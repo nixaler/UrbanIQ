@@ -1,0 +1,83 @@
+Smart. Here's the full agent prompt for real PvP Battle:
+
+---
+
+**TASK: Build Real PvP Battle System for UrbanIQ**
+
+Do not modify `.replit`. Do not change Vite config. After all changes run `npm run build` to verify.
+
+---
+
+**BACKEND — server.js additions**
+Add these API endpoints to the existing server.js:
+
+```
+POST /api/battle/submit — submit a deck of 5 cards for battle
+GET /api/battle/status/:battleId — check if battle is resolved
+GET /api/battle/history/:playerId — get past battle results
+GET /api/battle/leaderboard — top 10 players by battle wins
+```
+
+Use Replit DB (`@replit/database`) for all storage. Install it via npm.
+
+---
+
+**DATA MODELS**
+
+Battle submission:
+```json
+{
+  "battleId": "unique-id",
+  "playerId": "localStorage userId",
+  "playerName": "display name",
+  "deck": [5 card objects with stats],
+  "submittedAt": "timestamp",
+  "status": "waiting | matched | resolved",
+  "result": "win | loss | draw | null"
+}
+```
+
+---
+
+**MATCHMAKING LOGIC**
+When a player submits a deck:
+1. Check Replit DB for any waiting battles
+2. If found — match them, resolve battle immediately, update both records
+3. If not found — store as waiting, return battleId to poll
+
+**BATTLE RESOLUTION**
+- Each card has a power stat
+- Sum total power of both decks
+- Apply card abilities as multipliers
+- Higher total wins
+- On draw — compare number of rare/legendary cards
+
+---
+
+**FRONTEND — Battle UI**
+Update the Battle tab in Cards section:
+
+1. **Deck Builder** — pick 5 cards from collection, show combined power score
+2. **Submit Battle** button — sends deck to `/api/battle/submit`
+3. **Waiting screen** — polls `/api/battle/status/:battleId` every 10 seconds
+4. **Results screen** — shows both decks side by side, card by card resolution animation, win/loss/draw
+5. **Battle History** — last 5 battles with outcomes
+6. **Leaderboard tab** — top 10 by wins, pulls from `/api/battle/leaderboard`
+
+---
+
+**PLAYER ID**
+Generate a unique playerId on first visit, store in localStorage as `urbaniq_player_id`. Use this for all battle submissions. Pull display name from existing ME tab data.
+
+---
+
+**RULES:**
+- Do not touch `package.json` build scripts or `.replit`
+- Install `@replit/database` as the only new dependency
+- After changes run `npm run build` and confirm it succeeds
+- Do not break existing card collection or puzzle games
+- If Replit DB connection fails, fall back gracefully with an error message in UI
+
+---
+
+Feed that in one shot. Watch it closely — if it starts touching server.js build config or `.replit` stop it immediately and tell it to skip that step.

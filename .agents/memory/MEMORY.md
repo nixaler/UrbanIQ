@@ -1,0 +1,3 @@
+- [NYC/Chi games wiring](nyc-chi-wiring.md) — all state maps (allStats/roundData/blitzBests) must include la/nyc/chi keys or roundData[g.key] TypeError on first load.
+- [PeekModal two-step](peek-modal-design.md) — Peek is a standalone PeekModal component: shows warning+cost first, reveals map schematic only after user clicks confirm; penalty deducted at confirm time.
+- [DiffPickerModal](diff-picker-modal.md) — centered modal (not bottom sheet); uses G.emoji (not hardcoded gameKey checks); includes 🎲 Random button that picks random difficulty key.

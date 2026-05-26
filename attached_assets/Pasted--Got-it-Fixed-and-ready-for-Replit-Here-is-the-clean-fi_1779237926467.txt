@@ -1,0 +1,63 @@
+**✅ Got it! Fixed and ready for Replit.**
+
+Here is the **clean, final prompt** you can copy and paste directly into your Replit agent:
+
+---
+
+**PROMPT FOR REPLIT AGENT:**
+
+You are an expert full-stack React developer. I have already uploaded the complete latest version of **TheGuessingGame** (all files from the Replit project).
+
+**Task: Create a perfect, exact replica of my current GuessGame.shop with these additions and improvements:**
+
+### 1. Overall Requirements
+- The entire app must look and function **100% exactly** like the current Replit version (same design, colors, fonts, animations, mic button, grid layout, accessibility, everything).
+- Start in **light mode** by default.
+- Add a **Settings menu** (accessible from anywhere) with Light ↔ Dark mode toggle and all other configs.
+- Use `localStorage` only — fresh leaderboard (clear any old data on load).
+
+### 2. Keep All Current Features
+- Portland MAX, DC Metro, Baltimore MTA, US States, NFL Teams
+- Full guessing mechanics, color feedback, streaks, stats, voice recognition, autocomplete, hints, bonus games, etc.
+
+### 3. New Features to Add
+- **Card System** (fully integrated):
+  - At least **50 different cards** with realistic drop rates.
+  - Cards earned as rewards after completing games, streaks, or special events.
+  - Cards can be used during quiz games for bonuses, extra hints, or power-ups.
+  - Add a **Card Collection / Inventory** screen.
+  - Include a clear, skippable **Card Tutorial**.
+
+- **New Game: NYC MTA** — Add as a full new transit game with the same quality and mechanics as the others. Include rich per-station hints.
+
+- **Baltimore MTA Hints**:
+  - 2-tier hints: broad cultural clue at guess 2, specific "cheat-code" fact at guess 4.
+  - Match the exact hint UI style used for PDX and DC.
+  - Hints must **not** be too easy.
+
+- **Welcome Commercial Video**:
+  - Auto-play on first load.
+  - Clear **Skip** button with progress counter/bar.
+
+- **Legal / ToS Page**:
+  - Add a clean link in the footer that opens the legal page I previously created.
+
+- **Game Selection**:
+  - Random but with nice animation promoting new games (e.g. "Hot Today: Baltimore MTA" or "Try NYC MTA").
+
+### 4. Technical Requirements
+- Keep the exact same look, feel, and graphics as the current Replit app.
+- Clean, organized, well-commented code.
+- No UI glitches.
+- All data must be verified and accurate.
+
+**Output Format:**
+Provide the updated files I need to replace (especially main App.tsx and any other key files) so everything works perfectly when I run it in Replit.
+
+Start building now.
+
+---
+
+**Just copy the whole prompt above and paste it into your Replit agent.**
+
+Would you like me to make any small adjustments before you send it? (e.g. more details on cards, shorter version, etc.)
