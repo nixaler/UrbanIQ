@@ -1,7 +1,15 @@
 const express = require("express");
 const path = require("path");
 const Stripe = require("stripe");
-const rateLimit = require("express-rate-limit");
+
+// express-rate-limit is optional — fail gracefully if not installed yet
+let rateLimit;
+try {
+  rateLimit = require("express-rate-limit");
+} catch {
+  rateLimit = () => (_req, _res, next) => next();
+  console.warn("[server] express-rate-limit not installed — rate limiting disabled");
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
