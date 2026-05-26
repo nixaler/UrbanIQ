@@ -212,7 +212,7 @@ async function getWikiImage(title:string):Promise<string|null>{
 function CardVisual({card,size="md",onClick,selected,disabled}){
   const r=CARD_RARITY[card.rarityId?.toUpperCase()]||CARD_RARITY.COMMON;
   const gConf=GAMES[card.gameType]||Object.values(GAMES)[0];
-  const D={sm:{w:90,h:120,icon:24,nm:7},md:{w:130,h:175,icon:36,nm:9},lg:{w:160,h:215,icon:44,nm:10}}[size]||{w:130,h:175,icon:36,nm:9};
+  const D={sm:{w:108,h:148,icon:28,nm:8},md:{w:152,h:204,icon:42,nm:10},lg:{w:188,h:252,icon:52,nm:12}}[size]||{w:152,h:204,icon:42,nm:10};
   const[wikiImg,setWikiImg]=useState<string|null>(null);
   const[imgLoaded,setImgLoaded]=useState(false);
   useEffect(()=>{
@@ -4403,8 +4403,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         @keyframes tabSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         .sp-nav-btn{font-size:11px;letter-spacing:2px;color:rgba(0,0,0,0.3);cursor:pointer;transition:color .2s;background:none;border:none;font-family:'Inter',sans-serif;padding:0;white-space:nowrap;}
         .sp-nav-btn:hover{color:rgba(0,0,0,0.7);}
-        .sp-game-card{cursor:pointer;border-radius:14px;padding:16px 14px 14px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;border:1.5px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);}
-        .sp-game-card:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 36px rgba(0,0,0,0.13);}
+        .sp-game-card{cursor:pointer;border-radius:10px;padding:0;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;border:2px solid rgba(0,0,0,0.10);background:#fff;}
+        .sp-game-card:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 10px 32px rgba(0,0,0,0.15);}
         .sp-game-card:active{transform:scale(.97);}
         .sp-game-card.hot{animation:spHotPulse 2.4s ease infinite;}
         .sp-feat-card{cursor:pointer;border-radius:16px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;border:2px solid transparent;}
@@ -4499,14 +4499,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               style={{background:g.grad,boxShadow:featHov?`0 16px 48px ${g.color}44`:`0 8px 28px ${g.color}28`,userSelect:"none",touchAction:"pan-y",cursor:"pointer",overflow:"hidden",position:"relative"}}>
               {g.photo&&<img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:featHov?0.55:0.42,transition:"opacity .3s",filter:"brightness(0.7) saturate(1.3)"}}/>}
               <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(0,0,0,0.3) 0%,transparent 100%)"}}/>
-              <div style={{padding:"20px 18px 18px",display:"flex",alignItems:"center",gap:14,position:"relative",zIndex:1}}>
-                <div style={{width:52,height:52,borderRadius:14,background:"rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"26px",flexShrink:0,boxShadow:"0 4px 14px rgba(0,0,0,0.2)"}}>{g.emoji}</div>
+              <div style={{padding:"24px 20px 22px",display:"flex",alignItems:"center",gap:16,position:"relative",zIndex:1}}>
+                <div style={{width:62,height:62,borderRadius:14,background:"rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"30px",flexShrink:0,boxShadow:"0 4px 14px rgba(0,0,0,0.2)"}}>{g.emoji}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:"9px",letterSpacing:3,color:"rgba(255,255,255,0.65)",fontWeight:700,marginBottom:3}}>{g.tag}</div>
-                  <div style={{fontSize:"18px",fontWeight:800,color:"#fff",letterSpacing:-0.5,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{g.name}</div>
-                  <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)"}}>{g.sub}</div>
+                  <div style={{fontSize:"10px",letterSpacing:3,color:"rgba(255,255,255,0.65)",fontWeight:700,marginBottom:4}}>{g.tag}</div>
+                  <div style={{fontSize:"22px",fontWeight:800,color:"#fff",letterSpacing:-0.5,marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{g.name}</div>
+                  <div style={{fontSize:"11px",color:"rgba(255,255,255,0.6)"}}>{g.sub}</div>
                 </div>
-                <div style={{flexShrink:0,background:"rgba(255,255,255,0.95)",color:g.color,fontFamily:"'Inter',sans-serif",fontSize:"10px",fontWeight:800,letterSpacing:2,padding:"9px 16px",borderRadius:8,cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 2px 10px rgba(0,0,0,0.15)",transition:"transform .15s",transform:featHov?"scale(1.04)":"none"}}>PLAY →</div>
+                <div style={{flexShrink:0,background:"rgba(255,255,255,0.95)",color:g.color,fontFamily:"'Inter',sans-serif",fontSize:"11px",fontWeight:800,letterSpacing:2,padding:"11px 18px",borderRadius:9,cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 2px 10px rgba(0,0,0,0.15)",transition:"transform .15s",transform:featHov?"scale(1.04)":"none"}}>PLAY →</div>
               </div>
             </div>
           </div>
@@ -4530,8 +4530,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             return(
               <div key={tag} style={{marginBottom:12,animation:"spCardIn .2s ease both"}}>
                 <button onClick={()=>toggleSection(tag)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:collapsed?"rgba(0,0,0,0.02)":"rgba(255,255,255,0.85)",border:`1.5px solid ${collapsed?"rgba(0,0,0,0.07)":color+"28"}`,borderRadius:10,padding:"10px 14px",cursor:"pointer",transition:"all .2s",fontFamily:"'Inter',sans-serif",backdropFilter:"blur(6px)",boxShadow:collapsed?"none":`0 2px 12px ${color}10`}}>
-                  <span style={{fontSize:"10px",letterSpacing:3,color:collapsed?"rgba(0,0,0,0.28)":color,fontWeight:700}}>{label}</span>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:collapsed?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.92)",border:`2px solid ${collapsed?"rgba(0,0,0,0.08)":color+"35"}`,borderRadius:10,padding:"13px 16px",cursor:"pointer",transition:"all .2s",fontFamily:"'Inter',sans-serif",backdropFilter:"blur(6px)",boxShadow:collapsed?"none":`0 2px 14px ${color}12`}}>
+                  <span style={{fontSize:"11px",letterSpacing:3,color:collapsed?"rgba(0,0,0,0.32)":color,fontWeight:800}}>{label}</span>
                   <span style={{fontSize:"11px",color:"rgba(0,0,0,0.2)",transition:"transform .25s",display:"inline-block",transform:collapsed?"rotate(0deg)":"rotate(180deg)"}}>▼</span>
                 </button>
                 {!collapsed&&(
@@ -4541,15 +4541,18 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                         onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
                         onMouseEnter={()=>setHoveredGame(g.key)} onMouseLeave={()=>setHoveredGame(null)}
                         style={{animation:"spCardIn .2s ease both",borderColor:hoveredGame===g.key?g.color:"rgba(0,0,0,0.07)",boxShadow:hoveredGame===g.key?`0 8px 28px ${g.color}22`:"none",padding:0,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-                        {g.photo?<div style={{height:110,overflow:"hidden",position:"relative",flexShrink:0}}>
+                        {g.photo?<div style={{height:130,overflow:"hidden",position:"relative",flexShrink:0}}>
                           <img src={g.photo} alt={g.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .35s",transform:hoveredGame===g.key?"scale(1.07)":"scale(1)"}}/>
-                          <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.42) 100%)`}}/>
-                          <div style={{position:"absolute",bottom:7,left:10,fontSize:"11px",fontWeight:700,color:"rgba(255,255,255,0.92)",textShadow:"0 1px 6px rgba(0,0,0,0.7)",letterSpacing:.3}}>{g.emoji} {g.name}</div>
-                        </div>:<div style={{height:80,background:g.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"24px",flexShrink:0}}>{g.emoji}</div>}
-                        <div style={{padding:"10px 12px 12px",flex:1,display:"flex",flexDirection:"column",gap:4}}>
-                          <div style={{fontSize:"12px",fontWeight:700,color:"#0a0a0a",lineHeight:1.3}}>{g.emoji} {g.name}</div>
-                          <div style={{fontSize:"9px",color:"rgba(0,0,0,0.38)",lineHeight:1.4}}>{g.sub}</div>
-                          <div style={{marginTop:"auto",fontSize:"9px",fontWeight:700,letterSpacing:1,color:g.color}}>PLAY →</div>
+                          <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.52) 100%)`}}/>
+                          <div style={{position:"absolute",bottom:9,left:12,fontSize:"12px",fontWeight:800,color:"rgba(255,255,255,0.95)",textShadow:"0 1px 6px rgba(0,0,0,0.7)",letterSpacing:.3}}>{g.emoji} {g.name}</div>
+                          <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.45)",color:"rgba(255,255,255,0.7)",fontSize:"8px",fontWeight:700,letterSpacing:1.5,padding:"3px 7px",borderRadius:4}}>{g.tag}</div>
+                        </div>:<div style={{height:96,background:g.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"28px",flexShrink:0}}>{g.emoji}</div>}
+                        <div style={{padding:"12px 14px 14px",flex:1,display:"flex",flexDirection:"column",gap:5}}>
+                          <div style={{fontSize:"13px",fontWeight:800,color:"#0a0a0a",lineHeight:1.3}}>{g.name}</div>
+                          <div style={{fontSize:"10px",color:"rgba(0,0,0,0.42)",lineHeight:1.4}}>{g.sub}</div>
+                          <div style={{marginTop:"auto",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:1,color:g.color}}>PLAY →</div>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -5599,7 +5602,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
   const[blitzOpen,setBlitzOpen]=useState(false);
   const[historyOpen,setHistoryOpen]=useState(false);
   const[achOpen,setAchOpen]=useState(false);
-  const ER={guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false};
+  const ER={guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};
   const ES={streak:0,played:0,wins:0,totalGuesses:0,dist:{1:0,2:0,3:0,4:0,5:0,6:0},hardWins:0,proWins:0};
   const[allStats,setAllStats]=useState<any>({pdx:ES,dc:ES,states:ES,nfl:ES,balt:ES,la:ES,nyc:ES,chi:ES});
   const[allUnlocked,setAllUnlocked]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[]});
@@ -5624,6 +5627,9 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
   const[sugg,setSugg]=useState<any[]>([]);
   const[voiceListening,setVoiceListening]=useState(false);
   const[pendingCard,setPendingCard]=useState(null);
+  const[deckCards,setDeckCards]=useState<any[]>(()=>{try{return JSON.parse(localStorage.getItem("tgg-card-deck")||"[]");}catch{return [];}});
+  const[showCardPanel,setShowCardPanel]=useState(false);
+  const[cardToast,setCardToast]=useState<string|null>(null);
   const[showMoreMenu,setShowMoreMenu]=useState(false);
   const[confetti,setConfetti]=useState(false);
   const[shakeInput,setShakeInput]=useState(false);
@@ -5650,7 +5656,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
   const today=useMemo(getToday,[]);
   const dayNum=useMemo(getDayNum,[]);
 
-  function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false};}
+  function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};}
   const G=GAMES[gameKey];
   const DIFF=G.diffConfig[diff];
   const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:STATES;
@@ -5708,7 +5714,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
         const storedTgt=td.targetName?its.find((s:any)=>s.name===td.targetName):null;
         const tgt=storedTgt||getTarget(its,gk,roundIdx);
         const rebuilt=td.guesses.map((n:string)=>{const s=its.find((x:any)=>x.name===n);return s?buildGuess(s,tgt,gk):null;}).filter(Boolean);
-        return{guesses:rebuilt,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost,hardLocks:td.hardLocks||{},hintsUsed:td.hintsUsed||0,revealedHints:td.revealedHints||[],targetName:tgt.name,peekPenalty:td.peekPenalty||0,peekUsed:td.peekUsed||false};
+        return{guesses:rebuilt,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost,hardLocks:td.hardLocks||{},hintsUsed:td.hintsUsed||0,revealedHints:td.revealedHints||[],targetName:tgt.name,peekPenalty:td.peekPenalty||0,peekUsed:td.peekUsed||false,extraGuesses:td.extraGuesses||0,cardHintsUsed:td.cardHintsUsed||[]};
       }
       const newRoundData={
         pdx:[buildRound(pdxR0,PDX_STATIONS,"pdx",0),buildRound(pdxR1,PDX_STATIONS,"pdx",1),buildRound(pdxR2,PDX_STATIONS,"pdx",2)],
@@ -5801,7 +5807,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     const tgtName=rd.targetName||target.name;
     updateRound({guesses:rd.guesses,won:false,lost:true,hardLocks:rd.hardLocks,alreadyPlayed:true,targetName:tgtName});
     setInput("");setSugg([]);
-    await saveTodayData(gameKey,today+`r${round}`,{guesses:rd.guesses.map((g:any)=>g.item.name),won:false,lost:true,hardLocks:rd.hardLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false});
+    await saveTodayData(gameKey,today+`r${round}`,{guesses:rd.guesses.map((g:any)=>g.item.name),won:false,lost:true,hardLocks:rd.hardLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
     const isFirstRoundGiveUp=round===0;
     if(isFirstRoundGiveUp)setProtectToast(true);
     const ns={...stats,played:stats.played+1,wins:stats.wins,totalGuesses:stats.totalGuesses+rd.guesses.length,streak:isFirstRoundGiveUp?stats.streak:0,dist:stats.dist,lastGuesses:rd.guesses.length,lastPlayed:today};
@@ -5834,7 +5840,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       }
     }
     const isWin=item.name===target.name;
-    const isLoss=!isWin&&(newGuesses.length+(rd.peekPenalty||0))>=DIFF.maxGuesses;
+    const effectiveMax=DIFF.maxGuesses+(rd.extraGuesses||0);
+    const isLoss=!isWin&&(newGuesses.length+(rd.peekPenalty||0))>=effectiveMax;
     if(isWin){
       const allRoundsWon=roundData[gameKey].filter((_:any,i:number)=>i!==round).every((r:any)=>r.won);
       setTimeout(()=>SoundEngine.play(allRoundsWon?"win":"correct"),300);
@@ -5852,7 +5859,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     const tgtName=rd.targetName||target.name;
     updateRound({guesses:newGuesses,won:isWin,lost:isLoss,hardLocks:newLocks,alreadyPlayed:isWin||isLoss,targetName:tgtName});
     setInput("");setSugg([]);
-    await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false});
+    await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
     if(isWin)window.dispatchEvent(new CustomEvent('tgg-win'));
     if(isWin)setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));
     if(isWin||isLoss){
@@ -5875,6 +5882,33 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     const pool=generateHints(target,gameKey);
     const hint=pool[Math.min(rd.hintsUsed,pool.length-1)];
     updateRound({revealedHints:[...rd.revealedHints,hint],hintsUsed:rd.hintsUsed+1});
+  }
+  function useCardPowerupInGame(card:any){
+    if(!canUseCardPowerup(card)||rd.won||rd.lost||rd.alreadyPlayed)return;
+    const col2=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");
+    const updatedCol=col2.map((c:any)=>c.id===card.id?markCardPowerupUsed(c):c);
+    localStorage.setItem("tgg-card-col",JSON.stringify(updatedCol));
+    const updatedDeck=deckCards.map((c:any)=>c.id===card.id?markCardPowerupUsed(c):c);
+    setDeckCards(updatedDeck);
+    SoundEngine.play("hint");
+    const desc=(card.ability?.description||"").toLowerCase();
+    const isGuessBoost=desc.includes("extra guess")||desc.includes("one more guess")||desc.includes("skip")||desc.includes("skip one");
+    if(isGuessBoost){
+      const newExtra=(rd.extraGuesses||0)+1;
+      updateRound({extraGuesses:newExtra,cardHintsUsed:[...(rd.cardHintsUsed||[]),card.id]});
+      setCardToast(`+1 guess from ${card.ability?.icon||"🃏"} ${card.ability?.name||"Card"}`);
+      setTimeout(()=>setCardToast(null),3000);
+    }else{
+      const pool=generateHints(target,gameKey);
+      const nextIdx=Math.min((rd.revealedHints||[]).length,pool.length-1);
+      const hint=pool[nextIdx];
+      if(hint){
+        updateRound({revealedHints:[...(rd.revealedHints||[]),hint],hintsUsed:(rd.hintsUsed||0)+1,cardHintsUsed:[...(rd.cardHintsUsed||[]),card.id]});
+      }
+      setCardToast(`${card.ability?.icon||"💡"} ${card.ability?.name||"Hint"} activated!`);
+      setTimeout(()=>setCardToast(null),3000);
+    }
+    setShowCardPanel(false);
   }
   async function handleSaveSettings(ns:any){setSettings(ns);await saveSettings(ns);SoundEngine.setEnabled(ns?.sounds!==false);}
   async function handleSaveProfile(np:any){setProfile(np);await saveProfile(np);setEditProfile(false);}
@@ -5924,6 +5958,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
       <Particles gameKey={gameKey}/>
       {confetti&&<Confetti/>}
+      {cardToast&&(
+        <div style={{position:"fixed",bottom:68,left:"50%",transform:"translateX(-50%)",background:"#332800",color:"#c8a800",fontSize:"12px",fontWeight:700,letterSpacing:1,padding:"10px 20px",borderRadius:10,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.4)",border:"1px solid rgba(200,168,0,.3)",whiteSpace:"nowrap",pointerEvents:"none",animation:"spFadeIn .25s ease both"}}>
+          {cardToast}
+        </div>
+      )}
 
       {newAchieves.map((a,i)=>(
         <div key={a.id} style={{position:"fixed",bottom:80+i*72,left:"50%",transform:"translateX(-50%)",zIndex:800,background:T.card,border:`1.5px solid ${T.accent}`,borderRadius:12,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,animation:"achievePopUp 4.5s ease forwards",boxShadow:"0 -4px 24px rgba(0,0,0,.15)",whiteSpace:"nowrap",maxWidth:"90vw"}}>
@@ -6082,11 +6121,36 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               {DIFF.hints>0&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(
                 <button onClick={revealHint} disabled={rd.hintsUsed>=DIFF.hints} style={{background:"rgba(255,215,100,.08)",border:"1px solid rgba(255,215,100,.25)",borderRadius:6,padding:"5px 12px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:"#c8a840",cursor:rd.hintsUsed>=DIFF.hints?"not-allowed":"pointer",opacity:rd.hintsUsed>=DIFF.hints?.5:1,letterSpacing:1}}>💡 {DIFF.hints-rd.hintsUsed} HINT{DIFF.hints-rd.hintsUsed!==1?"S":""}</button>
               )}
-              {(PEEK_LINES[gameKey])&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&!rd.peekUsed&&(DIFF.maxGuesses-rd.guesses.length-(rd.peekPenalty||0))>=2&&(
+              {(PEEK_LINES[gameKey])&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&!rd.peekUsed&&(DIFF.maxGuesses+(rd.extraGuesses||0)-rd.guesses.length-(rd.peekPenalty||0))>=2&&(
                 <button onClick={()=>setShowPeek(true)} style={{background:"rgba(80,140,255,.08)",border:"1px solid rgba(80,140,255,.28)",borderRadius:6,padding:"5px 12px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:"#6496e0",cursor:"pointer",letterSpacing:1}}>🗺️ PEEK</button>
+              )}
+              {deckCards.length>0&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(
+                <button onClick={()=>setShowCardPanel(p=>!p)} style={{background:showCardPanel?"rgba(200,168,0,.15)":"rgba(200,168,0,.08)",border:`1px solid rgba(200,168,0,${showCardPanel?".5":".25"})`,borderRadius:6,padding:"5px 12px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:"#c8a800",cursor:"pointer",letterSpacing:1}}>🃏 {deckCards.filter(c=>canUseCardPowerup(c)).length} CARD{deckCards.filter(c=>canUseCardPowerup(c)).length!==1?"S":""}</button>
               )}
             </div>
           </div>
+
+          {showCardPanel&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(
+            <div style={{background:T.surface,border:`1px solid rgba(200,168,0,.25)`,borderRadius:10,padding:"12px 14px",marginBottom:10}}>
+              <div style={{fontSize:fs(8),letterSpacing:2,color:"#c8a800",fontWeight:700,marginBottom:8}}>🃏 USE A CARD ABILITY</div>
+              {deckCards.length===0?(
+                <div style={{fontSize:fs(9),color:T.textMuted,textAlign:"center",padding:"8px 0"}}>Add cards to your deck in the Cards tab</div>
+              ):(
+                <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:6}}>
+                  {deckCards.map((card:any)=>{
+                    const canUse=canUseCardPowerup(card);
+                    return(
+                      <div key={card.id} style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                        <CardVisual card={card} size="sm" disabled={!canUse} onClick={canUse?()=>useCardPowerupInGame(card):undefined}/>
+                        <div style={{fontSize:fs(7),color:canUse?"#c8a800":T.textMuted,fontWeight:700,letterSpacing:.5,textAlign:"center"}}>{canUse?"TAP TO USE":"COOLDOWN"}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <div style={{fontSize:fs(8),color:T.textMuted,marginTop:6,lineHeight:1.5}}>Hint cards reveal clues · Boost cards add extra guesses</div>
+            </div>
+          )}
 
           {target.img&&!rd.won&&!rd.lost&&(
             <div style={{borderRadius:10,overflow:"hidden",marginBottom:9,position:"relative",height:170,border:`1px solid ${T.border}`,flexShrink:0}}>
@@ -6155,7 +6219,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               {DIFF.headers.map((_:any,j:number)=>(<div key={j} style={{height:38,background:"rgba(80,140,255,.06)",border:"1px dashed rgba(80,140,255,.25)",borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",color:"rgba(100,150,224,.5)"}}>{j===0?"🗺️":""}</div>))}
             </div>
           ))}
-          {!rd.won&&!rd.lost&&Array.from({length:DIFF.maxGuesses-rd.guesses.length-(rd.peekPenalty||0)}).map((_,i)=>(
+          {!rd.won&&!rd.lost&&Array.from({length:DIFF.maxGuesses+(rd.extraGuesses||0)-rd.guesses.length-(rd.peekPenalty||0)}).map((_,i)=>(
             <div key={i} style={{display:"grid",gridTemplateColumns:DIFF.grid,gap:3,marginBottom:4,opacity:i===0?.3:.08}}>
               {DIFF.headers.map((_:any,j:number)=>(<div key={j} style={{height:38,background:T.surface,border:`1px solid ${T.border}`,borderRadius:5}}/>))}
             </div>
@@ -6164,7 +6228,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
           {!rd.won&&!rd.lost&&(
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,gap:8}}>
-              <div style={{fontSize:fs(8),color:T.textMuted,letterSpacing:2}}>{DIFF.maxGuesses-rd.guesses.length-(rd.peekPenalty||0)} TRIES LEFT · {DIFF.emoji} {DIFF.label.toUpperCase()}</div>
+              <div style={{fontSize:fs(8),color:T.textMuted,letterSpacing:2}}>{DIFF.maxGuesses+(rd.extraGuesses||0)-rd.guesses.length-(rd.peekPenalty||0)} TRIES LEFT · {DIFF.emoji} {DIFF.label.toUpperCase()}{(rd.extraGuesses||0)>0?` · +${rd.extraGuesses} 🃏`:""}</div>
               {!rd.alreadyPlayed&&(giveUpConfirm?(
                 <div style={{display:"flex",gap:5,alignItems:"center"}}>
                   <span style={{fontSize:fs(8),color:T.textMuted}}>Give up?</span>
@@ -6183,14 +6247,14 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               <div style={{marginBottom:8}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                   <span style={{fontSize:fs(8),letterSpacing:2,color:T.textMuted}}>GUESSES</span>
-                  <span style={{fontSize:fs(9),fontWeight:700,color:(rd.guesses.length+(rd.peekPenalty||0))>=DIFF.maxGuesses-1?T.cellText.red:T.textMuted}}>{rd.guesses.length+(rd.peekPenalty||0)} / {DIFF.maxGuesses}</span>
+                  <span style={{fontSize:fs(9),fontWeight:700,color:(rd.guesses.length+(rd.peekPenalty||0))>=(DIFF.maxGuesses+(rd.extraGuesses||0))-1?T.cellText.red:T.textMuted}}>{rd.guesses.length+(rd.peekPenalty||0)} / {DIFF.maxGuesses+(rd.extraGuesses||0)}</span>
                 </div>
                 <div style={{height:4,background:T.surface,borderRadius:4,overflow:"hidden",border:`1px solid ${T.border}`}}>
-                  <div style={{height:"100%",width:`${((rd.guesses.length+(rd.peekPenalty||0))/DIFF.maxGuesses)*100}%`,background:(rd.guesses.length+(rd.peekPenalty||0))>=DIFF.maxGuesses-1?T.cellBorder.red:(rd.guesses.length+(rd.peekPenalty||0))>=Math.ceil(DIFF.maxGuesses/2)?T.cellBorder.yellow:T.accent,borderRadius:4,transition:"width .4s ease, background .4s"}}/>
+                  <div style={{height:"100%",width:`${((rd.guesses.length+(rd.peekPenalty||0))/(DIFF.maxGuesses+(rd.extraGuesses||0)))*100}%`,background:(rd.guesses.length+(rd.peekPenalty||0))>=(DIFF.maxGuesses+(rd.extraGuesses||0))-1?T.cellBorder.red:(rd.guesses.length+(rd.peekPenalty||0))>=Math.ceil((DIFF.maxGuesses+(rd.extraGuesses||0))/2)?T.cellBorder.yellow:T.accent,borderRadius:4,transition:"width .4s ease, background .4s"}}/>
                 </div>
               </div>
               {/* Close call warning */}
-              {(rd.guesses.length+(rd.peekPenalty||0))===DIFF.maxGuesses-1&&(
+              {(rd.guesses.length+(rd.peekPenalty||0))===(DIFF.maxGuesses+(rd.extraGuesses||0))-1&&(
                 <div style={{background:T.cellBg.red,border:`1px solid ${T.cellBorder.red}`,borderRadius:7,padding:"7px 12px",marginBottom:8,fontSize:fs(10),color:T.cellText.red,fontWeight:700,textAlign:"center",animation:"popIn .25s ease"}}>
                   {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
                 </div>
@@ -6886,7 +6950,7 @@ function Root(){
   return(
     <>
     {pendingDailyCards.length>0&&<PackOpening isDaily={true} card={pendingDailyCards[0]} onDone={()=>{const _e=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._e,pendingDailyCards[0]]));setPendingDailyCards(p=>p.slice(1));}}/>}
-    {showOnboarding&&<OnboardingOverlay onDone={()=>{setShowOnboarding(false);setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");}}/>}
+    {showOnboarding&&<OnboardingOverlay onDone={()=>{setShowOnboarding(false);setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");}} onStartGame={(gk)=>{setShowOnboarding(false);setSelectedGame(gk);setSelectedDiff("medium");setPhase("play");}}/>}
     <div key={phase==="select-game"?"start":phase} style={{animation:"pageIn .32s ease both"}}>
       <style>{`@keyframes pageIn{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}`}</style>
       {pageContent}
@@ -6896,7 +6960,7 @@ function Root(){
 }
 
 // ── ONBOARDING OVERLAY ─────────────────────────────────────────────────────────
-function OnboardingOverlay({onDone}:{onDone:()=>void}){
+function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(gk:string)=>void}){
   const [screen,setScreen]=useState(0);
   const [cityPref,setCityPref]=useState(localStorage.getItem("tgg:cityPref")||"pdx");
   const [openCats,setOpenCats]=useState<Set<string>>(new Set());
@@ -6952,7 +7016,7 @@ function OnboardingOverlay({onDone}:{onDone:()=>void}){
               {open&&(
                 <div style={{paddingTop:5,display:"flex",flexDirection:"column",gap:5,paddingLeft:8}}>
                   {items.map(o=>(
-                    <div key={o.key} onClick={()=>setCityPref(o.key)}
+                    <div key={o.key} onClick={()=>{setCityPref(o.key);localStorage.setItem("tgg:cityPref",o.key);localStorage.setItem("has_boarded","1");if(onStartGame){onStartGame(o.key);}else{onDone();}}}
                       style={{display:"flex",alignItems:"center",gap:11,border:`2px solid ${cityPref===o.key?"#0a0a0a":"rgba(0,0,0,0.07)"}`,borderRadius:9,padding:"9px 13px",cursor:"pointer",background:cityPref===o.key?"rgba(0,0,0,0.03)":"#fff",transition:"all .15s"}}>
                       <span style={{fontSize:18,width:26,textAlign:"center"}}>{o.emoji}</span>
                       <div style={{flex:1}}>
