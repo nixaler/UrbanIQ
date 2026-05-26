@@ -127,16 +127,22 @@ app.post("/api/stripe/portal", async (req, res) => {
 });
 app.use(express.static(path.join(__dirname, "dist")));
 
+let supabase = null;
+try {
   const { createClient } = require("@supabase/supabase-js");
-  const supabase = createClient(
+  supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_KEY
   );
+} catch (e) {
+  console.error("[server] Supabase init failed — data storage unavailable:", e.message);
+}
 
-  const store = {
-    async get(k) {
-      try {
-        const { data } = await supabase
+const store = {
+  async get(k) {
+    try {
+      if (!supabase) return null;
+      const { data } = await supabase
           .from("kv_store").select("value")
           .eq("key", k).single();
         return data?.value ?? null;
@@ -144,25 +150,28 @@ app.use(express.static(path.join(__dirname, "dist")));
     },
     async set(k, v) {
       try {
+        if (!supabase) return;
         await supabase.from("kv_store")
           .upsert({ key: k, value: v });
       } catch {}
     },
     async del(k) {
       try {
+        if (!supabase) return;
         await supabase.from("kv_store")
           .delete().eq("key", k);
       } catch {}
     },
     async list(prefix) {
       try {
+        if (!supabase) return [];
         const { data } = await supabase
           .from("kv_store").select("key")
           .like("key", `${prefix}%`);
         return (data || []).map(r => r.key);
       } catch { return []; }
     }
-  }
+};
 
 function genId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
