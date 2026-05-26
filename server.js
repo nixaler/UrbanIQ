@@ -3,7 +3,7 @@ const path = require("path");
 const Stripe = require("stripe");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.use(express.json());
 
 // ── SECURITY: block common bot probe paths ─────────────────────────────────────
@@ -361,5 +361,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
+  console.log(`UrbanIQ running on port ${PORT}`);
 });
