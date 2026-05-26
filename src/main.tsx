@@ -416,7 +416,7 @@ function CardSystemTab({pendingCard,onClearPending,onActivePowerup}:{pendingCard
 
   return(
     <div style={{background:bg,minHeight:"100%",fontFamily:"'JetBrains Mono',monospace",color:txt,paddingBottom:60}}>
-      <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${border}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:card,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${border}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:`${card}ee`,boxShadow:"0 1px 4px rgba(0,0,0,.06)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)"}}>
         <div>
           <div style={{fontSize:16,fontWeight:700}}>🃏 Card Collection</div>
           <div style={{fontSize:8,color:txt3,letterSpacing:3,marginTop:2}}>{col.length} CARDS · {col.filter(c=>c.rarityId==="legendary").length} LEGENDARY · {col.filter(c=>c.isUnique).length} UNIQUE</div>
@@ -426,7 +426,7 @@ function CardSystemTab({pendingCard,onClearPending,onActivePowerup}:{pendingCard
           <div style={{fontSize:7,color:txt3}}>LEGENDARY</div>
         </div>
       </div>
-      <div style={{display:"flex",borderBottom:`1px solid ${border}`,background:card}}>
+      <div style={{display:"flex",borderBottom:`1px solid ${border}`,background:`${card}ee`,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)"}}>
         {CTABS.map(t=><div key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"11px 4px",textAlign:"center",cursor:"pointer",borderBottom:`2px solid ${tab===t.id?gold:"transparent"}`,transition:"all .15s"}}>
           <div style={{fontSize:16}}>{t.icon}</div>
           <div style={{fontSize:8,color:tab===t.id?gold:txt3,letterSpacing:1,marginTop:2,fontWeight:tab===t.id?700:400}}>{t.label}</div>
@@ -494,7 +494,7 @@ function CardSystemTab({pendingCard,onClearPending,onActivePowerup}:{pendingCard
             </div>
 
             {/* Deck builder (shared) */}
-            <div style={{background:card,border:`1px solid ${border}`,borderRadius:12,padding:16,marginBottom:14}}>
+            <div style={{background:`${card}ee`,border:`1px solid ${border}`,borderRadius:12,padding:16,marginBottom:14,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",boxShadow:"0 8px 32px rgba(0,0,0,0.08)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                 <div>
                   <div style={{fontSize:8,color:txt3,letterSpacing:3,marginBottom:2}}>BATTLE DECK</div>
@@ -656,7 +656,7 @@ function CardSystemTab({pendingCard,onClearPending,onActivePowerup}:{pendingCard
 
       {sel&&(
         <div onClick={()=>{setSel(null);setPowerupMsg(null);}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:900,padding:20}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:card,border:`1.5px solid ${CARD_RARITY[sel.rarityId?.toUpperCase()]?.color||"#555"}`,borderRadius:16,width:"100%",maxWidth:340,maxHeight:"90vh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:`${card}f0`,border:`1.5px solid ${CARD_RARITY[sel.rarityId?.toUpperCase()]?.color||"#555"}`,borderRadius:16,width:"100%",maxWidth:340,maxHeight:"90vh",display:"flex",flexDirection:"column",overflow:"hidden",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",boxShadow:"0 16px 48px rgba(0,0,0,0.2)"}}>
             <div style={{flex:1,overflowY:"auto",padding:24,paddingBottom:12}}>
               <div style={{display:"flex",gap:14,marginBottom:18}}>
                 <CardVisual card={sel} size="md"/>
@@ -3425,6 +3425,169 @@ const STATES_TRIVIA=[
   {q:"Which state became the 49th state admitted to the Union?",opts:["Hawaii","New Mexico","Arizona","Alaska"],ans:3},
 ];
 
+// ── ANIMATED CITY BACKGROUND ──────────────────────────────────────────────────
+function CityBackground(){
+  return(
+    <div aria-hidden="true" style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
+      <style>{`
+        @keyframes cityTrain1{0%{transform:translateX(110vw)}100%{transform:translateX(-120vw)}}
+        @keyframes cityTrain2{0%{transform:translateX(110vw)}100%{transform:translateX(-120vw)}}
+        @keyframes cityTrain3{0%{transform:translateX(110vw)}100%{transform:translateX(-120vw)}}
+        @keyframes cityBldgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+        @keyframes cityGlow{0%,100%{opacity:0.06}50%{opacity:0.12}}
+        @keyframes cityTrack{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+      `}</style>
+
+      {/* Background layer: slow-moving buildings (20s cycle) */}
+      <svg style={{position:"absolute",bottom:0,left:0,width:"200%",height:"45%",opacity:0.07,animation:"cityTrack 20s linear infinite"}} viewBox="0 0 2400 300" preserveAspectRatio="none">
+        {/* Building silhouettes — repeated for seamless loop */}
+        {[0,1200].map(ox=>(
+          <g key={ox} transform={`translate(${ox},0)`}>
+            <rect x="20" y="80" width="60" height="220" fill="#4a6fff"/>
+            <rect x="30" y="60" width="40" height="30" fill="#4a6fff"/>
+            <rect x="100" y="40" width="80" height="260" fill="#028A48"/>
+            <rect x="110" y="20" width="60" height="30" fill="#028A48"/>
+            <rect x="200" y="100" width="50" height="200" fill="#BF0000"/>
+            <rect x="270" y="60" width="90" height="240" fill="#1a3a8f"/>
+            <rect x="280" y="30" width="70" height="40" fill="#1a3a8f"/>
+            <rect x="380" y="120" width="40" height="180" fill="#4a6fff"/>
+            <rect x="440" y="50" width="70" height="250" fill="#028A48"/>
+            <rect x="450" y="20" width="50" height="40" fill="#028A48"/>
+            <rect x="530" y="90" width="55" height="210" fill="#BF0000"/>
+            <rect x="600" y="70" width="80" height="230" fill="#1a3a8f"/>
+            <rect x="610" y="40" width="60" height="40" fill="#1a3a8f"/>
+            <rect x="700" y="110" width="45" height="190" fill="#4a6fff"/>
+            <rect x="760" y="55" width="65" height="245" fill="#028A48"/>
+            <rect x="840" y="85" width="75" height="215" fill="#BF0000"/>
+            <rect x="850" y="55" width="55" height="40" fill="#BF0000"/>
+            <rect x="930" y="45" width="85" height="255" fill="#1a3a8f"/>
+            <rect x="940" y="15" width="65" height="40" fill="#1a3a8f"/>
+            <rect x="1030" y="100" width="50" height="200" fill="#4a6fff"/>
+            <rect x="1100" y="65" width="70" height="235" fill="#028A48"/>
+            <rect x="1110" y="35" width="50" height="40" fill="#028A48"/>
+            {/* Windows */}
+            {[20,40,60,80,100,120,140,160,180,200].map(wy=>(
+              <g key={wy}>
+                <rect x="30" y={wy+80} width="8" height="6" fill="rgba(255,255,255,0.4)" rx="1"/>
+                <rect x="50" y={wy+80} width="8" height="6" fill="rgba(255,255,255,0.3)" rx="1"/>
+                <rect x="110" y={wy+40} width="10" height="7" fill="rgba(255,255,255,0.35)" rx="1"/>
+                <rect x="130" y={wy+40} width="10" height="7" fill="rgba(255,255,255,0.25)" rx="1"/>
+                <rect x="280" y={wy+60} width="12" height="8" fill="rgba(255,255,255,0.3)" rx="1"/>
+                <rect x="305" y={wy+60} width="12" height="8" fill="rgba(255,255,255,0.2)" rx="1"/>
+              </g>
+            ))}
+          </g>
+        ))}
+      </svg>
+
+      {/* Mid layer: faster trains (15s cycle) */}
+      <div style={{position:"absolute",bottom:"18%",left:0,right:0,height:28,animation:"cityTrain1 15s linear infinite",animationDelay:"0s"}}>
+        <svg viewBox="0 0 520 28" style={{height:"100%",width:520,opacity:0.13}}>
+          {/* Train car 1 */}
+          <rect x="0" y="4" width="120" height="20" rx="4" fill="#028A48"/>
+          <rect x="4" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <rect x="26" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
+          <rect x="48" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <rect x="70" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+          <rect x="92" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="20" cy="25" r="4" fill="#1a1a1a"/>
+          <circle cx="100" cy="25" r="4" fill="#1a1a1a"/>
+          {/* Connector */}
+          <rect x="120" y="12" width="8" height="4" fill="#555"/>
+          {/* Train car 2 */}
+          <rect x="128" y="4" width="120" height="20" rx="4" fill="#028A48"/>
+          <rect x="132" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
+          <rect x="154" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <rect x="176" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+          <rect x="198" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
+          <rect x="220" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <circle cx="148" cy="25" r="4" fill="#1a1a1a"/>
+          <circle cx="228" cy="25" r="4" fill="#1a1a1a"/>
+          {/* Connector */}
+          <rect x="248" y="12" width="8" height="4" fill="#555"/>
+          {/* Train car 3 */}
+          <rect x="256" y="4" width="120" height="20" rx="4" fill="#028A48"/>
+          <rect x="260" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <rect x="282" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+          <rect x="304" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.4)"/>
+          <rect x="326" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.5)"/>
+          <rect x="348" y="8" width="18" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="276" cy="25" r="4" fill="#1a1a1a"/>
+          <circle cx="356" cy="25" r="4" fill="#1a1a1a"/>
+          {/* Track line */}
+          <line x1="0" y1="27" x2="520" y2="27" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5"/>
+        </svg>
+      </div>
+
+      {/* Second train — different color, offset timing */}
+      <div style={{position:"absolute",bottom:"32%",left:0,right:0,height:22,animation:"cityTrain2 22s linear infinite",animationDelay:"-8s"}}>
+        <svg viewBox="0 0 380 22" style={{height:"100%",width:380,opacity:0.09}}>
+          <rect x="0" y="3" width="90" height="16" rx="3" fill="#BF0000"/>
+          <rect x="3" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="21" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <rect x="39" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="57" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="75" y="6" width="8" height="8" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="15" cy="20" r="3" fill="#1a1a1a"/>
+          <circle cx="75" cy="20" r="3" fill="#1a1a1a"/>
+          <rect x="90" y="9" width="6" height="3" fill="#555"/>
+          <rect x="96" y="3" width="90" height="16" rx="3" fill="#BF0000"/>
+          <rect x="99" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <rect x="117" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="135" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="153" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="171" y="6" width="8" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <circle cx="111" cy="20" r="3" fill="#1a1a1a"/>
+          <circle cx="171" cy="20" r="3" fill="#1a1a1a"/>
+          <rect x="186" y="9" width="6" height="3" fill="#555"/>
+          <rect x="192" y="3" width="90" height="16" rx="3" fill="#BF0000"/>
+          <rect x="195" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="213" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="231" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="249" y="6" width="14" height="8" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <rect x="267" y="6" width="8" height="8" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <circle cx="207" cy="20" r="3" fill="#1a1a1a"/>
+          <circle cx="267" cy="20" r="3" fill="#1a1a1a"/>
+          <line x1="0" y1="21" x2="380" y2="21" stroke="rgba(255,255,255,0.12)" strokeWidth="1"/>
+        </svg>
+      </div>
+
+      {/* Foreground accent: fast small train (10s cycle) */}
+      <div style={{position:"absolute",bottom:"8%",left:0,right:0,height:16,animation:"cityTrain3 10s linear infinite",animationDelay:"-3s"}}>
+        <svg viewBox="0 0 260 16" style={{height:"100%",width:260,opacity:0.08}}>
+          <rect x="0" y="2" width="60" height="12" rx="2" fill="#1a3a8f"/>
+          <rect x="2" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="15" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <rect x="28" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="41" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="10" cy="15" r="2.5" fill="#1a1a1a"/>
+          <circle cx="50" cy="15" r="2.5" fill="#1a1a1a"/>
+          <rect x="60" y="6" width="5" height="2" fill="#555"/>
+          <rect x="65" y="2" width="60" height="12" rx="2" fill="#1a3a8f"/>
+          <rect x="67" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.4)"/>
+          <rect x="80" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="93" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <rect x="106" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <circle cx="75" cy="15" r="2.5" fill="#1a1a1a"/>
+          <circle cx="115" cy="15" r="2.5" fill="#1a1a1a"/>
+          <rect x="125" y="6" width="5" height="2" fill="#555"/>
+          <rect x="130" y="2" width="60" height="12" rx="2" fill="#1a3a8f"/>
+          <rect x="132" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
+          <rect x="145" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.35)"/>
+          <rect x="158" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.45)"/>
+          <rect x="171" y="4" width="10" height="6" rx="1" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="140" cy="15" r="2.5" fill="#1a1a1a"/>
+          <circle cx="180" cy="15" r="2.5" fill="#1a1a1a"/>
+          <line x1="0" y1="15.5" x2="260" y2="15.5" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+        </svg>
+      </div>
+
+      {/* Subtle grid overlay */}
+      <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px)",backgroundSize:"80px 80px",opacity:0.5}}/>
+    </div>
+  );
+}
+
 // ── CONFETTI / PARTICLES ──────────────────────────────────────────────────────
 function Confetti(){
   const colors=["#028A48","#D02B27","#FFC72C","#BF0000","#1a3a8f","#fff","#2ecc71","#f39c12","#e74c3c","#3498db"];
@@ -3473,7 +3636,7 @@ function usePWAInstall(){
 function InstallModal({isIOS,hasNativePrompt,onInstall,onClose}:{isIOS:boolean,hasNativePrompt:boolean,onInstall:()=>void,onClose:()=>void}){
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:20,backdropFilter:"blur(4px)"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:24,padding:"32px 28px",maxWidth:380,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"rgba(17,17,17,0.92)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:24,padding:"32px 28px",maxWidth:380,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
         <div style={{fontSize:"36px",marginBottom:10}}>📲</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"16px",fontWeight:900,color:"#e8e8e8",letterSpacing:2,marginBottom:6}}>ADD TO HOME SCREEN</div>
         <div style={{fontSize:"11px",color:"#555",letterSpacing:2,marginBottom:24}}>Play like a native app — no browser bar</div>
@@ -3558,7 +3721,7 @@ function PeekModal({T,fs,gameKey,target,DIFF,rd,cost,onConfirm,onClose}:{T:any,f
   if(!confirmed){
     return(
       <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
-        <div onClick={e=>e.stopPropagation()} style={{background:T.bg,border:`1.5px solid rgba(255,90,40,.5)`,borderRadius:14,padding:"24px 20px 20px",maxWidth:380,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.7)"}}>
+        <div onClick={e=>e.stopPropagation()} style={{background:`${T.bg}ee`,border:`1.5px solid rgba(255,90,40,.5)`,borderRadius:14,padding:"24px 20px 20px",maxWidth:380,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.7)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
           <div style={{textAlign:"center",marginBottom:12}}>
             <div style={{fontSize:"40px",marginBottom:6}}>🗺️</div>
             <div style={{fontSize:fs(16),fontWeight:900,color:"#6496e0",letterSpacing:2,marginBottom:4}}>MAP PEEK</div>
@@ -3587,7 +3750,7 @@ function PeekModal({T,fs,gameKey,target,DIFF,rd,cost,onConfirm,onClose}:{T:any,f
   }
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:T.bg,border:`1.5px solid ${T.border}`,borderRadius:14,padding:"22px 18px 18px",maxWidth:400,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:`${T.bg}ee`,border:`1.5px solid ${T.border}`,borderRadius:14,padding:"22px 18px 18px",maxWidth:400,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.6)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
         <div style={{textAlign:"center",marginBottom:2}}>
           <span style={{fontSize:fs(20),fontWeight:900,color:"#6496e0",letterSpacing:2}}>🗺️ SYSTEM PEEK</span>
         </div>
@@ -3627,7 +3790,7 @@ function BetaModal({code,onClose}:{code:string,onClose:()=>void}){
   const formUrl="https://forms.gle/MCqtdQJbYcPRb4yz7";
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:"20px",backdropFilter:"blur(4px)"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:24,padding:"36px 32px",maxWidth:420,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"rgba(17,17,17,0.92)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:24,padding:"36px 32px",maxWidth:420,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
         <div style={{fontSize:"32px",marginBottom:12}}>🎖️</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"18px",fontWeight:900,color:"#e8e8e8",letterSpacing:2,marginBottom:8}}>BETA TESTER REWARD</div>
         <div style={{fontSize:"11px",color:"#555",letterSpacing:2,marginBottom:24}}>Thank you for testing UrbanIQ!</div>
@@ -3753,7 +3916,7 @@ function SupporterModal({onClose,isSupporter,supporterEmail}:{onClose:()=>void,i
   }
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",zIndex:10000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,animation:"spFadeIn .2s ease both"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:8,padding:"36px 32px",maxWidth:440,width:"100%",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 80px rgba(0,0,0,0.2)",position:"relative"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"rgba(255,255,255,0.94)",borderRadius:8,padding:"36px 32px",maxWidth:440,width:"100%",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 80px rgba(0,0,0,0.2)",position:"relative",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:"18px",cursor:"pointer",color:"rgba(0,0,0,0.35)",lineHeight:1}}>✕</button>
         <div style={{fontSize:"11px",letterSpacing:3,color:"rgba(0,0,0,0.35)",marginBottom:8,fontWeight:700}}>SUPPORT THE GAME</div>
         <h2 style={{margin:"0 0 6px",fontSize:24,fontWeight:700,letterSpacing:-0.5}}>Become a Supporter</h2>
@@ -3943,7 +4106,7 @@ function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(g
   const sys=TRANSIT_SYSTEMS.find(s=>s.key===selSys)||TRANSIT_SYSTEMS[0];
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",backdropFilter:"blur(6px)"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fafafa",borderRadius:20,width:"100%",maxWidth:680,maxHeight:"88vh",overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 100px rgba(0,0,0,0.5)",animation:"obIn .18s ease both"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"rgba(250,250,250,0.95)",borderRadius:20,width:"100%",maxWidth:680,maxHeight:"88vh",overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 100px rgba(0,0,0,0.5)",animation:"obIn .18s ease both",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:scale(.96) translateY(16px)}to{opacity:1;transform:none}}.mg-sys-btn{transition:all .15s;}.mg-sys-btn:hover{opacity:.85;}.mg-line-station{font-size:10px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:6px;padding:4px 8px;color:#333;white-space:nowrap;}`}</style>
         {/* Header */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(0,0,0,.08)"}}>
@@ -4226,9 +4389,13 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           @keyframes dkBlob1{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(70px,-50px) scale(1.15)}50%{transform:translate(-30px,70px) scale(0.9)}75%{transform:translate(40px,30px) scale(1.08)}}
           @keyframes dkBlob2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-60px,50px) scale(0.88)}50%{transform:translate(55px,-60px) scale(1.12)}75%{transform:translate(-20px,-35px) scale(0.95)}}
           @keyframes dkBlob3{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(35px,55px) scale(1.1)}50%{transform:translate(-45px,-40px) scale(0.92)}75%{transform:translate(65px,-20px) scale(1.06)}}
-          .dk-tab-btn{font-size:10px;letter-spacing:2px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid transparent;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;white-space:nowrap;background:none;color:rgba(255,255,255,0.3);}
+          .dk-tab-btn{font-size:10px;letter-spacing:2px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid transparent;cursor:pointer;transition:all .18s,transform 200ms ease;font-family:'Inter',sans-serif;white-space:nowrap;background:none;color:rgba(255,255,255,0.3);}
           .dk-tab-btn.active{color:#fff;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);}
-          .dk-tab-btn:hover{color:rgba(255,255,255,0.7);}
+          .dk-tab-btn:hover{color:rgba(255,255,255,0.7);transform:translateY(-1px);}
+          .dk-tab-btn:active{transform:scale(0.96);}
+          .uiq-btn{transition:transform 200ms ease,box-shadow 200ms ease !important;}
+          .uiq-btn:hover{transform:translateY(-2px) !important;box-shadow:0 4px 16px rgba(0,0,0,0.3) !important;}
+          .uiq-btn:active{transform:scale(0.96) !important;box-shadow:none !important;}
           @media(max-width:600px){
             .sp-dark-nav{padding:20px 20px !important;}
             .sp-dark-nav-right{gap:14px !important;}
@@ -4251,7 +4418,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"rgba(255,255,255,0.95)",color:"#000",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:4,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,.5)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
 
         {/* Nav */}
-        <nav className="sp-dark-nav" style={{position:"relative",zIndex:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 48px",borderBottom:"1px solid rgba(255,255,255,0.06)",animation:"spFadeIn .4s ease both"}}>
+        <nav className="sp-dark-nav" style={{position:"relative",zIndex:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 48px",borderBottom:"1px solid rgba(255,255,255,0.06)",animation:"spFadeIn .4s ease both",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",background:"rgba(0,0,0,0.2)"}}>
           <div style={{fontSize:"13px",fontWeight:700,letterSpacing:3,color:"rgba(255,255,255,0.9)"}}>UrbanIQ</div>
           <div className="sp-dark-nav-right" style={{display:"flex",gap:28,alignItems:"center"}}>
             <span style={{...dNavBtn,color:"rgba(255,255,255,0.2)"}}>DAY #{dayNum}</span>
@@ -4401,10 +4568,15 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         @keyframes blob2{0%,100%{transform:translate(0px,0px) scale(1)}25%{transform:translate(-70px,50px) scale(0.9)}50%{transform:translate(60px,-70px) scale(1.1)}75%{transform:translate(-30px,-40px) scale(0.95)}}
         @keyframes blob3{0%,100%{transform:translate(0px,0px) scale(1)}25%{transform:translate(40px,60px) scale(1.08)}50%{transform:translate(-50px,-50px) scale(0.94)}75%{transform:translate(70px,-30px) scale(1.04)}}
         @keyframes tabSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-        .sp-nav-btn{font-size:11px;letter-spacing:2px;color:rgba(0,0,0,0.3);cursor:pointer;transition:color .2s;background:none;border:none;font-family:'Inter',sans-serif;padding:0;white-space:nowrap;}
-        .sp-nav-btn:hover{color:rgba(0,0,0,0.7);}
+        .sp-nav-btn{font-size:11px;letter-spacing:2px;color:rgba(0,0,0,0.3);cursor:pointer;transition:color .2s,transform 200ms ease;background:none;border:none;font-family:'Inter',sans-serif;padding:0;white-space:nowrap;}
+        .sp-nav-btn:hover{color:rgba(0,0,0,0.7);transform:translateY(-1px);}
+        .sp-nav-btn:active{transform:scale(0.96);}
         .sp-game-card{cursor:pointer;border-radius:14px;padding:16px 14px 14px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;border:1.5px solid rgba(0,0,0,0.07);background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);}
         .sp-game-card:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 12px 36px rgba(0,0,0,0.13);}
+        .sp-game-card:active{transform:scale(0.96);}
+        .uiq-btn{transition:transform 200ms ease,box-shadow 200ms ease !important;}
+        .uiq-btn:hover{transform:translateY(-2px) !important;box-shadow:0 4px 16px rgba(0,0,0,0.18) !important;}
+        .uiq-btn:active{transform:scale(0.96) !important;box-shadow:none !important;}
         .sp-game-card:active{transform:scale(.97);}
         .sp-game-card.hot{animation:spHotPulse 2.4s ease infinite;}
         .sp-feat-card{cursor:pointer;border-radius:16px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;border:2px solid transparent;}
@@ -4435,7 +4607,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </div>
 
       {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:8,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.18)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
-      <nav className="sp-nav" style={{position:"relative",zIndex:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"22px 40px",borderBottom:"1px solid rgba(0,0,0,0.06)",animation:"spFadeIn .4s ease both"}}>
+      <nav className="sp-nav" style={{position:"relative",zIndex:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"22px 40px",borderBottom:"1px solid rgba(0,0,0,0.06)",animation:"spFadeIn .4s ease both",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",background:"rgba(250,250,250,0.85)"}}>
         <div className="sp-nav-logo" style={{fontSize:"13px",fontWeight:700,letterSpacing:3,color:"#0a0a0a"}}>UrbanIQ</div>
         <div className="sp-nav-right" style={{display:"flex",gap:28,alignItems:"center"}}>
           <span className="sp-nav-day" style={{fontSize:"10px",letterSpacing:2,color:"rgba(0,0,0,0.3)"}}>DAY #{dayNum}</span>
@@ -4617,7 +4789,7 @@ function GameSelector({allStats,roundData,blitzBests,onSelect,onBack,settings}:{
 
       <div onClick={onBack} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.22)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",animation:"gsBackdrop .3s ease both"}}/>
 
-      <div style={{position:"relative",zIndex:1,background:bg,borderRadius:"0 0 24px 24px",boxShadow:"0 32px 80px rgba(0,0,0,0.22)",maxHeight:"88vh",overflowY:"auto",animation:"gsSlideDown .2s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif"}}>
+      <div style={{position:"relative",zIndex:1,background:dark?"rgba(17,17,17,0.94)":"rgba(250,250,250,0.95)",borderRadius:"0 0 24px 24px",boxShadow:"0 32px 80px rgba(0,0,0,0.22)",maxHeight:"88vh",overflowY:"auto",animation:"gsSlideDown .2s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
 
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 28px",borderBottom:`1px solid ${border}`}}>
           <div style={{fontSize:"11px",letterSpacing:3,fontWeight:700,color:textMuted}}>SELECT A GAME</div>
@@ -4704,7 +4876,7 @@ function DiffPickerModal({gameKey,settings,onSelect,onClose}:{gameKey:string,set
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
       <style>{`@keyframes dpBack{from{opacity:0}to{opacity:1}}@keyframes dpIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}.dp-row{transition:border-color .18s,box-shadow .15s;}.dp-row:hover{border-color:${G.accent}!important;box-shadow:0 4px 18px ${G.accent}20!important;}`}</style>
       <div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",animation:"dpBack .28s ease both"}}/>
-      <div style={{position:"relative",zIndex:1,background:"#fafafa",borderRadius:22,padding:"24px 22px 28px",boxShadow:"0 24px 80px rgba(0,0,0,0.28)",animation:"dpIn .18s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif",width:"100%",maxWidth:420}}>
+      <div style={{position:"relative",zIndex:1,background:"rgba(250,250,250,0.92)",borderRadius:22,padding:"24px 22px 28px",boxShadow:"0 24px 80px rgba(0,0,0,0.28)",animation:"dpIn .18s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif",width:"100%",maxWidth:420,backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
           <div>
             <div style={{fontSize:"24px",marginBottom:4}}>{G.emoji||"🗺️"}</div>
@@ -5885,7 +6057,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     {showGameDrop&&<div onClick={()=>setShowGameDrop(false)} style={{position:"fixed",inset:0,zIndex:9000}}/>}
     {showMoreMenu&&<div onClick={()=>setShowMoreMenu(false)} style={{position:"fixed",inset:0,zIndex:9001}}/>}
     {showMoreMenu&&(
-      <div style={{position:"fixed",right:8,top:44,background:T.card,border:`1px solid ${T.border}`,borderRadius:10,boxShadow:"0 4px 24px rgba(0,0,0,.35)",zIndex:9002,minWidth:148,overflow:"hidden",animation:"slideDown .18s ease"}}>
+      <div style={{position:"fixed",right:8,top:44,background:`${T.card}f0`,border:`1px solid ${T.border}`,borderRadius:10,boxShadow:"0 4px 24px rgba(0,0,0,.35)",zIndex:9002,minWidth:148,overflow:"hidden",animation:"slideDown .18s ease",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
         {[["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
           <button key={id} onClick={()=>{setTab(id as any);setShowMoreMenu(false);}} style={{display:"block",width:"100%",background:tab===id?T.accent:"transparent",color:tab===id?"#fff":T.text,border:"none",borderBottom:`1px solid ${T.border}`,padding:"13px 18px",fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",textAlign:"left",transition:"background .15s"}}>
             {label}
@@ -5912,6 +6084,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
         @keyframes flameAnim{0%,100%{transform:scaleY(1) rotate(-2deg);filter:hue-rotate(0deg)}33%{transform:scaleY(1.2) rotate(2deg);filter:hue-rotate(-20deg)}66%{transform:scaleY(0.85) rotate(-1deg);filter:hue-rotate(10deg)}}
         @keyframes peekPulse{0%,100%{transform:translateY(-50%) scale(1);opacity:1}50%{transform:translateY(-50%) scale(1.25);opacity:.7}}
         @keyframes dpIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        @keyframes correctPulse{0%{box-shadow:0 0 0 0 ${T.accent}66}50%{box-shadow:0 0 0 10px ${T.accent}00}100%{box-shadow:0 0 0 0 ${T.accent}00}}
+        @keyframes inputFocusGlow{0%,100%{box-shadow:0 0 0 0 ${T.accent}33}50%{box-shadow:0 0 0 4px ${T.accent}22}}
         .shake-anim{animation:shake 0.45s ease !important;}
         .flame-anim{display:inline-block;animation:flameAnim 1s ease infinite;transform-origin:bottom center;}
         .sug{cursor:pointer;padding:9px 14px;border-bottom:1px solid ${T.border};transition:background .12s;}
@@ -5920,8 +6094,17 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
         .tab-btn.on{color:${T.accentB};border-bottom-color:${T.accentB};}
         .toggle{width:42px;height:22px;border-radius:11px;position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0;}
         .toggle-knob{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+        .uiq-btn{transition:transform 200ms ease,box-shadow 200ms ease,opacity 200ms ease;}
+        .uiq-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.18);}
+        .uiq-btn:active{transform:scale(0.96) !important;box-shadow:none !important;}
+        .uiq-glass{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(255,255,255,0.15) !important;border:1px solid rgba(255,255,255,0.3) !important;box-shadow:0 8px 32px rgba(0,0,0,0.1) !important;}
+        .uiq-glass-dark{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(0,0,0,0.25) !important;border:1px solid rgba(255,255,255,0.12) !important;box-shadow:0 8px 32px rgba(0,0,0,0.25) !important;}
+        .uiq-input-focus:focus-within{box-shadow:0 0 0 3px ${T.accent}33;border-color:${T.accent} !important;transition:box-shadow 200ms ease,border-color 200ms ease;}
+        .uiq-correct-glow{animation:correctPulse 0.6s ease-out;}
+        input:focus{outline:none;box-shadow:0 0 0 2px ${T.accent}44;border-radius:4px;}
       `}</style>
 
+      <CityBackground/>
       <Particles gameKey={gameKey}/>
       {confetti&&<Confetti/>}
 
@@ -5934,7 +6117,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
       {showDiffChange&&(
         <div onClick={()=>setShowDiffChange(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:350,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(4px)"}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:18,padding:"22px 18px",width:"100%",maxWidth:420,animation:"dpIn .25s cubic-bezier(.4,0,.2,1)"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:`${T.card}f0`,border:`1px solid ${T.border}`,borderRadius:18,padding:"22px 18px",width:"100%",maxWidth:420,animation:"dpIn .25s cubic-bezier(.4,0,.2,1)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",boxShadow:"0 16px 48px rgba(0,0,0,0.25)"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:fs(16),color:T.text}}>Change Difficulty</div>
               <button onClick={()=>setShowDiffChange(false)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:20,padding:"4px 12px",fontSize:fs(9),color:T.textMuted,cursor:"pointer",fontFamily:"'JetBrains Mono',monospace"}}>✕</button>
@@ -5969,7 +6152,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       )}
 
       {/* Top bar */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 10px 0",position:"relative",gap:6}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 10px 0",position:"relative",gap:6,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",background:`${T.bg}cc`,zIndex:3}}>
         <div style={{display:"flex",gap:5,alignItems:"center",flexShrink:0}}>
           <button onClick={onHome} title="Home" style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:20,padding:"5px 10px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:T.textSub,cursor:"pointer"}}>🏠</button>
           <button onClick={onBack} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:20,padding:"5px 10px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:T.textSub,cursor:"pointer"}}>☰</button>
@@ -5982,7 +6165,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
             <span style={{fontSize:"9px",color:T.textMuted,display:"inline-block",transition:"transform .2s",transform:showGameDrop?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
           </button>
           {showGameDrop&&(
-            <div style={{position:"absolute",top:"calc(100% + 5px)",left:0,right:0,background:T.card,border:`1px solid ${T.border}`,borderRadius:12,zIndex:9001,boxShadow:"0 8px 28px rgba(0,0,0,0.22)",overflow:"hidden",minWidth:200}}>
+            <div style={{position:"absolute",top:"calc(100% + 5px)",left:0,right:0,background:`${T.card}f0`,border:`1px solid ${T.border}`,borderRadius:12,zIndex:9001,boxShadow:"0 8px 28px rgba(0,0,0,0.22)",overflow:"hidden",minWidth:200,backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
               {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
                 <div key={label}>
                   <div style={{fontSize:fs(7),letterSpacing:2,color:T.textMuted,padding:"8px 12px 3px",fontWeight:700,borderTop:`1px solid ${T.border}`,marginTop:label.includes("TRANSIT")?0:0}}>{label}</div>
@@ -6009,7 +6192,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       </div>
 
       {/* Header */}
-      <div style={{textAlign:"center",padding:"8px 16px 12px",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2}}>
+      <div style={{textAlign:"center",padding:"8px 16px 12px",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2,backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",background:`${T.bg}cc`}}>
         <div style={{fontSize:fs(7),letterSpacing:4,color:T.textMuted,marginBottom:4}}>{G.sub}</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:fs(34),fontWeight:900,letterSpacing:3,lineHeight:1,marginBottom:4}}>
           <span style={{color:"transparent",backgroundImage:`linear-gradient(90deg,${G.accent},${T.accentB},${G.accent})`,backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmer 4s linear infinite"}}>Daily</span>{" "}
@@ -6042,7 +6225,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       </div>
 
       {/* Tabs */}
-      <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2,background:T.bg}}>
+      <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2,background:`${T.bg}dd`,backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)"}}>
         <style>{`@media(min-width:768px){.tab-desktop{display:inline-flex!important}.tab-more{display:none!important}}`}</style>
         {[[`play`,`${G.itemEmoji} PLAY`],[`leaderboard`,`🏆 BOARD`]].map(([id,label])=>(
           <button key={id} className={`tab-btn${tab===id?" on":""}`} onClick={()=>setTab(id)}>
@@ -6076,7 +6259,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
             <div style={{fontSize:fs(11),color:T.textSub}}><span style={{fontSize:fs(18),fontWeight:800,color:T.accentB}}>{gameDailyPoints}</span><span style={{color:T.textMuted}}>/3 pts</span></div>
           </div>
 
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"7px 12px",marginBottom:9,flexWrap:"wrap",gap:6}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:`${T.surface}cc`,border:`1px solid ${T.border}`,borderRadius:8,padding:"7px 12px",marginBottom:9,flexWrap:"wrap",gap:6,backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
             <div style={{fontSize:fs(9),color:T.textMuted}}>YESTERDAY: <span style={{color:T.textSub,fontWeight:700}}>{yesterday.name}{yesterday.abbr?` (${yesterday.abbr})`:""}</span></div>
             <div style={{display:"flex",gap:5,alignItems:"center"}}>
               {DIFF.hints>0&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(
@@ -6196,7 +6379,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
                 </div>
               )}
               <div style={{position:"relative",marginBottom:12}}>
-                <div className={shakeInput?"shake-anim":""} style={{background:T.surface,border:`1.5px solid ${shakeInput?T.cellBorder.red:T.border}`,borderRadius:10,display:"flex",alignItems:"center",gap:8,padding:"0 14px",transition:"border-color .2s"}}>
+                <div className={`${shakeInput?"shake-anim":""} uiq-input-focus`} style={{background:`${T.surface}dd`,border:`1.5px solid ${shakeInput?T.cellBorder.red:T.border}`,borderRadius:10,display:"flex",alignItems:"center",gap:8,padding:"0 14px",transition:"border-color .2s,box-shadow .2s",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
                   <span style={{fontSize:fs(17),opacity:.35}}>{G.itemEmoji}</span>
                   <input ref={inputRef} value={input} onChange={e=>setInput(e.target.value)}
                     onKeyDown={e=>{if(e.key==="Enter"&&sugg.length>0)makeGuess(sugg[0]);else if(e.key==="Enter"&&input.trim()){const exact=sugg.find((s:any)=>s.name.toLowerCase()===input.trim().toLowerCase());if(exact)makeGuess(exact);}}}
@@ -6206,7 +6389,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
                   {((window as any).SpeechRecognition||(window as any).webkitSpeechRecognition)&&<button onClick={startVoice} title="Speak to input" style={{background:voiceListening?"rgba(0,180,80,.12)":"transparent",border:"none",borderRadius:6,padding:"4px 6px",cursor:"pointer",color:voiceListening?T.cellText.green:T.textMuted,fontSize:fs(16),lineHeight:1,transition:"all .2s",flexShrink:0}}>{voiceListening?"🔴":"🎤"}</button>}
                 </div>
                 {sugg.length>0&&(
-                  <div style={{position:"absolute",left:0,right:0,top:"100%",zIndex:100,background:T.surface,border:`1.5px solid ${T.border}`,borderRadius:"0 0 10px 10px",overflow:"hidden",boxShadow:`0 8px 24px rgba(0,0,0,0.15)`}}>
+                  <div style={{position:"absolute",left:0,right:0,top:"100%",zIndex:100,background:`${T.surface}f0`,border:`1.5px solid ${T.border}`,borderRadius:"0 0 10px 10px",overflow:"hidden",boxShadow:`0 8px 24px rgba(0,0,0,0.15)`,backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)"}}>
                     {sugg.map((s,i)=>(
                       <div key={i} className="sug" onPointerDown={e=>e.preventDefault()} onClick={()=>makeGuess(s)}>
                         <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -6225,7 +6408,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           )}
 
           {!rd.won&&!rd.lost&&(
-            <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"10px 14px",marginBottom:12,display:"flex",gap:8}}>
+            <div style={{background:`${T.surface}cc`,border:`1px solid ${T.border}`,borderRadius:8,padding:"10px 14px",marginBottom:12,display:"flex",gap:8,backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
               <span style={{fontSize:fs(14),flexShrink:0}}>{G.itemEmoji}</span>
               <div>
                 <div style={{fontSize:fs(8),letterSpacing:2,color:T.accent,marginBottom:2}}>DID YOU KNOW?</div>
@@ -6235,7 +6418,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           )}
 
           {rd.won&&(
-            <div style={{background:T.card,border:`2px solid ${T.accent}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease"}}>
+            <div style={{background:`${T.card}ee`,border:`2px solid ${T.accent}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",boxShadow:`0 8px 32px ${T.accent}22`}}>
               {target.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
                 <img src={target.img} alt={target.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.8) saturate(1.1)"}}/>
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 30%,rgba(0,0,0,0.78) 100%)"}}/>
@@ -6249,16 +6432,16 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               {target.fact&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:7,padding:"9px 12px",marginBottom:12,fontSize:fs(10),color:T.textSub,fontStyle:"italic",lineHeight:1.7}}>📖 {target.fact}</div>}
               <div style={{fontSize:fs(9),color:T.textMuted,marginBottom:12,letterSpacing:2}}>NEXT IN {countdown}</div>
               <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-                <button onClick={()=>doShare(buildShare(rd.guesses,true,dayNum,gameKey,diff,target.name))} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer",transition:"all .2s"}}>📤 SHARE</button>
-                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&(<button onClick={()=>setRound(round+1)} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'Cinzel',serif",fontSize:fs(11),fontWeight:700,letterSpacing:2,padding:"10px 16px",borderRadius:7,cursor:"pointer",animation:"bounce .6s ease"}}>ROUND {round+2} →</button>)}
-                <button onClick={()=>setTab("leaderboard")} style={{background:"transparent",color:T.accentB,border:`1px solid ${T.accent}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer"}}>🏆 POST SCORE</button>
+                <button className="uiq-btn" onClick={()=>doShare(buildShare(rd.guesses,true,dayNum,gameKey,diff,target.name))} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer",transition:"transform 200ms ease,box-shadow 200ms ease"}}>📤 SHARE</button>
+                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&(<button className="uiq-btn" onClick={()=>setRound(round+1)} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'Cinzel',serif",fontSize:fs(11),fontWeight:700,letterSpacing:2,padding:"10px 16px",borderRadius:7,cursor:"pointer",animation:"bounce .6s ease",transition:"transform 200ms ease,box-shadow 200ms ease"}}>ROUND {round+2} →</button>)}
+                <button className="uiq-btn" onClick={()=>setTab("leaderboard")} style={{background:"transparent",color:T.accentB,border:`1px solid ${T.accent}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer",transition:"transform 200ms ease,box-shadow 200ms ease"}}>🏆 POST SCORE</button>
               </div>
               </div>
             </div>
           )}
 
           {rd.lost&&(
-            <div style={{background:T.card,border:`1.5px solid ${T.cellBorder.red}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease"}}>
+            <div style={{background:`${T.card}ee`,border:`1.5px solid ${T.cellBorder.red}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",boxShadow:"0 8px 32px rgba(196,48,48,0.15)"}}>
               {target.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
                 <img src={target.img} alt={target.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55) grayscale(0.4) saturate(0.8)"}}/>
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.82) 100%)"}}/>
@@ -6295,14 +6478,14 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           )}
 
           {unfinishedRounds===0&&allGameRounds.some((r:any)=>r.alreadyPlayed)&&(
-            <div style={{background:T.card,border:`2px solid ${T.accent}`,borderRadius:12,padding:"18px",textAlign:"center",marginBottom:14,animation:"popIn .4s ease"}}>
+            <div style={{background:`${T.card}ee`,border:`2px solid ${T.accent}`,borderRadius:12,padding:"18px",textAlign:"center",marginBottom:14,animation:"popIn .4s ease",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",boxShadow:`0 8px 32px ${T.accent}22`}}>
               <div style={{fontSize:fs(9),letterSpacing:3,color:T.accentB,marginBottom:4}}>ALL ROUNDS COMPLETE</div>
               <div style={{fontSize:fs(11),color:T.textMuted,marginBottom:14}}>
                 {allGameRounds.filter((r:any)=>r.won).length}/{allGameRounds.length} won today
                 {stats.streak>1&&<span style={{marginLeft:8}}>🔥 {stats.streak} day streak</span>}
               </div>
-              <button onClick={()=>doShare(buildAllRoundsShare(allGameRounds,gameKey,diff,dayNum,stats.streak||0))}
-                style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(12),fontWeight:700,letterSpacing:2,padding:"13px 28px",borderRadius:8,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
+              <button className="uiq-btn" onClick={()=>doShare(buildAllRoundsShare(allGameRounds,gameKey,diff,dayNum,stats.streak||0))}
+                style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(12),fontWeight:700,letterSpacing:2,padding:"13px 28px",borderRadius:8,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8,transition:"transform 200ms ease,box-shadow 200ms ease"}}>
                 📤 SHARE TODAY'S RESULTS
               </button>
             </div>
@@ -6326,7 +6509,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       {tab==="profile"&&(
         <div style={{maxWidth:600,margin:"0 auto",padding:"18px 12px 50px",position:"relative",zIndex:2}}>
           {!editProfile?(
-            <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:12,padding:"20px",marginBottom:14}}>
+            <div style={{background:`${T.card}ee`,border:`1px solid ${T.border}`,borderRadius:12,padding:"20px",marginBottom:14,backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",boxShadow:"0 8px 32px rgba(0,0,0,0.08)"}}>
               <button onClick={()=>{setProfInput({name:profile.name||"",emoji:profile.emoji||"🎯",bio:profile.bio||""});setEditProfile(true);}} style={{float:"right",background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"4px 10px",fontSize:fs(9),color:T.textSub,cursor:"pointer"}}>✏️ EDIT</button>
               <div style={{display:"flex",gap:14,alignItems:"center",marginBottom:14}}>
                 <div style={{fontSize:fs(38),width:56,height:56,background:T.surface,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",border:`1px solid ${T.border}`,flexShrink:0}}>{profile.emoji||"🎯"}</div>
@@ -6399,7 +6582,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               </div>
             </div>
           )}
-          <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:12,padding:"18px 16px"}}>
+          <div style={{background:`${T.card}ee`,border:`1px solid ${T.border}`,borderRadius:12,padding:"18px 16px",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",boxShadow:"0 8px 32px rgba(0,0,0,0.08)"}}>
             <div style={{fontSize:fs(11),letterSpacing:2,color:T.accentB,marginBottom:12}}>⚙️ SETTINGS</div>
             {[{label:"Dark Mode",sub:"Switch to dark background",key:"dark"},{label:"Colorblind Mode",sub:"Adds shape indicators to cells",key:"colorblind"},{label:"High Contrast",sub:"Stronger colors and thicker borders",key:"highContrast"},{label:"Sound Effects",sub:"Feedback on guesses",key:"sounds"}].map((item:any)=>(
               <div key={item.key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${T.border}`}}>
