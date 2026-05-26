@@ -1,10 +1,19 @@
 const express = require("express");
 const path = require("path");
 const Stripe = require("stripe");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
+
+// ── RATE LIMITING ──────────────────────────────────────────────────────────────
+const apiLimiter = rateLimit({ windowMs: 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
+const submitLimiter = rateLimit({ windowMs: 60_000, max: 10, standardHeaders: true, legacyHeaders: false });
+app.use("/api/scores/submit", submitLimiter);
+app.use("/api/battle/submit", submitLimiter);
+app.use("/api/stripe/", submitLimiter);
+app.use("/api/", apiLimiter);
 
 // ── SECURITY: block common bot probe paths ─────────────────────────────────────
 const BOT_PROBE_RE = /^\/?(\.env|\.git|\.svn|\.hg|\.DS_Store|wp-admin|wp-login|phpinfo|\.php|web\.config|Dockerfile|docker-compose|\.aws|\.ssh|\.bash_history|\.bashrc|node_modules\/.bin)(\/|$)/i;
@@ -56,9 +65,10 @@ app.post("/api/stripe/checkout", async (req, res) => {
   if (!stripe) return res.status(503).json({ error: "Payments not configured" });
   try {
     const { email, priceId } = req.body;
-    // Use the browser-supplied Origin header — not the request body — to build redirect URLs.
-    // req.body.origin is attacker-controlled; req.headers.origin is set by the browser.
-    const origin = (req.headers.origin || "").replace(/\/$/, "");
+    // Use the browser-supplied Origin header (not req.body) for redirect URLs.
+    // Fall back to APP_ORIGIN env var for server-to-server / testing contexts.
+    const origin = (req.headers.origin || process.env.APP_ORIGIN || "").replace(/\/$/, "");
+    if (!origin) return res.status(400).json({ error: "Missing origin" });
     if (!email || !priceId) return res.status(400).json({ error: "Missing email or priceId" });
     // If priceId is a placeholder, look up the real price
     let realPriceId = priceId;
@@ -92,7 +102,8 @@ app.post("/api/stripe/portal", async (req, res) => {
   if (!stripe) return res.status(503).json({ error: "Payments not configured" });
   try {
     const { email } = req.body;
-    const origin = (req.headers.origin || "").replace(/\/$/, "");
+    const origin = (req.headers.origin || process.env.APP_ORIGIN || "").replace(/\/$/, "");
+    if (!origin) return res.status(400).json({ error: "Missing origin" });
     if (!email) return res.status(400).json({ error: "Missing email" });
     const customers = await stripe.customers.list({ email, limit: 1 });
     if (!customers.data.length) return res.status(404).json({ error: "No subscription found for this email" });
@@ -373,7 +384,9 @@ app.get("/api/scores/stats", async (req, res) => {
 });
 
 // GET /api/health — lets frontend detect if PvP API is available
-app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!supabase }));
+app.get("/api/health", (_req, res) =>
+  res.json({ pvp: true, db: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) })
+);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));

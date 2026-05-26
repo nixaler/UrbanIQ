@@ -1428,7 +1428,9 @@ function daysSinceDate(dateStr:string){const[y,m,d]=dateStr.split("-").map(Numbe
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-function getDayNum(){const n=new Date();return Math.floor((n.getTime()-new Date(n.getFullYear(),0,0).getTime())/86400000);}
+// Fixed UTC epoch — prevents leaderboard keys from colliding when the year rolls over.
+const DAY_EPOCH_MS=Date.UTC(2026,0,1);
+function getDayNum(){return Math.floor((Date.now()-DAY_EPOCH_MS)/86400000)+1;}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="la"?6:gameKey==="nyc"?7:gameKey==="chi"?8:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
@@ -3735,17 +3737,20 @@ function SupporterModal({onClose,isSupporter,supporterEmail}:{onClose:()=>void,i
     if(!email.includes("@")){setErr("Enter a valid email address");return;}
     setLoading(true);setErr(null);
     try{
-      const res=await fetch("/api/stripe/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,priceId,origin:window.location.origin})});
+      const res=await fetch("/api/stripe/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,priceId})});
       const data=await res.json();
-      if(data.url)window.location.href=data.url;
-      else{setErr(data.error||"Something went wrong");setLoading(false);}
+      if(data.url){
+        // Store email before leaving so we can restore it when Stripe redirects back.
+        localStorage.setItem("supporter_email_pending",email);
+        window.location.href=data.url;
+      } else{setErr(data.error||"Something went wrong");setLoading(false);}
     }catch{setErr("Network error — try again");setLoading(false);}
   }
   async function portal(){
     if(!email.includes("@")){setErr("Enter your supporter email");return;}
     setLoading(true);setErr(null);
     try{
-      const res=await fetch("/api/stripe/portal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,origin:window.location.origin})});
+      const res=await fetch("/api/stripe/portal",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
       const data=await res.json();
       if(data.url)window.location.href=data.url;
       else{setErr(data.error||"Subscription not found");setLoading(false);}
@@ -5732,37 +5737,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
   useEffect(()=>{const tick=()=>{const n=new Date();const m=new Date(n);m.setHours(24,0,0,0);setNextMins(Math.ceil((m.getTime()-n.getTime())/60000));};tick();const t=setInterval(tick,30000);return()=>clearInterval(t);},[]);
   useEffect(()=>{if(shieldToast){const t=setTimeout(()=>setShieldToast(false),4500);return()=>clearTimeout(t);}},[shieldToast]);
-  useEffect(()=>{
-    if(input.length>0){
-      const locks=rd.hardLocks||{};
-      const filtered=items.filter((s:any)=>{
-        if(!s.name.toLowerCase().includes(input.toLowerCase()))return false;
-        if(rd.guesses.find((g:any)=>g.item.name===s.name))return false;
-        if(DIFF.hardLocks){
-          if(gameKey==="nfl"){
-            if(locks.conf!==undefined&&s.conf!==locks.conf)return false;
-            if(locks.div!==undefined&&s.div!==locks.div)return false;
-            if(locks.region!==undefined&&s.region!==locks.region)return false;
-            if(locks.sb!==undefined&&s.sb!==locks.sb)return false;
-            if(locks.year!==undefined&&s.year!==locks.year)return false;
-          } else if(gameKey==="states"){
-            if(locks.region!==undefined&&s.region!==locks.region)return false;
-            if(locks.coast!==undefined&&s.coast!==locks.coast)return false;
-            if(locks.pop!==undefined&&s.pop!==locks.pop)return false;
-            if(locks.year!==undefined&&s.year!==locks.year)return false;
-            if(locks.size!==undefined&&s.size!==locks.size)return false;
-          } else {
-            if(locks.zone!==undefined&&s.zone!==locks.zone)return false;
-            if(locks.year!==undefined&&s.year!==locks.year)return false;
-          }
-        }
-        return true;
-      }).slice(0,7);
-      setSugg(filtered);
-      const exact=filtered.find((s:any)=>s.name.toLowerCase()===input.toLowerCase());
-      if(exact&&!rd.won&&!rd.lost&&!rd.alreadyPlayed)makeGuess(exact);
-    } else setSugg([]);
-  },[input,rd.guesses,gameKey,rd.hardLocks,DIFF.hardLocks]);
+  // auto-guess effect moved below makeGuess declaration (const cannot be used before declaration)
   useEffect(()=>{
     if(!rd.guesses.length)return;
     const lastIdx=rd.guesses.length-1;
@@ -5812,7 +5787,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     const hist=playHistory[gameKey]||[];const newHist=[...hist,{date:today,won:false}].slice(-90);
     setPlayHistory((prev:any)=>({...prev,[gameKey]:newHist}));await savePlayHistory(gameKey,newHist);
   }
-  async function makeGuess(item:any){
+  const makeGuess=useCallback(async(item:any)=>{
     if(rd.won||rd.lost||rd.alreadyPlayed)return;
     SoundEngine.play("guess");
     const guess=buildGuess(item,target,gameKey);
@@ -5871,7 +5846,38 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       const newOnes=ACHIEVEMENTS.filter(a=>!prev2.includes(a.id)&&a.check(ctx));
       if(newOnes.length>0){const upd=[...prev2,...newOnes.map(a=>a.id)];await saveUnlocked(gameKey,upd);setAllUnlocked((p:any)=>({...p,[gameKey]:upd}));setNewAchieves(newOnes);setTimeout(()=>setNewAchieves([]),4500);}
     }
-  }
+  },[rd,target,gameKey,DIFF,roundData,round,stats,diff,today,playHistory]);
+  useEffect(()=>{
+    if(input.length>0){
+      const locks=rd.hardLocks||{};
+      const filtered=items.filter((s:any)=>{
+        if(!s.name.toLowerCase().includes(input.toLowerCase()))return false;
+        if(rd.guesses.find((g:any)=>g.item.name===s.name))return false;
+        if(DIFF.hardLocks){
+          if(gameKey==="nfl"){
+            if(locks.conf!==undefined&&s.conf!==locks.conf)return false;
+            if(locks.div!==undefined&&s.div!==locks.div)return false;
+            if(locks.region!==undefined&&s.region!==locks.region)return false;
+            if(locks.sb!==undefined&&s.sb!==locks.sb)return false;
+            if(locks.year!==undefined&&s.year!==locks.year)return false;
+          } else if(gameKey==="states"){
+            if(locks.region!==undefined&&s.region!==locks.region)return false;
+            if(locks.coast!==undefined&&s.coast!==locks.coast)return false;
+            if(locks.pop!==undefined&&s.pop!==locks.pop)return false;
+            if(locks.year!==undefined&&s.year!==locks.year)return false;
+            if(locks.size!==undefined&&s.size!==locks.size)return false;
+          } else {
+            if(locks.zone!==undefined&&s.zone!==locks.zone)return false;
+            if(locks.year!==undefined&&s.year!==locks.year)return false;
+          }
+        }
+        return true;
+      }).slice(0,7);
+      setSugg(filtered);
+      const exact=filtered.find((s:any)=>s.name.toLowerCase()===input.toLowerCase());
+      if(exact&&!rd.won&&!rd.lost&&!rd.alreadyPlayed)makeGuess(exact);
+    } else setSugg([]);
+  },[input,rd.guesses,gameKey,rd.hardLocks,DIFF.hardLocks,makeGuess]);
   function revealHint(){
     if(rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
     SoundEngine.play("hint");
@@ -6742,6 +6748,8 @@ function Root(){
     // Only accept "success" — the value Stripe redirects with via our server's success_url.
     // Never accept "true" here; that was an unauthenticated bypass vector.
     if(p.get("supporter")==="success"){
+      const pending=localStorage.getItem("supporter_email_pending");
+      if(pending){localStorage.setItem("supporter_email",pending);localStorage.removeItem("supporter_email_pending");}
       window.history.replaceState({},"",window.location.pathname);
       return true;
     }
