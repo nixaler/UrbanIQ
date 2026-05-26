@@ -104,37 +104,41 @@ app.post("/api/stripe/portal", async (req, res) => {
 });
 app.use(express.static(path.join(__dirname, "dist")));
 
-// Replit DB with in-memory fallback
-let db = null;
-const mem = {};
-try {
-  const DB = require("@replit/database");
-  db = new DB();
-  console.log("[battle] Replit DB connected");
-} catch(e) {
-  console.log("[battle] Using in-memory store (Replit DB unavailable)");
-}
+  const { createClient } = require("@supabase/supabase-js");
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_KEY
+  );
 
-const store = {
-  async get(k) {
-    try {
-      if (!db) return mem[k] ?? null;
-      const r = await db.get(k);
-      if (r && typeof r === 'object' && 'ok' in r && 'value' in r) return r.value ?? null;
-      return r ?? null;
-    } catch { return null; }
-  },
-  async set(k, v) {
-    try { if (db) await db.set(k, v); else mem[k] = v; } catch {}
-  },
-  async del(k) {
-    try { if (db) await db.delete(k); else delete mem[k]; } catch {}
-  },
-  async list(prefix) {
-    try {
-      if (db) return await db.list(prefix);
-      return Object.keys(mem).filter(k => k.startsWith(prefix));
-    } catch { return []; }
+  const store = {
+    async get(k) {
+      try {
+        const { data } = await supabase
+          .from("kv_store").select("value")
+          .eq("key", k).single();
+        return data?.value ?? null;
+      } catch { return null; }
+    },
+    async set(k, v) {
+      try {
+        await supabase.from("kv_store")
+          .upsert({ key: k, value: v });
+      } catch {}
+    },
+    async del(k) {
+      try {
+        await supabase.from("kv_store")
+          .delete().eq("key", k);
+      } catch {}
+    },
+    async list(prefix) {
+      try {
+        const { data } = await supabase
+          .from("kv_store").select("key")
+          .like("key", `${prefix}%`);
+        return (data || []).map(r => r.key);
+      } catch { return []; }
+    }
   }
 };
 
