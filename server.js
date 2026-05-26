@@ -55,7 +55,10 @@ app.get("/api/stripe/products", async (_req, res) => {
 app.post("/api/stripe/checkout", async (req, res) => {
   if (!stripe) return res.status(503).json({ error: "Payments not configured" });
   try {
-    const { email, priceId, origin } = req.body;
+    const { email, priceId } = req.body;
+    // Use the browser-supplied Origin header — not the request body — to build redirect URLs.
+    // req.body.origin is attacker-controlled; req.headers.origin is set by the browser.
+    const origin = (req.headers.origin || "").replace(/\/$/, "");
     if (!email || !priceId) return res.status(400).json({ error: "Missing email or priceId" });
     // If priceId is a placeholder, look up the real price
     let realPriceId = priceId;
@@ -88,7 +91,8 @@ app.post("/api/stripe/checkout", async (req, res) => {
 app.post("/api/stripe/portal", async (req, res) => {
   if (!stripe) return res.status(503).json({ error: "Payments not configured" });
   try {
-    const { email, origin } = req.body;
+    const { email } = req.body;
+    const origin = (req.headers.origin || "").replace(/\/$/, "");
     if (!email) return res.status(400).json({ error: "Missing email" });
     const customers = await stripe.customers.list({ email, limit: 1 });
     if (!customers.data.length) return res.status(404).json({ error: "No subscription found for this email" });
@@ -197,11 +201,26 @@ async function appendHistory(playerId, record) {
   await store.set(key, h.slice(0, 10));
 }
 
+const VALID_CARD_TYPES = new Set(["transit", "geography", "sports"]);
+const VALID_RARITIES = new Set(["common", "uncommon", "rare", "legendary"]);
+
+function validateDeck(deck) {
+  if (!Array.isArray(deck) || deck.length < 1 || deck.length > 5) return false;
+  for (const card of deck) {
+    if (!card || typeof card !== "object") return false;
+    if (typeof card.power !== "number" || !isFinite(card.power) || card.power < 1 || card.power > 100) return false;
+    if (!VALID_CARD_TYPES.has(card.cardType)) return false;
+    if (card.rarityId && !VALID_RARITIES.has(card.rarityId)) return false;
+    if (!card.name || typeof card.name !== "string" || card.name.length > 80) return false;
+  }
+  return true;
+}
+
 // POST /api/battle/submit
 app.post("/api/battle/submit", async (req, res) => {
   try {
     const { playerId, playerName, deck } = req.body;
-    if (!playerId || !Array.isArray(deck) || deck.length < 1) {
+    if (!playerId || !validateDeck(deck)) {
       return res.status(400).json({ error: "Invalid submission" });
     }
     const waitingKeys = await store.list("bwait:");
@@ -354,7 +373,7 @@ app.get("/api/scores/stats", async (req, res) => {
 });
 
 // GET /api/health — lets frontend detect if PvP API is available
-app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!db }));
+app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!supabase }));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));

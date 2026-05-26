@@ -1430,7 +1430,7 @@ function daysSinceDate(dateStr:string){const[y,m,d]=dateStr.split("-").map(Numbe
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function getDayNum(){const n=new Date();return Math.floor((n.getTime()-new Date(n.getFullYear(),0,0).getTime())/86400000);}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
-function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
+function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="la"?6:gameKey==="nyc"?7:gameKey==="chi"?8:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
 function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
 function getDailyTrivia(questions:any[]){const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
@@ -4811,12 +4811,12 @@ function HelpTab({T,fs,G,DIFF,gameKey,onPlay}:{T:any,fs:any,G:any,DIFF:any,gameK
   useEffect(()=>{
     if(helpStep!==1)return;
     setDemoLit(-1);
+    let iv:ReturnType<typeof setInterval>|undefined;
     const t=setTimeout(()=>{
       let i=-1;
-      const iv=setInterval(()=>{i++;setDemoLit(i);if(i>=cols.length)clearInterval(iv);},320);
-      return()=>clearInterval(iv);
+      iv=setInterval(()=>{i++;setDemoLit(i);if(i>=cols.length)clearInterval(iv);},320);
     },400);
-    return()=>clearTimeout(t);
+    return()=>{clearTimeout(t);if(iv!==undefined)clearInterval(iv);};
   },[helpStep]);
   return(
     <div style={{maxWidth:600,margin:"0 auto",padding:"16px 14px 60px",position:"relative",zIndex:2}}>
@@ -5095,15 +5095,18 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
     const rd=(roundData[gameKey]||[])[roundIdx];if(!rd)return;
     setSubmitting(true);
     const payload={playerName:name,gameKey,dayNum,roundIdx,difficulty:diff,guessCount:rd.guesses.length,won:!!rd.won};
+    let submitOk=false;
     try{
       const res=await fetch("/api/scores/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
       if(res.ok){
+        submitOk=true;
         const data=await res.json();
         setMyRank(p=>({...p,[`${gameKey}:${dayNum}:${roundIdx}`]:data.rank}));
         const lb2=await fetch(`/api/scores/leaderboard/${gameKey}/${dayNum}`);
         if(lb2.ok){const d=await lb2.json();if(gameKey===lbGameKey){setLiveEntries(d.entries||[]);setLiveTotal(d.total||0);}}
       }
-    }catch{}
+    }catch(err){console.error("[leaderboard] submit failed:",err);}
+    if(!submitOk){setSubmitting(false);return;}
     const lsEntry={id:Date.now(),playerName:name,...payload,ts:new Date().toISOString()};
     try{const prev=JSON.parse(localStorage.getItem('tgg:lb')||'[]');localStorage.setItem('tgg:lb',JSON.stringify([lsEntry,...prev].slice(0,100)));}catch{}
     setJustSubmitted(p=>({...p,[`${gameKey}:${dayNum}:${roundIdx}`]:true}));
@@ -5326,7 +5329,7 @@ function BlitzMode({T,fs,items,lineColors,gameKey,blitzBest,onNewBest,onClose}:{
       sr.start();
     }catch(err){setListening(false);}
   }
-  useEffect(()=>{if(phase==="done"&&score>blitzBest)onNewBest(score);},[phase]);
+  useEffect(()=>{if(phase==="done"&&score>blitzBest)onNewBest(score);},[phase,score,blitzBest,onNewBest]);
   const tc=timeLeft>20?"green":timeLeft>10?"yellow":"red";
   const missed=category?.targets.filter((t:any)=>!guessed.has(t.name))||[];
   const hasSpeech=!!(((window as any).SpeechRecognition)||(window as any).webkitSpeechRecognition);
@@ -5768,7 +5771,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     const numCols=DIFF.cols.length+1;
     setRowReveal((prev:any)=>({...prev,[key]:0}));
     for(let i=1;i<=numCols;i++)setTimeout(()=>{setRowReveal((prev:any)=>({...prev,[key]:i}));SoundEngine.play("tick");},i*120);
-  },[rd.guesses.length]);
+  },[rd.guesses.length,gameKey,round]);
 
   function switchGame(gk:string){setGameKey(gk);setInput("");setSugg([]);setGiveUpConfirm(false);const firstInc=(roundData[gk]||[]).findIndex((r:any)=>!r.alreadyPlayed);setRound(Math.max(0,firstInc));}
   function doShare(text:string){
@@ -6192,7 +6195,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
               {/* Close call warning */}
               {(rd.guesses.length+(rd.peekPenalty||0))===DIFF.maxGuesses-1&&(
                 <div style={{background:T.cellBg.red,border:`1px solid ${T.cellBorder.red}`,borderRadius:7,padding:"7px 12px",marginBottom:8,fontSize:fs(10),color:T.cellText.red,fontWeight:700,textAlign:"center",animation:"popIn .25s ease"}}>
-                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
+                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="chi"?"🚨 Last guess — doors closing!":gameKey==="la"?"🚨 Last guess — doors are closing!":gameKey==="nyc"?"🚨 Last guess — stand clear of the closing doors!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
                 </div>
               )}
               <div style={{position:"relative",marginBottom:12}}>
@@ -6736,9 +6739,9 @@ function Root(){
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
-    if(p.get("supporter")==="true"){
-      const email=p.get("email");
-      if(email)localStorage.setItem("supporter_email",email);
+    // Only accept "success" — the value Stripe redirects with via our server's success_url.
+    // Never accept "true" here; that was an unauthenticated bypass vector.
+    if(p.get("supporter")==="success"){
       window.history.replaceState({},"",window.location.pathname);
       return true;
     }
