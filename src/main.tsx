@@ -4170,9 +4170,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     }
   }
   const gameCards=[
-    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Portland_Oregon_skyline_with_Mt_Hood.jpg/800px-Portland_Oregon_skyline_with_Mt_Hood.jpg"},
+    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/TriMet_MAX_Blue_Line_at_Library_%26_SW_9th_Ave_station.jpg/800px-TriMet_MAX_Blue_Line_at_Library_%26_SW_9th_Ave_station.jpg"},
     {key:"dc",   emoji:"🚇",name:"DC Metro",       tag:"TRANSIT",    sub:"Subway · Nation's capital",  color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Washington_Metro_Center_station.jpg/800px-Washington_Metro_Center_station.jpg"},
-    {key:"balt", emoji:"🚉",name:"Baltimore MTA",  tag:"TRANSIT",    sub:"Light Rail & Metro · MD",    color:"#003087",grad:"linear-gradient(135deg,#003087,#F0A500)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Baltimore_Inner_Harbor.jpg/800px-Baltimore_Inner_Harbor.jpg"},
+    {key:"balt", emoji:"🚉",name:"Baltimore MTA",  tag:"TRANSIT",    sub:"Light Rail & Metro · MD",    color:"#003087",grad:"linear-gradient(135deg,#003087,#F0A500)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Baltimore_Metro_SubwayLink.jpg/800px-Baltimore_Metro_SubwayLink.jpg"},
     {key:"la",   emoji:"🌴",name:"LA Metro",       tag:"TRANSIT",    sub:"Metro Rail · Los Angeles, CA",color:"#0072bc",grad:"linear-gradient(135deg,#0072bc,#005a96)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Los_Angeles_Union_Station_train_hall.jpg/800px-Los_Angeles_Union_Station_train_hall.jpg"},
     {key:"nyc",  emoji:"🗽",name:"NYC Subway",     tag:"TRANSIT",    sub:"MTA · New York City, NY",    color:"#EE352E",grad:"linear-gradient(135deg,#EE352E,#a01010)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Times_Square_station_42nd_Street.jpg/800px-Times_Square_station_42nd_Street.jpg"},
     {key:"chi",  emoji:"🌬️",name:"Chicago L",    tag:"TRANSIT",    sub:"CTA · Chicago, IL",           color:"#C60C30",grad:"linear-gradient(135deg,#C60C30,#850920)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Clark-Lake_station_Chicago_L.jpg/800px-Clark-Lake_station_Chicago_L.jpg"},
@@ -4546,7 +4546,10 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                           <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.52) 100%)`}}/>
                           <div style={{position:"absolute",bottom:9,left:12,fontSize:"12px",fontWeight:800,color:"rgba(255,255,255,0.95)",textShadow:"0 1px 6px rgba(0,0,0,0.7)",letterSpacing:.3}}>{g.emoji} {g.name}</div>
                           <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.45)",color:"rgba(255,255,255,0.7)",fontSize:"8px",fontWeight:700,letterSpacing:1.5,padding:"3px 7px",borderRadius:4}}>{g.tag}</div>
-                        </div>:<div style={{height:96,background:g.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"28px",flexShrink:0}}>{g.emoji}</div>}
+                        </div>:<div style={{height:130,background:g.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"32px",flexShrink:0,position:"relative"}}>
+                          <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.3)",color:"rgba(255,255,255,0.65)",fontSize:"8px",fontWeight:700,letterSpacing:1.5,padding:"3px 7px",borderRadius:4}}>{g.tag}</div>
+                          {g.emoji}
+                        </div>}
                         <div style={{padding:"12px 14px 14px",flex:1,display:"flex",flexDirection:"column",gap:5}}>
                           <div style={{fontSize:"13px",fontWeight:800,color:"#0a0a0a",lineHeight:1.3}}>{g.name}</div>
                           <div style={{fontSize:"10px",color:"rgba(0,0,0,0.42)",lineHeight:1.4}}>{g.sub}</div>
