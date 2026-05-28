@@ -5882,7 +5882,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
   function revealHint(){
     if(rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
     SoundEngine.play("hint");
-    const pool=generateHints(target,gameKey);
+    const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+    const pool=generateHints(hintTarget,gameKey);
     const hint=pool[Math.min(rd.hintsUsed,pool.length-1)];
     updateRound({revealedHints:[...rd.revealedHints,hint],hintsUsed:rd.hintsUsed+1});
   }
@@ -5902,7 +5903,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       setCardToast(`+1 guess from ${card.ability?.icon||"🃏"} ${card.ability?.name||"Card"}`);
       setTimeout(()=>setCardToast(null),3000);
     }else{
-      const pool=generateHints(target,gameKey);
+      const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+      const pool=generateHints(hintTarget,gameKey);
       const nextIdx=Math.min((rd.revealedHints||[]).length,pool.length-1);
       const hint=pool[nextIdx];
       if(hint){
@@ -6494,12 +6496,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           if(!target||rd.won||rd.lost||rd.alreadyPlayed)return "no-game";
           // Map ability description to a specific targeted hint
           const desc=(card.ability.description||'').toLowerCase();
-          const pool=generateHints(target,gameKey);
+          const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+          const pool=generateHints(hintTarget,gameKey);
           let hint='';
           if(desc.includes('first letter')){
-            hint=`🔤 First letter: "${target.name[0].toUpperCase()}"`;
+            hint=`🔤 First letter: "${hintTarget.name[0].toUpperCase()}"`;
           } else if(desc.includes('connect')||(desc.includes('line')&&!desc.includes('zone')&&!desc.includes('year')&&!desc.includes('admitted')&&!desc.includes('all stations')&&!desc.includes('same line'))){
-            const ls=Array.isArray(target.lines)&&target.lines.length?target.lines.join(', '):null;
+            const ls=Array.isArray(hintTarget.lines)&&hintTarget.lines.length?hintTarget.lines.join(', '):null;
             hint=ls?`🚊 Lines: ${ls}`:pool[1];
           } else if(desc.includes('same line')||desc.includes('every station')){
             // Full line reveal — structural hint best approximation
@@ -6507,12 +6510,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           } else if(desc.includes('zone')&&(desc.includes('year')||desc.includes('direction')||desc.includes('and'))){
             hint=pool[1]; // combined structural hint
           } else if(desc.includes('zone')){
-            hint=target.zone?`📍 Zone: ${target.zone}`:target.region?`🗺️ Region: ${target.region}`:pool[1];
+            hint=hintTarget.zone?`📍 Zone: ${hintTarget.zone}`:hintTarget.region?`🗺️ Region: ${hintTarget.region}`:pool[1];
           } else if(desc.includes('year')||desc.includes('opened')){
-            const yr=target.year;
+            const yr=hintTarget.year;
             hint=yr?`📅 Opened: ${yr}`:pool[1];
           } else if(desc.includes('admitted')){
-            hint=target.year?`📅 Admitted: ${target.year}`:pool[1];
+            hint=hintTarget.year?`📅 Admitted: ${hintTarget.year}`:pool[1];
           } else if(desc.includes('direction')){
             hint=pool[1];
           } else {
