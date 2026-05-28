@@ -32,7 +32,7 @@ class ErrorBoundary extends Component<{children:React.ReactNode},{hasError:boole
 const CARD_RARITY={
   COMMON:   {id:"common",   label:"Common",   color:"#778899",glow:"rgba(119,136,153,.25)",weight:55},
   UNCOMMON: {id:"uncommon", label:"Uncommon", color:"#0060A9",glow:"rgba(0,96,169,.3)",    weight:28},
-  RARE:     {id:"rare",     label:"Rare",     color:"#7B2FBE",glow:"rgba(123,47,190,.35)", weight:13},
+  RARE:     {id:"rare",     label:"Rare",     color:"#BF0000",glow:"rgba(191,0,0,.35)",     weight:13},
   LEGENDARY:{id:"legendary",label:"Legendary",color:"#c8a800",glow:"rgba(200,168,0,.45)", weight:4},
 };
 const CARD_DROP={
@@ -193,7 +193,7 @@ function canUseCardPowerup(c){
 }
 function markCardPowerupUsed(c){return{...c,powerupUsedAt:new Date().toISOString()};}
 function rarityGrad(id){
-  return({common:"linear-gradient(135deg,#1a1a1a,#2a2a2a)",uncommon:"linear-gradient(135deg,#0a1a35,#0d2a55)",rare:"linear-gradient(135deg,#1a0a30,#2d0d50)",legendary:"linear-gradient(135deg,#1a1400,#332800)"})[id]||"linear-gradient(135deg,#1a1a1a,#2a2a2a)";
+  return({common:"linear-gradient(135deg,#1a1a1a,#2a2a2a)",uncommon:"linear-gradient(135deg,#0a1a35,#0d2a55)",rare:"linear-gradient(135deg,#1a0000,#350a0a)",legendary:"linear-gradient(135deg,#1a1400,#332800)"})[id]||"linear-gradient(135deg,#1a1a1a,#2a2a2a)";
 }
 
 const wikiImageCache=new Map<string,Promise<string|null>>();
@@ -304,7 +304,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
         </div>}
         {phase!=="intro"&&phase!=="reveal"&&<div style={{color:"rgba(255,255,255,.5)",fontSize:12,letterSpacing:3,marginTop:8}}>{phase==="shaking"?"OPENING...":"YOU GOT A CARD!"}</div>}
       </div>
-      {phase==="reveal"&&<button onClick={onDone} style={{background:r.color,border:"none",borderRadius:10,padding:"12px 32px",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:2,fontFamily:"inherit"}}>ADD TO COLLECTION</button>}
+      {phase==="reveal"&&<button onClick={onDone} style={{background:"#BF0000",border:"none",borderRadius:10,padding:"12px 32px",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:2,fontFamily:"inherit"}}>ADD TO COLLECTION</button>}
     </div>
   );
 }
@@ -2481,11 +2481,11 @@ const NYC_RAW:any[]=[
   ["36 Av",["N","W"],"Queens",2,1917,"Astoria N/W stop — residential Queens neighborhood","36th Avenue in Astoria is a quieter commercial strip — serving the neighborhood's mix of Greek, Egyptian, and Bangladeshi residents."],
   ["39 Av-Dutch Kills",["N","W"],"Queens",2,1917,"N/W stop in Long Island City — the Dutch Kills neighborhood","Dutch Kills takes its name from the Dutch colonial-era waterway — it's now one of LIC's rapidly developing areas."],
   // ── QUEENS — 7 Train ──────────────────────────────────────────────────
-  ["40 St",["7"],"Queens",2,1928,"7 train stop in Sunnyside — Queens residential neighborhood","Sunnyside is one of Queens' most diverse and affordable neighborhoods — home to Irish, Colombian, Romanian, and Tibetan communities."],
-  ["46 St",["7"],"Queens",2,1928,"7 train stop in Sunnyside — suburban-feeling Queens neighborhood","Sunnyside Gardens, nearby, is a 1924 planned garden community — the houses and shared gardens are still well-preserved today."],
-  ["52 St",["7"],"Queens",2,1928,"7 train stop in Woodside — Irish-American Queens neighborhood","Woodside has one of NYC's largest Irish-American communities — Irish pubs and Philippine restaurants share the blocks."],
-  ["61 St-Woodside",["7"],"Queens",3,1928,"7 train stop in Woodside — LIRR connection for Long Island commuters","The LIRR station at Woodside provides a direct connection to Penn Station — a lifeline for Long Island commuters."],
-  ["69 St",["7"],"Queens",2,1928,"7 train stop in Woodside — near the busy Roosevelt Avenue corridor","Roosevelt Avenue runs beneath the 7 train for miles — one of NYC's most commercially dense and ethnically diverse streets."],
+  ["Vernon Blvd-Jackson Av",["7"],"Queens",3,1917,"7 train stop in Long Island City — first Queens stop on the Flushing Line","Vernon Boulevard is lined with waterfront restaurants and galleries overlooking the Manhattan skyline — one of NYC's most scenic streets."],
+  ["46 St-Bliss St",["7"],"Queens",2,1917,"7 train stop in Sunnyside — suburban-feeling Queens neighborhood","Sunnyside Gardens, nearby, is a 1924 planned garden community — the houses and shared gardens are still well-preserved today."],
+  ["52 St",["7"],"Queens",2,1917,"7 train stop in Woodside — Irish-American Queens neighborhood","Woodside has one of NYC's largest Irish-American communities — Irish pubs and Philippine restaurants share the blocks."],
+  ["61 St-Woodside",["7"],"Queens",3,1917,"7 train stop in Woodside — LIRR connection for Long Island commuters","The LIRR station at Woodside provides a direct connection to Penn Station — a lifeline for Long Island commuters."],
+  ["69 St",["7"],"Queens",2,1917,"7 train stop in Woodside — near the busy Roosevelt Avenue corridor","Roosevelt Avenue runs beneath the 7 train for miles — one of NYC's most commercially dense and ethnically diverse streets."],
   ["82 St-Jackson Hts",["7"],"Queens",3,1928,"7 train stop in Jackson Heights — one of the neighborhood's main stops","82nd Street in Jackson Heights is lined with Indian, Bangladeshi, and South Asian businesses — a neighborhood shopping hub."],
   ["90 St-Elmhurst Av",["7"],"Queens",2,1928,"7 train stop in Elmhurst — one of NYC's most diverse neighborhoods","Elmhurst has been called the most ethnically diverse urban area in the world — over 120 languages are spoken here."],
   ["103 St-Corona Plaza",["7"],"Queens",3,1928,"7 train stop in Corona — near the famous Lemon Ice King","The Lemon Ice King of Corona, open since 1944, is one of NYC's most beloved summer institutions — lines stretch around the block."],
@@ -4242,7 +4242,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(2,138,72,0.15) 0%,transparent 70%)",top:"-20%",left:"-15%",animation:"dkBlob1 24s ease-in-out infinite",filter:"blur(60px)"}}/>
           <div style={{position:"absolute",width:550,height:550,borderRadius:"50%",background:"radial-gradient(circle,rgba(26,58,143,0.18) 0%,transparent 70%)",top:"25%",right:"-15%",animation:"dkBlob2 30s ease-in-out infinite",filter:"blur(65px)"}}/>
           <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.12) 0%,transparent 70%)",bottom:"-15%",left:"20%",animation:"dkBlob3 36s ease-in-out infinite",filter:"blur(70px)"}}/>
-          <div style={{position:"absolute",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(113,58,237,0.12) 0%,transparent 70%)",top:"60%",right:"15%",animation:"dkBlob1 20s ease-in-out infinite reverse",filter:"blur(55px)"}}/>
+          <div style={{position:"absolute",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.1) 0%,transparent 70%)",top:"60%",right:"15%",animation:"dkBlob3 20s ease-in-out infinite reverse",filter:"blur(55px)"}}/>
           <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)",backgroundSize:"80px 80px"}}/>
         </div>
         {/* Scan line */}
@@ -4430,7 +4430,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(2,138,72,0.18) 0%,transparent 70%)",top:"-15%",left:"-10%",animation:"blob1 22s ease-in-out infinite",filter:"blur(48px)"}}/>
         <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(26,58,143,0.15) 0%,transparent 70%)",top:"20%",right:"-12%",animation:"blob2 28s ease-in-out infinite",filter:"blur(52px)"}}/>
         <div style={{position:"absolute",width:450,height:450,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.1) 0%,transparent 70%)",bottom:"-10%",left:"25%",animation:"blob3 34s ease-in-out infinite",filter:"blur(56px)"}}/>
-        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(113,58,237,0.1) 0%,transparent 70%)",top:"55%",right:"10%",animation:"blob1 19s ease-in-out infinite reverse",filter:"blur(44px)"}}/>
+        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.08) 0%,transparent 70%)",top:"55%",right:"10%",animation:"blob3 19s ease-in-out infinite reverse",filter:"blur(44px)"}}/>
         <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px)",backgroundSize:"80px 80px",opacity:.6}}/>
       </div>
 
@@ -5882,7 +5882,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
   function revealHint(){
     if(rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
     SoundEngine.play("hint");
-    const pool=generateHints(target,gameKey);
+    const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+    const pool=generateHints(hintTarget,gameKey);
     const hint=pool[Math.min(rd.hintsUsed,pool.length-1)];
     updateRound({revealedHints:[...rd.revealedHints,hint],hintsUsed:rd.hintsUsed+1});
   }
@@ -5902,7 +5903,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       setCardToast(`+1 guess from ${card.ability?.icon||"🃏"} ${card.ability?.name||"Card"}`);
       setTimeout(()=>setCardToast(null),3000);
     }else{
-      const pool=generateHints(target,gameKey);
+      const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+      const pool=generateHints(hintTarget,gameKey);
       const nextIdx=Math.min((rd.revealedHints||[]).length,pool.length-1);
       const hint=pool[nextIdx];
       if(hint){
@@ -6494,12 +6496,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           if(!target||rd.won||rd.lost||rd.alreadyPlayed)return "no-game";
           // Map ability description to a specific targeted hint
           const desc=(card.ability.description||'').toLowerCase();
-          const pool=generateHints(target,gameKey);
+          const hintTarget=(rd.targetName?items.find((s:any)=>s.name===rd.targetName):null)||target;
+          const pool=generateHints(hintTarget,gameKey);
           let hint='';
           if(desc.includes('first letter')){
-            hint=`🔤 First letter: "${target.name[0].toUpperCase()}"`;
+            hint=`🔤 First letter: "${hintTarget.name[0].toUpperCase()}"`;
           } else if(desc.includes('connect')||(desc.includes('line')&&!desc.includes('zone')&&!desc.includes('year')&&!desc.includes('admitted')&&!desc.includes('all stations')&&!desc.includes('same line'))){
-            const ls=Array.isArray(target.lines)&&target.lines.length?target.lines.join(', '):null;
+            const ls=Array.isArray(hintTarget.lines)&&hintTarget.lines.length?hintTarget.lines.join(', '):null;
             hint=ls?`🚊 Lines: ${ls}`:pool[1];
           } else if(desc.includes('same line')||desc.includes('every station')){
             // Full line reveal — structural hint best approximation
@@ -6507,12 +6510,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
           } else if(desc.includes('zone')&&(desc.includes('year')||desc.includes('direction')||desc.includes('and'))){
             hint=pool[1]; // combined structural hint
           } else if(desc.includes('zone')){
-            hint=target.zone?`📍 Zone: ${target.zone}`:target.region?`🗺️ Region: ${target.region}`:pool[1];
+            hint=hintTarget.zone?`📍 Zone: ${hintTarget.zone}`:hintTarget.region?`🗺️ Region: ${hintTarget.region}`:pool[1];
           } else if(desc.includes('year')||desc.includes('opened')){
-            const yr=target.year;
+            const yr=hintTarget.year;
             hint=yr?`📅 Opened: ${yr}`:pool[1];
           } else if(desc.includes('admitted')){
-            hint=target.year?`📅 Admitted: ${target.year}`:pool[1];
+            hint=hintTarget.year?`📅 Admitted: ${hintTarget.year}`:pool[1];
           } else if(desc.includes('direction')){
             hint=pool[1];
           } else {
@@ -6748,7 +6751,7 @@ function IntroScreen({onDone}:{onDone:()=>void}){
         />
       ):(
         /* Fallback animated splash if video fails */
-        <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%)"}}>
+        <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#0a0a0a 0%,#1a0000 50%,#0a0a0a 100%)"}}>
           <style>{`@keyframes introPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}@keyframes introFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}@keyframes introLine{from{width:0}to{width:100%}}`}</style>
           <div style={{fontSize:80,animation:"introPulse 2s ease-in-out infinite",marginBottom:24}}>🎯</div>
           <div style={{fontFamily:"'Cinzel',serif",fontSize:"clamp(28px,6vw,52px)",fontWeight:700,color:"#fff",letterSpacing:6,animation:"introFadeUp .8s .2s ease both"}}>UrbanIQ</div>
