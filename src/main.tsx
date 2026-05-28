@@ -32,7 +32,7 @@ class ErrorBoundary extends Component<{children:React.ReactNode},{hasError:boole
 const CARD_RARITY={
   COMMON:   {id:"common",   label:"Common",   color:"#778899",glow:"rgba(119,136,153,.25)",weight:55},
   UNCOMMON: {id:"uncommon", label:"Uncommon", color:"#0060A9",glow:"rgba(0,96,169,.3)",    weight:28},
-  RARE:     {id:"rare",     label:"Rare",     color:"#7B2FBE",glow:"rgba(123,47,190,.35)", weight:13},
+  RARE:     {id:"rare",     label:"Rare",     color:"#BF0000",glow:"rgba(191,0,0,.35)",     weight:13},
   LEGENDARY:{id:"legendary",label:"Legendary",color:"#c8a800",glow:"rgba(200,168,0,.45)", weight:4},
 };
 const CARD_DROP={
@@ -193,7 +193,7 @@ function canUseCardPowerup(c){
 }
 function markCardPowerupUsed(c){return{...c,powerupUsedAt:new Date().toISOString()};}
 function rarityGrad(id){
-  return({common:"linear-gradient(135deg,#1a1a1a,#2a2a2a)",uncommon:"linear-gradient(135deg,#0a1a35,#0d2a55)",rare:"linear-gradient(135deg,#1a0a30,#2d0d50)",legendary:"linear-gradient(135deg,#1a1400,#332800)"})[id]||"linear-gradient(135deg,#1a1a1a,#2a2a2a)";
+  return({common:"linear-gradient(135deg,#1a1a1a,#2a2a2a)",uncommon:"linear-gradient(135deg,#0a1a35,#0d2a55)",rare:"linear-gradient(135deg,#1a0000,#350a0a)",legendary:"linear-gradient(135deg,#1a1400,#332800)"})[id]||"linear-gradient(135deg,#1a1a1a,#2a2a2a)";
 }
 
 const wikiImageCache=new Map<string,Promise<string|null>>();
@@ -304,7 +304,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
         </div>}
         {phase!=="intro"&&phase!=="reveal"&&<div style={{color:"rgba(255,255,255,.5)",fontSize:12,letterSpacing:3,marginTop:8}}>{phase==="shaking"?"OPENING...":"YOU GOT A CARD!"}</div>}
       </div>
-      {phase==="reveal"&&<button onClick={onDone} style={{background:r.color,border:"none",borderRadius:10,padding:"12px 32px",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:2,fontFamily:"inherit"}}>ADD TO COLLECTION</button>}
+      {phase==="reveal"&&<button onClick={onDone} style={{background:"#BF0000",border:"none",borderRadius:10,padding:"12px 32px",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:2,fontFamily:"inherit"}}>ADD TO COLLECTION</button>}
     </div>
   );
 }
@@ -4242,7 +4242,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(2,138,72,0.15) 0%,transparent 70%)",top:"-20%",left:"-15%",animation:"dkBlob1 24s ease-in-out infinite",filter:"blur(60px)"}}/>
           <div style={{position:"absolute",width:550,height:550,borderRadius:"50%",background:"radial-gradient(circle,rgba(26,58,143,0.18) 0%,transparent 70%)",top:"25%",right:"-15%",animation:"dkBlob2 30s ease-in-out infinite",filter:"blur(65px)"}}/>
           <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.12) 0%,transparent 70%)",bottom:"-15%",left:"20%",animation:"dkBlob3 36s ease-in-out infinite",filter:"blur(70px)"}}/>
-          <div style={{position:"absolute",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(113,58,237,0.12) 0%,transparent 70%)",top:"60%",right:"15%",animation:"dkBlob1 20s ease-in-out infinite reverse",filter:"blur(55px)"}}/>
+          <div style={{position:"absolute",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.1) 0%,transparent 70%)",top:"60%",right:"15%",animation:"dkBlob3 20s ease-in-out infinite reverse",filter:"blur(55px)"}}/>
           <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)",backgroundSize:"80px 80px"}}/>
         </div>
         {/* Scan line */}
@@ -4430,7 +4430,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(2,138,72,0.18) 0%,transparent 70%)",top:"-15%",left:"-10%",animation:"blob1 22s ease-in-out infinite",filter:"blur(48px)"}}/>
         <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(26,58,143,0.15) 0%,transparent 70%)",top:"20%",right:"-12%",animation:"blob2 28s ease-in-out infinite",filter:"blur(52px)"}}/>
         <div style={{position:"absolute",width:450,height:450,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.1) 0%,transparent 70%)",bottom:"-10%",left:"25%",animation:"blob3 34s ease-in-out infinite",filter:"blur(56px)"}}/>
-        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(113,58,237,0.1) 0%,transparent 70%)",top:"55%",right:"10%",animation:"blob1 19s ease-in-out infinite reverse",filter:"blur(44px)"}}/>
+        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.08) 0%,transparent 70%)",top:"55%",right:"10%",animation:"blob3 19s ease-in-out infinite reverse",filter:"blur(44px)"}}/>
         <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px)",backgroundSize:"80px 80px",opacity:.6}}/>
       </div>
 
@@ -6751,7 +6751,7 @@ function IntroScreen({onDone}:{onDone:()=>void}){
         />
       ):(
         /* Fallback animated splash if video fails */
-        <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%)"}}>
+        <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#0a0a0a 0%,#1a0000 50%,#0a0a0a 100%)"}}>
           <style>{`@keyframes introPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}@keyframes introFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}@keyframes introLine{from{width:0}to{width:100%}}`}</style>
           <div style={{fontSize:80,animation:"introPulse 2s ease-in-out infinite",marginBottom:24}}>🎯</div>
           <div style={{fontFamily:"'Cinzel',serif",fontSize:"clamp(28px,6vw,52px)",fontWeight:700,color:"#fff",letterSpacing:6,animation:"introFadeUp .8s .2s ease both"}}>UrbanIQ</div>
