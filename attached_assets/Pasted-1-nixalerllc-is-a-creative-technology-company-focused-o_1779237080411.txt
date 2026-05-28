@@ -1,0 +1,21 @@
+1. nixalerllc is a creative technology company focused on building original digital experiences, games, systems, and ideas that feel ahead of their time.
+2. I want people to feel curiosity immediately. Clean, futuristic, confident, intentional, and slightly mysterious. Like they just stepped into something early before everyone else catches on.
+3. More like a company with personality underneath it. Not influencer-style personal branding, but you can still feel there’s a real creator behind it.
+4. Mostly white with black, silver, and soft electric blue accents. Maybe subtle cyan glow elements in certain areas, but restrained. I don’t want it looking like a gaming RGB setup.
+5. Futuristic in a subtle premium way. Minimal first, sci-fi second. Smooth glass effects, clean motion, depth, and precision without overdoing hologram aesthetics.
+6. A mix. Mostly clean geometric structure with slightly rounded corners so it still feels modern and approachable instead of cold.
+7. Modern sans-serif fonts. I like clean fonts that feel premium and tech-forward. Slightly condensed is cool as long as it stays readable. Nothing playful or overly corporate.
+8. “Building Ideas Beyond the Expected.”
+    Alternative vibe: “Future-leaning systems, games, and experiences.”
+9. Create it. I want it concise, intelligent, and human. No generic startup language.
+10. Personality matters, but controlled. I want the design itself to communicate personality more than huge blocks of text about me.
+11. Large featured cards or sections with strong visuals and motion. I want niXalergame and guessgame.shop to feel like real products, not random links.
+12. For now mainly those two, but structure the site so future projects can slide in naturally later.
+13. Minimal top navigation. Maybe just logo, projects, and contact. I don’t want a crowded navbar.
+14. Yes, subtle animations are important. Smooth scrolling, soft hover effects, glow transitions, section reveals, and clean motion throughout. Nothing distracting.
+15. Very airy. Lots of whitespace. I want everything to breathe and feel deliberate.
+16. Yes, a clean minimal footer with brand identity, copyright, and maybe one clean contact method.
+17. React + Vite. I want it scalable and modern from the beginning.
+18. Definitely planning to expand later with additional projects, maybe a lab section, blog, interactive demos, and company updates.
+19. Direct, creative, intelligent, slightly mysterious, and future-focused. Professional without sounding corporate.
+20. I definitely do not want clutter, stock photos, cheesy AI art, giant walls of text, loud colors, forced motivational language, or too many social media icons everywhere. Keep it focused and intentional.

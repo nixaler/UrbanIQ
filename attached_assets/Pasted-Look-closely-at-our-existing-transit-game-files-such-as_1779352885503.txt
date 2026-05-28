@@ -1,0 +1,23 @@
+Look closely at our existing transit game files (such as our data-fetching hooks, city configuration arrays, card asset directories, and trivia matrices). I want to fully incorporate 'Los Angeles Metro' as our newest premium game hub, mimicking the exact data structure of Portland, DC, and Baltimore without altering them. 
+
+The data arrays, hints, card drops, and filters for Los Angeles must be 100% accurate to the active 2026 network metrics. Use the following strict specifications:
+
+1. City Visual Identity & Theme Token:
+   - Hub Accent Color: Bright Blue / Teal (Hex: #0072bc)
+   - Badge Filter Set: [A Line, B Line, C Line, D Line, E Line, K Line]
+
+2. Strict 2026 Rail Network Data Mapping:
+   - System Total: 6 core lines serving 110 active operational stations.
+   - A Line (Light Rail, Color Hex #0072bc): Pomona North to Downtown Long Beach.
+   - B Line (Heavy Rail Subway, Color Hex #e3131b): North Hollywood to Union Station.
+   - C Line (Light Rail, Color Hex #58a738): LAX/Metro Transit Center to Norwalk.
+   - D Line (Heavy Rail Subway, Color Hex #a05da5): Wilshire/La Cienega extension to Union Station.
+   - E Line (Light Rail, Color Hex #f7b618): Downtown Santa Monica to Atlantic.
+   - K Line (Light Rail, Color Hex #e96bb0): Expo/Crenshaw to Redondo Beach.
+
+3. Module Extensions:
+   - Daily Puzzle & Guessing Grid: Create a dictionary database for these stations mapping their respective Lines, Zones, Character types (Underground, At Grade, Elevated), and Opening Years.
+   - Trivia Mode: Generate 26 multiple-choice questions focusing exclusively on LA Metro history, line lengths (like the A Line being the longest light rail), and key stations like 7th St/Metro Center and Union Station.
+   - Card Pack Drops: Add 5 unique collectible card models for the LA deck ranging from Common to Legendary (e.g., 'Union Station' - Legendary).
+
+Review the existing dataset models carefully. Append the Los Angeles datasets smoothly via our existing data export files. Double-check that all state wrappers, autocomplete inputs, and conditional views do not experience any regressions, edge-case null breaks, or layout overflows. Do not touch any existing operational city code blocks.

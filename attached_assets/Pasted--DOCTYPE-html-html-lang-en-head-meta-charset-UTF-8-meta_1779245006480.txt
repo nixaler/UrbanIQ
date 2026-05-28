@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legal — TheGuessingGame</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=JetBrains+Mono:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#f8f8f6; font-family:'JetBrains Mono',monospace; color:#222; line-height:1.7; }
+
+.stripe { height:6px; display:flex; }
+.stripe div { flex:1; }
+
+.container { max-width:720px; margin:0 auto; padding:0 24px 80px; }
+
+.site-header { padding:32px 0 28px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e8e8e4; margin-bottom:48px; }
+.site-logo { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:#111; text-decoration:none; }
+.site-logo span { color:#1a3a8f; }
+.back-link { font-size:10px; color:#aaa; letter-spacing:2px; text-decoration:none; }
+.back-link:hover { color:#111; }
+
+.doc-title { font-family:'Cinzel',serif; font-size:28px; font-weight:700; color:#111; margin-bottom:6px; }
+.doc-meta { font-size:10px; color:#aaa; letter-spacing:2px; margin-bottom:40px; }
+
+h2 { font-size:11px; font-weight:700; letter-spacing:3px; color:#aaa; text-transform:uppercase; margin:36px 0 12px; padding-bottom:8px; border-bottom:1px solid #f0f0f0; }
+p { font-size:12px; color:#444; margin-bottom:14px; line-height:1.9; }
+ul { margin:0 0 14px 0; padding-left:20px; }
+li { font-size:12px; color:#444; margin-bottom:8px; line-height:1.8; }
+strong { color:#222; }
+a { color:#1a3a8f; text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+.highlight { background:#f0f4ff; border-left:3px solid #1a3a8f; padding:14px 18px; border-radius:0 6px 6px 0; margin-bottom:20px; }
+.highlight p { margin:0; color:#333; }
+
+.divider { height:1px; background:#f0f0f0; margin:52px 0; }
+
+.toc { background:#f8f8f8; border:1px solid #eee; border-radius:8px; padding:20px 24px; margin-bottom:40px; }
+.toc-title { font-size:9px; letter-spacing:3px; color:#aaa; margin-bottom:12px; font-weight:700; }
+.toc a { display:block; font-size:11px; color:#444; text-decoration:none; padding:4px 0; border-bottom:1px solid #f0f0f0; }
+.toc a:last-child { border:none; }
+.toc a:hover { color:#1a3a8f; }
+</style>
+</head>
+<body>
+
+<div class="stripe">
+  <div style="background:#0060A9"></div><div style="background:#D02B27"></div>
+  <div style="background:#028A48"></div><div style="background:#FFC72C"></div>
+  <div style="background:#D35B2C"></div><div style="background:#BF0000"></div>
+  <div style="background:#009CDE"></div><div style="background:#00B140"></div>
+  <div style="background:#919D9D"></div>
+</div>
+
+<div class="container">
+
+  <div class="site-header">
+    <a class="site-logo" href="https://guessgame.shop">The<span>Guessing</span>Game</a>
+    <a class="back-link" href="https://guessgame.shop">← BACK TO GAME</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- TERMS OF SERVICE                               -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <div class="doc-title">Terms of Service</div>
+  <div class="doc-meta">NiXalerLLC · guessgame.shop · Last updated: May 2026</div>
+
+  <div class="highlight">
+    <p>Short version: TheGuessingGame is free to play. We don't collect your personal information. Play fair, don't break things, and enjoy the game.</p>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <a href="#tos-acceptance">1. Acceptance of Terms</a>
+    <a href="#tos-use">2. Use of the Service</a>
+    <a href="#tos-ip">3. Intellectual Property</a>
+    <a href="#tos-conduct">4. User Conduct</a>
+    <a href="#tos-disclaimer">5. Disclaimer of Warranties</a>
+    <a href="#tos-liability">6. Limitation of Liability</a>
+    <a href="#tos-changes">7. Changes to Terms</a>
+    <a href="#tos-contact">8. Contact</a>
+  </div>
+
+  <h2 id="tos-acceptance">1. Acceptance of Terms</h2>
+  <p>By accessing or using TheGuessingGame at <a href="https://guessgame.shop">guessgame.shop</a> ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service. The Service is operated by NiXalerLLC ("we," "us," or "our").</p>
+
+  <h2 id="tos-use">2. Use of the Service</h2>
+  <p>TheGuessingGame is provided free of charge. You may use the Service for personal, non-commercial entertainment purposes. No account, registration, or personal information is required to play.</p>
+  <ul>
+    <li>The Service is available to users of all ages. No age restriction applies.</li>
+    <li>Game progress and streak data are stored locally on your device via your browser's local storage. We do not store this information on our servers.</li>
+    <li>You may access the Service from any device with a modern web browser and internet connection.</li>
+  </ul>
+
+  <h2 id="tos-ip">3. Intellectual Property</h2>
+  <p>All content, design, code, gameplay mechanics, branding, and assets associated with TheGuessingGame — including but not limited to the name "TheGuessingGame," "NiXalerGames," and "NiXalerLLC" — are the exclusive property of NiXalerLLC and are protected by applicable intellectual property laws.</p>
+  <ul>
+    <li>You may not copy, reproduce, distribute, or create derivative works from the Service without prior written permission from NiXalerLLC.</li>
+    <li>Screenshots and screen recordings of gameplay may be shared on social media for personal, non-commercial purposes with credit to <strong>@nixalergames</strong> or <strong>guessgame.shop</strong>.</li>
+    <li>Press and media use of screenshots is permitted for editorial coverage. See our press kit for assets.</li>
+  </ul>
+
+  <h2 id="tos-conduct">4. User Conduct</h2>
+  <p>When using the Service you agree not to:</p>
+  <ul>
+    <li>Attempt to reverse engineer, decompile, or extract source code from the Service</li>
+    <li>Use automated tools, bots, or scripts to interact with the Service</li>
+    <li>Attempt to manipulate, cheat, or exploit game mechanics in a way that undermines the integrity of the daily puzzle system</li>
+    <li>Use the Service for any unlawful purpose or in violation of any applicable laws</li>
+  </ul>
+
+  <h2 id="tos-disclaimer">5. Disclaimer of Warranties</h2>
+  <p>The Service is provided "as is" and "as available" without warranties of any kind, either express or implied. NiXalerLLC does not warrant that the Service will be uninterrupted, error-free, or free of harmful components. We reserve the right to modify, suspend, or discontinue the Service at any time without notice.</p>
+
+  <h2 id="tos-liability">6. Limitation of Liability</h2>
+  <p>To the fullest extent permitted by applicable law, NiXalerLLC shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the Service. Our total liability to you for any claim arising from these Terms or your use of the Service shall not exceed zero dollars ($0), reflecting the fact that the Service is provided entirely free of charge.</p>
+
+  <h2 id="tos-changes">7. Changes to Terms</h2>
+  <p>We may update these Terms of Service from time to time. Continued use of the Service after any changes constitutes acceptance of the new terms. The "last updated" date at the top of this page will reflect any revisions.</p>
+
+  <h2 id="tos-contact">8. Contact</h2>
+  <p>For questions about these Terms, contact us at <strong>@nixalergames</strong> on Instagram or X, or visit <a href="https://guessgame.shop">guessgame.shop</a>.</p>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- PRIVACY POLICY                                 -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <div class="doc-title">Privacy Policy</div>
+  <div class="doc-meta">NiXalerLLC · guessgame.shop · Last updated: May 2026</div>
+
+  <div class="highlight">
+    <p>Short version: We don't collect your personal information. We don't run ads. We don't track you. Your game data stays on your device.</p>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <a href="#pp-collect">1. Information We Collect</a>
+    <a href="#pp-storage">2. Local Storage</a>
+    <a href="#pp-third">3. Third-Party Services</a>
+    <a href="#pp-cookies">4. Cookies</a>
+    <a href="#pp-children">5. Children's Privacy</a>
+    <a href="#pp-rights">6. Your Rights</a>
+    <a href="#pp-changes">7. Changes to This Policy</a>
+    <a href="#pp-contact">8. Contact</a>
+  </div>
+
+  <h2 id="pp-collect">1. Information We Collect</h2>
+  <p><strong>We collect no personal information.</strong> TheGuessingGame does not require you to create an account, provide an email address, or share any personally identifiable information to play.</p>
+  <p>We do not collect:</p>
+  <ul>
+    <li>Names, email addresses, phone numbers, or any contact information</li>
+    <li>Location data or IP addresses tied to individual users</li>
+    <li>Device identifiers or advertising IDs</li>
+    <li>Behavioral data, browsing history, or usage profiles</li>
+  </ul>
+
+  <h2 id="pp-storage">2. Local Storage</h2>
+  <p>TheGuessingGame stores game progress data — including your daily puzzle results, streak counts, and statistics — locally on your device using your browser's built-in local storage or equivalent mechanism. This data:</p>
+  <ul>
+    <li>Never leaves your device</li>
+    <li>Is not transmitted to NiXalerLLC or any third party</li>
+    <li>Can be cleared at any time by clearing your browser's local storage or site data</li>
+    <li>Is not accessible by us or anyone other than you</li>
+  </ul>
+
+  <h2 id="pp-third">3. Third-Party Services</h2>
+  <p>TheGuessingGame is hosted on third-party infrastructure (Replit). While we do not collect personal data, your connection to guessgame.shop may be subject to standard server-level logging by our hosting provider. We do not control or have access to those logs and they are subject to the hosting provider's own privacy policy.</p>
+  <p>We do not integrate any advertising networks, analytics platforms, social tracking pixels, or data brokers into the Service.</p>
+
+  <h2 id="pp-cookies">4. Cookies</h2>
+  <p>TheGuessingGame does not use cookies for tracking, advertising, or analytics purposes. Any cookies that may be set are strictly functional (such as session management) and contain no personal information.</p>
+
+  <h2 id="pp-children">5. Children's Privacy</h2>
+  <p>TheGuessingGame is a family-friendly game with no age restriction. Because we collect no personal information from any user, we comply with the Children's Online Privacy Protection Act (COPPA) and similar regulations by design. No data from users of any age is collected or stored on our servers.</p>
+
+  <h2 id="pp-rights">6. Your Rights</h2>
+  <p>Because we do not collect personal information, there is no personal data held by NiXalerLLC for you to access, correct, export, or delete. Your game data exists solely on your own device and is fully under your control.</p>
+
+  <h2 id="pp-changes">7. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated "last updated" date. Continued use of the Service after changes constitutes acceptance of the revised policy.</p>
+
+  <h2 id="pp-contact">8. Contact</h2>
+  <p>For privacy-related questions or concerns, contact us at <strong>@nixalergames</strong> on Instagram or X, or visit <a href="https://guessgame.shop">guessgame.shop</a>.</p>
+
+</div>
+
+<div class="stripe">
+  <div style="background:#0060A9"></div><div style="background:#D02B27"></div>
+  <div style="background:#028A48"></div><div style="background:#FFC72C"></div>
+  <div style="background:#D35B2C"></div><div style="background:#BF0000"></div>
+  <div style="background:#009CDE"></div><div style="background:#00B140"></div>
+  <div style="background:#919D9D"></div>
+</div>
+
+</body>
+</html>

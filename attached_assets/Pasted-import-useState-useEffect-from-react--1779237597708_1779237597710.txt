@@ -1,0 +1,585 @@
+import { useState, useEffect } from "react";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LAYER (inlined from cardData.js v2)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RARITY={
+  COMMON:    {id:"common",    label:"Common",    color:"#778899",glow:"rgba(119,136,153,.25)",weight:55},
+  UNCOMMON:  {id:"uncommon",  label:"Uncommon",  color:"#0060A9",glow:"rgba(0,96,169,.3)",    weight:28},
+  RARE:      {id:"rare",      label:"Rare",      color:"#7B2FBE",glow:"rgba(123,47,190,.35)", weight:13},
+  LEGENDARY: {id:"legendary", label:"Legendary", color:"#c8a800",glow:"rgba(200,168,0,.45)",  weight:4 },
+};
+const DROP_RATES={
+  easy:  {common:70,uncommon:22,rare:7, legendary:1 },
+  medium:{common:58,uncommon:28,rare:11,legendary:3 },
+  hard:  {common:42,uncommon:30,rare:20,legendary:8 },
+  pro:   {common:25,uncommon:32,rare:30,legendary:13},
+};
+const CARD_TYPE={dc:"transit",pdx:"transit",balt:"transit",states:"geography",nfl:"sports"};
+const TYPE_ADVANTAGE={
+  transit:  {beats:"geography",label:"Transit crushes Geography", bonus:1.18},
+  geography:{beats:"sports",   label:"Geography outlasts Sports", bonus:1.18},
+  sports:   {beats:"transit",  label:"Sports dominate Transit",   bonus:1.18},
+};
+const ROUND_MODIFIERS=[
+  {id:"blitz",   label:"⚡ Blitz Round",   desc:"All powers doubled this round.",                    effect:"double_power"},
+  {id:"defense", label:"🛡️ Defense Round", desc:"All card abilities locked. Power only.",             effect:"lock_abilities"},
+  {id:"wildcard",label:"🎲 Wildcard Round", desc:"Winner decided by coin flip, power ignored.",       effect:"coin_flip"},
+  {id:"rush",    label:"🚄 Rush Hour",      desc:"Transit cards get +20 power this round.",           effect:"transit_boost"},
+  {id:"std",     label:"Standard",          desc:"Normal rules.",                                     effect:"none"},
+  {id:"std",     label:"Standard",          desc:"Normal rules.",                                     effect:"none"},
+  {id:"std",     label:"Standard",          desc:"Normal rules.",                                     effect:"none"},
+];
+const GAME_CONFIG={
+  dc:    {label:"DC Metro",     emoji:"🚇",accent:"#BF0000"},
+  pdx:   {label:"Portland MAX", emoji:"🌹",accent:"#028A48"},
+  balt:  {label:"Baltimore MTA",emoji:"🚊",accent:"#0060A9"},
+  states:{label:"US States",    emoji:"🗺️",accent:"#1a3a8f"},
+  nfl:   {label:"NFL Teams",    emoji:"🏈",accent:"#D02B27"},
+};
+const STORAGE_KEYS={collection:"gg-cv2-col",deck:"gg-cv2-deck"};
+
+// Unique card definitions
+const DC_UNIQUE={
+  "Metro Center": {rarity:"legendary",ability:{name:"Transfer Rush",icon:"🔄",description:"The busiest transfer point in DC. Reveals all connecting lines at today's target station before your first guess.",type:"hint",cooldownHours:24,battleEffect:{type:"power_bonus",value:14,desc:"+14 power — transfer hub dominance"}}},
+  "Pentagon":     {rarity:"legendary",ability:{name:"Security Clearance",icon:"🔐",description:"High-level access. Your opponent's strongest card is classified — removed from Round 1 of battle.",type:"battle",cooldownHours:48,battleEffect:{type:"disable_top",value:0,desc:"Opponent's top card sits out Round 1"}}},
+  "Union Station":{rarity:"legendary",ability:{name:"Grand Terminus",icon:"🏛️",description:"DC's gateway to the nation. Reveals Zone AND Direction. Grants +15 battle power.",type:"hint",cooldownHours:36,battleEffect:{type:"power_bonus",value:15,desc:"+15 power — historic gateway"}}},
+  "Foggy Bottom-GWU":{rarity:"legendary",ability:{name:"Academic Intelligence",icon:"🎓",description:"GWU intelligence network. Reveals today's answer's first letter AND doubles Trivia Mode points.",type:"hint",cooldownHours:24,battleEffect:{type:"power_bonus",value:10,desc:"+10 power, +5 vs Rare or below"}}},
+  "Gallery Place":    {rarity:"rare",ability:{name:"Dragon Gate",icon:"🐉",description:"Luck favors the prepared. Double drop chance for Rare or Legendary on your next puzzle.",type:"boost",cooldownHours:48,battleEffect:{type:"power_bonus",value:9,desc:"+9 power — lucky aura"}}},
+  "L'Enfant Plaza":   {rarity:"rare",ability:{name:"Underground Network",icon:"🕸️",description:"The most complex transfer. Reveals all stations in the same Zone as today's answer.",type:"hint",cooldownHours:36,battleEffect:{type:"power_bonus",value:8,desc:"+8 power — network node"}}},
+  "Dupont Circle":    {rarity:"rare",ability:{name:"Circle Line",icon:"♻️",description:"Reveals every station on the same Metro line as today's answer. One of the best hints in the game.",type:"hint",cooldownHours:32,battleEffect:{type:"power_bonus",value:7,desc:"+7 power"}}},
+  "Capitol South":    {rarity:"rare",ability:{name:"Legislative Power",icon:"🏛️",description:"Freezes your opponent's entire ability set for the battle. They get power only — no specials.",type:"battle",cooldownHours:48,battleEffect:{type:"freeze_ability",value:0,desc:"Blocks all opponent abilities"}}},
+  "Navy Yard-Ballpark":{rarity:"rare",ability:{name:"Home Field",icon:"⚾",description:"+20 battle power when your deck has all 5 cards. Empty seats hurt: -5 if below 3.",type:"battle",cooldownHours:24,battleEffect:{type:"deck_bonus",value:20,desc:"+20 full deck / -5 under 3 cards"}}},
+  "Stadium-Armory":   {rarity:"rare",ability:{name:"Crowd Roar",icon:"📣",description:"Random power bonus +5 to +35 in battle. The crowd decides. Pray.",type:"battle",cooldownHours:24,battleEffect:{type:"random_bonus",min:5,max:35,desc:"Random +5 to +35 power"}}},
+  "Smithsonian":      {rarity:"rare",ability:{name:"History Lesson",icon:"🏛️",description:"Reveals the decade the target station opened — the most precise Year hint available.",type:"hint",cooldownHours:24,battleEffect:{type:"power_bonus",value:6,desc:"+6 power"}}},
+  "Waterfront":       {rarity:"rare",ability:{name:"Potomac Flow",icon:"🌊",description:"Cuts the cooldown of every card in your collection by 8 hours.",type:"boost",cooldownHours:48,battleEffect:{type:"power_bonus",value:6,desc:"+6 power"}}},
+  "Rosslyn":          {rarity:"rare",ability:{name:"Gateway Bridge",icon:"🌉",description:"Reveals whether today's station is inside DC proper or in a VA/MD zone.",type:"hint",cooldownHours:28,battleEffect:{type:"power_bonus",value:7,desc:"+7 power"}}},
+};
+const STATE_UNIQUE={
+  "California":{rarity:"legendary",ability:{name:"Golden State",icon:"✨",description:"All Legendary cards in your deck receive +10 power for this entire battle.",type:"battle",cooldownHours:48,battleEffect:{type:"legendary_boost",value:10,desc:"All Legendary cards +10 power"}}},
+  "Texas":     {rarity:"legendary",ability:{name:"Lone Star",icon:"⭐",description:"Immune to all opponent ability effects this battle. Power competition only. Don't mess with Texas.",type:"battle",cooldownHours:48,battleEffect:{type:"immunity",value:0,desc:"Immune to all opponent abilities"}}},
+  "New York":  {rarity:"legendary",ability:{name:"Empire State",icon:"🏙️",description:"Auto-wins Round 1 AND Round 5. Control the start and the finish.",type:"battle",cooldownHours:72,battleEffect:{type:"auto_win_rounds",rounds:[0,4],desc:"Auto-wins Rounds 1 and 5"}}},
+  "Florida":   {rarity:"rare",ability:{name:"Wildcard State",icon:"🎲",description:"Coin flip: +35 power (chaos) or -10 (disaster). Classic Florida energy.",type:"battle",cooldownHours:24,battleEffect:{type:"coin_flip_bonus",win:35,lose:-10,desc:"Coin flip: +35 or -10. This is Florida."}}},
+  "Alaska":    {rarity:"rare",ability:{name:"Last Frontier",icon:"🏔️",description:"+8 power for every round you're currently losing by. Gets stronger the worse things get.",type:"battle",cooldownHours:36,battleEffect:{type:"comeback_scaling",value:8,desc:"+8 power per round behind"}}},
+  "Hawaii":    {rarity:"rare",ability:{name:"Aloha Spirit",icon:"🌺",description:"Cuts all your active deck card cooldowns in half for 24 hours. Pure island energy.",type:"boost",cooldownHours:72,battleEffect:{type:"power_bonus",value:8,desc:"+8 power"}}},
+  "Georgia":   {rarity:"rare",ability:{name:"Peach State Advantage",icon:"🍑",description:"Home of Hartsfield-Jackson. Reveals Region AND Coast of today's answer.",type:"hint",cooldownHours:24,battleEffect:{type:"power_bonus",value:7,desc:"+7 power"}}},
+  "Colorado":  {rarity:"rare",ability:{name:"Rocky Mountain High",icon:"⛰️",description:"+2 battle power for every day in your current streak. The higher you climb, the stronger you get.",type:"battle",cooldownHours:24,battleEffect:{type:"streak_scaling",value:2,desc:"+2 power per streak day"}}},
+  "Illinois":  {rarity:"rare",ability:{name:"Windy City",icon:"💨",description:"Blows your opponent's top-power card out of Round 1. It sits out.",type:"battle",cooldownHours:48,battleEffect:{type:"disable_top",value:0,desc:"Opponent's top card sits out Round 1"}}},
+  "Massachusetts":{rarity:"rare",ability:{name:"Revolution",icon:"🔥",description:"When losing by 2+ rounds, triggers a +22 power comeback. Boston never quits.",type:"battle",cooldownHours:36,battleEffect:{type:"comeback_bonus",threshold:2,value:22,desc:"+22 power if losing by 2+ rounds"}}},
+  "Washington":{rarity:"rare",ability:{name:"Evergreen",icon:"🌲",description:"After losing a battle round, carry +10 power into the next round. Pacific Northwest resilience.",type:"battle",cooldownHours:24,battleEffect:{type:"regen",value:10,desc:"+10 carry-over after each loss"}}},
+};
+const NFL_UNIQUE={
+  "Dallas Cowboys":     {rarity:"legendary",ability:{name:"America's Team",icon:"⭐",description:"Your highest-power card always goes first in battle. Guaranteed opening play.",type:"battle",cooldownHours:48,battleEffect:{type:"first_strike",value:0,desc:"Strongest card always battles first"}}},
+  "New England Patriots":{rarity:"legendary",ability:{name:"Dynasty",icon:"🏆",description:"Win 3+ rounds and the dynasty bonus fires: +25 to your final deck score.",type:"battle",cooldownHours:72,battleEffect:{type:"dynasty_bonus",threshold:3,value:25,desc:"+25 deck score if you win 3+ rounds"}}},
+  "Green Bay Packers":  {rarity:"legendary",ability:{name:"Frozen Tundra",icon:"🧊",description:"Lambeau in January. All opponent cards lose 12 power for the entire battle.",type:"battle",cooldownHours:48,battleEffect:{type:"debuff_all",value:-12,desc:"All opponent cards -12 power"}}},
+  "Kansas City Chiefs": {rarity:"rare",ability:{name:"Arrowhead Thunder",icon:"⚡",description:"+18 power in Rounds 1 and 2. Fast start is everything at Arrowhead.",type:"battle",cooldownHours:36,battleEffect:{type:"early_boost",rounds:[0,1],value:18,desc:"+18 power Rounds 1-2"}}},
+  "Baltimore Ravens":   {rarity:"rare",ability:{name:"Nevermore",icon:"🦅",description:"Win margin from each round is doubled and added to the next round.",type:"battle",cooldownHours:36,battleEffect:{type:"counter_double",value:0,desc:"Win margin doubled into next round"}}},
+  "Pittsburgh Steelers":{rarity:"rare",ability:{name:"Steel Curtain",icon:"🛡️",description:"Blocks all opponent ability effects for the entire battle. Defense wins championships.",type:"battle",cooldownHours:48,battleEffect:{type:"freeze_ability",value:0,desc:"Blocks all opponent abilities"}}},
+  "Philadelphia Eagles":{rarity:"rare",ability:{name:"Underdog",icon:"🦅",description:"+25 comeback power when losing by 2+ rounds. Philly always bets on itself.",type:"battle",cooldownHours:36,battleEffect:{type:"comeback_bonus",threshold:2,value:25,desc:"+25 power if losing by 2+"}}},
+  "San Francisco 49ers":{rarity:"rare",ability:{name:"Gold Rush",icon:"⛏️",description:"Strike first. Auto-wins Round 1 regardless of power.",type:"battle",cooldownHours:36,battleEffect:{type:"auto_win_rounds",rounds:[0],desc:"Auto-wins Round 1"}}},
+  "Las Vegas Raiders":  {rarity:"rare",ability:{name:"Just Win Baby",icon:"⚡",description:"Steal the power value from your opponent's strongest card and add it to this card for Round 1.",type:"battle",cooldownHours:48,battleEffect:{type:"steal_power",value:0,desc:"Steals opponent top card's power for Round 1"}}},
+  "Chicago Bears":      {rarity:"rare",ability:{name:"Monsters of the Midway",icon:"🐻",description:"+6 power for every battle round currently losing. Gets scarier under pressure.",type:"battle",cooldownHours:24,battleEffect:{type:"loss_scaling",value:6,desc:"+6 power per round losing"}}},
+};
+
+// Fallback ability pools
+const FALLBACKS={
+  transit:{
+    common:[
+      {name:"Local Knowledge",icon:"📍",description:"Reveals the Zone of today's answer.",cooldownHours:24,battleEffect:{type:"power_bonus",value:3}},
+      {name:"Rush Hour Boost",icon:"🚇",description:"Grants one extra guess in today's puzzle.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+      {name:"End of Line",icon:"🔚",description:"Reveals whether today's station is a terminus or mid-line stop.",cooldownHours:24,battleEffect:{type:"power_bonus",value:3}},
+      {name:"Transfer Point",icon:"🔄",description:"Reveals which line group the answer belongs to.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+    ],
+    uncommon:[
+      {name:"Commuter Intel",icon:"📋",description:"Reveals the Direction clue before guessing.",cooldownHours:24,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Platform Knowledge",icon:"🚉",description:"Reveals whether the station is busy, moderate, or quiet.",cooldownHours:24,battleEffect:{type:"power_bonus",value:5}},
+      {name:"Express Service",icon:"⚡",description:"Skip one failed guess — it doesn't count against you.",cooldownHours:36,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Signal Priority",icon:"🟢",description:"This card's cooldown is permanently reduced to 12 hours.",cooldownHours:12,battleEffect:{type:"power_bonus",value:5}},
+    ],
+  },
+  geography:{
+    common:[
+      {name:"State Pride",icon:"🏳️",description:"Reveals the Region of today's target state.",cooldownHours:24,battleEffect:{type:"power_bonus",value:3}},
+      {name:"Compass Rose",icon:"🧭",description:"Reveals the Direction clue for today's answer.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+      {name:"Border Crossing",icon:"🛤️",description:"Reveals whether today's state is Coastal, Inland, or Great Lakes.",cooldownHours:24,battleEffect:{type:"power_bonus",value:3}},
+      {name:"Capital Knowledge",icon:"🏛️",description:"Reveals the Population tier of today's answer.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+    ],
+    uncommon:[
+      {name:"Regional Expert",icon:"🗺️",description:"Reveals both Region AND Coast of today's answer.",cooldownHours:28,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Census Data",icon:"📊",description:"Reveals the exact population tier and direction together.",cooldownHours:24,battleEffect:{type:"power_bonus",value:5}},
+      {name:"Time Zone",icon:"🕐",description:"Eliminates all states outside the correct time zone.",cooldownHours:32,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Weather Pattern",icon:"🌤️",description:"Reveals Sun Belt, Rust Belt, or neither.",cooldownHours:24,battleEffect:{type:"power_bonus",value:5}},
+    ],
+  },
+  sports:{
+    common:[
+      {name:"Home Game",icon:"🏟️",description:"+5 battle power. Home field advantage, nothing fancy.",cooldownHours:24,battleEffect:{type:"power_bonus",value:5}},
+      {name:"Fan Base",icon:"📣",description:"Reveals the Conference (AFC/NFC) of today's answer.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+      {name:"Division Rival",icon:"⚔️",description:"Reveals the Division of today's target team.",cooldownHours:24,battleEffect:{type:"power_bonus",value:4}},
+      {name:"Draft Pick",icon:"📝",description:"Reveals the founding decade of today's franchise.",cooldownHours:24,battleEffect:{type:"power_bonus",value:3}},
+    ],
+    uncommon:[
+      {name:"Film Room",icon:"📽️",description:"Reveals Conference AND Division before guessing.",cooldownHours:28,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Championship Pedigree",icon:"🏆",description:"Reveals how many championships today's team has won.",cooldownHours:32,battleEffect:{type:"power_bonus",value:6}},
+      {name:"Market Size",icon:"📈",description:"Reveals major, medium, or small market.",cooldownHours:24,battleEffect:{type:"power_bonus",value:5}},
+      {name:"Rivalry Week",icon:"🔥",description:"Extra guess AND reveals the geographic region.",cooldownHours:36,battleEffect:{type:"power_bonus",value:7}},
+    ],
+  },
+};
+
+function getUnique(name,gameType){
+  if(gameType==="dc")     return DC_UNIQUE[name]||null;
+  if(gameType==="states") return STATE_UNIQUE[name]||null;
+  if(gameType==="nfl")    return NFL_UNIQUE[name]||null;
+  return null;
+}
+function rollRarity(diff="medium"){
+  const r=DROP_RATES[diff]||DROP_RATES.medium,roll=Math.random()*100;let c=0;
+  for(const[id,w]of Object.entries(r)){c+=w;if(roll<c)return id;}return"common";
+}
+function getFallback(gameType,rarityId){
+  const pool=(FALLBACKS[CARD_TYPE[gameType]]||FALLBACKS.transit)[rarityId==="uncommon"?"uncommon":"common"];
+  const b=pool[Math.floor(Math.random()*pool.length)];
+  return{...b,id:b.name.toLowerCase().replace(/\s+/g,"-"),type:"hint"};
+}
+function calcPower(rarityId,unique){
+  const base={common:12,uncommon:30,rare:55,legendary:78}[rarityId]||12;
+  return Math.min(100,base+Math.floor(Math.random()*18)+(unique?6:0));
+}
+function generateCard(name,gameType,difficulty="medium",extraMeta={}){
+  const u=getUnique(name,gameType);
+  const rarityId=u?u.rarity:rollRarity(difficulty);
+  const rarity=RARITY[rarityId.toUpperCase()]||RARITY.COMMON;
+  const ability=u?{...u.ability,id:u.ability.name.toLowerCase().replace(/\s+/g,"-")}:getFallback(gameType,rarityId);
+  return{
+    id:`${gameType}-${name.toLowerCase().replace(/\s+/g,"-")}-${Date.now()}-${Math.random().toString(36).slice(2,5)}`,
+    name,gameType,cardType:CARD_TYPE[gameType]||"transit",rarityId,rarity,ability,
+    power:calcPower(rarityId,!!u),meta:extraMeta,
+    earnedAt:new Date().toISOString(),powerupUsedAt:null,isUnique:!!u,
+  };
+}
+function scoreDeck(cards){
+  if(!cards?.length)return 0;
+  return cards.reduce((s,c)=>s+c.power+({common:0,uncommon:5,rare:15,legendary:30}[c.rarityId]||0),0);
+}
+function simulateBattle(pDeck,oDeck,streak=0){
+  const rounds=[];let pW=0,oW=0,pCarry=0;
+  let pd=[...pDeck],od=[...oDeck];
+  // Pre-battle effects
+  if(pd.find(c=>c.name==="California"))   pd=pd.map(c=>c.rarityId==="legendary"?{...c,power:c.power+10}:c);
+  if(od.find(c=>c.name==="Green Bay Packers")) pd=pd.map(c=>({...c,power:Math.max(1,c.power-12)}));
+  if(od.find(c=>c.name==="California"))   od=od.map(c=>c.rarityId==="legendary"?{...c,power:c.power+10}:c);
+  if(pd.find(c=>c.name==="Green Bay Packers")) od=od.map(c=>({...c,power:Math.max(1,c.power-12)}));
+  pd=pd.map(c=>c.name==="Colorado"&&c.gameType==="states"?{...c,power:c.power+streak*2}:c);
+  if(pd.find(c=>c.name==="Dallas Cowboys")) pd=[...pd].sort((a,b)=>b.power-a.power);
+  const pAutoWin=new Set();
+  pd.forEach(c=>{
+    if(c.name==="San Francisco 49ers"||c.name==="New York")pAutoWin.add(0);
+    if(c.name==="New York")pAutoWin.add(4);
+  });
+  const pAbilLocked=!!(od.find(c=>c.name==="Capitol South"||c.name==="Pittsburgh Steelers"));
+  const oAbilLocked=!!(pd.find(c=>c.name==="Capitol South"||c.name==="Pittsburgh Steelers"));
+  const pImmune=!!pd.find(c=>c.name==="Texas"&&c.gameType==="states");
+  // Disable top card
+  if(pd.find(c=>c.name==="Illinois"||c.name==="Pentagon")&&!pImmune){
+    const top=[...od].sort((a,b)=>b.power-a.power)[0];
+    if(top)od=od.map(c=>c.id===top.id?{...c,power:0,disabled:true}:c);
+  }
+  const max=Math.max(pd.length,od.length);
+  for(let i=0;i<max;i++){
+    const pC=pd[i],oC=od[i];
+    const mod=ROUND_MODIFIERS[Math.floor(Math.random()*ROUND_MODIFIERS.length)];
+    if(!pC&&!oC)continue;
+    if(!pC){oW++;rounds.push({winner:"opponent",pCard:null,oCard:oC,modifier:mod});continue;}
+    if(!oC){pW++;rounds.push({winner:"player",pCard:pC,oCard:null,modifier:mod});continue;}
+    if(pAutoWin.has(i)){pW++;rounds.push({winner:"player",pCard:pC,oCard:oC,pScore:pC.power,oScore:oC.power,modifier:mod,note:"⭐ Auto-win"});continue;}
+    if(mod.effect==="coin_flip"){const w=Math.random()>.5?"player":"opponent";if(w==="player")pW++;else oW++;rounds.push({winner:w,pCard:pC,oCard:oC,pScore:pC.power,oScore:oC.power,modifier:mod,note:"🎲 Coin flip!"});continue;}
+    let ps=pC.power+pCarry+(Math.random()*12),os=oC.power+(Math.random()*12);pCarry=0;
+    if(mod.effect==="double_power"){ps*=2;os*=2;}
+    if(mod.effect==="transit_boost"){if(pC.cardType==="transit")ps+=20;if(oC.cardType==="transit")os+=20;}
+    const pT=pC.cardType,oT=oC.cardType;
+    if(TYPE_ADVANTAGE[pT]?.beats===oT)ps*=TYPE_ADVANTAGE[pT].bonus;
+    if(TYPE_ADVANTAGE[oT]?.beats===pT)os*=TYPE_ADVANTAGE[oT].bonus;
+    if(!pAbilLocked&&!pImmune){
+      const be=pC.ability?.battleEffect;
+      if(be?.type==="random_bonus")ps+=be.min+Math.random()*(be.max-be.min);
+      if(be?.type==="deck_bonus")ps+=pd.length>=5?be.value:(pd.length<3?-5:0);
+      if(be?.type==="loss_scaling")ps+=oW*be.value;
+      if(be?.type==="comeback_scaling")ps+=Math.max(0,oW-pW)*be.value;
+      if(be?.type==="comeback_bonus"&&(oW-pW)>=be.threshold)ps+=be.value;
+      if(be?.type==="counter_double"&&ps>os)pCarry=(ps-os)*2;
+      if(be?.type==="regen"&&ps<os)pCarry=be.value;
+      if(be?.type==="early_boost"&&be.rounds?.includes(i))ps+=be.value;
+      if(be?.type==="steal_power"&&i===0){const top=[...od].sort((a,b)=>b.power-a.power)[0];if(top)ps+=top.power;}
+      if(be?.type==="streak_scaling")ps+=streak*be.value;
+      if(pC.name==="Kansas City Chiefs"&&i<2)ps+=18;
+    }
+    if(!oAbilLocked){
+      const be=oC.ability?.battleEffect;
+      if(be?.type==="random_bonus")os+=be.min+Math.random()*(be.max-be.min);
+      if(be?.type==="loss_scaling")os+=pW*be.value;
+      if(be?.type==="comeback_scaling")os+=Math.max(0,pW-oW)*be.value;
+      if(be?.type==="comeback_bonus"&&(pW-oW)>=be.threshold)os+=be.value;
+      if(be?.type==="early_boost"&&be.rounds?.includes(i))os+=be.value;
+      if(oC.name==="Kansas City Chiefs"&&i<2)os+=18;
+    }
+    const fp=Math.round(ps),fo=Math.round(os),w=fp>=fo?"player":"opponent";
+    if(w==="player")pW++;else oW++;
+    const typeNote=TYPE_ADVANTAGE[pT]?.beats===oT?`⚡ ${pT} beats ${oT}`:TYPE_ADVANTAGE[oT]?.beats===pT?`⚡ Opponent type advantage`:null;
+    rounds.push({winner:w,pCard:pC,oCard:oC,pScore:fp,oScore:fo,modifier:mod,note:typeNote});
+  }
+  const dynBonus=pd.find(c=>c.name==="New England Patriots")&&pW>=3?25:0;
+  return{winner:pW>=oW?"player":"opponent",playerWins:pW,opponentWins:oW,playerScore:scoreDeck(pd)+dynBonus,opponentScore:scoreDeck(od),rounds,dynastyBonus:dynBonus};
+}
+function canUsePowerup(c){if(!c.powerupUsedAt)return true;return(Date.now()-new Date(c.powerupUsedAt).getTime())>=(c.ability?.cooldownHours||24)*3600000;}
+function markPowerupUsed(c){return{...c,powerupUsedAt:new Date().toISOString()};}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UI COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const BG="#f4f5f7",CARD="#ffffff",CARD2="#f0f0f4";
+const BORDER="rgba(0,0,0,.08)",TXT="#111",TXT2="rgba(0,0,0,.55)",TXT3="rgba(0,0,0,.28)";
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+function rarityGrad(id){return({common:"linear-gradient(135deg,#1a1a1a,#2a2a2a)",uncommon:"linear-gradient(135deg,#0a1a35,#0d2a55)",rare:"linear-gradient(135deg,#1a0a30,#2d0d50)",legendary:"linear-gradient(135deg,#1a1400,#332800)"})[id]||"linear-gradient(135deg,#1a1a1a,#2a2a2a)";}
+
+function CardVisual({card,size="md",onClick,selected,disabled}){
+  const r=RARITY[card.rarityId?.toUpperCase()]||RARITY.COMMON;
+  const g=GAME_CONFIG[card.gameType]||GAME_CONFIG.dc;
+  const D={sm:{w:92,h:122,icon:26,nm:7},md:{w:132,h:178,icon:36,nm:9},lg:{w:162,h:218,icon:46,nm:10}}[size]||{w:132,h:178,icon:36,nm:9};
+  return(
+    <div onClick={disabled?undefined:onClick} style={{width:D.w,height:D.h,borderRadius:10,flexShrink:0,background:rarityGrad(card.rarityId),border:`1.5px solid ${selected?"#fff":r.color}`,boxShadow:selected?`0 0 0 2px #fff,0 0 20px ${r.glow}`:`0 0 10px ${r.glow}`,cursor:disabled?"default":"pointer",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative",transition:"transform .18s",transform:selected?"scale(1.06)":"scale(1)",opacity:disabled?.4:1}}>
+      <div style={{height:3,background:r.color,flexShrink:0}}/>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:size==="sm"?"3px 5px":"5px 8px",flexShrink:0}}>
+        <span style={{fontSize:size==="sm"?11:14}}>{g.emoji}</span>
+        <span style={{fontSize:size==="sm"?6:7.5,fontWeight:700,color:r.color,letterSpacing:.5}}>{r.label.toUpperCase()}</span>
+      </div>
+      <div style={{position:"absolute",top:size==="sm"?16:22,right:size==="sm"?5:8,background:r.color+"33",border:`1px solid ${r.color}55`,borderRadius:6,padding:size==="sm"?"2px 5px":"3px 7px",fontSize:size==="sm"?8:10,fontWeight:700,color:r.color}}>{card.power}</div>
+      <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",fontSize:D.icon,background:`radial-gradient(ellipse at center,${r.color}15 0%,transparent 70%)`}}>{card.ability?.icon||"🃏"}</div>
+      <div style={{padding:size==="sm"?"3px 5px":"5px 8px",flexShrink:0,background:"rgba(0,0,0,.4)",borderTop:`1px solid ${r.color}33`}}>
+        <div style={{fontSize:D.nm,fontWeight:700,color:"#fff",lineHeight:1.25,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{card.name}</div>
+        {size!=="sm"&&<div style={{fontSize:7,color:"rgba(255,255,255,.4)",marginTop:1}}>{g.label}</div>}
+      </div>
+      {size!=="sm"&&card.ability&&(
+        <div style={{padding:"3px 8px 5px",flexShrink:0,background:"rgba(0,0,0,.5)"}}>
+          <div style={{fontSize:7.5,color:r.color,fontWeight:700,letterSpacing:.3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{card.ability.icon} {card.ability.name}</div>
+        </div>
+      )}
+      {card.isUnique&&size!=="sm"&&<div style={{position:"absolute",top:6,left:8,fontSize:7,color:"#c8a800",fontWeight:700,letterSpacing:.5}}>UNIQUE</div>}
+    </div>
+  );
+}
+
+function PackOpening({card,onDone}){
+  const[phase,setPhase]=useState("closed");
+  const r=RARITY[card?.rarityId?.toUpperCase()]||RARITY.COMMON;
+  useEffect(()=>{async function go(){await sleep(400);setPhase("shaking");await sleep(900);setPhase("open");await sleep(500);setPhase("reveal");}go();},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.93)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:999,gap:24}}>
+      <style>{`@keyframes cS{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.06)}}@keyframes cR{0%{opacity:0;transform:scale(.5) rotateY(90deg)}60%{transform:scale(1.1) rotateY(-5deg)}100%{opacity:1;transform:scale(1)}}`}</style>
+      {phase!=="reveal"&&<div style={{width:120,height:160,borderRadius:14,background:"linear-gradient(135deg,#1a1a2e,#16213e)",border:`2px solid ${r.color}`,boxShadow:`0 0 40px ${r.glow}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:60,animation:phase==="shaking"?"cS .18s infinite":"none"}}>🃏</div>}
+      {phase==="reveal"&&<div style={{animation:"cR .55s ease both"}}><CardVisual card={card} size="lg"/></div>}
+      <div style={{textAlign:"center"}}>
+        {(phase==="closed"||phase==="shaking")&&<div style={{color:"rgba(255,255,255,.5)",fontSize:12,letterSpacing:3}}>OPENING PACK...</div>}
+        {phase==="open"&&<div style={{color:r.color,fontSize:13,fontWeight:700,letterSpacing:2}}>YOU GOT A CARD!</div>}
+        {phase==="reveal"&&<div style={{textAlign:"center"}}>
+          <div style={{fontSize:16,fontWeight:700,color:r.color}}>{card.name}</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,.5)",marginTop:4}}>{r.label} · Power {card.power}{card.isUnique?" · ✦ UNIQUE":""}</div>
+          <div style={{fontSize:12,color:r.color,marginTop:6}}>{card.ability?.icon} {card.ability?.name}</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,.35)",marginTop:6,maxWidth:260,lineHeight:1.7,textAlign:"center"}}>{card.ability?.description}</div>
+          {card.ability?.battleEffect?.desc&&<div style={{fontSize:9,color:"rgba(255,255,255,.25)",marginTop:4,letterSpacing:.5}}>⚔️ {card.ability.battleEffect.desc}</div>}
+        </div>}
+      </div>
+      {phase==="reveal"&&<button onClick={onDone} style={{background:r.color,border:"none",borderRadius:10,padding:"12px 32px",color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:2,fontFamily:"'JetBrains Mono',monospace"}}>ADD TO COLLECTION</button>}
+    </div>
+  );
+}
+
+function CardDetail({card,onClose,onUsePowerup,inDeck,onToggleDeck}){
+  if(!card)return null;
+  const r=RARITY[card.rarityId?.toUpperCase()]||RARITY.COMMON;
+  const g=GAME_CONFIG[card.gameType]||GAME_CONFIG.dc;
+  const canUse=canUsePowerup(card);
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:900,padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:CARD,border:`1.5px solid ${r.color}`,borderRadius:16,padding:24,width:"100%",maxWidth:340,boxShadow:`0 0 40px ${r.glow}`,maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{display:"flex",gap:14,marginBottom:18}}>
+          <CardVisual card={card} size="md"/>
+          <div style={{flex:1}}>
+            <div style={{fontSize:15,fontWeight:700,color:TXT,marginBottom:3,lineHeight:1.3}}>{card.name}</div>
+            <div style={{fontSize:10,color:TXT3,marginBottom:8}}>{g.emoji} {g.label}</div>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:6}}>
+              <span style={{background:r.color+"20",border:`1px solid ${r.color}40`,color:r.color,borderRadius:4,padding:"2px 7px",fontSize:9,fontWeight:700}}>{r.label}{card.isUnique?" · UNIQUE":""}</span>
+              <span style={{background:"rgba(0,0,0,.06)",border:`1px solid ${BORDER}`,color:TXT2,borderRadius:4,padding:"2px 7px",fontSize:9}}>PWR {card.power}</span>
+            </div>
+            <div style={{fontSize:9,color:TXT3}}>⚡ {CARD_TYPE[card.gameType]} type</div>
+            {card.meta&&Object.entries(card.meta).map(([k,v])=><div key={k} style={{fontSize:9,color:TXT3,lineHeight:1.8}}><span style={{color:TXT2,fontWeight:700}}>{k.toUpperCase()}: </span>{v}</div>)}
+          </div>
+        </div>
+        <div style={{background:"#f8f8fc",border:`1px solid ${BORDER}`,borderRadius:10,padding:14,marginBottom:14}}>
+          <div style={{fontSize:9,color:TXT3,letterSpacing:2,marginBottom:6}}>ABILITY</div>
+          <div style={{fontSize:13,fontWeight:700,color:r.color,marginBottom:5}}>{card.ability?.icon} {card.ability?.name}</div>
+          <div style={{fontSize:11,color:TXT2,lineHeight:1.7,marginBottom:8}}>{card.ability?.description}</div>
+          {card.ability?.battleEffect?.desc&&<div style={{fontSize:9,color:TXT3,fontWeight:700,letterSpacing:.5}}>⚔️ BATTLE: {card.ability.battleEffect.desc}</div>}
+          <div style={{fontSize:9,color:TXT3,marginTop:6}}>Cooldown: {card.ability?.cooldownHours}h{!canUse&&<span style={{color:"#c43030"}}> · On cooldown</span>}</div>
+        </div>
+        <div style={{display:"flex",gap:8,flexDirection:"column"}}>
+          <button onClick={canUse?onUsePowerup:undefined} disabled={!canUse} style={{background:canUse?r.color:"rgba(0,0,0,.06)",border:`1px solid ${canUse?r.color:BORDER}`,borderRadius:10,padding:"11px",color:canUse?"#fff":TXT3,fontSize:11,fontWeight:700,cursor:canUse?"pointer":"not-allowed",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>
+            {canUse?`${card.ability?.icon} USE POWER-UP`:"⏳ ON COOLDOWN"}
+          </button>
+          <button onClick={onToggleDeck} style={{background:inDeck?"rgba(196,48,48,.08)":"rgba(40,176,80,.08)",border:`1px solid ${inDeck?"#c43030":"#28b050"}`,borderRadius:10,padding:"11px",color:inDeck?"#c43030":"#28b050",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>
+            {inDeck?"− REMOVE FROM DECK":"+ ADD TO BATTLE DECK"}
+          </button>
+          <button onClick={onClose} style={{background:"transparent",border:`1px solid ${BORDER}`,borderRadius:10,padding:"11px",color:TXT3,fontSize:11,cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>CLOSE</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CollectionScreen({collection,onSelectCard}){
+  const[rf,setRf]=useState("all");
+  const[gf,setGf]=useState("all");
+  const filtered=[...collection].filter(c=>(rf==="all"||c.rarityId===rf)&&(gf==="all"||c.gameType===gf)).sort((a,b)=>({legendary:0,rare:1,uncommon:2,common:3}[a.rarityId]||3)-({legendary:0,rare:1,uncommon:2,common:3}[b.rarityId]||3));
+  return(
+    <div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:14}}>
+        {["legendary","rare","uncommon","common"].map(r=>{
+          const col=RARITY[r.toUpperCase()]?.color||"#555";
+          return <div key={r} style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px 6px",textAlign:"center",boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+            <div style={{fontSize:20,fontWeight:700,color:col,lineHeight:1}}>{collection.filter(c=>c.rarityId===r).length}</div>
+            <div style={{fontSize:6.5,color:TXT3,letterSpacing:1,marginTop:2,textTransform:"uppercase"}}>{r}</div>
+          </div>;
+        })}
+      </div>
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4,marginBottom:8}}>
+        {["all","legendary","rare","uncommon","common"].map(r=>{const col=r==="all"?TXT2:RARITY[r.toUpperCase()]?.color||TXT3;return <div key={r} onClick={()=>setRf(r)} style={{background:rf===r?col+"15":"rgba(0,0,0,.04)",border:`1px solid ${rf===r?col:BORDER}`,borderRadius:16,padding:"5px 12px",fontSize:10,color:rf===r?col:TXT3,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,fontWeight:700,transition:"all .15s"}}>{r==="all"?"All":RARITY[r.toUpperCase()]?.label}</div>;})}
+      </div>
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4,marginBottom:14}}>
+        {["all",...Object.keys(GAME_CONFIG)].map(g=><div key={g} onClick={()=>setGf(g)} style={{background:gf===g?"rgba(0,0,0,.1)":"rgba(0,0,0,.03)",border:`1px solid ${gf===g?"rgba(0,0,0,.2)":BORDER}`,borderRadius:16,padding:"5px 12px",fontSize:10,color:gf===g?TXT:TXT3,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,transition:"all .15s"}}>{g==="all"?"All Games":GAME_CONFIG[g].emoji+" "+GAME_CONFIG[g].label}</div>)}
+      </div>
+      {filtered.length===0?(
+        <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:32,textAlign:"center",boxShadow:"0 1px 6px rgba(0,0,0,.06)"}}>
+          <div style={{fontSize:40,marginBottom:12}}>🃏</div>
+          <div style={{fontSize:12,color:TXT2,marginBottom:6}}>No cards yet</div>
+          <div style={{fontSize:11,color:TXT3,lineHeight:1.8}}>Complete a daily puzzle to earn cards. Try Pro difficulty for Legendary drops.</div>
+        </div>
+      ):<div style={{display:"flex",flexWrap:"wrap",gap:10}}>{filtered.map(c=><CardVisual key={c.id} card={c} size="md" onClick={()=>onSelectCard(c)}/>)}</div>}
+    </div>
+  );
+}
+
+function PowerupsScreen({collection,onUsePowerup}){
+  const ready=collection.filter(c=>canUsePowerup(c));
+  const onCD=collection.filter(c=>!canUsePowerup(c));
+  const Row=({card,active})=>{
+    const r=RARITY[card.rarityId?.toUpperCase()]||RARITY.COMMON;
+    return <div style={{background:CARD,border:`1px solid ${active?r.color+"40":BORDER}`,borderRadius:12,padding:14,display:"flex",gap:12,alignItems:"center",marginBottom:8,opacity:active?1:.55,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <CardVisual card={card} size="sm"/>
+      <div style={{flex:1}}>
+        <div style={{fontSize:12,fontWeight:700,color:TXT,marginBottom:2}}>{card.name}</div>
+        <div style={{fontSize:10,color:r.color,marginBottom:4,fontWeight:700}}>{card.ability?.icon} {card.ability?.name}</div>
+        <div style={{fontSize:10,color:TXT3,lineHeight:1.6,marginBottom:4}}>{card.ability?.description}</div>
+        {card.ability?.battleEffect?.desc&&<div style={{fontSize:8,color:TXT3,letterSpacing:.5}}>⚔️ {card.ability.battleEffect.desc}</div>}
+      </div>
+      {active
+        ?<button onClick={()=>onUsePowerup(card)} style={{background:r.color,border:"none",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>USE</button>
+        :<div style={{fontSize:9,color:"#c43030",flexShrink:0}}>⏳ {card.ability?.cooldownHours}h CD</div>
+      }
+    </div>;
+  };
+  return <div>
+    <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:14,marginBottom:16,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <div style={{fontSize:8,color:TXT3,letterSpacing:3,marginBottom:4}}>HOW POWER-UPS WORK</div>
+      <div style={{fontSize:11,color:TXT2,lineHeight:1.8}}>Activate a card before starting a puzzle to apply its ability. Each card has a cooldown after use. Unique cards have abilities tied to their real identity.</div>
+    </div>
+    {!ready.length&&!onCD.length&&<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:28,textAlign:"center"}}><div style={{fontSize:30,marginBottom:8}}>🃏</div><div style={{fontSize:11,color:TXT3}}>No cards yet. Complete a puzzle to earn your first card.</div></div>}
+    {ready.length>0&&<><div style={{fontSize:8,color:"#28b050",letterSpacing:3,marginBottom:10}}>READY TO USE ({ready.length})</div>{ready.map(c=><Row key={c.id} card={c} active={true}/>)}</>}
+    {onCD.length>0&&<><div style={{fontSize:8,color:TXT3,letterSpacing:3,marginBottom:10,marginTop:8}}>ON COOLDOWN ({onCD.length})</div>{onCD.map(c=><Row key={c.id} card={c} active={false}/>)}</>}
+  </div>;
+}
+
+function BattleScreen({collection,deck,onUpdateDeck}){
+  const[result,setResult]=useState(null);
+  const[battling,setBattling]=useState(false);
+  const[phase,setPhase]=useState("setup");
+  const MAX=5;
+  const tog=c=>{if(deck.find(x=>x.id===c.id))onUpdateDeck(deck.filter(x=>x.id!==c.id));else if(deck.length<MAX)onUpdateDeck([...deck,c]);};
+  async function battle(){
+    if(!deck.length)return;
+    setBattling(true);setPhase("battling");
+    const pool=collection.filter(c=>!deck.find(d=>d.id===c.id));
+    const opp=pool.sort(()=>Math.random()-.5).slice(0,5);
+    await sleep(1800);
+    setResult(simulateBattle(deck,opp.length?opp:deck));
+    setPhase("result");setBattling(false);
+  }
+  const typeRow=(pC,oC)=>{
+    if(!pC||!oC)return null;
+    const pt=pC.cardType,ot=oC.cardType;
+    if(TYPE_ADVANTAGE[pt]?.beats===ot)return <span style={{color:"#28b050",fontSize:9}}>⚡ {pt} beats {ot}</span>;
+    if(TYPE_ADVANTAGE[ot]?.beats===pt)return <span style={{color:"#c43030",fontSize:9}}>⚡ Opponent advantage</span>;
+    return null;
+  };
+  return <div>
+    <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:16,marginBottom:14,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+        <div>
+          <div style={{fontSize:8,color:TXT3,letterSpacing:3,marginBottom:2}}>BATTLE DECK</div>
+          <div style={{fontSize:11,color:TXT2}}>{deck.length}/{MAX} cards · Power {scoreDeck(deck)}</div>
+        </div>
+        <button onClick={battle} disabled={!deck.length||battling} style={{background:deck.length?"#c43030":"rgba(0,0,0,.06)",border:"none",borderRadius:8,padding:"10px 18px",color:deck.length?"#fff":TXT3,fontSize:11,fontWeight:700,cursor:deck.length?"pointer":"not-allowed",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>{battling?"BATTLING...":"⚔️ BATTLE"}</button>
+      </div>
+      <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
+        {deck.map(c=><CardVisual key={c.id} card={c} size="sm" onClick={()=>tog(c)}/>)}
+        {Array.from({length:MAX-deck.length}).map((_,i)=><div key={i} style={{width:92,height:122,borderRadius:10,flexShrink:0,border:`1.5px dashed ${BORDER}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:TXT3}}>+</div>)}
+      </div>
+    </div>
+
+    {phase==="battling"&&<div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:24,textAlign:"center",marginBottom:14}}>
+      <div style={{fontSize:30,marginBottom:10}}>⚔️</div>
+      <div style={{fontSize:12,color:TXT2,letterSpacing:2}}>BATTLE IN PROGRESS...</div>
+    </div>}
+
+    {phase==="result"&&result&&<div style={{background:CARD,border:`1px solid ${result.winner==="player"?"#28b050":"#c43030"}`,borderRadius:12,padding:20,marginBottom:14,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <div style={{textAlign:"center",marginBottom:16}}>
+        <div style={{fontSize:32,marginBottom:6}}>{result.winner==="player"?"🏆":"💀"}</div>
+        <div style={{fontSize:18,fontWeight:700,color:result.winner==="player"?"#28b050":"#c43030",marginBottom:4}}>{result.winner==="player"?"VICTORY!":"DEFEATED"}</div>
+        <div style={{fontSize:11,color:TXT2}}>Your Power {result.playerScore} · Opponent {result.opponentScore}</div>
+        {result.dynastyBonus>0&&<div style={{fontSize:10,color:"#c8a800",marginTop:4}}>🏆 Dynasty bonus +{result.dynastyBonus}!</div>}
+      </div>
+      {result.rounds.map((r,i)=>(
+        <div key={i} style={{background:"#f8f8fc",borderRadius:8,padding:"8px 12px",marginBottom:5,border:`1px solid ${BORDER}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+            <div style={{fontSize:8,color:TXT3,width:16,flexShrink:0}}>R{i+1}</div>
+            <div style={{flex:1,fontSize:10,color:TXT,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.pCard?.name||"—"}</div>
+            <div style={{fontSize:11,color:r.winner==="player"?"#28b050":"#c43030",fontWeight:700,flexShrink:0}}>{r.winner==="player"?"WIN":"LOSS"}</div>
+            <div style={{flex:1,fontSize:10,color:TXT,fontWeight:700,textAlign:"right",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.oCard?.name||"—"}</div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{fontSize:9,color:TXT3}}>{r.pScore||"—"}</div>
+            <div style={{display:"flex",gap:6,alignItems:"center"}}>
+              {r.modifier?.effect!=="none"&&<span style={{fontSize:8,color:"#7B2FBE",fontWeight:700}}>{r.modifier?.label}</span>}
+              {r.note&&<span style={{fontSize:8,color:"#0060A9"}}>{r.note}</span>}
+            </div>
+            <div style={{fontSize:9,color:TXT3}}>{r.oScore||"—"}</div>
+          </div>
+        </div>
+      ))}
+      <button onClick={()=>setPhase("setup")} style={{width:"100%",background:"rgba(0,0,0,.05)",border:`1px solid ${BORDER}`,borderRadius:10,padding:"10px",color:TXT2,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1,marginTop:12}}>BATTLE AGAIN</button>
+    </div>}
+
+    <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:12,padding:16,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+      <div style={{fontSize:8,color:TXT3,letterSpacing:3,marginBottom:4}}>YOUR COLLECTION</div>
+      <div style={{fontSize:9,color:TXT3,marginBottom:12}}>⚡ Transit beats 🗺️ Geography · 🗺️ Geography beats 🏈 Sports · 🏈 Sports beats ⚡ Transit</div>
+      {!collection.length?<div style={{textAlign:"center",padding:"16px 0",color:TXT3,fontSize:11}}>Earn cards by completing puzzles first.</div>
+        :<div style={{display:"flex",flexWrap:"wrap",gap:8}}>{collection.map(c=><CardVisual key={c.id} card={c} size="sm" selected={!!deck.find(x=>x.id===c.id)} disabled={!deck.find(x=>x.id===c.id)&&deck.length>=MAX} onClick={()=>tog(c)}/>)}</div>}
+    </div>
+  </div>;
+}
+
+function CardSystem({pendingCard,onClearPending,onActivatePowerup}){
+  const[tab,setTab]=useState("collection");
+  const[col,setCol]=useState([]);
+  const[deck,setDeck]=useState([]);
+  const[loaded,setLoaded]=useState(false);
+  const[sel,setSel]=useState(null);
+  const[showPack,setShowPack]=useState(false);
+  const[revealCard,setRevealCard]=useState(null);
+
+  useEffect(()=>{async function load(){try{const[cr,dr]=await Promise.all([window.storage.get(STORAGE_KEYS.collection),window.storage.get(STORAGE_KEYS.deck)]);if(cr?.value)setCol(JSON.parse(cr.value));if(dr?.value)setDeck(JSON.parse(dr.value));}catch(e){}setLoaded(true);}load();},[]);
+  useEffect(()=>{if(!loaded)return;window.storage.set(STORAGE_KEYS.collection,JSON.stringify(col)).catch(()=>{});},[col,loaded]);
+  useEffect(()=>{if(!loaded)return;window.storage.set(STORAGE_KEYS.deck,JSON.stringify(deck)).catch(()=>{});},[deck,loaded]);
+  useEffect(()=>{if(pendingCard&&loaded){setRevealCard(pendingCard);setShowPack(true);}},[pendingCard,loaded]);
+
+  function packDone(){if(revealCard)setCol(p=>[...p,revealCard]);setShowPack(false);setRevealCard(null);if(onClearPending)onClearPending();}
+  function usePowerup(card){setCol(p=>p.map(c=>c.id===card.id?markPowerupUsed(c):c));setSel(null);if(onActivatePowerup)onActivatePowerup(card.ability?.id,card);}
+  function toggleDeck(card){if(deck.find(c=>c.id===card.id))setDeck(p=>p.filter(c=>c.id!==card.id));else if(deck.length<5)setDeck(p=>[...p,card]);setSel(null);}
+
+  if(!loaded)return <div style={{background:BG,minHeight:"100%",display:"flex",alignItems:"center",justifyContent:"center",color:TXT3,fontSize:12,fontFamily:"'JetBrains Mono',monospace"}}>Loading cards...</div>;
+
+  const TABS=[{id:"collection",icon:"📦",label:"Collection"},{id:"powerups",icon:"⚡",label:"Power-Ups"},{id:"battle",icon:"⚔️",label:"Battle"}];
+  return(
+    <div style={{background:BG,minHeight:"100%",fontFamily:"'JetBrains Mono',monospace",color:TXT,paddingBottom:60}}>
+      <div style={{padding:"14px 16px 12px",borderBottom:`1px solid ${BORDER}`,display:"flex",alignItems:"center",justifyContent:"space-between",background:CARD,boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+        <div>
+          <div style={{fontSize:16,fontWeight:700,color:TXT,letterSpacing:1}}>🃏 Card Collection</div>
+          <div style={{fontSize:8,color:TXT3,letterSpacing:3,marginTop:2}}>{col.length} CARDS · {col.filter(c=>c.rarityId==="legendary").length} LEGENDARY · {col.filter(c=>c.isUnique).length} UNIQUE</div>
+        </div>
+        <div style={{textAlign:"right"}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#c8a800"}}>{col.filter(c=>c.rarityId==="legendary").length} ✦</div>
+          <div style={{fontSize:7,color:TXT3}}>LEGENDARY</div>
+        </div>
+      </div>
+      <div style={{display:"flex",borderBottom:`1px solid ${BORDER}`,background:CARD}}>
+        {TABS.map(t=><div key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"11px 4px",textAlign:"center",cursor:"pointer",borderBottom:`2px solid ${tab===t.id?"#c8a800":"transparent"}`,transition:"all .15s"}}>
+          <div style={{fontSize:16}}>{t.icon}</div>
+          <div style={{fontSize:8,color:tab===t.id?"#c8a800":TXT3,letterSpacing:1,marginTop:2,fontWeight:tab===t.id?700:400}}>{t.label}</div>
+        </div>)}
+      </div>
+      <div style={{padding:"14px 16px"}}>
+        {tab==="collection"&&<CollectionScreen collection={col} onSelectCard={setSel}/>}
+        {tab==="powerups"  &&<PowerupsScreen   collection={col} onUsePowerup={usePowerup}/>}
+        {tab==="battle"    &&<BattleScreen      collection={col} deck={deck} onUpdateDeck={setDeck}/>}
+      </div>
+      {sel&&<CardDetail card={sel} onClose={()=>setSel(null)} onUsePowerup={()=>usePowerup(sel)} inDeck={!!deck.find(c=>c.id===sel.id)} onToggleDeck={()=>toggleDeck(sel)}/>}
+      {showPack&&revealCard&&<PackOpening card={revealCard} onDone={packDone}/>}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DEMO WRAPPER
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DEMO_POOL=[
+  {name:"Metro Center",       gameType:"dc",    diff:"pro",  meta:{lines:"Red,Blue,Orange,Silver,Green",zone:"1"}},
+  {name:"Pentagon",           gameType:"dc",    diff:"pro",  meta:{lines:"Blue,Yellow",zone:"2"}},
+  {name:"Union Station",      gameType:"dc",    diff:"hard", meta:{lines:"Red",zone:"1"}},
+  {name:"Foggy Bottom-GWU",   gameType:"dc",    diff:"hard", meta:{lines:"Blue,Orange,Silver",zone:"1"}},
+  {name:"Gallery Place",      gameType:"dc",    diff:"medium",meta:{lines:"Red,Yellow,Green",zone:"1"}},
+  {name:"Dupont Circle",      gameType:"dc",    diff:"medium",meta:{lines:"Red",zone:"1"}},
+  {name:"Capitol South",      gameType:"dc",    diff:"medium",meta:{lines:"Blue,Orange,Silver",zone:"1"}},
+  {name:"Stadium-Armory",     gameType:"dc",    diff:"easy", meta:{lines:"Blue,Orange,Silver",zone:"2"}},
+  {name:"Waterfront",         gameType:"dc",    diff:"easy", meta:{lines:"Green",zone:"1"}},
+  {name:"California",         gameType:"states",diff:"pro",  meta:{region:"Pacific",coast:"Pacific"}},
+  {name:"Texas",              gameType:"states",diff:"pro",  meta:{region:"South",coast:"Gulf"}},
+  {name:"New York",           gameType:"states",diff:"hard", meta:{region:"Northeast",coast:"Atlantic"}},
+  {name:"Georgia",            gameType:"states",diff:"medium",meta:{region:"Southeast",coast:"Atlantic"}},
+  {name:"Colorado",           gameType:"states",diff:"medium",meta:{region:"West",coast:"Inland"}},
+  {name:"Florida",            gameType:"states",diff:"easy", meta:{region:"Southeast",coast:"Atlantic/Gulf"}},
+  {name:"Dallas Cowboys",     gameType:"nfl",   diff:"pro",  meta:{conf:"NFC",div:"East",sb:"5"}},
+  {name:"New England Patriots",gameType:"nfl",  diff:"pro",  meta:{conf:"AFC",div:"East",sb:"6"}},
+  {name:"Green Bay Packers",  gameType:"nfl",   diff:"hard", meta:{conf:"NFC",div:"North",sb:"4"}},
+  {name:"Kansas City Chiefs", gameType:"nfl",   diff:"hard", meta:{conf:"AFC",div:"West",sb:"4"}},
+  {name:"Philadelphia Eagles",gameType:"nfl",   diff:"medium",meta:{conf:"NFC",div:"East",sb:"1"}},
+  {name:"Chicago Bears",      gameType:"nfl",   diff:"easy", meta:{conf:"NFC",div:"North",sb:"1"}},
+];
+
+export default function Demo(){
+  const[pending,setPending]=useState(null);
+  const[lastPU,setLastPU]=useState(null);
+  const[idx,setIdx]=useState(0);
+  function earnCard(){
+    const s=DEMO_POOL[idx%DEMO_POOL.length];
+    setPending(generateCard(s.name,s.gameType,s.diff,s.meta));
+    setIdx(i=>i+1);
+  }
+  return(
+    <div style={{background:BG,minHeight:"100vh",fontFamily:"'JetBrains Mono',monospace"}}>
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+      <div style={{background:CARD,borderBottom:`1px solid ${BORDER}`,padding:"10px 16px",display:"flex",gap:10,alignItems:"center",justifyContent:"space-between",boxShadow:"0 1px 4px rgba(0,0,0,.06)"}}>
+        <div style={{fontSize:8,color:TXT3,letterSpacing:2}}>PREVIEW · {DEMO_POOL.length} UNIQUE CARDS IN POOL</div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          {lastPU&&<div style={{fontSize:9,color:"#28b050",fontWeight:700}}>⚡ {lastPU} activated!</div>}
+          <button onClick={earnCard} style={{background:"#c8a800",border:"none",borderRadius:8,padding:"8px 16px",color:"#000",fontSize:10,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>
+            🎯 EARN CARD ({DEMO_POOL[idx%DEMO_POOL.length]?.name})
+          </button>
+        </div>
+      </div>
+      <CardSystem pendingCard={pending} onClearPending={()=>setPending(null)} onActivatePowerup={id=>setLastPU(id)}/>
+    </div>
+  );
+}

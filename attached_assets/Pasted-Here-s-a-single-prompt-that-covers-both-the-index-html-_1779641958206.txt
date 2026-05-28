@@ -1,0 +1,62 @@
+Here's a single prompt that covers both the `index.html` fixes and the code audit fixes from the previous conversation:
+
+---
+
+**Prompt:**
+
+I have a React + Vite app called UrbanIQ (`main.tsx`). I need two things done:
+
+---
+
+**PART 1 — Fix `index.html`**
+
+Update my `index.html` with these changes:
+
+1. Replace all instances of `https://guessgame.shop` with `https://urbaniq.quest` in `og:url`, `og:image`, and any Twitter card meta tags.
+2. Add an `apple-touch-icon` link tag referencing `/icon-192.png` directly below the existing favicon link tags:
+```html
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+```
+3. Keep all existing Google Fonts (`Cinzel`, `Inter`, `JetBrains Mono`) and the Vite module script (`<script type="module" src="/src/main.tsx"></script>`) exactly as they are.
+4. After updating, give me a checklist of these four `/public` assets and whether each is present or missing: `favicon.ico`, `icon-192.png`, `og-preview.png`, `manifest.json`.
+
+---
+
+**PART 2 — Fix these bugs in `main.tsx`**
+
+Apply the following targeted fixes, do not rewrite anything unrelated:
+
+1. **`gk` naming collision** — rename the storage helper function `async function gk(k,def)` to `async function getFromStorage(k,def)` and update all its call sites to match.
+
+2. **`rowReveal` memory leak** — in `GameApp`, when `gameKey` or `round` changes, clear stale entries from `rowReveal` state so it doesn't accumulate indefinitely across game switches.
+
+3. **`getWikiImage` hammering** — add a module-level `Map` cache so `CardVisual` only calls the Wikipedia API once per card name, returning the cached result on subsequent mounts.
+
+4. **Chicago duplicate station autocomplete** — in the `normalize()` function used in Blitz mode, preserve parenthetical suffixes like `(Blue Line)` before stripping special characters, so `"Belmont (Blue Line)"` and `"Belmont"` resolve as distinct entries.
+
+5. **`PackOpening` unmount leak** — in the `useEffect` inside `PackOpening`, store all `setTimeout` IDs and clear them in the cleanup function so state updates don't fire on unmounted components.
+
+6. **Dead code removal** — delete the `false&&arcadeCards.map(...)` block in `StartPage`.
+
+7. **`PeekModal` UX** — in the confirm screen (before the user clicks "USE PEEK"), display the exact number of guesses they will have remaining after the penalty is applied, e.g. "You will have 1 guess remaining after peeking."
+
+---
+
+Here is my current `index.html`:
+```html
+[PASTE index.html HERE]
+```
+
+Here is my current `main.tsx`:
+```tsx
+[PASTE main.tsx HERE]
+```
+
+Please output:
+- The complete updated `index.html`
+- Only the changed sections of `main.tsx` with clear comments showing where each fix was applied
+- The `/public` asset checklist
+
+---
+
+That covers everything from both requests in one pass.

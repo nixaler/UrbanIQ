@@ -1,0 +1,65 @@
+Implement all these changes, one by one.
+
+
+Remove the intro welcome/how to video 
+
+Site should start at Home page
+
+Prompt 1: Fix Mobile Navigation Viewport Height
+```text
+
+Look only at our global layout wrapper component and CSS file. Mobile Safari toolbars are slightly pushing our layout or making the bottom tabs feel cramped. I need to update the core layout container to use a fixed viewport height setup (using `min-height: 100dvh` or `height: 100dvh`) and add exactly `padding-bottom: 2.5rem;` to the main scrollable game container so that elements never get clipped or obscured by mobile browser controls. Do not alter any state management, data structures, or game logic.
+
+Prompt 2: Standardize Container Corners & Dark Mode Foundation
+```text
+
+Look only at our global CSS variables and card component classes. I want to standardize the border-radius across every single card component, list item, and data-grid row to a clean, uniform `12px`. Additionally, ensure our light background uses a crisp minimalist grid accent, and set up the CSS variable placeholders for Dark Mode (`--bg-primary`, `--text-main`, `--border-color`) so that switching themes changes colors globally without breaking component layout styles.
+
+Prompt 3: Clean Up Daily Grid Column & Row Contrast
+```text
+
+Look at the Daily Puzzle guessing grid component (where rows show green/yellow/red indicators). Clean up the vertical alignment of the text inside the cells so everything centers perfectly. Change the "Supporters get streak protection" layout: remove the standard text underline and replace it with a clean, high-contrast minimalist badge or a subtle, borders-only status banner directly below the primary stats grid.
+
+
+Phase 2: Onboarding & First-Win Momentum
+
+Prompt 4: Create a Simple 3-Screen Onboarding Flow Component
+```text
+I want to build a simple, minimalist onboarding overlay component that only appears for first-time visitors (check localStorage `has_boarded`). Screen 1: 'Pick your focus' with buttons for Portland, DC, Baltimore, or US States. Screen 2: A quick 3-step visual text tip on how the grid clues work. Screen 3: 'Ready to play.' Make this an elegant, centered modal with a dark semi-transparent backdrop. Only give me the code for this new component and where to call it in the main landing file.
+
+Prompt 5: Auto-Detect/Default City Preference Logic
+```text
+Look at our main landing page state or initialization logic. When a user first loads the app, check if they have a city preference saved in localStorage. If they don't, set their default view focus to bias toward Portland, DC, or Baltimore depending on what we choose. Ensure the game select screen highlights their preferred city network prominently right at the top of the 'Transit' section.
+
+Prompt 6: First-Round Win Card Drop Flag
+```text
+
+Look at the round completion logic and card drop system. We need to implement a 'Momentum Lever': if a user completes their very first daily round successfully, force a guaranteed Card Drop to ensure an immediate reward. Modify the card reward function to check if `total_cards_collected == 0`, and if so, trigger a high-tier or customized starter card drop.
+
+Retention & Streak Protection Loops
+Prompt 7: Implement "Free Daily Play" First-Round Protection
+```text
+
+Look at the puzzle loss/streak reset controller. I want to update the logic so that the first round of any daily puzzle has zero penalty on a loss. If a player fails rounds 1, do not break their current streak. Show a clean popup notification that says: 'Daily Protection Active — Streak Saved! Try the next round.' Breaking streaks should only happen if they lose subsequent un-protected rounds or miss a full day.
+
+
+Prompt 8: Create the "Yesterday's Answer" Teaser Module
+```text
+
+I want to add a tiny 'Yesterday's Answer' teaser panel right at the top of the landing page, just above the active daily challenges. It should read: 'Missed yesterday? [Answer] was on the [Line/Region]...' Fetch the previous day's data block cleanly and display it in a subtle, low-opacity minimalist box that sparks curiosity to click into today's game. Only provide the modifications for this template block.
+
+Phase 4: Share Loops & Niche Viral Mechanics
+
+📋 Prompt 9: Build the "One-Tap" Clipboard Share Text Generator
+```text
+
+Look at the win/completion modal code. Let's upgrade the share button. When tapped, it should copy a beautifully formatted text snippet to the clipboard:
+'I got [Station/State Name] in [X] guesses on UrbanIQ 🏙️ — [City/Category] Day #[DayNum]
+[Insert Green/Yellow/Red emoji block corresponding to their guess history rows]
+Play here: GuessGame.Shop'
+Ensure it works perfectly via the standard Web Share API on iOS Safari, falling back to a standard copy-to-clipboard if unavailable.
+
+Prompt 10: Wire Up Coming Soon Content Pipeline Placeholders
+```text
+
+Look at the game selection menu component. Below our current city options, add two beautifully styled, slightly desaturated card placeholders for 'NYC Subway' and 'Chicago L'. Tag them both with a sleek, tiny purple badge that reads 'Coming Soon'. Add a subtle button on those cards that says 'Vote with Plays' which increments a counter or shows a thank-you micro-toast when clicked. Do not modify any operational city codes.

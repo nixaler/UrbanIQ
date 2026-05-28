@@ -1,0 +1,69 @@
+Here's your full Replit Agent prompt, clean and ready to paste:
+
+---
+
+**REPLIT AGENT PROMPT — TheGuessingGame Full Update**
+
+---
+
+**🔴 CRITICAL BUG FIXES**
+
+1. Fix `TypeError: undefined is not an object (evaluating 'roundData[gameKey][round]')` — this is breaking multiple pages. Audit every instance of `roundData` access and add null/undefined guards before accessing nested properties.
+
+2. Fix the Peek function — hints must be deducted the moment the player presses Peek, not after the answer is revealed. Add a confirmation warning popup before showing the answer. Deduct hint immediately on confirm.
+
+3. Fix the difficulty selector popup — it is off-center on multiple screens. Center it fully, redesign it as a clean interactive button group (Easy / Medium / Hard), and add a "Random Difficulty" button as a fourth option with a shuffle icon.
+
+4. Audit every game page for broken interactions, missing data, and runtime errors. Fix all of them.
+
+---
+
+**🟡 NEW CONTENT — ADD FULL TRANSIT SYSTEMS**
+
+5. Add full **LA Metro** system game with accurate station names, line assignments, zone data, and map locations. Use the same data structure as DC Metro and Baltimore MTA.
+
+6. Add full **Chicago CTA** system game (L Train — Red, Blue, Green, Brown, Orange, Pink, Purple, Yellow lines) with complete station dataset.
+
+7. Add full **NYC MTA Subway** game with complete station dataset across all lines.
+
+8. Rename the LA state game to **"LA Metro"** or **"Metro Rail"** — whatever matches their actual system branding.
+
+---
+
+**🟡 MAIN SCREEN UPDATES**
+
+9. Add LA Metro, Chicago CTA, and NYC MTA to the main screen dropdown selector and game cards. All transit systems must appear in the Transit category.
+
+10. Add a **"Maps & Guides"** button on the main screen. Inside: display official-style route maps for every transit system in the game (DC Metro, Baltimore MTA, Portland MAX, LA Metro, Chicago CTA, NYC MTA). This is a reference tool players can open between games. Make it clean and scrollable.
+
+11. Ensure all games are listed on the main page — no hidden or missing entries.
+
+---
+
+**🟡 GAME FEATURE PARITY**
+
+12. Every game (all transit, geography, NFL, mini games) must have the same core features: streak tracking, leaderboard, hints/peek, difficulty selector, Did You Know facts, Bonus Games section, and round system. Different themes, identical structure.
+
+13. Every station/team/location card must have real images of the actual place being referenced — not placeholders.
+
+14. Every station in every transit game must have a fun facts card with accurate, interesting trivia.
+
+15. Hints must never reveal or reference the actual name of the station, team, or answer being guessed. Audit all hint text across all games and remove any that give away the answer directly.
+
+---
+
+**🟡 UI / ANIMATION UPGRADES**
+
+16. Add the metro line visual as a design element — a visible colored line (matching the transit system's actual line colors) that runs through the game UI as a thematic accent.
+
+17. Add small UI animations throughout: card flips, subtle hover states, smooth dropdown transitions, round progression animations, and score pop effects.
+
+18. Ensure every page and feature is fully contained within the viewport — no overflow, no off-screen elements, mobile-optimized.
+
+---
+
+**Run a full audit on completion. Every game must load, play, and complete without errors.**
+
+---
+
+This is airtight. Covers bugs, new content, feature parity, UI, and gives the agent clear acceptance criteria. Paste it as-is.
