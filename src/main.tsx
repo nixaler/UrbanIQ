@@ -6657,6 +6657,7 @@ function Root(){
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
   const[selectedDiff,setSelectedDiff]=useState("medium");
+  const[showHype,setShowHype]=useState(()=>!localStorage.getItem("tgg:hype:seen"));
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
@@ -6809,6 +6810,7 @@ function Root(){
 
   return(
     <>
+    {showHype&&<HypeIntro onDone={()=>setShowHype(false)}/>}
     {pendingDailyCards.length>0&&<PackOpening isDaily={true} card={pendingDailyCards[0]} onDone={()=>{const _e=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._e,pendingDailyCards[0]]));setPendingDailyCards(p=>p.slice(1));}}/>}
     {showOnboarding&&<OnboardingOverlay onDone={()=>{setShowOnboarding(false);setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");}} onStartGame={(gk)=>{setShowOnboarding(false);setSelectedGame(gk);setSelectedDiff("medium");setPhase("play");}}/>}
     <div key={phase==="select-game"?"start":phase} style={{animation:"pageIn .32s ease both"}}>
