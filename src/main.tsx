@@ -3987,7 +3987,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{animation:"lmFadeIn .4s ease both"}}>
             <div style={{padding:"0 22px",marginBottom:0}}>
               <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
-                Yesterday\'s Answer <div className="lm-eyebrow-line"/>
+                Yesterday's Answer <div className="lm-eyebrow-line"/>
               </div>
             </div>
             <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid #EDEBE8",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"white"}}
