@@ -417,12 +417,45 @@ function CardSystemTab({pendingCard,onClearPending}){
                 <div style={{fontSize:12,color:txt2,marginBottom:6}}>No cards yet</div>
                 <div style={{fontSize:11,color:txt3,lineHeight:1.8}}>Win a daily puzzle round to earn your first card. Pro difficulty gives the best legendary drop rates.</div>
               </div>
-            ):<div style={{display:"flex",flexWrap:"wrap",gap:10}}>{col.map(c=>(
-              <div key={c.id} style={{position:"relative"}}>
-                <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
-                {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:20}}>
+                {([
+                  {type:"transit",  label:"Transit",   emoji:"🚊", accent:"#028A48"},
+                  {type:"geography",label:"Geography", emoji:"🗺️", accent:"#1a3a8f"},
+                  {type:"sports",   label:"Sports",    emoji:"🏈", accent:"#c43030"},
+                ] as {type:string,label:string,emoji:string,accent:string}[]).map(({type,label,emoji,accent})=>{
+                  const typeCards=col.filter(c=>c.cardType===type);
+                  if(typeCards.length===0) return null;
+                  return(
+                    <div key={type}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,paddingBottom:6,borderBottom:`2px solid ${accent}`}}>
+                        <span style={{fontSize:16}}>{emoji}</span>
+                        <span style={{fontSize:11,fontWeight:700,letterSpacing:2,color:accent,textTransform:"uppercase"}}>{label}</span>
+                        <span style={{fontSize:9,color:txt3,marginLeft:4}}>{typeCards.length} CARDS</span>
+                      </div>
+                      {(["legendary","rare","uncommon","common"] as const).map(r=>{
+                        const rc=CARD_RARITY[r.toUpperCase()]?.color||"#555";
+                        const rarityCards=typeCards.filter(c=>c.rarityId===r);
+                        if(rarityCards.length===0) return null;
+                        return(
+                          <div key={r} style={{marginBottom:14}}>
+                            <div style={{fontSize:8,fontWeight:700,letterSpacing:2,color:rc,textTransform:"uppercase",marginBottom:6}}>{r} · {rarityCards.length}</div>
+                            <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+                              {rarityCards.map(c=>(
+                                <div key={c.id} style={{position:"relative"}}>
+                                  <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
+                                  {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
-            ))}</div>}
+            )}
           </div>
         )}
 
