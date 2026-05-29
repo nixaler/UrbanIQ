@@ -3,370 +3,710 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>UrbanIQ — Hype Intro Preview</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet"/>
+<title>UrbanIQ — Hype Intro v2 Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet"/>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:#000;overflow:hidden;font-family:'JetBrains Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;overflow:hidden;font-family:'JetBrains Mono',monospace;}
 
-  #intro{
-    position:fixed;inset:0;background:#000;z-index:9999;
-    display:flex;align-items:center;justify-content:center;
-    overflow:hidden;
-  }
+/* ── FULL SCREEN WRAPPER ── */
+#intro{
+  position:fixed;inset:0;background:#080c12;z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+}
 
-  /* ── MAP GRID BACKGROUND ── */
-  #grid-canvas{position:absolute;inset:0;opacity:0;animation:gridFadeIn .8s .2s ease forwards;}
-  @keyframes gridFadeIn{to{opacity:1;}}
+/* ── CANVAS BACKGROUND ── */
+#bg-canvas{position:absolute;inset:0;pointer-events:none;}
 
-  /* ── SCAN LINE ── */
-  .scanline{
-    position:absolute;top:0;left:0;right:0;height:2px;
-    background:linear-gradient(90deg,transparent,rgba(0,200,120,.6),transparent);
-    animation:scan 10s linear forwards;
-    z-index:2;
-  }
-  @keyframes scan{0%{top:0%}100%{top:100%}}
+/* ── SCANLINE ── */
+.scanline{
+  position:absolute;left:0;right:0;height:120px;pointer-events:none;z-index:1;
+  background:linear-gradient(to bottom,transparent,rgba(0,200,120,.03),transparent);
+  animation:scanMove 4s linear infinite;
+}
+@keyframes scanMove{0%{top:-120px}100%{top:100%}}
 
-  /* ── CITY FLICKER WORDS ── */
-  .city-flash{
-    position:absolute;font-size:11px;letter-spacing:3px;font-weight:700;
-    color:rgba(255,255,255,0.07);text-transform:uppercase;
-    animation:cityFlicker 0s linear forwards;
-    pointer-events:none;z-index:1;
-  }
-  @keyframes cityFlicker{
-    0%{opacity:0}5%{opacity:1}10%{opacity:.3}15%{opacity:.9}20%{opacity:0}100%{opacity:0}
-  }
+/* ── PHASE WRAPPER ── */
+#stage{position:relative;z-index:10;width:100%;max-width:520px;padding:0 16px;display:flex;flex-direction:column;align-items:center;}
 
-  /* ── METRO LINE STREAKS ── */
-  .streak{
-    position:absolute;height:2px;border-radius:1px;
-    animation:streakAnim linear forwards;
-    z-index:2;
-  }
-  @keyframes streakAnim{
-    0%{width:0;opacity:0}10%{opacity:1}80%{opacity:.7}100%{width:var(--w);opacity:0}
-  }
+/* ══════════════════════════════════════════
+   PHASE 1  — CITY SPLASH  (0 – 2.2s)
+══════════════════════════════════════════ */
+#ph1{
+  position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;
+  animation:ph1Out .5s 2.2s ease forwards;
+}
+@keyframes ph1Out{to{opacity:0;transform:scale(.92);pointer-events:none;}}
 
-  /* ── CENTER CONTENT ── */
-  #center{
-    position:relative;z-index:10;text-align:center;
-    display:flex;flex-direction:column;align-items:center;gap:0;
-  }
+.city-row{
+  display:flex;align-items:center;gap:12px;
+  opacity:0;transform:translateX(-40px);
+  animation:cityIn .3s ease forwards;
+}
+.city-row:nth-child(1){animation-delay:.05s;}
+.city-row:nth-child(2){animation-delay:.38s;}
+.city-row:nth-child(3){animation-delay:.71s;}
+.city-row:nth-child(4){animation-delay:1.04s;}
+.city-row:nth-child(5){animation-delay:1.37s;}
+@keyframes cityIn{
+  0%{opacity:0;transform:translateX(-40px)}
+  55%{opacity:1;transform:translateX(4px)}
+  100%{opacity:.9;transform:translateX(0)}
+}
 
-  /* PHASE 1 — city names cycling */
-  #phase-cities{
-    position:absolute;display:flex;flex-direction:column;align-items:center;gap:6px;
-    animation:phaseFadeOut .5s 2.8s ease forwards;
-  }
-  .p1-city{
-    font-size:clamp(28px,7vw,64px);font-weight:700;letter-spacing:4px;
-    color:transparent;
-    background-clip:text;-webkit-background-clip:text;
-    opacity:0;
-  }
-  .p1-city:nth-child(1){background-image:linear-gradient(90deg,#028A48,#03c96a);animation:citySlide .35s .1s ease forwards;}
-  .p1-city:nth-child(2){background-image:linear-gradient(90deg,#BF0000,#ff4444);animation:citySlide .35s .55s ease forwards;}
-  .p1-city:nth-child(3){background-image:linear-gradient(90deg,#0039A6,#3388ff);animation:citySlide .35s 1.0s ease forwards;}
-  .p1-city:nth-child(4){background-image:linear-gradient(90deg,#E3051B,#ff6644);animation:citySlide .35s 1.45s ease forwards;}
-  .p1-city:nth-child(5){background-image:linear-gradient(90deg,#C60C30,#ff4488);animation:citySlide .35s 1.9s ease forwards;}
-  @keyframes citySlide{
-    0%{opacity:0;transform:translateX(-30px)}
-    40%{opacity:1;transform:translateX(4px)}
-    70%{opacity:1;transform:translateX(0)}
-    100%{opacity:0;transform:translateX(30px)}
-  }
+.city-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.city-name{font-size:clamp(20px,5.5vw,42px);font-weight:700;letter-spacing:3px;color:transparent;background-clip:text;-webkit-background-clip:text;}
+.city-meta{font-size:clamp(7px,1.8vw,10px);letter-spacing:2px;color:rgba(255,255,255,0.2);}
 
-  /* PHASE 2 — logo reveal */
-  #phase-logo{opacity:0;animation:logoReveal .7s 3.0s cubic-bezier(.2,0,.2,1) forwards;}
-  @keyframes logoReveal{
-    0%{opacity:0;transform:scale(.85)}
-    60%{opacity:1;transform:scale(1.04)}
-    100%{opacity:1;transform:scale(1)}
-  }
+/* ══════════════════════════════════════════
+   PHASE 2  — PUZZLE DEMO  (2.2 – 7.8s)
+══════════════════════════════════════════ */
+#ph2{
+  width:100%;display:flex;flex-direction:column;align-items:center;gap:0;
+  opacity:0;animation:fadeUp .55s 2.3s ease forwards;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-  #logo-word{
-    font-family:'Cinzel',serif;
-    font-size:clamp(52px,13vw,120px);
-    font-weight:900;letter-spacing:6px;line-height:1;
-    background:linear-gradient(90deg,#028A48,#00e87a,#0060ff,#028A48);
-    background-size:300% auto;
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    animation:logoShimmer 3s 3.5s linear infinite;
-  }
-  @keyframes logoShimmer{
-    0%{background-position:0% center}100%{background-position:300% center}
-  }
+/* Puzzle header */
+.puzzle-header{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;padding:0 0 10px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:12px;
+}
+.ph-left{display:flex;flex-direction:column;gap:2px;}
+.ph-badge{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.2);}
+.ph-title{font-family:'Cinzel',serif;font-size:clamp(14px,3.5vw,22px);font-weight:700;color:rgba(255,255,255,0.9);}
+.ph-right{display:flex;gap:6px;}
+.line-pill{width:28px;height:7px;border-radius:4px;}
 
-  #logo-iq{
-    font-family:'Cinzel',serif;
-    font-size:clamp(52px,13vw,120px);
-    font-weight:900;letter-spacing:6px;line-height:1;
-    color:#fff;
-  }
+/* Column headers */
+.col-headers{
+  display:grid;grid-template-columns:2fr 1.2fr .9fr .9fr .45fr;
+  gap:4px;width:100%;margin-bottom:5px;
+}
+.col-hdr{
+  font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,0.22);
+  text-align:center;padding:2px 0;cursor:default;
+  position:relative;transition:color .2s;
+}
+.col-hdr:hover{color:rgba(255,255,255,.7);}
+.col-hdr:hover .col-tip{opacity:1;transform:translateY(0);pointer-events:auto;}
+.col-tip{
+  position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%) translateY(4px);
+  background:#1a2030;border:1px solid rgba(255,255,255,0.12);border-radius:7px;
+  padding:7px 10px;font-size:9px;letter-spacing:.5px;color:rgba(255,255,255,.7);
+  white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .18s,transform .18s;z-index:50;
+  font-weight:400;line-height:1.5;
+}
+.col-tip::before{
+  content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-bottom-color:#1a2030;border-top:none;
+}
 
-  #tagline{
-    font-size:clamp(9px,2vw,13px);letter-spacing:5px;
-    color:rgba(255,255,255,0.35);margin-top:10px;
-    opacity:0;animation:fadeUp .5s 3.7s ease forwards;
-  }
-  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* Guess rows */
+.guess-rows{display:flex;flex-direction:column;gap:4px;width:100%;}
 
-  /* PHASE 3 — stats/cities grid */
-  #phase-stats{
-    margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
-    opacity:0;animation:fadeUp .6s 4.3s ease forwards;
-  }
-  .stat-chip{
-    border-radius:6px;padding:8px 14px;text-align:center;
-    border:1px solid rgba(255,255,255,0.08);
-    background:rgba(255,255,255,0.03);
-  }
-  .stat-num{font-size:clamp(18px,4vw,28px);font-weight:700;color:#fff;line-height:1;}
-  .stat-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.g-row{
+  display:grid;grid-template-columns:2fr 1.2fr .9fr .9fr .45fr;
+  gap:4px;opacity:0;
+}
 
-  /* PHASE 4 — CTA */
-  #phase-cta{
-    margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:10px;
-    opacity:0;animation:fadeUp .6s 5.6s ease forwards;
-  }
-  #cta-line{
-    width:0;height:1px;background:linear-gradient(90deg,transparent,#00e87a,transparent);
-    animation:ctaLine .8s 5.5s ease forwards;
-  }
-  @keyframes ctaLine{to{width:200px}}
+/* each cell */
+.g-cell{
+  border-radius:5px;padding:8px 5px;text-align:center;
+  font-size:clamp(7px,1.8vw,10px);font-weight:700;letter-spacing:.5px;
+  border:1.5px solid rgba(255,255,255,0.07);
+  background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.25);
+  min-height:36px;display:flex;align-items:center;justify-content:center;
+  line-height:1.2;
+  transition:none;
+  transform-style:preserve-3d;
+  perspective:400px;
+  cursor:default;
+  position:relative;
+}
+/* The name cell is left-aligned */
+.g-cell.name-cell{justify-content:flex-start;padding-left:8px;font-size:clamp(8px,2vw,11px);}
+.g-cell.name-cell.typing::after{content:'|';animation:blink .5s step-end infinite;margin-left:1px;color:rgba(255,255,255,0.5);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-  #cta-btn{
-    font-family:'JetBrains Mono',monospace;
-    font-size:clamp(10px,2.5vw,14px);letter-spacing:4px;font-weight:700;
-    color:#fff;background:linear-gradient(135deg,#028A48,#0060ff);
-    border:none;border-radius:30px;padding:14px 40px;cursor:pointer;
-    position:relative;overflow:hidden;
-    animation:ctaPulse 2s 6.5s ease infinite;
-  }
-  #cta-btn::before{
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
-    border-radius:inherit;
-  }
-  @keyframes ctaPulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(0,232,122,.4)}
-    50%{box-shadow:0 0 0 12px rgba(0,232,122,0)}
-  }
+/* color states */
+.g-cell.green{background:#041508;border-color:#28b050;color:#7fffb0;}
+.g-cell.yellow{background:#1a1400;border-color:#c8a800;color:#ffe680;}
+.g-cell.red{background:#180404;border-color:#c43030;color:#ffaaaa;}
+.g-cell.win{background:#041508;border-color:#28b050;color:#7fffb0;}
 
-  #cta-sub{
-    font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.2);
-    opacity:0;animation:fadeUp .5s 6.2s ease forwards;
-  }
+/* flip animation */
+.g-cell.flip{animation:cellFlip .38s ease forwards;}
+@keyframes cellFlip{
+  0%{transform:perspective(400px) rotateY(0deg);opacity:1}
+  40%{transform:perspective(400px) rotateY(-90deg);opacity:0}
+  60%{transform:perspective(400px) rotateY(-90deg);opacity:0}
+  100%{transform:perspective(400px) rotateY(0deg);opacity:1}
+}
 
-  /* PHASE 5 — progress bar */
-  #progress-bar{
-    position:absolute;bottom:0;left:0;height:2px;
-    background:linear-gradient(90deg,#028A48,#0060ff);
-    animation:progressFill 10s linear forwards;
-    z-index:20;
-  }
-  @keyframes progressFill{from{width:0}to{width:100%}}
+/* blank rows */
+.blank-row{
+  display:grid;grid-template-columns:2fr 1.2fr .9fr .9fr .45fr;
+  gap:4px;opacity:0.06;
+}
+.blank-cell{
+  height:36px;border-radius:5px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+}
 
-  /* SKIP BUTTON */
-  #skip-btn{
-    position:absolute;top:20px;right:20px;z-index:30;
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.35);
-    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-    border-radius:20px;padding:7px 16px;cursor:pointer;
-    transition:color .2s,border-color .2s,background .2s;
-    animation:skipAppear .4s .5s ease both;
-  }
-  #skip-btn:hover{color:#fff;border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.08);}
-  @keyframes skipAppear{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+/* mystery station */
+.mystery-bar{
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;padding:12px 14px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;
+  opacity:0;animation:fadeUp .4s 2.5s ease forwards;
+}
+.mystery-label{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.2);}
+.mystery-blocks{display:flex;gap:3px;}
+.mystery-block{
+  height:10px;border-radius:2px;background:rgba(255,255,255,0.1);
+  animation:mystPulse 2s ease infinite;
+}
+.mystery-block:nth-child(2){animation-delay:.15s;width:18px;}
+.mystery-block:nth-child(3){animation-delay:.30s;width:24px;}
+.mystery-block:nth-child(4){animation-delay:.45s;width:16px;}
+.mystery-block:nth-child(5){animation-delay:.60s;width:22px;}
+.mystery-block:nth-child(6){animation-delay:.75s;width:14px;}
+@keyframes mystPulse{0%,100%{opacity:.4}50%{opacity:.9}}
 
-  /* SKIP countdown ring */
-  #skip-ring{
-    position:absolute;top:14px;right:14px;width:38px;height:38px;
-    pointer-events:none;z-index:31;
-  }
-  #skip-ring circle{
-    fill:none;stroke:rgba(0,232,122,.5);stroke-width:2;
-    stroke-dasharray:113;stroke-dashoffset:113;
-    animation:ringDrain 10s linear forwards;
-    transform-origin:center;transform:rotate(-90deg);
-  }
-  @keyframes ringDrain{to{stroke-dashoffset:0}}
+/* Win flash */
+#win-flash{
+  position:absolute;inset:0;background:rgba(40,176,80,0);pointer-events:none;z-index:5;
+  border-radius:12px;
+}
+#win-flash.burst{animation:winBurst .6s ease forwards;}
+@keyframes winBurst{
+  0%{background:rgba(40,176,80,0)}
+  25%{background:rgba(40,176,80,.18)}
+  100%{background:rgba(40,176,80,0)}
+}
 
-  /* FADE OUT */
-  #intro.fade-out{animation:introOut .6s ease forwards;}
-  @keyframes introOut{to{opacity:0;pointer-events:none}}
+/* Win text */
+#win-msg{
+  font-size:clamp(11px,3vw,15px);letter-spacing:3px;font-weight:700;color:#7fffb0;
+  opacity:0;margin-top:8px;text-align:center;
+}
+#win-msg.show{animation:fadeUp .4s ease forwards;}
 
-  @keyframes phaseFadeOut{to{opacity:0;transform:scale(.9);pointer-events:none}}
+/* ══════════════════════════════════════════
+   PHASE 3  — LOGO  (7.8 – 9s)
+══════════════════════════════════════════ */
+#ph3{
+  position:absolute;display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;pointer-events:none;
+}
+#ph3.active{
+  opacity:0;pointer-events:auto;
+  animation:ph3In .65s ease forwards;
+}
+@keyframes ph3In{
+  0%{opacity:0;transform:scale(.82)}
+  60%{opacity:1;transform:scale(1.03)}
+  100%{opacity:1;transform:scale(1)}
+}
+.logo-lockup{display:flex;align-items:baseline;gap:3px;}
+.logo-urban{
+  font-family:'Cinzel',serif;font-size:clamp(44px,12vw,100px);font-weight:900;letter-spacing:5px;
+  background:linear-gradient(90deg,#028A48,#00d46a,#0060ff,#028A48);
+  background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.logo-urban.shimmer{animation:shimmer 3s linear infinite;}
+@keyframes shimmer{0%{background-position:0% center}100%{background-position:300% center}}
+.logo-iq{
+  font-family:'Cinzel',serif;font-size:clamp(44px,12vw,100px);font-weight:900;letter-spacing:5px;
+  color:#fff;
+}
+.logo-tag{font-size:clamp(8px,1.8vw,11px);letter-spacing:5px;color:rgba(255,255,255,0.28);margin-top:2px;}
+
+/* stats row */
+.logo-stats{
+  display:flex;gap:12px;margin-top:14px;opacity:0;
+}
+.logo-stats.show{animation:fadeUp .5s .15s ease forwards;}
+.lstat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:7px;padding:9px 18px;text-align:center;}
+.lstat-n{font-size:clamp(16px,4vw,26px);font-weight:700;color:#fff;line-height:1;}
+.lstat-l{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-top:3px;}
+
+/* CTA */
+.cta-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:20px;
+  opacity:0;
+}
+.cta-wrap.show{animation:fadeUp .5s .3s ease forwards;}
+.cta-divider{width:0;height:1px;background:linear-gradient(90deg,transparent,#00d46a 50%,transparent);}
+.cta-divider.grow{animation:divGrow .7s ease forwards;}
+@keyframes divGrow{to{width:180px}}
+.cta-btn{
+  font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,13px);letter-spacing:3px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#028A48,#0060ff);
+  border:none;border-radius:30px;padding:14px 36px;cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.cta-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.14),transparent);}
+.cta-btn.pulse{animation:ctaPulse 2s .5s ease infinite;}
+@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,106,.4)}50%{box-shadow:0 0 0 14px rgba(0,212,106,0)}}
+.cta-sub{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,.18);}
+
+/* ── PROGRESS BAR ── */
+#progress{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,#028A48,#0060ff);animation:progFill 10s linear forwards;z-index:20;}
+@keyframes progFill{from{width:0}to{width:100%}}
+
+/* ── SKIP ── */
+#skip-wrap{position:absolute;top:16px;right:16px;z-index:30;display:flex;align-items:center;gap:8px;opacity:0;animation:fadeUp .4s .5s ease forwards;}
+#skip-btn{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;
+  color:rgba(255,255,255,.35);background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:6px 14px;cursor:pointer;
+  transition:all .2s;
+}
+#skip-btn:hover{color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.09);}
+.skip-ring{width:32px;height:32px;flex-shrink:0;}
+.skip-ring circle{fill:none;stroke:rgba(0,212,106,.5);stroke-width:2.5;stroke-dasharray:88;stroke-dashoffset:88;animation:ringDrain 10s linear forwards;transform-origin:center;transform:rotate(-90deg);}
+@keyframes ringDrain{to{stroke-dashoffset:0}}
+
+/* ── CONFETTI DOTS ── */
+.conf{position:absolute;width:6px;height:6px;border-radius:1px;pointer-events:none;opacity:0;z-index:15;}
+.conf.burst{animation:confFall 1.2s ease forwards;}
+@keyframes confFall{
+  0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+  100%{opacity:0;transform:translateY(var(--fall)) translateX(var(--drift)) rotate(720deg) scale(.3)}
+}
+
+/* ── FADE OUT ── */
+#intro.bye{animation:byeOut .7s ease forwards;}
+@keyframes byeOut{to{opacity:0;pointer-events:none;}}
+
+/* ── LINE STREAKS ── */
+.streak{position:absolute;height:1.5px;border-radius:1px;opacity:0;pointer-events:none;z-index:0;}
+.streak.go{animation:streakGo var(--dur) ease forwards;}
+@keyframes streakGo{
+  0%{width:0;opacity:0}8%{opacity:.9}85%{opacity:.6}100%{width:var(--w);opacity:0}
+}
 </style>
 </head>
 <body>
-
 <div id="intro">
-  <canvas id="grid-canvas"></canvas>
+  <canvas id="bg-canvas"></canvas>
   <div class="scanline"></div>
-  <div id="progress-bar"></div>
+  <div id="progress"></div>
+  <div id="win-flash"></div>
 
   <!-- Skip -->
-  <button id="skip-btn" onclick="skipIntro()">SKIP ▶</button>
-  <svg id="skip-ring" viewBox="0 0 38 38">
-    <circle cx="19" cy="19" r="18"/>
-  </svg>
-
-  <!-- Center stage -->
-  <div id="center">
-
-    <!-- Phase 1: City names -->
-    <div id="phase-cities">
-      <div class="p1-city">PORTLAND</div>
-      <div class="p1-city">WASHINGTON DC</div>
-      <div class="p1-city">NEW YORK CITY</div>
-      <div class="p1-city">LOS ANGELES</div>
-      <div class="p1-city">CHICAGO</div>
-    </div>
-
-    <!-- Phase 2+: Logo + everything else -->
-    <div id="phase-logo">
-      <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
-        <span id="logo-word">Urban</span><span id="logo-iq">IQ</span>
-      </div>
-      <div id="tagline">DECODE THE CITY · DAILY TRANSIT PUZZLE</div>
-
-      <!-- Phase 3: Stats -->
-      <div id="phase-stats">
-        <div class="stat-chip"><div class="stat-num" style="color:#028A48;">6</div><div class="stat-lbl">CITIES</div></div>
-        <div class="stat-chip"><div class="stat-num" style="color:#0060ff;">868+</div><div class="stat-lbl">STATIONS</div></div>
-        <div class="stat-chip"><div class="stat-num" style="color:#C60C30;">∞</div><div class="stat-lbl">PUZZLES</div></div>
-      </div>
-
-      <!-- Phase 4: CTA -->
-      <div id="phase-cta">
-        <div id="cta-line"></div>
-        <button id="cta-btn" onclick="skipIntro()">PLAY TODAY'S PUZZLE</button>
-        <div id="cta-sub">FREE · NO ACCOUNT NEEDED</div>
-      </div>
-    </div>
-
+  <div id="skip-wrap">
+    <svg class="skip-ring" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14"/></svg>
+    <button id="skip-btn" onclick="skipIntro()">SKIP ▶</button>
   </div>
-</div>
 
-<div style="background:#080c12;color:#fff;padding:40px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.3);">
-  ← Your app lives here
+  <!-- Main stage -->
+  <div id="stage">
+
+    <!-- PHASE 1: City splash -->
+    <div id="ph1">
+      <div class="city-row">
+        <div class="city-dot" style="background:#028A48;box-shadow:0 0 8px #028A48;"></div>
+        <div class="city-name" style="background-image:linear-gradient(90deg,#028A48,#03d46a);">PORTLAND</div>
+        <div class="city-meta">MAX · 5 LINES</div>
+      </div>
+      <div class="city-row">
+        <div class="city-dot" style="background:#BF0000;box-shadow:0 0 8px #BF0000;"></div>
+        <div class="city-name" style="background-image:linear-gradient(90deg,#BF0000,#ff5555);">WASHINGTON DC</div>
+        <div class="city-meta">METRO · 6 LINES</div>
+      </div>
+      <div class="city-row">
+        <div class="city-dot" style="background:#0039A6;box-shadow:0 0 8px #0039A6;"></div>
+        <div class="city-name" style="background-image:linear-gradient(90deg,#0039A6,#4488ff);">NEW YORK CITY</div>
+        <div class="city-meta">SUBWAY · 6 LINES</div>
+      </div>
+      <div class="city-row">
+        <div class="city-dot" style="background:#E3051B;box-shadow:0 0 8px #E3051B;"></div>
+        <div class="city-name" style="background-image:linear-gradient(90deg,#E3051B,#ff6644);">LOS ANGELES</div>
+        <div class="city-meta">METRO · 5 LINES</div>
+      </div>
+      <div class="city-row">
+        <div class="city-dot" style="background:#C60C30;box-shadow:0 0 8px #C60C30;"></div>
+        <div class="city-name" style="background-image:linear-gradient(90deg,#C60C30,#ff4488);">CHICAGO</div>
+        <div class="city-meta">L · 6 LINES</div>
+      </div>
+    </div>
+
+    <!-- PHASE 2: Puzzle demo -->
+    <div id="ph2" style="display:none;">
+
+      <!-- Header -->
+      <div class="puzzle-header">
+        <div class="ph-left">
+          <div class="ph-badge">DC METRO · PUZZLE #247</div>
+          <div class="ph-title">Daily Metro</div>
+        </div>
+        <div class="ph-right">
+          <div class="line-pill" style="background:#BF0000;" title="Red"></div>
+          <div class="line-pill" style="background:#0039A6;" title="Blue"></div>
+          <div class="line-pill" style="background:#FF9900;" title="Orange"></div>
+          <div class="line-pill" style="background:#009b3a;" title="Green"></div>
+          <div class="line-pill" style="background:#FFD700;" title="Yellow"></div>
+          <div class="line-pill" style="background:#919D9D;" title="Silver"></div>
+        </div>
+      </div>
+
+      <!-- Mystery station -->
+      <div class="mystery-bar">
+        <div class="mystery-label">TODAY'S STATION</div>
+        <div class="mystery-blocks">
+          <div class="mystery-block" style="width:12px;"></div>
+          <div class="mystery-block" style="width:18px;"></div>
+          <div class="mystery-block" style="width:24px;"></div>
+          <div class="mystery-block" style="width:16px;"></div>
+          <div class="mystery-block" style="width:22px;"></div>
+          <div class="mystery-block" style="width:14px;"></div>
+        </div>
+      </div>
+
+      <!-- Column headers (interactive: hover for tooltip) -->
+      <div class="col-headers">
+        <div class="col-hdr" style="text-align:left;padding-left:4px;">STATION
+          <div class="col-tip">The DC Metro station you're guessing</div>
+        </div>
+        <div class="col-hdr">LINES
+          <div class="col-tip">🟢 Exact line match<br>🟡 Partial overlap<br>🔴 No shared lines</div>
+        </div>
+        <div class="col-hdr">ZONE
+          <div class="col-tip">🟢 Same zone<br>🟡 Adjacent zone<br>🔴 Different area</div>
+        </div>
+        <div class="col-hdr">BUSY
+          <div class="col-tip">🟢 Same traffic level<br>🟡 One level off (▲▼)<br>🔴 Far off</div>
+        </div>
+        <div class="col-hdr">✓</div>
+      </div>
+
+      <!-- Guess rows (filled by JS) -->
+      <div class="guess-rows" id="guess-rows">
+        <!-- Blank placeholders -->
+        <div class="blank-row" id="blank0"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+        <div class="blank-row" id="blank1"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+        <div class="blank-row" id="blank2"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+        <div class="blank-row" id="blank3"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+        <div class="blank-row" id="blank4"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+        <div class="blank-row" id="blank5"><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div><div class="blank-cell"></div></div>
+      </div>
+
+      <div id="win-msg"></div>
+    </div>
+
+    <!-- PHASE 3: Logo + CTA -->
+    <div id="ph3">
+      <div class="logo-lockup">
+        <span class="logo-urban" id="logo-urban">Urban</span>
+        <span class="logo-iq">IQ</span>
+      </div>
+      <div class="logo-tag">DECODE THE CITY · DAILY TRANSIT PUZZLE</div>
+      <div class="logo-stats" id="logo-stats">
+        <div class="lstat"><div class="lstat-n" style="color:#028A48;">6</div><div class="lstat-l">CITIES</div></div>
+        <div class="lstat"><div class="lstat-n" style="color:#0060ff;">868+</div><div class="lstat-l">STATIONS</div></div>
+        <div class="lstat"><div class="lstat-n" style="color:#C60C30;">3</div><div class="lstat-l">ROUNDS/DAY</div></div>
+        <div class="lstat"><div class="lstat-n" style="color:#c8a800;">FREE</div><div class="lstat-l">FOREVER</div></div>
+      </div>
+      <div class="cta-wrap" id="cta-wrap">
+        <div class="cta-divider" id="cta-divider"></div>
+        <button class="cta-btn" id="cta-btn" onclick="skipIntro()">PLAY TODAY'S PUZZLE</button>
+        <div class="cta-sub">NO ADS · NO ACCOUNT · DAILY RESET</div>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+</div><!-- /intro -->
+
+<div style="background:#080c12;height:100vh;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.15);">
+  ← Your game loads here after the intro
 </div>
 
 <script>
-// ── CANVAS: animated metro map grid ──────────────────────────
-const canvas = document.getElementById('grid-canvas');
+/* ─────────────────────────────────────────────
+   CANVAS: animated transit network background
+───────────────────────────────────────────── */
+const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
-let W, H, dots = [], lines = [];
+let W, H, nodes = [], edges = [], t0 = performance.now();
 
-const COLORS = ['#028A48','#BF0000','#0039A6','#E3051B','#C60C30','#003087','#FF6319'];
+const LINE_COLORS = ['#BF0000','#0039A6','#FF9900','#009b3a','#FFD700','#919D9D','#028A48','#C60C30','#EE352E'];
 
 function resize() {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
-  initDots();
+  buildGraph();
 }
-
-function initDots() {
-  dots = [];
-  for (let i = 0; i < 55; i++) {
-    dots.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 2.5 + 1,
-      c: COLORS[Math.floor(Math.random() * COLORS.length)],
-      pulse: Math.random() * Math.PI * 2,
-      speed: Math.random() * 0.02 + 0.01,
+function buildGraph() {
+  nodes = [];
+  const cols = Math.ceil(W / 120) + 1, rows = Math.ceil(H / 100) + 1;
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    nodes.push({
+      x: c * 120 + (r % 2 ? 60 : 0) + Math.random() * 30 - 15,
+      y: r * 100 + Math.random() * 20 - 10,
+      c: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+      r: Math.random() * 2 + 1.5,
+      phase: Math.random() * Math.PI * 2,
     });
   }
-  // connect nearby dots as metro lines
-  lines = [];
-  for (let i = 0; i < dots.length; i++) {
-    for (let j = i + 1; j < dots.length; j++) {
-      const dx = dots[i].x - dots[j].x;
-      const dy = dots[i].y - dots[j].y;
-      const d = Math.sqrt(dx*dx + dy*dy);
-      if (d < 160) {
-        lines.push({ a: i, b: j, alpha: (1 - d / 160) * 0.18 });
-      }
-    }
-  }
+  edges = [];
+  nodes.forEach((n, i) => {
+    nodes.forEach((m, j) => {
+      if (j <= i) return;
+      const dx = n.x - m.x, dy = n.y - m.y, d = Math.hypot(dx, dy);
+      if (d < 140) edges.push({ i, j, a: (1 - d/140) * 0.12 });
+    });
+  });
 }
 
-let startTime = performance.now();
-function draw(now) {
-  const t = (now - startTime) / 1000;
+let animDone = false;
+function drawBg(now) {
+  const t = (now - t0) / 1000;
   ctx.clearRect(0, 0, W, H);
-  const fadeIn = Math.min(1, t / 1.5);
-
-  // Lines
-  lines.forEach(l => {
-    const a = dots[l.a], b = dots[l.b];
+  const fade = Math.min(1, t / 1.2);
+  edges.forEach(e => {
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.strokeStyle = `rgba(255,255,255,${l.alpha * fadeIn})`;
-    ctx.lineWidth = 0.5;
+    ctx.moveTo(nodes[e.i].x, nodes[e.i].y);
+    ctx.lineTo(nodes[e.j].x, nodes[e.j].y);
+    ctx.strokeStyle = `rgba(255,255,255,${e.a * fade})`;
+    ctx.lineWidth = 0.6;
     ctx.stroke();
   });
-
-  // Dots
-  dots.forEach(d => {
-    const pulse = (Math.sin(d.pulse + t * d.speed * 60) + 1) / 2;
+  nodes.forEach(n => {
+    const pulse = (Math.sin(n.phase + t * 0.9) + 1) / 2;
+    const alpha = fade * (0.25 + pulse * 0.35);
     ctx.beginPath();
-    ctx.arc(d.x, d.y, d.r * (0.7 + pulse * 0.5), 0, Math.PI * 2);
-    ctx.fillStyle = d.c + Math.round(fadeIn * (0.3 + pulse * 0.5) * 255).toString(16).padStart(2,'0');
+    ctx.arc(n.x, n.y, n.r * (0.8 + pulse * 0.4), 0, Math.PI * 2);
+    ctx.fillStyle = n.c + Math.round(alpha * 255).toString(16).padStart(2,'0');
     ctx.fill();
   });
-
-  if (!done) requestAnimationFrame(draw);
+  if (!animDone) requestAnimationFrame(drawBg);
 }
-requestAnimationFrame(draw);
+requestAnimationFrame(drawBg);
 window.addEventListener('resize', resize);
 resize();
 
-// ── METRO LINE STREAKS ──────────────────────────────────────
-const intro = document.getElementById('intro');
-const streakData = [
-  { color:'#028A48', top:'18%', left:'0', delay:'.3s', dur:'1.8s', w:'55vw' },
-  { color:'#BF0000', top:'35%', left:'20vw', delay:'.9s', dur:'2.2s', w:'70vw' },
-  { color:'#0039A6', top:'55%', left:'5vw', delay:'1.4s', dur:'1.6s', w:'50vw' },
-  { color:'#E3051B', top:'72%', left:'30vw', delay:'2.0s', dur:'2.0s', w:'60vw' },
-  { color:'#C60C30', top:'85%', left:'0', delay:'2.5s', dur:'1.5s', w:'40vw' },
-  { color:'#FF6319', top:'10%', right:'0', left:'auto', delay:'1.1s', dur:'2.1s', w:'45vw' },
+/* ─────────────────────────────────────────────
+   METRO STREAKS
+───────────────────────────────────────────── */
+const streakDefs = [
+  { color:'#BF0000', pct:'22%', delay:400,  dur:2200, w:'58vw', dir:'left' },
+  { color:'#028A48', pct:'38%', delay:800,  dur:2600, w:'72vw', dir:'left' },
+  { color:'#0039A6', pct:'55%', delay:1200, dur:2000, w:'48vw', dir:'right'},
+  { color:'#FF9900', pct:'68%', delay:1600, dur:2400, w:'62vw', dir:'left' },
+  { color:'#C60C30', pct:'80%', delay:2000, dur:1800, w:'40vw', dir:'right'},
 ];
-streakData.forEach(s => {
+const intro = document.getElementById('intro');
+streakDefs.forEach(s => {
   const el = document.createElement('div');
   el.className = 'streak';
-  el.style.cssText = `top:${s.top};left:${s.left||'auto'};right:${s.right||'auto'};background:${s.color};animation-delay:${s.delay};animation-duration:${s.dur};--w:${s.w};`;
+  el.style.cssText = `background:${s.color};top:${s.pct};${s.dir==='left'?'left:0':'right:0'};--w:${s.w};--dur:${s.dur}ms;`;
   intro.appendChild(el);
+  setTimeout(() => el.classList.add('go'), s.delay);
 });
 
-// ── CITY FLASH WORDS ─────────────────────────────────────────
-const flashWords = ['METRO','TRANSIT','STATION','PLATFORM','LINE','DAILY','NETWORK','SIGNAL','RAIL','DECODE'];
-flashWords.forEach((w, i) => {
-  const el = document.createElement('div');
-  el.className = 'city-flash';
-  el.textContent = w;
-  el.style.cssText = `top:${10 + Math.random()*80}%;left:${Math.random()*80}%;animation-delay:${i*0.6}s;animation-duration:3s;`;
-  intro.appendChild(el);
-});
+/* ─────────────────────────────────────────────
+   GUESSING DEMO DATA
+   Target: DUPONT CIRCLE (Red, NW, Busy=4, 1977)
+───────────────────────────────────────────── */
+const GUESSES = [
+  {
+    name: 'METRO CENTER',
+    cells: [
+      { cls:'yellow', text:'Red ∩ Multi', tip:'Lines overlap — shares Red line' },
+      { cls:'red',    text:'CENTRAL', tip:'Wrong zone — target is NW' },
+      { cls:'yellow', text:'🌕 PACKED ▼', tip:'Traffic too high — go lower' },
+      { cls:'red',    text:'✗' },
+    ]
+  },
+  {
+    name: 'WOODLEY PARK',
+    cells: [
+      { cls:'green',  text:'🔴 RED',    tip:'Exact! Red line only' },
+      { cls:'green',  text:'NW',        tip:'Exact zone match!' },
+      { cls:'yellow', text:'🌒 QUIET ▲', tip:'Traffic too low — go higher' },
+      { cls:'red',    text:'✗' },
+    ]
+  },
+  {
+    name: 'DUPONT CIRCLE',
+    cells: [
+      { cls:'green', text:'🔴 RED',       tip:'Exact line match' },
+      { cls:'green', text:'NW',           tip:'Exact zone match' },
+      { cls:'green', text:'🌔 BUSY',      tip:'Exact traffic level' },
+      { cls:'green win', text:'✓' },
+    ]
+  },
+];
 
-// ── AUTO-DISMISS after 10s ───────────────────────────────────
+let currentGuess = 0;
+
+function showRow(rowIdx, guessIdx) {
+  return new Promise(resolve => {
+    const guess = GUESSES[guessIdx];
+    // hide corresponding blank
+    const blank = document.getElementById('blank'+rowIdx);
+    if (blank) blank.style.display = 'none';
+
+    // create row
+    const row = document.createElement('div');
+    row.className = 'g-row';
+    row.style.cssText = 'opacity:1;';
+    // Insert before blank rowIdx+1 or at end
+    const blankNext = document.getElementById('blank'+(rowIdx+1));
+    const container = document.getElementById('guess-rows');
+    if (blankNext) container.insertBefore(row, blankNext);
+    else container.appendChild(row);
+
+    // Name cell with typing
+    const nameCell = document.createElement('div');
+    nameCell.className = 'g-cell name-cell typing';
+    nameCell.textContent = '';
+    row.appendChild(nameCell);
+
+    // Placeholder cells
+    const placeholders = [];
+    for (let i = 0; i < 4; i++) {
+      const c = document.createElement('div');
+      c.className = 'g-cell';
+      c.textContent = '—';
+      row.appendChild(c);
+      placeholders.push(c);
+    }
+
+    // Type the name
+    const name = guess.name;
+    let charIdx = 0;
+    const typeInterval = setInterval(() => {
+      charIdx++;
+      nameCell.textContent = name.slice(0, charIdx);
+      if (charIdx >= name.length) {
+        clearInterval(typeInterval);
+        nameCell.classList.remove('typing');
+        // Flip cells after a short pause
+        setTimeout(() => {
+          flipCells(placeholders, guess.cells, 0, resolve);
+        }, 300);
+      }
+    }, 55);
+  });
+}
+
+function flipCells(placeholders, cells, idx, onDone) {
+  if (idx >= placeholders.length) { onDone(); return; }
+  const cell = placeholders[idx];
+  const data = cells[idx];
+
+  // Start flip: goes opaque → invisible halfway, apply color, reappear
+  cell.classList.add('flip');
+  setTimeout(() => {
+    cell.className = 'g-cell flip ' + data.cls;
+    cell.textContent = data.text;
+    if (data.tip) {
+      cell.title = data.tip;
+      cell.style.cursor = 'help';
+    }
+  }, 190); // midpoint of flip
+
+  setTimeout(() => {
+    cell.classList.remove('flip');
+    flipCells(placeholders, cells, idx + 1, onDone);
+  }, 380);
+}
+
+function launchConfetti() {
+  const colors = ['#28b050','#c8a800','#0060ff','#BF0000','#028A48','#FFD700'];
+  for (let i = 0; i < 32; i++) {
+    const el = document.createElement('div');
+    el.className = 'conf';
+    const angle = Math.random() * 360;
+    const dist = 80 + Math.random() * 180;
+    el.style.cssText = `
+      left:${30+Math.random()*40}%;top:${40+Math.random()*20}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;
+      --fall:${-80-Math.random()*120}px;
+      --drift:${-60+Math.random()*120}px;
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      animation-delay:${Math.random()*0.3}s;
+    `;
+    intro.appendChild(el);
+    setTimeout(() => el.classList.add('burst'), 10);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   MASTER TIMELINE
+───────────────────────────────────────────── */
+const ph1 = document.getElementById('ph1');
+const ph2 = document.getElementById('ph2');
+const ph3 = document.getElementById('ph3');
+
+// 2.3s: switch to puzzle demo
+setTimeout(() => {
+  ph2.style.display = 'flex';
+  void ph2.offsetWidth;
+  // trigger the fadeUp animation
+  ph2.style.animation = 'fadeUp .55s ease forwards';
+}, 2300);
+
+// 3.0s: guess 1
+setTimeout(async () => {
+  await showRow(0, 0);
+}, 3000);
+
+// 4.6s: guess 2
+setTimeout(async () => {
+  await showRow(1, 1);
+}, 4600);
+
+// 6.0s: guess 3 (WIN)
+setTimeout(async () => {
+  await showRow(2, 2);
+  // Win effects
+  document.getElementById('win-flash').classList.add('burst');
+  launchConfetti();
+  const wm = document.getElementById('win-msg');
+  wm.textContent = '🎉  DUPONT CIRCLE  ·  SOLVED IN 3';
+  wm.classList.add('show');
+}, 6000);
+
+// 7.8s: transition to logo
+setTimeout(() => {
+  ph2.style.animation = 'ph1Out .5s ease forwards';
+  ph3.style.display = 'flex';
+  ph3.style.flexDirection = 'column';
+  ph3.style.alignItems = 'center';
+  void ph3.offsetWidth;
+  ph3.classList.add('active');
+  setTimeout(() => {
+    document.getElementById('logo-urban').classList.add('shimmer');
+    const stats = document.getElementById('logo-stats');
+    stats.classList.add('show');
+    const cta = document.getElementById('cta-wrap');
+    cta.classList.add('show');
+    document.getElementById('cta-divider').classList.add('grow');
+    document.getElementById('cta-btn').classList.add('pulse');
+  }, 500);
+}, 7800);
+
+// 10s: auto-dismiss
 let done = false;
-const timer = setTimeout(() => skipIntro(), 10000);
+const autoTimer = setTimeout(() => skipIntro(), 10000);
 
 function skipIntro() {
   if (done) return;
   done = true;
-  clearTimeout(timer);
-  document.getElementById('intro').classList.add('fade-out');
-  setTimeout(() => {
-    document.getElementById('intro').style.display = 'none';
-  }, 600);
+  animDone = true;
+  clearTimeout(autoTimer);
+  document.getElementById('intro').classList.add('bye');
+  setTimeout(() => document.getElementById('intro').style.display = 'none', 700);
 }
 </script>
 </body>
