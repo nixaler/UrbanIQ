@@ -288,6 +288,8 @@ function getOrCreatePlayerId():string{let id=localStorage.getItem("urbaniq_playe
 function CardSystemTab({pendingCard,onClearPending}){
   const CARD_STORAGE={col:"tgg-card-col",deck:"tgg-card-deck"};
   const[tab,setTab]=useState("collection");
+  const[openTypes,setOpenTypes]=useState<Record<string,boolean>>({transit:true,geography:true,sports:true});
+  const[openRarities,setOpenRarities]=useState<Record<string,boolean>>({});
   const[col,setCol]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.col)||"[]");}catch{return [];}});
   const[deck,setDeck]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.deck)||"[]");}catch{return [];}});
   const[sel,setSel]=useState(null);
@@ -418,7 +420,7 @@ function CardSystemTab({pendingCard,onClearPending}){
                 <div style={{fontSize:11,color:txt3,lineHeight:1.8}}>Win a daily puzzle round to earn your first card. Pro difficulty gives the best legendary drop rates.</div>
               </div>
             ):(
-              <div style={{display:"flex",flexDirection:"column",gap:20}}>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {([
                   {type:"transit",  label:"Transit",   emoji:"🚊", accent:"#028A48"},
                   {type:"geography",label:"Geography", emoji:"🗺️", accent:"#1a3a8f"},
@@ -426,31 +428,49 @@ function CardSystemTab({pendingCard,onClearPending}){
                 ] as {type:string,label:string,emoji:string,accent:string}[]).map(({type,label,emoji,accent})=>{
                   const typeCards=col.filter(c=>c.cardType===type);
                   if(typeCards.length===0) return null;
+                  const typeOpen=openTypes[type]!==false;
                   return(
-                    <div key={type}>
-                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,paddingBottom:6,borderBottom:`2px solid ${accent}`}}>
+                    <div key={type} style={{border:`1px solid ${border}`,borderRadius:12,overflow:"hidden"}}>
+                      {/* Type accordion header */}
+                      <div onClick={()=>setOpenTypes(p=>({...p,[type]:!typeOpen}))} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",background:card,cursor:"pointer",userSelect:"none"}}>
                         <span style={{fontSize:16}}>{emoji}</span>
-                        <span style={{fontSize:11,fontWeight:700,letterSpacing:2,color:accent,textTransform:"uppercase"}}>{label}</span>
-                        <span style={{fontSize:9,color:txt3,marginLeft:4}}>{typeCards.length} CARDS</span>
+                        <span style={{fontSize:11,fontWeight:700,letterSpacing:2,color:accent,textTransform:"uppercase",flex:1}}>{label}</span>
+                        <span style={{fontSize:9,color:txt3}}>{typeCards.length} CARDS</span>
+                        <span style={{fontSize:12,color:txt3,marginLeft:6,transition:"transform .2s",display:"inline-block",transform:typeOpen?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
                       </div>
-                      {(["legendary","rare","uncommon","common"] as const).map(r=>{
-                        const rc=CARD_RARITY[r.toUpperCase()]?.color||"#555";
-                        const rarityCards=typeCards.filter(c=>c.rarityId===r);
-                        if(rarityCards.length===0) return null;
-                        return(
-                          <div key={r} style={{marginBottom:14}}>
-                            <div style={{fontSize:8,fontWeight:700,letterSpacing:2,color:rc,textTransform:"uppercase",marginBottom:6}}>{r} · {rarityCards.length}</div>
-                            <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-                              {rarityCards.map(c=>(
-                                <div key={c.id} style={{position:"relative"}}>
-                                  <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
-                                  {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+                      {/* Type content */}
+                      {typeOpen&&(
+                        <div style={{padding:"10px 14px 14px",background:bg,display:"flex",flexDirection:"column",gap:6}}>
+                          {(["legendary","rare","uncommon","common"] as const).map(r=>{
+                            const rc=CARD_RARITY[r.toUpperCase()]?.color||"#555";
+                            const rarityCards=typeCards.filter(c=>c.rarityId===r);
+                            if(rarityCards.length===0) return null;
+                            const rKey=`${type}-${r}`;
+                            const rOpen=openRarities[rKey]!==false;
+                            return(
+                              <div key={r} style={{border:`1px solid ${border}`,borderRadius:8,overflow:"hidden"}}>
+                                {/* Rarity accordion header */}
+                                <div onClick={()=>setOpenRarities(p=>({...p,[rKey]:!rOpen}))} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:card,cursor:"pointer",userSelect:"none"}}>
+                                  <span style={{fontSize:9,fontWeight:700,letterSpacing:2,color:rc,textTransform:"uppercase",flex:1}}>{r}</span>
+                                  <span style={{fontSize:9,color:txt3}}>{rarityCards.length}</span>
+                                  <span style={{fontSize:10,color:txt3,marginLeft:6,transition:"transform .2s",display:"inline-block",transform:rOpen?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
+                                {/* Rarity cards */}
+                                {rOpen&&(
+                                  <div style={{display:"flex",flexWrap:"wrap",gap:10,padding:"10px 12px 12px"}}>
+                                    {rarityCards.map(c=>(
+                                      <div key={c.id} style={{position:"relative"}}>
+                                        <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
+                                        {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -3166,6 +3186,86 @@ function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>vo
   );
 }
 
+// ── MAPS INLINE VIEW (tab) ────────────────────────────────────────────────────
+function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
+  const GAMES_LIST=[
+    {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest",type:"transit"},
+    {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital",type:"transit"},
+    {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City",type:"transit"},
+    {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"Los Angeles County · SoCal",type:"transit"},
+    {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA",type:"transit"},
+    {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority · The Loop",type:"transit"},
+    {key:"states",name:"US States",emoji:"🗺️",accent:"#1a3a8f",sub:"All 50 states · Geography & Capitals",type:"geography"},
+    {key:"nfl",name:"NFL Teams",emoji:"🏈",accent:"#013369",sub:"32 franchises · AFC & NFC",type:"sports"},
+  ];
+  const[openMini,setOpenMini]=useState(true);
+  const[openGuides,setOpenGuides]=useState(true);
+  return(
+    <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10,fontFamily:"'JetBrains Mono',monospace"}}>
+      {/* Mini Games accordion */}
+      <div style={{border:"1px solid rgba(0,0,0,.1)",borderRadius:12,overflow:"hidden"}}>
+        <div onClick={()=>setOpenMini(p=>!p)} style={{display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"#f5f5f5",cursor:"pointer",userSelect:"none"}}>
+          <span style={{fontSize:18}}>🎮</span>
+          <span style={{fontSize:11,fontWeight:700,letterSpacing:2,flex:1,color:"#0a0a0a",textTransform:"uppercase"}}>Mini Games</span>
+          <span style={{fontSize:12,color:"#888",transition:"transform .2s",display:"inline-block",transform:openMini?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
+        </div>
+        {openMini&&(
+          <div style={{display:"flex",flexDirection:"column",gap:8,padding:"12px 14px 14px",background:"#fff"}}>
+            {GAMES_LIST.map(g=>(
+              <div key={g.key} onClick={()=>onSelectGame(g.key)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",borderRadius:10,border:`1.5px solid ${g.accent}22`,background:`linear-gradient(135deg,${g.accent}11,${g.accent}05)`,cursor:"pointer",transition:"all .15s"}}
+                onMouseEnter={e=>(e.currentTarget.style.background=`linear-gradient(135deg,${g.accent}22,${g.accent}11)`)}
+                onMouseLeave={e=>(e.currentTarget.style.background=`linear-gradient(135deg,${g.accent}11,${g.accent}05)`)}>
+                <span style={{fontSize:28,flexShrink:0}}>{g.emoji}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#0a0a0a",letterSpacing:.3}}>{g.name}</div>
+                  <div style={{fontSize:9,color:"#888",marginTop:2,letterSpacing:.5}}>{g.sub}</div>
+                </div>
+                <div style={{background:g.accent,color:"#fff",fontSize:9,fontWeight:700,padding:"6px 14px",borderRadius:20,letterSpacing:1,flexShrink:0}}>PLAY →</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Guides accordion */}
+      <div style={{border:"1px solid rgba(0,0,0,.1)",borderRadius:12,overflow:"hidden"}}>
+        <div onClick={()=>setOpenGuides(p=>!p)} style={{display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"#f5f5f5",cursor:"pointer",userSelect:"none"}}>
+          <span style={{fontSize:18}}>🗺️</span>
+          <span style={{fontSize:11,fontWeight:700,letterSpacing:2,flex:1,color:"#0a0a0a",textTransform:"uppercase"}}>Transit Maps & Guides</span>
+          <span style={{fontSize:12,color:"#888",transition:"transform .2s",display:"inline-block",transform:openGuides?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
+        </div>
+        {openGuides&&(
+          <div style={{padding:"12px 14px 14px",background:"#fff",display:"flex",flexDirection:"column",gap:10}}>
+            {[
+              {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",lines:[{name:"Blue",color:"#0066CC"},{name:"Red",color:"#CC0000"},{name:"Green",color:"#009933"},{name:"Orange",color:"#FF6600"},{name:"Yellow",color:"#CCAA00"}],stats:"97 stations · 5 lines"},
+              {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#0066CC"},{name:"Orange",color:"#FF8000"},{name:"Silver",color:"#A0A8B0"},{name:"Green",color:"#009933"},{name:"Yellow",color:"#CCAA00"}],stats:"98 stations · 6 lines"},
+              {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",lines:[{name:"Metro",color:"#003087"},{name:"Light Rail",color:"#F0A500"}],stats:"14 metro + 33 light rail stations"},
+              {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",lines:[{name:"A (Blue)",color:"#0072BC"},{name:"B (Red)",color:"#E3051B"},{name:"C (Green)",color:"#5B8731"},{name:"D (Purple)",color:"#8D1F8C"},{name:"E (Expo)",color:"#FDB913"}],stats:"109 stations · 6 lines"},
+              {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",lines:[{name:"1/2/3",color:"#EE352E"},{name:"4/5/6",color:"#00933C"},{name:"A/C/E",color:"#0039A6"},{name:"N/Q/R/W",color:"#FCCC0A"},{name:"L",color:"#A7A9AC"},{name:"7",color:"#B933AD"}],stats:"472 stations · 36 lines"},
+              {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",lines:[{name:"Red",color:"#C60C30"},{name:"Blue",color:"#00A1DE"},{name:"Brown",color:"#62361B"},{name:"Green",color:"#009B3A"},{name:"Orange",color:"#F9461C"},{name:"Purple",color:"#522398"}],stats:"145 stations · 8 lines"},
+            ].map(sys=>(
+              <div key={sys.key} style={{border:`1px solid ${sys.accent}33`,borderRadius:10,overflow:"hidden"}}>
+                <div style={{background:`linear-gradient(135deg,${sys.accent},${sys.accent}cc)`,padding:"12px 16px",display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:22}}>{sys.emoji}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{sys.name}</div>
+                    <div style={{fontSize:9,color:"rgba(255,255,255,.65)",marginTop:1}}>{sys.stats}</div>
+                  </div>
+                  <div onClick={()=>onSelectGame(sys.key)} style={{background:"rgba(255,255,255,.2)",border:"1px solid rgba(255,255,255,.4)",color:"#fff",fontSize:9,fontWeight:700,padding:"6px 14px",borderRadius:20,cursor:"pointer",letterSpacing:1}}>PLAY →</div>
+                </div>
+                <div style={{padding:"10px 16px 12px",display:"flex",flexWrap:"wrap",gap:6}}>
+                  {sys.lines.map((ln:any)=>(
+                    <div key={ln.name} style={{background:ln.color,color:"#fff",fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:.5}}>{ln.name}</div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
 function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
   const[tab,setTab]=useState("transit");
@@ -5722,7 +5822,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
       {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
       {tab==="maps"&&(
-        <MapsGuideModal onClose={()=>setTab("play")} onSelectGame={(gk)=>{onHome();}}/>
+        <MapsInlineView onSelectGame={(gk)=>{onHome();}}/>
       )}
       {tab==="cards"&&(
         <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
