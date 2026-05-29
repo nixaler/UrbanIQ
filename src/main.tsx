@@ -3314,7 +3314,7 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
       `}</style>
       {/* SVG map */}
       <div style={{position:"relative",padding:"8px 4px 4px"}}>
-        <svg viewBox={`0 0 ${map.w} ${map.h}`} style={{width:"100%",height:"auto",display:"block"}}>
+        <svg viewBox={`0 0 ${map.w} ${map.h}`} style={{width:"100%",height:"auto",display:"block",aspectRatio:`${map.w}/${map.h}`}}>
           <defs>
             {map.lines.map(l=>(
               <filter key={l.name} id={`glow-${l.name.replace(/[^a-z]/gi,"")}`} x="-50%" y="-50%" width="200%" height="200%">
@@ -3480,7 +3480,6 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
 // ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
 function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>void,defaultCity?:string}){
   const[selSys,setSelSys]=useState<string>(defaultCity||"pdx");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
   const SYSTEMS=[
     {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
       top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
@@ -3500,7 +3499,7 @@ function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>vo
   const BORDER="rgba(255,255,255,0.06)";
   const circumference=2*Math.PI*22;
   return(
-    <div style={{background:BG,minHeight:"100%",fontFamily:"'Inter',sans-serif"}}>
+    <div style={{background:BG,fontFamily:"'Inter',sans-serif"}}>
       <style>{`
         @keyframes miv-wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
         @keyframes miv-flow{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
@@ -3907,7 +3906,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           </h1>
           <div style={{fontWeight:300,fontSize:"clamp(13px,2.5vw,18px)",color:"rgba(255,255,255,0.38)",letterSpacing:5,marginBottom:28,animation:"spFadeIn .25s ease both"}}>A Guessing Game</div>
           {/* City photo hero banner — dark mode */}
-          {!heroImgFailed&&heroImgUrl&&<div style={{position:"relative",height:"clamp(160px,28vw,280px)",overflow:"hidden",marginBottom:0,animation:"spFadeIn .5s ease both"}}>
+          {!heroImgFailed&&heroImgUrl&&<div style={{position:"relative",height:"clamp(80px,18vw,200px)",overflow:"hidden",marginBottom:0,animation:"spFadeIn .5s ease both"}}>
             <img src={heroImgUrl} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:0.65,filter:"brightness(0.65) saturate(1.3)"}} onError={()=>setHeroImgFailed(true)}/>
             <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,transparent 40%,transparent 55%,rgba(0,0,0,0.85) 100%)"}}/>
             <div style={{position:"absolute",bottom:16,left:0,right:0,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
@@ -4091,7 +4090,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </nav>
 
       {/* HERO */}
-      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"24px 0 24px",position:"relative",background:"#FFFFFF",overflow:"clip"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -4223,44 +4222,19 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               </div>
             );
           })}
-          {/* MAPS accordion */}
-          {(()=>{
-            const mapsOpen=!lmCollapsed.has("MAPS");
-            const mapsSystems=[
-              {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest"},
-              {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital"},
-              {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City"},
-              {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"LA County · SoCal"},
-              {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA"},
-              {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority"},
-            ];
-            return(
-              <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
-                <button onClick={()=>toggleLmSection("MAPS")}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:mapsOpen?"#FAFAFA":"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
-                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:mapsOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-                </button>
-                {mapsOpen&&(
-                  <div style={{animation:"lmFadeIn .2s ease both",display:"flex",flexDirection:"column"}}>
-                    {mapsSystems.map((s,i)=>(
-                      <div key={s.key} onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-                        style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderBottom:i<mapsSystems.length-1?"2px solid #E8E5E0":"none",borderLeft:`5px solid ${s.accent}`,cursor:"pointer",background:"#fff",transition:"background .15s"}}
-                        onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
-                        onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
-                        <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{s.emoji}</div>
-                        <div style={{flex:1}}>
-                          <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{s.name}</div>
-                          <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{s.sub}</div>
-                        </div>
-                        <div style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600,flexShrink:0}}>View Map →</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+          {/* MAPS section */}
+          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+            <div style={{borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",background:"#fff"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
               </div>
-            );
-          })()}
+              <p style={{margin:"0 0 12px",fontSize:"11px",color:"#888580",lineHeight:1.6}}>Interactive transit maps for every city — explore lines, stations, and routes.</p>
+              <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
+                style={{width:"100%",background:"#0ea5e9",color:"#fff",border:"none",borderRadius:6,padding:"13px 16px",fontSize:"12px",fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Outfit',sans-serif",textTransform:"uppercase"}}>
+                Open Transit Maps →
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
