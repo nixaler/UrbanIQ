@@ -4461,6 +4461,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"LA County · SoCal"},
               {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA"},
               {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority"},
+              {key:"bos",name:"Boston T",emoji:"🦞",accent:"#DA291C",sub:"MBTA · Boston, MA"},
+              {key:"atl",name:"Atlanta MARTA",emoji:"🍑",accent:"#CE1141",sub:"MARTA · Atlanta, GA"},
             ];
             return(
               <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
@@ -6825,8 +6827,8 @@ function HypeIntro({onDone}:{onDone:()=>void}){
       <button id="hy-skip" onClick={skip}>SKIP ▶</button>
       {/* Phase 1 */}
       <div className="hy-ph" id="hy-ph1">
-        <div className="hy-hl" id="hy-l1">Six cities.</div>
-        <div className="hy-hl hy-c" id="hy-l2">868 stations.</div>
+        <div className="hy-hl" id="hy-l1">Eight cities.</div>
+        <div className="hy-hl hy-c" id="hy-l2">950+ stations.</div>
         <div className="hy-hl" id="hy-l3">One puzzle. Every day.</div>
         <div className="hy-sub" id="hy-ls">Can you guess today's station?</div>
         <div className="hy-chips" id="hy-lc">
