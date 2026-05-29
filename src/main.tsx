@@ -694,6 +694,8 @@ const BALT_LINES:{[k:string]:{bg:string,text:string}}={Metro:{bg:"#003087",text:
 const LA_LINES:{[k:string]:{bg:string,text:string}}={A:{bg:"#0072bc",text:"#fff"},B:{bg:"#e3131b",text:"#fff"},C:{bg:"#58a738",text:"#fff"},D:{bg:"#a05da5",text:"#fff"},E:{bg:"#f7b618",text:"#111"},K:{bg:"#e96bb0",text:"#fff"}};
 const NYC_LINES:{[k:string]:{bg:string,text:string}}={"1":{bg:"#EE352E",text:"#fff"},"2":{bg:"#EE352E",text:"#fff"},"3":{bg:"#EE352E",text:"#fff"},"4":{bg:"#00933C",text:"#fff"},"5":{bg:"#00933C",text:"#fff"},"6":{bg:"#00933C",text:"#fff"},"7":{bg:"#B933AD",text:"#fff"},"A":{bg:"#0039A6",text:"#fff"},"C":{bg:"#0039A6",text:"#fff"},"E":{bg:"#0039A6",text:"#fff"},"B":{bg:"#FF6319",text:"#fff"},"D":{bg:"#FF6319",text:"#fff"},"F":{bg:"#FF6319",text:"#fff"},"M":{bg:"#FF6319",text:"#fff"},"G":{bg:"#6CBE45",text:"#000"},"J":{bg:"#996633",text:"#fff"},"Z":{bg:"#996633",text:"#fff"},"L":{bg:"#A7A9AC",text:"#000"},"N":{bg:"#FCCC0A",text:"#000"},"Q":{bg:"#FCCC0A",text:"#000"},"R":{bg:"#FCCC0A",text:"#000"},"W":{bg:"#FCCC0A",text:"#000"},"S":{bg:"#808183",text:"#fff"}};
 const CHI_LINES:{[k:string]:{bg:string,text:string}}={Red:{bg:"#C60C30",text:"#fff"},Blue:{bg:"#00A1DE",text:"#fff"},Brown:{bg:"#62361B",text:"#fff"},Green:{bg:"#009B3A",text:"#fff"},Orange:{bg:"#F9461C",text:"#fff"},Pink:{bg:"#E27EA6",text:"#000"},Purple:{bg:"#522398",text:"#fff"},Yellow:{bg:"#F9E300",text:"#000"}};
+const BOS_LINES:{[k:string]:{bg:string,text:string}}={Red:{bg:"#DA291C",text:"#fff"},Orange:{bg:"#ED8B00",text:"#fff"},Green:{bg:"#00843D",text:"#fff"},Blue:{bg:"#003DA5",text:"#fff"},Silver:{bg:"#7C878E",text:"#fff"}};
+const ATL_LINES:{[k:string]:{bg:string,text:string}}={Red:{bg:"#CE1141",text:"#fff"},Gold:{bg:"#E8971E",text:"#111"},Blue:{bg:"#003087",text:"#fff"},Green:{bg:"#00833E",text:"#fff"}};
 
 // ── ZONE DATA ─────────────────────────────────────────────────────────────────
 const PDX_ZONE_DIST:{[k:string]:number}={"Downtown Portland":0,"Lloyd District":1,"North Portland":1,"SW Portland":1,"Inner East":1,"NE Portland":2,"SE Portland":2,"Airport":3,"East Portland":3,"Beaverton":3,"Milwaukie":3,"Gresham":4,"Hillsboro":4,"Clackamas":4};
@@ -723,6 +725,14 @@ const NYC_ADJ:{[k:string]:string[]}={"Manhattan":["Brooklyn","Queens","Bronx"],"
 const CHI_ZONE_DIST:{[k:string]:number}={"Loop":0,"North":1,"Northwest":2,"West":2,"Southwest":2,"South":2,"North Shore":3};
 const CHI_ZONE_COORDS:{[k:string]:[number,number]}={"Loop":[0,0],"North":[0,3],"Northwest":[-2,2],"West":[-3,0],"Southwest":[-1,-2],"South":[0,-3],"North Shore":[0,5]};
 const CHI_ADJ:{[k:string]:string[]}={"Loop":["North","Northwest","West","Southwest","South"],"North":["Loop","Northwest","North Shore"],"Northwest":["Loop","North","West"],"West":["Loop","Northwest","Southwest"],"Southwest":["Loop","West","South"],"South":["Loop","Southwest"],"North Shore":["North"]};
+
+const BOS_ZONE_DIST:{[k:string]:number}={"Downtown Boston":0,"Back Bay/Fenway":1,"Cambridge":2,"East Boston":2,"South Boston":2,"Jamaica Plain":3,"North Shore":3,"South Shore":4,"Outer Suburbs":4};
+const BOS_ZONE_COORDS:{[k:string]:[number,number]}={"Downtown Boston":[0,0],"Back Bay/Fenway":[-2,0],"Cambridge":[-2,3],"East Boston":[3,0],"South Boston":[1,-2],"Jamaica Plain":[-1,-3],"North Shore":[4,2],"South Shore":[0,-5],"Outer Suburbs":[-5,0]};
+const BOS_ADJ:{[k:string]:string[]}={"Downtown Boston":["Back Bay/Fenway","East Boston","South Boston","Cambridge"],"Back Bay/Fenway":["Downtown Boston","Cambridge","Jamaica Plain"],"Cambridge":["Downtown Boston","Back Bay/Fenway","North Shore"],"East Boston":["Downtown Boston","North Shore"],"South Boston":["Downtown Boston","Jamaica Plain","South Shore"],"Jamaica Plain":["Back Bay/Fenway","South Boston","Outer Suburbs"],"North Shore":["East Boston","Cambridge"],"South Shore":["South Boston"],"Outer Suburbs":["Jamaica Plain"]};
+
+const ATL_ZONE_DIST:{[k:string]:number}={"Downtown Atlanta":0,"Midtown":1,"Buckhead":2,"West End/Westside":2,"East Atlanta/Decatur":2,"Northeast Atlanta":3,"Airport/South":3,"North Springs":4};
+const ATL_ZONE_COORDS:{[k:string]:[number,number]}={"Downtown Atlanta":[0,0],"Midtown":[0,2],"Buckhead":[0,4],"West End/Westside":[-3,0],"East Atlanta/Decatur":[3,0],"Northeast Atlanta":[2,3],"Airport/South":[0,-4],"North Springs":[0,6]};
+const ATL_ADJ:{[k:string]:string[]}={"Downtown Atlanta":["Midtown","West End/Westside","East Atlanta/Decatur","Airport/South"],"Midtown":["Downtown Atlanta","Buckhead","Northeast Atlanta"],"Buckhead":["Midtown","North Springs","Northeast Atlanta"],"West End/Westside":["Downtown Atlanta"],"East Atlanta/Decatur":["Downtown Atlanta","Northeast Atlanta"],"Northeast Atlanta":["Midtown","Buckhead","East Atlanta/Decatur"],"Airport/South":["Downtown Atlanta"],"North Springs":["Buckhead"]};
 
 // ── DIRECTION HELPERS ─────────────────────────────────────────────────────────
 function dirFromCoords(fx:number,fy:number,tx:number,ty:number,fd:number,td:number){
@@ -806,6 +816,30 @@ function getCHIDir(f:string,t:string){
   if(r.label==="→ Go East")return{label:"→ Go East",sub:"Toward the Lakefront"};
   return{label:"← Go West",sub:"Toward O'Hare"};
 }
+function getBOSDir(f:string,t:string){
+  if(f===t)return{label:"✓ MATCH",sub:""};
+  const fd=BOS_ZONE_DIST[f]??2,td=BOS_ZONE_DIST[t]??2;
+  const[fx,fy]=BOS_ZONE_COORDS[f]||[0,0];const[tx,ty]=BOS_ZONE_COORDS[t]||[0,0];
+  const r=dirFromCoords(fx,fy,tx,ty,fd,td);
+  if(r.label==="→ Closer In")return{label:"→ Toward Downtown",sub:"Closer to Park Street"};
+  if(r.label==="← Further Out")return{label:"← Away from Downtown",sub:"Further out"};
+  if(r.label==="↑ Go North")return{label:"↑ Go North",sub:"Toward Cambridge/Somerville"};
+  if(r.label==="↓ Go South")return{label:"↓ Go South",sub:"Toward Braintree/Quincy"};
+  if(r.label==="→ Go East")return{label:"→ Go East",sub:"Toward East Boston/Airport"};
+  return{label:"← Go West",sub:"Toward Newton/Riverside"};
+}
+function getATLDir(f:string,t:string){
+  if(f===t)return{label:"✓ MATCH",sub:""};
+  const fd=ATL_ZONE_DIST[f]??2,td=ATL_ZONE_DIST[t]??2;
+  const[fx,fy]=ATL_ZONE_COORDS[f]||[0,0];const[tx,ty]=ATL_ZONE_COORDS[t]||[0,0];
+  const r=dirFromCoords(fx,fy,tx,ty,fd,td);
+  if(r.label==="→ Closer In")return{label:"→ Toward Downtown",sub:"Closer to Five Points"};
+  if(r.label==="← Further Out")return{label:"← Away from Downtown",sub:"Further out"};
+  if(r.label==="↑ Go North")return{label:"↑ Go North",sub:"Toward Buckhead/North Springs"};
+  if(r.label==="↓ Go South")return{label:"↓ Go South",sub:"Toward Airport/College Park"};
+  if(r.label==="→ Go East")return{label:"→ Go East",sub:"Toward Decatur/Doraville"};
+  return{label:"← Go West",sub:"Toward H.E. Holmes/Bankhead"};
+}
 function getStateDir(f:string,t:string){
   if(f===t)return{label:"✓ SAME REGION",sub:""};
   const fd=REGION_DIST[f]??2,td=REGION_DIST[t]??2;
@@ -865,6 +899,8 @@ const GAMES:{[k:string]:any}={
   la:{key:"la",name:"LA Metro",short:"LA",emoji:"🌴",sub:"Metro Rail · Los Angeles, CA",accent:"#0072bc",accentDark:"#2aa8ff",bgDark:"#01061a",bgLight:"#f0f7ff",winText:"Doors are closing!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:LA_LINES,adj:LA_ADJ,zDist:LA_ZONE_DIST,zCoords:LA_ZONE_COORDS,getDir:getLADir,type:"transit"},
   nyc:{key:"nyc",name:"NYC Subway",short:"NYC",emoji:"🗽",sub:"MTA · New York City, NY",accent:"#EE352E",accentDark:"#ff6666",bgDark:"#0a0002",bgLight:"#fff5f5",winText:"Stand clear of the closing doors!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:NYC_LINES,adj:NYC_ADJ,zDist:NYC_ZONE_DIST,zCoords:NYC_ZONE_COORDS,getDir:getNYCDir,type:"transit"},
   chi:{key:"chi",name:"Chicago L",short:"CHI",emoji:"🌬️",sub:"CTA · Chicago, IL",accent:"#C60C30",accentDark:"#ff3355",bgDark:"#0a0002",bgLight:"#fff5f5",winText:"Doors closing!",itemLabel:"station",itemEmoji:"🚊",diffConfig:TRANSIT_DIFF,lineColors:CHI_LINES,adj:CHI_ADJ,zDist:CHI_ZONE_DIST,zCoords:CHI_ZONE_COORDS,getDir:getCHIDir,type:"transit"},
+  bos:{key:"bos",name:"Boston T",short:"BOS",emoji:"🦞",sub:"MBTA · Boston, MA",accent:"#DA291C",accentDark:"#ff5555",bgDark:"#0a0001",bgLight:"#fff5f5",winText:"Last stop!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:BOS_LINES,adj:BOS_ADJ,zDist:BOS_ZONE_DIST,zCoords:BOS_ZONE_COORDS,getDir:getBOSDir,type:"transit"},
+  atl:{key:"atl",name:"Atlanta MARTA",short:"ATL",emoji:"🍑",sub:"MARTA · Atlanta, GA",accent:"#CE1141",accentDark:"#ff4466",bgDark:"#0a0002",bgLight:"#fff5f5",winText:"Doors closing!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:ATL_LINES,adj:ATL_ADJ,zDist:ATL_ZONE_DIST,zCoords:ATL_ZONE_COORDS,getDir:getATLDir,type:"transit"},
 };
 
 // ── COMPARE HELPERS ───────────────────────────────────────────────────────────
@@ -884,8 +920,8 @@ function cmpSize(g:number,t:number){if(g===t)return{color:"green",arrow:""};retu
 function buildGuess(item:any,target:any,gameKey:string){
   if(gameKey==="nfl"){return{item,confColor:cmpNFLConf(item.conf,target.conf),divColor:cmpNFLDiv(item.conf,item.div,target.conf,target.div),regionColor:cmpNFLRegion(item.region,target.region),sbResult:cmpSB(item.sb,target.sb),dirInfo:getNFLDir(item.region,target.region),yearResult:cmpYear(item.year,target.year,10)};}
   if(gameKey==="states"){return{item,regionColor:cmpRegion(item.region,target.region),coastColor:cmpCoast(item.coast,target.coast),popResult:cmpPop(item.pop,target.pop),dirInfo:getStateDir(item.region,target.region),yearResult:cmpYear(item.year,target.year,15),sizeResult:cmpSize(item.size,target.size)};}
-  const adj=gameKey==="pdx"?PDX_ADJ:gameKey==="balt"?BALT_ADJ:gameKey==="la"?LA_ADJ:gameKey==="nyc"?NYC_ADJ:gameKey==="chi"?CHI_ADJ:DC_ADJ;
-  const dirFn=gameKey==="pdx"?getPDXDir:gameKey==="balt"?getBALTDir:gameKey==="la"?getLADir:gameKey==="nyc"?getNYCDir:gameKey==="chi"?getCHIDir:getDCDir;
+  const adj=gameKey==="pdx"?PDX_ADJ:gameKey==="balt"?BALT_ADJ:gameKey==="la"?LA_ADJ:gameKey==="nyc"?NYC_ADJ:gameKey==="chi"?CHI_ADJ:gameKey==="bos"?BOS_ADJ:gameKey==="atl"?ATL_ADJ:DC_ADJ;
+  const dirFn=gameKey==="pdx"?getPDXDir:gameKey==="balt"?getBALTDir:gameKey==="la"?getLADir:gameKey==="nyc"?getNYCDir:gameKey==="chi"?getCHIDir:gameKey==="bos"?getBOSDir:gameKey==="atl"?getATLDir:getDCDir;
   return{item,linesColor:cmpLines(item.lines,target.lines),zoneColor:cmpZone(item.zone,target.zone,adj),trafficResult:cmpTraffic(item.traffic,target.traffic),dirInfo:dirFn(item.zone,target.zone),yearResult:cmpYear(item.year,target.year,5)};
 }
 function getFocusHint(guesses:any[],gameKey:string){
@@ -1217,6 +1253,9 @@ function generateHints(target:any,gameKey:string):[string,string]{
   else if(gameKey==="chi"){cultural=(CHI_HINTS[target.name]||["",""])[0]||null;}
   else if(gameKey==="pdx"){cultural=(PDX_HINTS[target.name]||["",""])[0]||null;}
   else if(gameKey==="dc"){cultural=(DC_HINTS[target.name]||["",""])[0]||null;}
+  else if(gameKey==="bos"){cultural=(BOS_HINTS[target.name]||["",""])[0]||null;}
+  else if(gameKey==="atl"){cultural=(ATL_HINTS[target.name]||["",""])[0]||null;}
+  else if(gameKey==="balt"){cultural=(BALT_HINTS[target.name]||["",""])[0]||null;}
   // Safe structural hint from data fields only
   const decade=`${Math.floor((target.year||2000)/10)*10}s`;
   const traffic=target.traffic>=4?"very busy stop":target.traffic>=3?"moderately busy":"a quieter stop";
@@ -1266,6 +1305,19 @@ const PEEK_LINES:Record<string,{name:string,color:string,start:string,end:string
     {name:"Pink",  color:"#E27EA6",start:"54th/Cermak",       end:"Loop"},
     {name:"Purple",color:"#522398",start:"Linden",            end:"Howard"},
   ],
+  bos:[
+    {name:"Red",   color:"#DA291C",start:"Braintree/Ashmont",end:"Alewife"},
+    {name:"Orange",color:"#ED8B00",start:"Forest Hills",     end:"Oak Grove"},
+    {name:"Green", color:"#00843D",start:"Heath St/Riverside",end:"Lechmere"},
+    {name:"Blue",  color:"#003DA5",start:"Bowdoin",          end:"Wonderland"},
+    {name:"Silver",color:"#7C878E",start:"South Station",    end:"Chelsea/Logan"},
+  ],
+  atl:[
+    {name:"Red",   color:"#CE1141",start:"Airport",          end:"North Springs"},
+    {name:"Gold",  color:"#E8971E",start:"Airport",          end:"Doraville"},
+    {name:"Blue",  color:"#003087",start:"H.E. Holmes",      end:"Indian Creek"},
+    {name:"Green", color:"#00833E",start:"Bankhead",         end:"Edgewood-Candler Park"},
+  ],
 };
 const PEEK_POS:Record<string,Record<string,Record<string,number>>>={
   pdx:{
@@ -1304,6 +1356,19 @@ const PEEK_POS:Record<string,Record<string,Record<string,number>>>={
     "Orange":{"Southwest":0.82,"Loop":0.15},
     "Pink":  {"West":0.82,"Northwest":0.50,"Loop":0.12},
     "Purple":{"North Shore":0.90,"North":0.60,"Loop":0.15},
+  },
+  bos:{
+    "Red":   {"South Shore":0.10,"South Boston":0.30,"Downtown Boston":0.50,"Cambridge":0.80,"Outer Suburbs":0.92},
+    "Orange":{"Jamaica Plain":0.10,"Downtown Boston":0.45,"Back Bay/Fenway":0.55,"Cambridge":0.72,"Outer Suburbs":0.90},
+    "Green": {"Jamaica Plain":0.08,"Back Bay/Fenway":0.30,"Downtown Boston":0.50,"Cambridge":0.72},
+    "Blue":  {"Downtown Boston":0.20,"East Boston":0.58,"North Shore":0.85},
+    "Silver":{"South Boston":0.25,"Downtown Boston":0.50,"East Boston":0.78},
+  },
+  atl:{
+    "Red":   {"Airport/South":0.08,"Downtown Atlanta":0.35,"Midtown":0.55,"Buckhead":0.72,"North Springs":0.92},
+    "Gold":  {"Airport/South":0.08,"Downtown Atlanta":0.35,"Midtown":0.55,"Buckhead":0.70,"Northeast Atlanta":0.88},
+    "Blue":  {"West End/Westside":0.10,"Downtown Atlanta":0.40,"East Atlanta/Decatur":0.82},
+    "Green": {"West End/Westside":0.08,"Downtown Atlanta":0.38,"East Atlanta/Decatur":0.85},
   },
 };
 function getPeekPos(zone:string,lineName:string,gk:string):number{
@@ -1425,7 +1490,7 @@ function daysSinceDate(dateStr:string){const[y,m,d]=dateStr.split("-").map(Numbe
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function getDayNum(){const n=new Date();return Math.floor((n.getTime()-new Date(n.getFullYear(),0,0).getTime())/86400000);}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
-function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
+function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="bos"?6:gameKey==="atl"?7:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
 function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
 function getDailyTrivia(questions:any[]){const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
@@ -1769,6 +1834,13 @@ const DC_IMG:Record<string,string>={
 const DC_STATIONS=DC_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:DC_IMG[name]?`https://en.wikipedia.org/wiki/Special:FilePath/${DC_IMG[name]}`:""}));
 
 // ── BALTIMORE MTA DATA ─────────────────────────────────────────────────────────
+const BALT_HINTS:{[k:string]:[string,string]}={
+  "Lexington Market":["One of America's oldest public markets — at the heart of the Metro and Light Rail network","Lexington Market has operated since 1782 — vendors sell fresh seafood, produce, and classic Baltimore food"],
+  "Johns Hopkins Hospital":["Eastern Metro terminus — anchors one of the world's most prestigious medical institutions","Consistently ranked #1 US hospital — the Metro was extended here to improve access for workers and patients"],
+  "Owings Mills":["Northwest terminus of the Metro SubwayLink — park-and-ride hub for Baltimore County commuters","Owings Mills is one of the largest park-and-ride facilities on the Metro system"],
+  "Penn Station":["Light Rail connects to Amtrak's Northeast Corridor at this Beaux-Arts landmark","The Penn Station building opened in 1911 — a restored architectural gem with a Donald Judd sculpture outside"],
+  "Camden Yards":["Light Rail stop adjacent to Oriole Park — one of MLB's most transit-friendly ballparks","Camden Yards opened in 1992 — the same year as the Light Rail — and is credited with sparking the retro-ballpark movement"],
+};
 const BALT_DYK=["The Baltimore Metro SubwayLink opened November 21, 1983 — the first rapid transit system in Maryland.","The Baltimore Light Rail opened April 22, 1992, originally running only from Lexington Market to Linthicum.","Lexington Market, served by both the Metro and Light Rail, has operated since 1782 — one of the oldest public markets in America.","Camden Yards opened the same year as the Light Rail in 1992, and the station helped make it one of MLB's most transit-accessible ballparks.","M&T Bank Stadium, home of the Ravens, is directly on the Light Rail — making Baltimore one of the NFL's most transit-friendly cities.","The BWI Airport Light Rail extension opened in 1997, connecting downtown Baltimore to the airport in about 35 minutes.","Johns Hopkins Hospital, the Metro's eastern terminus, is consistently ranked the #1 hospital in the United States.","Mondawmin Mall station was the site of civil unrest in 2015, bringing national attention to transit access and public safety.","Penn Station in Baltimore connects Light Rail to Amtrak's Northeast Corridor — the gorgeous Beaux-Arts building opened in 1911.","The Maryland State Fairgrounds at Timonium sees some of the highest single-event ridership surges on the entire Light Rail system during the State Fair each August."];
 const BALT_RAW:any[]=[
   ["Owings Mills",["Metro"],"Baltimore County N",3,1987,"Northwest terminus of Metro SubwayLink in Baltimore County","Owings Mills is a major commercial and residential hub in Baltimore County — one of the busier park-and-ride stations on the Metro."],
@@ -2377,6 +2449,128 @@ const CHI_IMG:Record<string,string>={
   "Harrison":"Harrison_Street_Chicago.jpg",
 };
 const CHI_STATIONS=CHI_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:CHI_IMG[name]?`https://en.wikipedia.org/wiki/Special:FilePath/${CHI_IMG[name]}`:""}));
+
+// ── BOSTON MBTA T DATA ─────────────────────────────────────────────────────────
+const BOS_DYK=["Boston's Green Line, opened in 1897, is the oldest subway line in the Western Hemisphere still in continuous operation.","Park Street station, at the heart of the T, has been in use since 1897 — making it one of America's oldest active subway stations.","The MBTA Red Line gets its name from Harvard's crimson color — Cambridge's Harvard Square is a major destination.","Boston's Blue Line directly connects downtown to Logan Airport in about 8 minutes — one of the fastest airport connections in the US.","The T's Silver Line BRT uses a unique hybrid system: electric power underground and diesel above ground.","Kenmore Square is served by all three Green Line branches — B, C, and D — making it one of the busiest streetcar stations in North America.","South Station is Boston's largest rail hub — Amtrak, commuter rail, buses, and the Red and Silver Lines all converge here.","The MBTA runs the country's first subway signal upgrade — the Green Line Extension opened new stations in Somerville and Medford in 2022.","Harvard station on the Red Line is the deepest station in the Boston system — 105 feet underground due to the hilly terrain of Cambridge.","Back Bay station serves the second-busiest Amtrak stop in New England — the renovated Victorian terminal is a commuter landmark."];
+const BOS_HINTS:{[k:string]:[string,string]}={
+  "Park Street":["The historic heart of the MBTA — Red and Green Lines cross here beneath Boston Common","Opened in 1897 as part of the nation's first subway — the station's neon signs are a Boston icon"],
+  "Downtown Crossing":["Major downtown hub where Orange and Red Lines meet — the open-air shopping street above is famous","Downtown Crossing is the busiest pedestrian zone in Boston — Filene's Basement was a landmark here for decades"],
+  "South Station":["Boston's largest transit hub — Red Line, Silver Line, Amtrak, and commuter rail all converge","South Station handles over 100,000 passengers daily — the Beaux-Arts headhouse opened in 1899"],
+  "Harvard":["Red Line station serving Harvard University — deepest station in the Boston system at 105 feet","Harvard Yard is steps away — the station opened in 1912 and serves the oldest university in the US (founded 1636)"],
+  "Kendall/MIT":["Red Line station adjacent to MIT's campus — at the heart of Cambridge's innovation corridor","The Kendall Square area is one of the most concentrated biotech and tech hubs in the world"],
+  "Alewife":["Northwestern terminus of the Red Line — major park-and-ride hub connecting suburbs to Cambridge","Alewife opened in 1985, built over the Alewife Brook — Cambridge's gateway to the northwest suburbs"],
+  "Airport":["Blue Line station with direct access to Logan Airport — only 8 minutes from downtown","The airport shuttle runs between this station and all Logan terminals — making it one of the fastest airport connections in the US"],
+  "Wonderland":["Eastern terminus of the Blue Line in Revere — steps from Revere Beach, America's first public beach","Revere Beach was designated America's first public beach in 1896 — the Blue Line brought Boston residents here all summer long"],
+  "Kenmore":["Green Line hub where B, C, and D branches converge — at the edge of Fenway Park","Fenway Park, opened in 1912, is the oldest baseball stadium in Major League Baseball — steps from Kenmore station"],
+  "Back Bay":["Orange Line stop and Amtrak station — in Boston's most upscale residential neighborhood","Back Bay was literally filled in from the bay between 1857 and 1882 — the neighborhood's grid layout reflects its engineered origins"],
+};
+const BOS_RAW:any[]=[
+  ["Park Street",["Red","Green"],"Downtown Boston",5,1897,"Historic heart of the T — Red and Green Lines meet beneath Boston Common","Opened in 1897 as part of America's first subway — the Park Street Church above opened in 1810."],
+  ["Downtown Crossing",["Red","Orange"],"Downtown Boston",5,1897,"The busiest open-air intersection in New England — Red and Orange Lines cross here","Filene's Basement, just above, was a Boston retail institution for over a century."],
+  ["South Station",["Red","Silver"],"South Boston",5,1899,"Boston's largest transit hub — Red Line, Silver Line, Amtrak, and commuter rail","The Beaux-Arts headhouse opened in 1899 — over 100,000 passengers pass through daily."],
+  ["North Station",["Green","Orange"],"Downtown Boston",4,1975,"Gateway to the North Shore — Green and Orange Lines, Amtrak, and commuter rail to Maine","TD Garden, home to the Celtics and Bruins, is connected directly to this station."],
+  ["Government Center",["Green","Blue"],"Downtown Boston",4,1963,"Green and Blue Lines meet at the civic heart of Boston — steps from City Hall","The City Hall Plaza above was one of America's most controversial urban renewal projects when built in 1968."],
+  ["State",["Orange","Blue"],"Downtown Boston",4,1904,"Financial District hub — Orange and Blue Lines connect here","The Old State House (1713) is steps away — site of the Boston Massacre in 1770."],
+  ["Haymarket",["Green","Orange"],"Downtown Boston",4,1898,"Gateway to the North End — Green and Orange Lines near the famous outdoor market","Haymarket is home to Boston's oldest outdoor produce market, operating since 1830."],
+  ["Kenmore",["Green"],"Back Bay/Fenway",4,1932,"Green Line hub near Fenway Park — B, C, and D branches all stop here","Fenway Park (1912) is the oldest active Major League Baseball stadium — steps from Kenmore station."],
+  ["Copley",["Green"],"Back Bay/Fenway",4,1897,"Back Bay's most elegant station — at the intersection of art and architecture","Copley Square above has Trinity Church (1877) and the Boston Public Library (1895) facing each other."],
+  ["Back Bay",["Orange"],"Back Bay/Fenway",4,1987,"Orange Line and Amtrak station in Boston's most upscale neighborhood","Back Bay was literally filled in from the bay between 1857 and 1882 — the grid layout is famously un-Bostonian."],
+  ["Ruggles",["Orange"],"Back Bay/Fenway",3,1987,"Northeastern University gateway station — an important academic hub","Northeastern's co-op program makes it one of the most career-connected universities in the US."],
+  ["Roxbury Crossing",["Orange"],"Back Bay/Fenway",3,1987,"Roxbury hub connecting the Orange Line to MBTA bus routes","Roxbury has been a center of Boston's African-American community since the Great Migration."],
+  ["Harvard",["Red"],"Cambridge",5,1912,"Red Line station 105 feet underground — deepest station in the Boston T","Harvard University, founded in 1636, is the oldest university in the United States."],
+  ["Central",["Red"],"Cambridge",4,1912,"Central Square — diverse dining, music venues, and activist culture in Cambridge","Central Square is Cambridge's most diverse neighborhood — a beloved mix of cultures and cuisines."],
+  ["Kendall/MIT",["Red"],"Cambridge",4,1918,"MIT's gateway station — at the center of the world's top innovation cluster","Kendall Square is home to more biotech and tech startups per square mile than anywhere else on Earth."],
+  ["Porter",["Red"],"Cambridge",3,1984,"Porter Square in Cambridge — Red Line and commuter rail connections","Porter Square has an acclaimed Japanese restaurant scene — a reflection of the MIT and Harvard international community."],
+  ["Davis",["Red"],"Cambridge",4,1984,"Davis Square in Somerville — one of Greater Boston's liveliest neighborhoods","Davis Square was named 'the hippest neighborhood in America' by Rolling Stone in the late 1990s."],
+  ["Alewife",["Red"],"Outer Suburbs",3,1985,"Northwestern terminus of the Red Line — major park-and-ride hub","Alewife opened in 1985, built over Alewife Brook — the gateway station for Cambridge and the northwest suburbs."],
+  ["Airport",["Blue"],"East Boston",4,1952,"Blue Line's direct connection to Logan Airport — 8 minutes from downtown Boston","The shuttle between Airport station and all Logan terminals makes this one of the fastest airport rail connections in the US."],
+  ["Maverick",["Blue"],"East Boston",3,1924,"East Boston's main Blue Line hub — served the immigrant community for decades","East Boston has been Boston's gateway for immigrants since the 1840s — a vibrant Italian-American neighborhood historically."],
+  ["Wonderland",["Blue"],"North Shore",3,1952,"Eastern terminus of the Blue Line — steps from America's first public beach","Revere Beach, designated in 1896, was the first public beach in the United States — the Blue Line brought Boston day-trippers here."],
+  ["Revere Beach",["Blue"],"North Shore",3,1952,"A classic beach stop on the Blue Line — oceanfront platform views","The Blue Line runs along Revere Beach with ocean views — a rare treat on an urban transit system."],
+  ["Orient Heights",["Blue"],"East Boston",2,1952,"Blue Line station in the Orient Heights neighborhood of East Boston","Orient Heights offers sweeping views of Boston Harbor and the downtown skyline from its hillside location."],
+  ["Wood Island",["Blue"],"East Boston",2,1952,"East Boston neighborhood station on the Blue Line","Wood Island Park nearby was designed by Frederick Law Olmsted — a piece of the Emerald Necklace in East Boston."],
+  ["Aquarium",["Blue"],"Downtown Boston",3,1952,"Steps from the New England Aquarium on the Boston waterfront","The New England Aquarium, opened in 1969, hosts over 1.3 million visitors per year — the Blue Line is the best way to get there."],
+  ["Bowdoin",["Blue"],"Downtown Boston",2,1924,"The western terminus of the Blue Line — low-key but historically significant","Bowdoin station serves Beacon Hill and the MGH area — it operates only during peak hours on weekdays."],
+  ["Charles/MGH",["Red"],"Downtown Boston",4,1932,"Beacon Hill and Massachusetts General Hospital — a beautiful riverside station","MGH, founded in 1811, is one of the top research hospitals in the world — this station is its transit lifeline."],
+  ["Andrew",["Red"],"South Boston",3,1918,"South Boston station near UMass Boston and the Bayside Expo Center","The area around Andrew Square has transformed dramatically with new development in the 2010s and 2020s."],
+  ["Broadway",["Red"],"South Boston",3,1918,"South Boston neighborhood station — Red Line stop in evolving 'Southie'","South Boston has undergone massive gentrification since the 2010s — Broadway is at the center of the transformation."],
+  ["JFK/UMass",["Red"],"South Boston",4,1988,"Transfer station for the Ashmont and Braintree Red Line branches","The John F. Kennedy Presidential Library and Museum is a short shuttle ride from this station."],
+  ["Ashmont",["Red"],"South Boston",3,1897,"Southern terminus of the Ashmont branch — serves Dorchester and Codman Square","Ashmont station connects to the Mattapan High Speed Line, a heritage streetcar route still using PCC cars."],
+  ["Braintree",["Red"],"South Shore",3,1980,"Southern terminus of the Braintree branch — major park-and-ride for the South Shore","Braintree is the final stop on the Red Line — served by South Shore commuters since 1980."],
+  ["Quincy Center",["Red"],"South Shore",3,1971,"Downtown Quincy station — birthplace of Presidents Adams and Adams","John Adams and John Quincy Adams were both born in Quincy — the Adams National Historical Park is nearby."],
+  ["Quincy Adams",["Red"],"South Shore",3,1980,"Red Line station with the T's largest park-and-ride lot","The Quincy Adams station park-and-ride lot holds over 2,400 vehicles — one of the largest in the MBTA system."],
+  ["Forest Hills",["Orange"],"Jamaica Plain",3,1987,"Southern terminus of the Orange Line — a major bus hub for the Southwest Corridor","Forest Hills connects to the Franklin Park Zoo and Arnold Arboretum — two gems of Frederick Law Olmsted's Emerald Necklace."],
+  ["Jackson Square",["Orange"],"Jamaica Plain",3,1987,"Orange Line station in Jamaica Plain — arts and culture hub","Jamaica Plain is known for its vibrant Latino community, craft breweries, and the Jamaica Pond walking path."],
+  ["Stony Brook",["Orange"],"Jamaica Plain",2,1987,"Quiet Jamaica Plain residential station on the Orange Line","The Southwest Corridor Park runs along the Orange Line here — a green linear park through the heart of Boston."],
+  ["Green Street",["Orange"],"Jamaica Plain",2,1987,"Leafy Jamaica Plain residential stop on the Orange Line","Green Street station serves the residential heart of Jamaica Plain — the neighborhood was named for Jamaican rum trade."],
+  ["Sullivan Square",["Orange"],"Cambridge",3,1901,"Charlestown industrial district — Orange Line connection to Bunker Hill","The Bunker Hill Monument, site of the American Revolution's first major battle, is a short walk from Sullivan Square."],
+  ["Community College",["Orange"],"Cambridge",2,1901,"Bunker Hill Community College area — Charlestown neighborhood station","Charlestown is Boston's oldest neighborhood — settled in 1629, predating Boston itself."],
+  ["Oak Grove",["Orange"],"Outer Suburbs",2,1977,"Northern terminus of the Orange Line in Malden","Malden Center station on the commuter rail connects Oak Grove to the regional rail network."],
+  ["Wellington",["Orange"],"Outer Suburbs",3,1977,"Revere/Malden border station — large park-and-ride on the Orange Line","Wellington station is one of the Orange Line's most-used park-and-ride facilities for northern suburbs."],
+  ["Assembly",["Orange"],"Outer Suburbs",3,2014,"One of the newest stations on the Orange Line — Assembly Row mixed-use development","Assembly Row is one of Greater Boston's largest mixed-use developments — retail, restaurants, and residential along the Mystic River."],
+  ["Malden Center",["Orange"],"Outer Suburbs",3,1977,"Orange Line hub in downtown Malden — connections to commuter rail","Malden is one of the most diverse cities in Massachusetts — the Orange Line makes it a popular affordable alternative to Boston."],
+  ["Chelsea",["Silver"],"East Boston",2,2018,"Silver Line terminus in Chelsea — newest extension in the MBTA network","Chelsea is one of the most densely populated cities in the US — the Silver Line extension improved connections to Logan Airport significantly."],
+  ["World Trade Center",["Silver"],"South Boston",3,2004,"Silver Line station in the Seaport District — Boston's fastest-growing neighborhood","The Seaport District transformed from a working harbor to a billion-dollar innovation district in just 15 years."],
+  ["Courthouse",["Silver"],"South Boston",3,2004,"Silver Line station near the federal courthouse and Fan Pier","Fan Pier is home to the Institute of Contemporary Art — Boston's premier contemporary art museum opened here in 2006."],
+  ["Tufts Medical Center",["Orange"],"Downtown Boston",3,1987,"Orange Line station serving Tufts Medical Center and Boston Medical Center","The area around this station is part of Boston's South End Medical Area — one of the largest in New England."],
+];
+const BOS_STATIONS=BOS_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:""}));
+
+// ── ATLANTA MARTA DATA ─────────────────────────────────────────────────────────
+const ATL_DYK=["MARTA, opened in 1979, was the first rapid transit system in the American South — serving Atlanta's growing metro population.","Five Points station is the hub of the entire MARTA system — all four lines (Red, Gold, Blue, Green) intersect here.","Hartsfield-Jackson Atlanta International Airport, served by MARTA, is the world's busiest airport by passenger count since 1998.","The MARTA Gold Line runs to Doraville, home to one of the most diverse zip codes in the United States.","Atlanta's midtown station serves the Fox Theatre, a 1929 Moorish Revival movie palace that's one of the most beautiful buildings in the South.","Peachtree Center station sits beneath the famous Peachtree Street corridor, Atlanta's main spine running 14 miles through the city.","North Springs station, the Red Line's northern terminus, opened in 2000 and serves one of the fastest-growing suburban corridors in the US.","MARTA's airport connection to Hartsfield-Jackson is free for transit passengers — one of the few major US airports with direct rail service.","Inman Park/Reynoldstown station is the gateway to Atlanta's most popular neighborhood for young professionals — a revitalized streetcar suburb.","The MARTA system covers 48 route miles and serves 38 stations, making it one of the South's most significant public transit investments."];
+const ATL_HINTS:{[k:string]:[string,string]}={
+  "Five Points":["The central hub of MARTA — all four lines meet here in the heart of downtown Atlanta","Five Points is named for the five-road intersection above — the geographic and transit heart of Atlanta since the 1800s"],
+  "Hartsfield-Jackson Airport":["World's busiest airport, served directly by MARTA's Red and Gold Lines — a 24-minute ride from downtown","Hartsfield-Jackson has been the world's busiest airport by passenger count every year since 1998 — MARTA makes it uniquely accessible"],
+  "Peachtree Center":["Red and Gold Lines station beneath Peachtree Street — Atlanta's famous main street runs 14 miles through the city","The Peachtree Center complex above includes hotels, offices, and the Merchandise Mart — an Atlanta landmark since 1976"],
+  "Midtown":["Red and Gold Lines station in Atlanta's cultural and arts district","The High Museum of Art, the Fox Theatre, and Piedmont Park are all within walking distance of Midtown station"],
+  "Buckhead":["Red Line station in Atlanta's most upscale neighborhood — the Beverly Hills of the South","Buckhead is known for luxury shopping on Peachtree Road and some of Atlanta's top restaurants"],
+  "North Springs":["The northern terminus of MARTA's Red Line — at the edge of Atlanta's northern suburbs","North Springs opened in 2000 as MARTA's longest extension — it includes one of the system's largest park-and-ride lots"],
+  "Decatur":["Blue Line station in the walkable city of Decatur — a community frequently cited as a model of urban living","Decatur is one of the most walkable, bikeable cities in Georgia — its MARTA connection makes it a car-optional community"],
+  "Inman Park/Reynoldstown":["Blue and Green Line station in Atlanta's hippest neighborhood — the birthplace of the bungalow style in the South","Inman Park, founded in 1889 as Atlanta's first planned suburb, is now one of Georgia's most desirable zip codes"],
+  "Vine City":["Blue and Green Line station adjacent to the historic Vine City neighborhood — steps from Mercedes-Benz Stadium","Vine City was home to many leaders of the Civil Rights Movement — Martin Luther King Jr. lived nearby"],
+  "Arts Center":["Red and Gold Lines station near the Woodruff Arts Center and High Museum of Art","The Woodruff Arts Center is the third-largest arts center in the US — anchor of Atlanta's thriving arts scene"],
+};
+const ATL_RAW:any[]=[
+  ["Five Points",["Red","Gold","Blue","Green"],"Downtown Atlanta",5,1979,"The central hub of MARTA — all four lines meet here beneath downtown Atlanta","Five Points is named for the five-road intersection above — the geographic heart of Atlanta since 1837."],
+  ["Peachtree Center",["Red","Gold"],"Downtown Atlanta",4,1979,"Red and Gold Lines beneath the Peachtree Center complex — heart of downtown commerce","The Peachtree Center complex includes the Merchandise Mart and multiple hotels — an Atlanta landmark since 1976."],
+  ["Civic Center",["Red","Gold"],"Downtown Atlanta",3,1979,"Red and Gold Lines in the civic center district — near the Atlanta Civic Center","The Atlanta Civic Center hosted major concerts and events for decades before its 2014 demolition."],
+  ["North Avenue",["Red","Gold"],"Downtown Atlanta",3,1979,"Gateway to Midtown — Red and Gold Lines near Georgia Tech","Georgia Tech's campus begins just north of North Avenue — one of the top engineering schools in the US."],
+  ["Midtown",["Red","Gold"],"Midtown",4,1979,"Atlanta's arts and culture hub — Fox Theatre and Piedmont Park nearby","The Fox Theatre (1929) is one of America's most beautiful old movie palaces — still hosting Broadway tours."],
+  ["Arts Center",["Red","Gold"],"Midtown",4,1979,"Steps from the High Museum of Art and Woodruff Arts Center","The Woodruff Arts Center is the third-largest performing arts center in the US."],
+  ["Lindbergh Center",["Red","Gold"],"Buckhead",3,1984,"Transfer station where Red and Gold Lines diverge — in the Lindbergh City Center","Lindbergh Center is named for Charles Lindbergh, who had a flying school near this location in the 1920s."],
+  ["Buckhead",["Red"],"Buckhead",4,1984,"Red Line station in Atlanta's most upscale shopping and dining district","Buckhead's Peachtree Road corridor features some of the South's finest restaurants and luxury retail."],
+  ["Medical Center",["Red"],"Buckhead",3,1984,"Red Line station near Piedmont Hospital and major medical facilities","Piedmont Hospital, one of Atlanta's most prominent hospitals, is directly served by this station."],
+  ["Dunwoody",["Red"],"North Suburbs",3,2000,"Red Line station in north Atlanta's tech and business corridor","Dunwoody is home to State Farm's Southeast headquarters and part of Atlanta's technology belt."],
+  ["Sandy Springs",["Red"],"North Suburbs",3,2000,"Red Line station in the city of Sandy Springs — major northern suburb","Sandy Springs became Georgia's second-largest city after incorporating in 2005 — a major MARTA destination."],
+  ["North Springs",["Red"],"North Suburbs",3,2000,"Northern terminus of the Red Line — major park-and-ride for northern suburbs","North Springs has one of MARTA's largest parking facilities — a key park-and-ride for Alpharetta and Roswell commuters."],
+  ["Lenox",["Gold"],"Northeast Atlanta",4,1984,"Gold Line station adjacent to Lenox Square — one of the Southeast's busiest malls","Lenox Square has been the anchor of Buckhead's retail scene since 1959 — the station drives enormous weekend ridership."],
+  ["Brookhaven/Oglethorpe",["Gold"],"Northeast Atlanta",3,1984,"Gold Line station in Brookhaven — growing midtown suburb","Brookhaven became Georgia's newest city in 2012, incorporating the Brookhaven area around this station."],
+  ["Chamblee",["Gold"],"Northeast Atlanta",3,1984,"Gold Line station in Chamblee — one of metro Atlanta's most diverse cities","Chamblee is known as 'Chambodia' for its large Southeast Asian population — the International Village on Buford Highway is nearby."],
+  ["Doraville",["Gold"],"Northeast Atlanta",2,1992,"Northeastern terminus of the Gold Line — gateway to the International Village corridor","Doraville and neighboring Chamblee form the most ethnically diverse corridor in Georgia — the Buford Highway food scene is legendary."],
+  ["Garnett",["Red","Gold"],"Downtown Atlanta",3,1979,"Red and Gold Lines south of Five Points — the southbound gateway toward the airport","Garnett station serves the historic Mechanicsville neighborhood and connects to Forsyth Street corridor."],
+  ["West End",["Red","Gold"],"Downtown Atlanta",3,1979,"Historic African-American neighborhood — Red and Gold Lines along the Westside","West End is one of Atlanta's oldest neighborhoods — the birthplace of Atlanta University Center's legacy."],
+  ["Oakland City",["Red","Gold"],"Downtown Atlanta",2,1979,"Red and Gold Lines in Southwest Atlanta — serving the airport corridor","Oakland City is a historic southwest Atlanta community with a strong neighborhood association and arts scene."],
+  ["Lakewood/Ft McPherson",["Red","Gold"],"Downtown Atlanta",2,1979,"Red and Gold Lines near Fort McPherson — historic military installation site","Fort McPherson, a former Army base, is being redeveloped as Tyler Perry Studios — one of the largest film studios in the US."],
+  ["East Point",["Red","Gold"],"Airport/South",3,1979,"Red and Gold Lines in East Point — gateway city to Hartsfield-Jackson Airport","East Point is known as the city within a city — its own downtown sits between Atlanta and the world's busiest airport."],
+  ["College Park",["Red","Gold"],"Airport/South",3,1979,"Red and Gold Lines in College Park — southern suburbs near the airport","College Park is home to the Georgia International Convention Center and several major hotels near Hartsfield-Jackson."],
+  ["Hartsfield-Jackson Airport",["Red","Gold"],"Airport/South",5,1988,"World's busiest airport, served by MARTA's Red and Gold Lines","Hartsfield-Jackson has been the world's busiest airport by passenger count every year since 1998 — 104 million passengers in 2023."],
+  ["H.E. Holmes",["Blue","Green"],"West End/Westside",2,1979,"Western terminus of the Blue and Green Lines — Hamilton E. Holmes station","Holmes was a pioneering figure — one of the first two Black students to desegregate the University of Georgia in 1961."],
+  ["West Lake",["Blue"],"West End/Westside",2,1979,"Blue Line station in the West Lake neighborhood of Atlanta's Westside","The Westside is one of Atlanta's fastest-growing areas — major investment has flowed here since the 2000s."],
+  ["Ashby",["Blue","Green"],"West End/Westside",3,1979,"Blue and Green Lines in West Atlanta — near the Atlanta University Center","The Atlanta University Center (Morehouse, Spelman, Clark Atlanta) is the largest consortium of HBCUs in the world."],
+  ["Vine City",["Blue","Green"],"Downtown Atlanta",3,1979,"Historic Civil Rights neighborhood — steps from Mercedes-Benz Stadium","Vine City was home to many Civil Rights leaders — Martin Luther King Jr. and John Lewis lived in this neighborhood."],
+  ["GWCC/CNN Center",["Blue","Green"],"Downtown Atlanta",4,1979,"Blue and Green Lines at CNN Center and the Georgia World Congress Center","CNN's world headquarters has been here since 1976 — the Georgia World Congress Center is one of the largest in the US."],
+  ["Georgia State",["Blue","Green"],"Downtown Atlanta",3,1979,"Blue and Green Lines near Georgia State University — in Sweet Auburn","Sweet Auburn Historic District is the birthplace of Martin Luther King Jr. and a National Historic Landmark."],
+  ["King Memorial",["Blue","Green"],"East Atlanta/Decatur",3,1979,"Named for Martin Luther King Jr. — near the MLK National Historic Site","The Martin Luther King Jr. National Historic Site is walking distance from this station — a must-visit landmark."],
+  ["Inman Park/Reynoldstown",["Blue","Green"],"East Atlanta/Decatur",4,1979,"Gateway to Atlanta's most popular neighborhood — founded as Atlanta's first planned suburb in 1889","Inman Park's Victorian homes and bungalows are among the most sought-after in Atlanta — the Beltline runs nearby."],
+  ["Edgewood/Candler Park",["Blue","Green"],"East Atlanta/Decatur",3,1979,"Eastern terminal of the Green Line — serves Edgewood and Candler Park neighborhoods","Candler Park is one of Atlanta's most beloved urban neighborhoods — the Little Five Points area is nearby."],
+  ["Decatur",["Blue"],"East Atlanta/Decatur",4,1979,"City of Decatur station — a model of walkable, transit-oriented urbanism in Georgia","Decatur's downtown has been cited as a national model for transit-oriented development and walkability."],
+  ["East Lake",["Blue"],"East Atlanta/Decatur",3,1979,"Blue Line station in the East Lake neighborhood — site of major urban renewal","The East Lake Golf Club is steps away — site of the TOUR Championship and a major neighborhood revitalization story."],
+  ["Avondale",["Blue"],"East Atlanta/Decatur",2,1979,"Blue Line station in Avondale Estates — a historic planned community","Avondale Estates was built in 1924 as a planned Tudor-style community — one of metro Atlanta's most distinctive neighborhoods."],
+  ["Kensington",["Blue"],"East Atlanta/Decatur",3,1979,"Blue Line station serving DeKalb County's Stone Mountain corridor","Kensington is a key transfer point for bus routes into Stone Mountain Park and eastern DeKalb County."],
+  ["Indian Creek",["Blue"],"East Atlanta/Decatur",2,1979,"Eastern terminus of the Blue Line — in Stone Mountain, Georgia","Indian Creek opened in 1979 and serves the diverse communities along Memorial Drive in eastern DeKalb County."],
+  ["Bankhead",["Green"],"West End/Westside",2,1992,"Western terminus of the Green Line — in Atlanta's Bankhead neighborhood","Bankhead is one of Atlanta's oldest communities — the neighborhood is seeing major redevelopment through the Westside BeltLine."],
+];
+const ATL_STATIONS=ATL_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:""}));
 
 const STATES_RAW:any[]=[
   ["Maine","Northeast","Atlantic",2,1820,3,"Augusta","New England's largest state by area","Maine produces 90% of the nation's lobster supply.","ME"],
@@ -3123,7 +3317,7 @@ function SupporterModal({onClose,isSupporter,supporterEmail}:{onClose:()=>void,i
 
 // ── CARD PROGRESS WIDGET ──────────────────────────────────────────────────────
 function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>void}){
-  const GAMES_KEYS=["pdx","dc","states","nfl","balt","la"];
+  const GAMES_KEYS=["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"];
   const today=new Date().toISOString().slice(0,10);
   // Count today's wins across all games (max 15 total: 5 games × 3 rounds each)
   const [todayWins,setTodayWins]=useState(0);
@@ -3284,6 +3478,34 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
         {name:"Green",color:"#009B3A",pts:[{x:22,y:232,label:"Harlem/Lake"},{x:72,y:232,label:"Oak Park"},{x:125,y:232,label:"Laramie"},{x:168,y:228,label:"Pulaski"},{x:205,y:224,label:"Ashland"},{x:226,y:218,label:"Clinton"},{x:235,y:200,label:"Clark/Lake"},{x:235,y:252,label:"Roosevelt"},{x:255,y:272,label:"35th-Bronzeville"},{x:272,y:305,label:"43rd St"},{x:288,y:332,label:"Cottage Grove"}]},
         {name:"Orange",color:"#F9461C",pts:[{x:188,y:338,label:"Midway"},{x:205,y:312,label:"Kedzie"},{x:218,y:285,label:"Western"},{x:228,y:258,label:"35th/Archer"},{x:233,y:240,label:"Ashland"},{x:235,y:225,label:"Halsted"},{x:235,y:200,label:"Clark/Lake"}]},
         {name:"Purple",color:"#522398",pts:[{x:50,y:22,label:"Linden"},{x:92,y:22,label:"Central"},{x:135,y:22,label:"Noyes"},{x:175,y:22,label:"Davis"},{x:212,y:22,label:"Dempster"},{x:235,y:22,label:"Howard"},{x:235,y:175,label:"Clark/Lake (Exp)"}]},
+      ]},
+    bos:{w:480,h:330,emoji:"🦞",name:"Boston T",accent:"#DA291C",stats:"53 stations · 5 lines · 38 mi",
+      info:{
+        Red:{vibe:"Core spine · Busiest line",districts:"Braintree · Ashmont · Andrew · South Station · Park St · Kendall/MIT · Harvard · Alewife",hint:"America's oldest rapid transit line — Red Line opened in 1897"},
+        Orange:{vibe:"North-South corridor · Urban",districts:"Oak Grove · Wellington · Sullivan Sq · North Station · Downtown · Back Bay · Forest Hills",hint:"Runs through some of Boston's most historic neighborhoods"},
+        Green:{vibe:"Surface + subway · Branching",districts:"Lechmere · North Station · Park St · Copley · Kenmore · Riverside · Heath St",hint:"Largest light rail system in the US — multiple branches west of Kenmore"},
+        Blue:{vibe:"Airport connector · East Boston",districts:"Bowdoin · Gov Center · Aquarium · Maverick · Airport · Revere · Wonderland",hint:"Only MBTA line with direct access to Logan Airport stations"},
+        Silver:{vibe:"BRT rapid bus · Waterfront",districts:"South Station · World Trade Center · Airport · Chelsea",hint:"Bus rapid transit in dedicated lanes — newest line in the system"},
+      },
+      lines:[
+        {name:"Red",color:"#DA291C",pts:[{x:72,y:32,label:"Alewife"},{x:98,y:58,label:"Davis"},{x:120,y:80,label:"Porter"},{x:145,y:102,label:"Harvard"},{x:170,y:125,label:"Central"},{x:195,y:148,label:"Kendall/MIT"},{x:215,y:165,label:"Charles/MGH"},{x:228,y:175,label:"Park Street"},{x:238,y:188,label:"Downtown Crossing"},{x:245,y:208,label:"South Station"},{x:252,y:228,label:"Broadway"},{x:258,y:248,label:"Andrew"},{x:264,y:268,label:"JFK/UMass"},{x:270,y:295,label:"Ashmont"},{x:268,y:318,label:"Braintree"}]},
+        {name:"Orange",color:"#ED8B00",pts:[{x:348,y:22,label:"Oak Grove"},{x:332,y:45,label:"Malden Center"},{x:318,y:65,label:"Wellington"},{x:308,y:85,label:"Assembly"},{x:298,y:105,label:"Sullivan Square"},{x:288,y:125,label:"Community College"},{x:278,y:142,label:"North Station"},{x:264,y:158,label:"Haymarket"},{x:252,y:168,label:"State"},{x:238,y:188,label:"Downtown Crossing"},{x:228,y:208,label:"Tufts Medical Center"},{x:220,y:225,label:"Back Bay"},{x:212,y:245,label:"Ruggles"},{x:202,y:262,label:"Roxbury Crossing"},{x:190,y:282,label:"Jackson Square"},{x:178,y:298,label:"Stony Brook"},{x:165,y:315,label:"Forest Hills"}]},
+        {name:"Green",color:"#00843D",pts:[{x:38,y:185,label:"Riverside"},{x:80,y:183,label:"Waban"},{x:118,y:181,label:"Newton Centre"},{x:148,y:180,label:"Chestnut Hill"},{x:172,y:179,label:"Kenmore"},{x:195,y:178,label:"Copley"},{x:212,y:177,label:"Arlington"},{x:220,y:175,label:"Boylston"},{x:228,y:175,label:"Park Street"},{x:242,y:162,label:"Government Center"},{x:258,y:150,label:"Haymarket"},{x:272,y:138,label:"North Station"},{x:295,y:122,label:"Lechmere"}]},
+        {name:"Blue",color:"#003DA5",pts:[{x:228,y:170,label:"Bowdoin"},{x:242,y:162,label:"Government Center"},{x:256,y:168,label:"State"},{x:272,y:175,label:"Aquarium"},{x:298,y:172,label:"Maverick"},{x:330,y:168,label:"Airport"},{x:358,y:162,label:"Wood Island"},{x:385,y:155,label:"Orient Heights"},{x:415,y:148,label:"Suffolk Downs"},{x:442,y:142,label:"Beachmont"},{x:462,y:132,label:"Wonderland"}]},
+        {name:"Silver",color:"#7C878E",pts:[{x:348,y:195,label:"Chelsea"},{x:330,y:178,label:"Airport Terminals"},{x:295,y:218,label:"World Trade Center"},{x:278,y:228,label:"Courthouse"},{x:245,y:208,label:"South Station"}]},
+      ]},
+    atl:{w:480,h:330,emoji:"🍑",name:"Atlanta MARTA",accent:"#CE1141",stats:"38 stations · 4 lines · 48 mi",
+      info:{
+        Red:{vibe:"Airport to North Springs · Main spine",districts:"Airport · College Park · West End · Five Points · Midtown · Buckhead · Sandy Springs · North Springs",hint:"Runs from Hartsfield-Jackson to the northern suburbs — longest MARTA line"},
+        Gold:{vibe:"Airport to Doraville · Northeast branch",districts:"Airport · Five Points · Midtown · Lindbergh · Lenox · Brookhaven · Doraville",hint:"Shares the south corridor with Red, splits northeast at Lindbergh"},
+        Blue:{vibe:"East-West crosstown",districts:"H.E. Holmes · Vine City · Five Points · Inman Park · Decatur · Indian Creek",hint:"Longest east-west line — connects diverse neighborhoods across Atlanta"},
+        Green:{vibe:"Inner east-west shuttle",districts:"Bankhead · Vine City · Five Points · Inman Park · Edgewood",hint:"Shorter line sharing the east-west corridor — frequent service on inner segment"},
+      },
+      lines:[
+        {name:"Red",color:"#CE1141",pts:[{x:240,y:308,label:"Hartsfield-Jackson Airport"},{x:240,y:285,label:"College Park"},{x:240,y:262,label:"East Point"},{x:240,y:242,label:"Lakewood/Ft McPherson"},{x:240,y:222,label:"West End"},{x:240,y:200,label:"Garnett"},{x:240,y:172,label:"Five Points"},{x:240,y:152,label:"Peachtree Center"},{x:240,y:132,label:"Civic Center"},{x:240,y:112,label:"North Avenue"},{x:240,y:92,label:"Midtown"},{x:240,y:72,label:"Arts Center"},{x:240,y:55,label:"Lindbergh Center"},{x:228,y:38,label:"Buckhead"},{x:215,y:24,label:"Medical Center"},{x:200,y:12,label:"North Springs"}]},
+        {name:"Gold",color:"#E8971E",pts:[{x:240,y:308,label:"Airport (Gold)"},{x:240,y:285,label:"College Park (G)"},{x:240,y:262,label:"East Point (G)"},{x:240,y:242,label:"Lakewood (G)"},{x:240,y:222,label:"West End (G)"},{x:240,y:200,label:"Garnett (G)"},{x:240,y:172,label:"Five Points (G)"},{x:240,y:152,label:"Peachtree Center (G)"},{x:240,y:132,label:"Civic Center (G)"},{x:240,y:112,label:"North Avenue (G)"},{x:240,y:92,label:"Midtown (G)"},{x:240,y:72,label:"Arts Center (G)"},{x:240,y:55,label:"Lindbergh Center"},{x:265,y:40,label:"Lenox"},{x:292,y:28,label:"Brookhaven/Oglethorpe"},{x:320,y:17,label:"Chamblee"},{x:348,y:8,label:"Doraville"}]},
+        {name:"Blue",color:"#003087",pts:[{x:35,y:172,label:"H.E. Holmes"},{x:65,y:172,label:"West Lake"},{x:95,y:172,label:"Ashby"},{x:122,y:172,label:"Vine City"},{x:152,y:172,label:"GWCC/CNN Center"},{x:240,y:172,label:"Five Points"},{x:265,y:172,label:"Georgia State"},{x:292,y:172,label:"King Memorial"},{x:320,y:172,label:"Inman Park"},{x:348,y:175,label:"Edgewood/Candler Park"},{x:378,y:175,label:"Decatur"},{x:408,y:175,label:"Avondale"},{x:440,y:175,label:"Kensington"},{x:465,y:175,label:"Indian Creek"}]},
+        {name:"Green",color:"#00833E",pts:[{x:55,y:168,label:"Bankhead"},{x:95,y:172,label:"Ashby (G)"},{x:122,y:172,label:"Vine City (G)"},{x:152,y:172,label:"GWCC (G)"},{x:240,y:172,label:"Five Points (G)"},{x:265,y:172,label:"Georgia State (G)"},{x:292,y:172,label:"King Memorial (G)"},{x:320,y:172,label:"Inman Park (G)"},{x:348,y:175,label:"Edgewood/Candler Park (G)"}]},
       ]},
   };
   const map=MAPS[systemKey];
@@ -3494,6 +3716,10 @@ function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>vo
       top:[{n:"Times Sq-42 St",t:"6:35 PM"},{n:"Grand Central",t:"6:28 PM"},{n:"Fulton St",t:"6:22 PM"}]},
     {key:"chi",name:"Chicago L",city:"Chicago, IL",emoji:"🌬️",accent:"#C60C30",lines:6,stations:145,riders:"218K",health:86,tagline:"The Loop. The L. The city.",
       top:[{n:"Clark/Lake",t:"5:48 PM"},{n:"O'Hare",t:"5:40 PM"},{n:"Roosevelt",t:"5:32 PM"}]},
+    {key:"bos",name:"Boston T",city:"Boston, MA",emoji:"🦞",accent:"#DA291C",lines:5,stations:53,riders:"315K",health:82,tagline:"America's oldest subway, still running.",
+      top:[{n:"Park Street",t:"5:22 PM"},{n:"Downtown Crossing",t:"5:18 PM"},{n:"South Station",t:"5:10 PM"}]},
+    {key:"atl",name:"Atlanta MARTA",city:"Atlanta, GA",emoji:"🍑",accent:"#CE1141",lines:4,stations:38,riders:"195K",health:85,tagline:"Moving the New South forward.",
+      top:[{n:"Five Points",t:"5:30 PM"},{n:"Hartsfield-Jackson Airport",t:"5:22 PM"},{n:"Peachtree Center",t:"5:15 PM"}]},
   ];
   const sys=SYSTEMS.find(s=>s.key===selSys);
   const BG="#080c12";
@@ -3720,7 +3946,7 @@ function DkCard({g,featured,delay,darkHov,setDarkHov,onSelectGame}:{g:any,featur
 }
 function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:()=>void,onSelectGame:(gk:string)=>void,initialShowSupport?:boolean,settings?:any}){
   const dayNum=useMemo(getDayNum,[]);
-  const hotGameKey=useMemo(()=>{const d=new Date().getDay();return d===0?"nyc":d===1?"pdx":d===2?"dc":d===3?"states":d===4?"nfl":d===5?"la":d===6?"chi":"balt";},[]);
+  const hotGameKey=useMemo(()=>{const d=new Date().getDay();return d===0?"nyc":d===1?"pdx":d===2?"dc":d===3?"states":d===4?"nfl":d===5?"bos":d===6?"atl":"chi";},[]);
   const [showBeta,setShowBeta]=useState(false);
   const [showInstall,setShowInstall]=useState(false);
   const [showSupport,setShowSupport]=useState(!!initialShowSupport);
@@ -3732,7 +3958,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [supporterEmail]=useState(()=>localStorage.getItem("supporter_email")||"");
   const [topStreak,setTopStreak]=useState(0);
   const [lmStats,setLmStats]=useState({played:0,wins:0,avgGuesses:0});
-  useEffect(()=>{(async()=>{const keys=["pdx","dc","states","nfl","balt","la","nyc","chi"];const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));setTopStreak(Math.max(...stats.map((s:any)=>s?.streak||0)));const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const tg=stats.reduce((s:number,st:any)=>s+(st?.totalGuesses||0),0);setLmStats({played:tp,wins:tw,avgGuesses:tw>0?Math.round((tg/tw)*10)/10:0});})();},[]);
+  useEffect(()=>{(async()=>{const keys=["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"];const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));setTopStreak(Math.max(...stats.map((s:any)=>s?.streak||0)));const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const tg=stats.reduce((s:number,st:any)=>s+(st?.totalGuesses||0),0);setLmStats({played:tp,wins:tw,avgGuesses:tw>0?Math.round((tg/tw)*10)/10:0});})();},[]);
   const [notifEnabled,setNotifEnabled]=useState(()=>localStorage.getItem("tgg:notif:sub")==="1");
   const [notifLoading,setNotifLoading]=useState(false);
   const [notifMsg,setNotifMsg]=useState<string|null>(null);
@@ -3807,6 +4033,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     {key:"la",   emoji:"🌴",name:"LA Metro",       tag:"TRANSIT",    sub:"Metro Rail · Los Angeles, CA",color:"#0072bc",grad:"linear-gradient(135deg,#0072bc,#005a96)",photo:"/photo-la.jpg"},
     {key:"nyc",  emoji:"🗽",name:"NYC Subway",     tag:"TRANSIT",    sub:"MTA · New York City, NY",    color:"#EE352E",grad:"linear-gradient(135deg,#EE352E,#a01010)",photo:"/photo-nyc.jpg"},
     {key:"chi",  emoji:"🌬️",name:"Chicago L",    tag:"TRANSIT",    sub:"CTA · Chicago, IL",           color:"#C60C30",grad:"linear-gradient(135deg,#C60C30,#850920)",photo:"/photo-chi.jpg"},
+    {key:"bos",  emoji:"🦞",name:"Boston T",      tag:"TRANSIT",    sub:"MBTA · Boston, MA",           color:"#DA291C",grad:"linear-gradient(135deg,#DA291C,#9a1a10)",photo:"/photo-bos.jpg"},
+    {key:"atl",  emoji:"🍑",name:"Atlanta MARTA", tag:"TRANSIT",    sub:"MARTA · Atlanta, GA",         color:"#CE1141",grad:"linear-gradient(135deg,#CE1141,#8a0028)",photo:"/photo-atl.jpg"},
     {key:"states",emoji:"🗺️",name:"US States",   tag:"GEOGRAPHY",  sub:"50 states · Regions",        color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",photo:"/photo-states.jpg"},
     {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"/photo-nfl.jpg"},
     {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"/photo-arcade.jpg"},
@@ -4011,7 +4239,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <CardProgressWidget dark={true} onOpenCards={()=>onSelectGame("cards")}/>
 
         {/* Yesterday's Answer Teaser — dark mode */}
-        {(()=>{const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:STATES;const yest=getYesterday(yItems,hotGameKey);const G2=GAMES[hotGameKey];if(!yest)return null;return(
+        {(()=>{const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;const yest=getYesterday(yItems,hotGameKey);const G2=GAMES[hotGameKey];if(!yest)return null;return(
           <div style={{maxWidth:680,margin:"0 auto",padding:"0 48px 8px",boxSizing:"border-box",animation:"spFadeIn .2s ease both"}}>
             <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:G2.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0}}>{G2.emoji}</div>
@@ -4269,7 +4497,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
       {/* YESTERDAY */}
       {(()=>{
-        const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:STATES;
+        const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;
         const yest=getYesterday(yItems,hotGameKey);
         const G2=GAMES[hotGameKey];
         if(!yest)return null;
@@ -5250,13 +5478,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[profileCopied,setProfileCopied]=useState(false);
   const ER={guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};
   const ES={streak:0,played:0,wins:0,totalGuesses:0,dist:{1:0,2:0,3:0,4:0,5:0,6:0},hardWins:0,proWins:0};
-  const[allStats,setAllStats]=useState<any>({pdx:ES,dc:ES,states:ES,nfl:ES,balt:ES,la:ES,nyc:ES,chi:ES});
-  const[allUnlocked,setAllUnlocked]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[]});
-  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0});
-  const[playHistory,setPlayHistory]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[]});
+  const[allStats,setAllStats]=useState<any>({pdx:ES,dc:ES,states:ES,nfl:ES,balt:ES,la:ES,nyc:ES,chi:ES,bos:ES,atl:ES});
+  const[allUnlocked,setAllUnlocked]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
+  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
+  const[playHistory,setPlayHistory]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
   const[newAchieves,setNewAchieves]=useState<any[]>([]);
   const[round,setRound]=useState(0);
-  const[dailyPoints,setDailyPoints]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0});
+  const[dailyPoints,setDailyPoints]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
   const[roundData,setRoundData]=useState<any>({
     pdx:[{...ER},{...ER},{...ER}],
     dc:[{...ER},{...ER},{...ER}],
@@ -5266,6 +5494,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     la:[{...ER},{...ER},{...ER}],
     nyc:[{...ER},{...ER},{...ER}],
     chi:[{...ER},{...ER},{...ER}],
+    bos:[{...ER},{...ER},{...ER}],
+    atl:[{...ER},{...ER},{...ER}],
   });
   const[rowReveal,setRowReveal]=useState<any>({});
   const[input,setInput]=useState("");
@@ -5305,7 +5535,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};}
   const G=GAMES[gameKey];
   const DIFF=G.diffConfig[diff];
-  const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:STATES;
+  const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:STATES;
   const target=useMemo(()=>getTarget(items,gameKey,round),[gameKey,round]);
   const yesterday=useMemo(()=>getYesterday(items,gameKey),[gameKey]);
   const stats=allStats[gameKey];
@@ -5315,7 +5545,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const T=useMemo(()=>getTheme(gameKey,settings),[gameKey,settings]);
   const fs=T.fs;
   const lineColors=G.lineColors||{};
-  const didYouKnow=useMemo(()=>{const pool=gameKey==="pdx"?PDX_DYK:gameKey==="dc"?DC_DYK:gameKey==="nfl"?NFL_DYK:gameKey==="balt"?BALT_DYK:gameKey==="la"?LA_DYK:gameKey==="nyc"?NYC_DYK:gameKey==="chi"?CHI_DYK:STATES.map(s=>s.fact);return pool[dayNum%pool.length];},[gameKey,dayNum]);
+  const didYouKnow=useMemo(()=>{const pool=gameKey==="pdx"?PDX_DYK:gameKey==="dc"?DC_DYK:gameKey==="nfl"?NFL_DYK:gameKey==="balt"?BALT_DYK:gameKey==="la"?LA_DYK:gameKey==="nyc"?NYC_DYK:gameKey==="chi"?CHI_DYK:gameKey==="bos"?BOS_DYK:gameKey==="atl"?ATL_DYK:STATES.map(s=>s.fact);return pool[dayNum%pool.length];},[gameKey,dayNum]);
   const openingClues=useMemo(()=>{
     const clues:string[]=[];
     if(DIFF.clues.includes("year"))clues.push(gameKey==="nfl"?`📅 Founded in ${target.year}`:`📅 Opened/Admitted in ${target.year}`);
@@ -5335,12 +5565,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
   useEffect(()=>{
     (async()=>{
-      const[prf,sett,pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,pdxUnl,dcUnl,stUnl,nflUnl,baltUnl,laUnl,nycUnl,chiUnl,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,pdxHist,dcHist,stHist,nflHist,baltHist,laHist,nycHist,chiHist,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2]=await Promise.all([
+      const[prf,sett,pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxUnl,dcUnl,stUnl,nflUnl,baltUnl,laUnl,nycUnl,chiUnl,bosUnl,atlUnl,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,pdxHist,dcHist,stHist,nflHist,baltHist,laHist,nycHist,chiHist,bosHist,atlHist,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
         getProfile(),getSettings(),
-        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),
-        getUnlocked("pdx"),getUnlocked("dc"),getUnlocked("states"),getUnlocked("nfl"),getUnlocked("balt"),getUnlocked("la"),getUnlocked("nyc"),getUnlocked("chi"),
-        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),
-        getPlayHistory("pdx"),getPlayHistory("dc"),getPlayHistory("states"),getPlayHistory("nfl"),getPlayHistory("balt"),getPlayHistory("la"),getPlayHistory("nyc"),getPlayHistory("chi"),
+        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
+        getUnlocked("pdx"),getUnlocked("dc"),getUnlocked("states"),getUnlocked("nfl"),getUnlocked("balt"),getUnlocked("la"),getUnlocked("nyc"),getUnlocked("chi"),getUnlocked("bos"),getUnlocked("atl"),
+        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
+        getPlayHistory("pdx"),getPlayHistory("dc"),getPlayHistory("states"),getPlayHistory("nfl"),getPlayHistory("balt"),getPlayHistory("la"),getPlayHistory("nyc"),getPlayHistory("chi"),getPlayHistory("bos"),getPlayHistory("atl"),
         getTodayData("pdx",today+"r0"),getTodayData("pdx",today+"r1"),getTodayData("pdx",today+"r2"),
         getTodayData("dc",today+"r0"),getTodayData("dc",today+"r1"),getTodayData("dc",today+"r2"),
         getTodayData("states",today+"r0"),getTodayData("states",today+"r1"),getTodayData("states",today+"r2"),
@@ -5349,12 +5579,14 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         getTodayData("la",today+"r0"),getTodayData("la",today+"r1"),getTodayData("la",today+"r2"),
         getTodayData("nyc",today+"r0"),getTodayData("nyc",today+"r1"),getTodayData("nyc",today+"r2"),
         getTodayData("chi",today+"r0"),getTodayData("chi",today+"r1"),getTodayData("chi",today+"r2"),
+        getTodayData("bos",today+"r0"),getTodayData("bos",today+"r1"),getTodayData("bos",today+"r2"),
+        getTodayData("atl",today+"r0"),getTodayData("atl",today+"r1"),getTodayData("atl",today+"r2"),
       ]);
       setProfile(prf);setSettings(sett);SoundEngine.setEnabled(sett?.sounds!==false);
-      setAllStats({pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt});
-      setAllUnlocked({pdx:pdxUnl,dc:dcUnl,states:stUnl,nfl:nflUnl,balt:baltUnl,la:laUnl,nyc:nycUnl,chi:chiUnl});
-      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0});
-      setPlayHistory({pdx:pdxHist||[],dc:dcHist||[],states:stHist||[],nfl:nflHist||[],balt:baltHist||[],la:laHist||[],nyc:nycHist||[],chi:chiHist||[]});
+      setAllStats({pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt});
+      setAllUnlocked({pdx:pdxUnl,dc:dcUnl,states:stUnl,nfl:nflUnl,balt:baltUnl,la:laUnl,nyc:nycUnl,chi:chiUnl,bos:bosUnl,atl:atlUnl});
+      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
+      setPlayHistory({pdx:pdxHist||[],dc:dcHist||[],states:stHist||[],nfl:nflHist||[],balt:baltHist||[],la:laHist||[],nyc:nycHist||[],chi:chiHist||[],bos:bosHist||[],atl:atlHist||[]});
       function buildRound(td:any,its:any[],gk:string,roundIdx:number){
         if(!td?.guesses)return emptyRound();
         const storedTgt=td.targetName?its.find((s:any)=>s.name===td.targetName):null;
@@ -5371,9 +5603,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         la:[buildRound(laR0,LA_STATIONS,"la",0),buildRound(laR1,LA_STATIONS,"la",1),buildRound(laR2,LA_STATIONS,"la",2)],
         nyc:[buildRound(nycR0,NYC_STATIONS,"nyc",0),buildRound(nycR1,NYC_STATIONS,"nyc",1),buildRound(nycR2,NYC_STATIONS,"nyc",2)],
         chi:[buildRound(chiR0,CHI_STATIONS,"chi",0),buildRound(chiR1,CHI_STATIONS,"chi",1),buildRound(chiR2,CHI_STATIONS,"chi",2)],
+        bos:[buildRound(bosR0,BOS_STATIONS,"bos",0),buildRound(bosR1,BOS_STATIONS,"bos",1),buildRound(bosR2,BOS_STATIONS,"bos",2)],
+        atl:[buildRound(atlR0,ATL_STATIONS,"atl",0),buildRound(atlR1,ATL_STATIONS,"atl",1),buildRound(atlR2,ATL_STATIONS,"atl",2)],
       };
       setRoundData(newRoundData);
-      setDailyPoints({pdx:newRoundData.pdx.filter((r:any)=>r.won).length,dc:newRoundData.dc.filter((r:any)=>r.won).length,states:newRoundData.states.filter((r:any)=>r.won).length,nfl:newRoundData.nfl.filter((r:any)=>r.won).length,balt:newRoundData.balt.filter((r:any)=>r.won).length,la:newRoundData.la.filter((r:any)=>r.won).length,nyc:newRoundData.nyc.filter((r:any)=>r.won).length,chi:newRoundData.chi.filter((r:any)=>r.won).length});
+      setDailyPoints({pdx:newRoundData.pdx.filter((r:any)=>r.won).length,dc:newRoundData.dc.filter((r:any)=>r.won).length,states:newRoundData.states.filter((r:any)=>r.won).length,nfl:newRoundData.nfl.filter((r:any)=>r.won).length,balt:newRoundData.balt.filter((r:any)=>r.won).length,la:newRoundData.la.filter((r:any)=>r.won).length,nyc:newRoundData.nyc.filter((r:any)=>r.won).length,chi:newRoundData.chi.filter((r:any)=>r.won).length,bos:newRoundData.bos.filter((r:any)=>r.won).length,atl:newRoundData.atl.filter((r:any)=>r.won).length});
       const firstInc=newRoundData[gameKey as keyof typeof newRoundData].findIndex((r:any)=>!r.alreadyPlayed);
       if(firstInc>0)setRound(firstInc);
     })();
@@ -5663,7 +5897,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           </button>
           {showGameDrop&&(
             <div style={{position:"absolute",top:"calc(100% + 5px)",left:0,right:0,background:T.card,border:`1px solid ${T.border}`,borderRadius:12,zIndex:9001,boxShadow:"0 8px 28px rgba(0,0,0,0.22)",overflow:"hidden",minWidth:200}}>
-              {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
+              {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi","bos","atl"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
                 <div key={label}>
                   <div style={{fontSize:fs(7),letterSpacing:2,color:T.textMuted,padding:"8px 12px 3px",fontWeight:700,borderTop:`1px solid ${T.border}`,marginTop:label.includes("TRANSIT")?0:0}}>{label}</div>
                   {keys.map(k=>{const g=GAMES[k];if(!g)return null;const em=k==="states"?"🗺️":k==="pdx"?"🚊":k==="nfl"?"🏈":k==="balt"?"🚉":k==="la"?"🌴":k==="nyc"?"🗽":k==="chi"?"🌬️":"🚇";return(
@@ -5693,7 +5927,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         <div style={{fontSize:fs(7),letterSpacing:4,color:T.textMuted,marginBottom:4}}>{G.sub}</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:fs(34),fontWeight:900,letterSpacing:3,lineHeight:1,marginBottom:4}}>
           <span style={{color:"transparent",backgroundImage:`linear-gradient(90deg,${G.accent},${T.accentB},${G.accent})`,backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmer 4s linear infinite"}}>Daily</span>{" "}
-          <span style={{color:T.text}}>{gameKey==="pdx"?"MAX":gameKey==="dc"?"METRO":gameKey==="nfl"?"TEAMS":gameKey==="balt"?"MTA":gameKey==="la"?"METRO":gameKey==="nyc"?"SUBWAY":gameKey==="chi"?"L":"STATE"}</span>
+          <span style={{color:T.text}}>{gameKey==="pdx"?"MAX":gameKey==="dc"?"METRO":gameKey==="nfl"?"TEAMS":gameKey==="balt"?"MTA":gameKey==="la"?"METRO":gameKey==="nyc"?"SUBWAY":gameKey==="chi"?"L":gameKey==="bos"?"T":gameKey==="atl"?"MARTA":"STATE"}</span>
           {gameKey!=="states"&&<span style={{color:G.accent,fontSize:fs(26)}}> {G.short}</span>}
         </div>
         <div style={{fontSize:fs(7),letterSpacing:3,color:T.textMuted,marginBottom:10}}>PUZZLE · DAY #{dayNum}</div>
@@ -6671,9 +6905,9 @@ function Root(){
   });
   const RER={guesses:[],won:false,lost:false,alreadyPlayed:false};
   const RES={streak:0,played:0,wins:0,totalGuesses:0,dist:{1:0,2:0,3:0,4:0,5:0,6:0}};
-  const[allStats,setAllStats]=useState<any>({pdx:RES,dc:RES,states:RES,nfl:RES,balt:RES,la:RES,nyc:RES,chi:RES});
-  const[roundData,setRoundData]=useState<any>({pdx:[{...RER},{...RER},{...RER}],dc:[{...RER},{...RER},{...RER}],states:[{...RER},{...RER},{...RER}],nfl:[{...RER},{...RER},{...RER}],balt:[{...RER},{...RER},{...RER}],la:[{...RER},{...RER},{...RER}],nyc:[{...RER},{...RER},{...RER}],chi:[{...RER},{...RER},{...RER}]});
-  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0});
+  const[allStats,setAllStats]=useState<any>({pdx:RES,dc:RES,states:RES,nfl:RES,balt:RES,la:RES,nyc:RES,chi:RES,bos:RES,atl:RES});
+  const[roundData,setRoundData]=useState<any>({pdx:[{...RER},{...RER},{...RER}],dc:[{...RER},{...RER},{...RER}],states:[{...RER},{...RER},{...RER}],nfl:[{...RER},{...RER},{...RER}],balt:[{...RER},{...RER},{...RER}],la:[{...RER},{...RER},{...RER}],nyc:[{...RER},{...RER},{...RER}],chi:[{...RER},{...RER},{...RER}],bos:[{...RER},{...RER},{...RER}],atl:[{...RER},{...RER},{...RER}]});
+  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
   const[loaded,setLoaded]=useState(false);
   const[showDiffPicker,setShowDiffPicker]=useState(false);
@@ -6684,9 +6918,9 @@ function Root(){
   useEffect(()=>{
     (async()=>{
       const today=getToday();
-      const[pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,sett,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2]=await Promise.all([
-        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),
-        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),
+      const[pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,sett,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
+        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
+        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
         getSettings(),
         getTodayData("pdx",today+"r0"),getTodayData("pdx",today+"r1"),getTodayData("pdx",today+"r2"),
         getTodayData("dc",today+"r0"),getTodayData("dc",today+"r1"),getTodayData("dc",today+"r2"),
@@ -6696,12 +6930,14 @@ function Root(){
         getTodayData("la",today+"r0"),getTodayData("la",today+"r1"),getTodayData("la",today+"r2"),
         getTodayData("nyc",today+"r0"),getTodayData("nyc",today+"r1"),getTodayData("nyc",today+"r2"),
         getTodayData("chi",today+"r0"),getTodayData("chi",today+"r1"),getTodayData("chi",today+"r2"),
+        getTodayData("bos",today+"r0"),getTodayData("bos",today+"r1"),getTodayData("bos",today+"r2"),
+        getTodayData("atl",today+"r0"),getTodayData("atl",today+"r1"),getTodayData("atl",today+"r2"),
       ]);
       const shieldAvail=shieldAvailableForSupporter();
       let shieldFired=false;
-      const statsMut:{[k:string]:any}={pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt};
+      const statsMut:{[k:string]:any}={pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt};
       const today2=getToday();
-      for(const gk2 of["pdx","dc","states","nfl","balt","la","nyc","chi"]){
+      for(const gk2 of["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"]){
         const s=statsMut[gk2];
         if(!s.lastPlayed||s.streak===0)continue;
         const dayDiff=daysSinceDate(s.lastPlayed);
@@ -6722,10 +6958,10 @@ function Root(){
       if(shieldFired){markShieldUsed();setStreakShieldFired(true);}
       // ────────────────────────────────────────────────────────────────────────
       setAllStats(statsMut);
-      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0});
+      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
       setSettings(sett);SoundEngine.setEnabled(sett?.sounds!==false);
       function quickRound(td:any){if(!td?.guesses)return{guesses:[],won:false,lost:false,alreadyPlayed:false};return{guesses:td.guesses,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost};}
-      const rd={pdx:[quickRound(pdxR0),quickRound(pdxR1),quickRound(pdxR2)],dc:[quickRound(dcR0),quickRound(dcR1),quickRound(dcR2)],states:[quickRound(stR0),quickRound(stR1),quickRound(stR2)],nfl:[quickRound(nflR0),quickRound(nflR1),quickRound(nflR2)],balt:[quickRound(baltR0),quickRound(baltR1),quickRound(baltR2)],la:[quickRound(laR0),quickRound(laR1),quickRound(laR2)],nyc:[quickRound(nycR0),quickRound(nycR1),quickRound(nycR2)],chi:[quickRound(chiR0),quickRound(chiR1),quickRound(chiR2)]};
+      const rd={pdx:[quickRound(pdxR0),quickRound(pdxR1),quickRound(pdxR2)],dc:[quickRound(dcR0),quickRound(dcR1),quickRound(dcR2)],states:[quickRound(stR0),quickRound(stR1),quickRound(stR2)],nfl:[quickRound(nflR0),quickRound(nflR1),quickRound(nflR2)],balt:[quickRound(baltR0),quickRound(baltR1),quickRound(baltR2)],la:[quickRound(laR0),quickRound(laR1),quickRound(laR2)],nyc:[quickRound(nycR0),quickRound(nycR1),quickRound(nycR2)],chi:[quickRound(chiR0),quickRound(chiR1),quickRound(chiR2)],bos:[quickRound(bosR0),quickRound(bosR1),quickRound(bosR2)],atl:[quickRound(atlR0),quickRound(atlR1),quickRound(atlR2)]};
       setRoundData(rd);
       const anyPlayed=Object.values(rd).some((rounds:any)=>rounds.some((r:any)=>r.alreadyPlayed));
       if(anyPlayed)markActivityDay(getDayNum());
@@ -6833,6 +7069,8 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
     {key:"la",    label:"LA Metro",      emoji:"🌴", sub:"Metro Rail · Los Angeles",    cat:"TRANSIT"},
     {key:"nyc",   label:"NYC Subway",    emoji:"🗽", sub:"MTA · New York City",         cat:"TRANSIT"},
     {key:"chi",   label:"Chicago L",     emoji:"🌬️",sub:"CTA · Chicago",              cat:"TRANSIT"},
+    {key:"bos",   label:"Boston T",      emoji:"🦞", sub:"MBTA · Boston",              cat:"TRANSIT"},
+    {key:"atl",   label:"Atlanta MARTA", emoji:"🍑", sub:"MARTA · Atlanta",            cat:"TRANSIT"},
     {key:"states",label:"US States",     emoji:"🗺️",sub:"Geography puzzle",           cat:"GEOGRAPHY"},
     {key:"nfl",   label:"NFL Teams",     emoji:"🏈", sub:"Football puzzle",             cat:"SPORTS"},
     {key:"minigames",label:"Mini Games", emoji:"🎮", sub:"Blitz · Trivia · Challenges", cat:"ARCADE"},
