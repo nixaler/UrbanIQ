@@ -3670,112 +3670,18 @@ function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
 
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
 function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
-  const[tab,setTab]=useState("transit");
-  const TRANSIT_SYSTEMS=[
-    {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest",lines:[
-      {name:"Blue",color:"#0066CC",start:"Hillsboro",end:"Gresham",stations:["Hillsboro","Beaverton TC","Sunset TC","Goose Hollow","Pioneer Sq","Lloyd District","Gateway","Gresham"]},
-      {name:"Red",color:"#CC0000",start:"Beaverton TC",end:"PDX Airport",stations:["Beaverton TC","Sunset TC","Gateway","PDX Airport"]},
-      {name:"Green",color:"#009933",start:"PSU",end:"Clackamas TC",stations:["PSU","Lloyd District","Gateway","Clackamas TC"]},
-      {name:"Orange",color:"#FF6600",start:"SW Waterfront",end:"Milwaukie",stations:["SW Waterfront","OMSI","SE Main","Park Ave","Milwaukie"]},
-      {name:"Yellow",color:"#CCAA00",start:"Expo Center",end:"Rose Quarter",stations:["Expo Center","Lombard","Delta Park","Rose Quarter"]},
-    ],stats:"97 stations · 5 lines · 60 miles of track"},
-    {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital",lines:[
-      {name:"Red",color:"#BF0000",start:"Shady Grove",end:"Glenmont",stations:["Shady Grove","Rockville","Bethesda","Friendship Hts","Tenleytown","Woodley Park","Dupont Cir","Farragut N","Metro Center","Union Station","Glenmont"]},
-      {name:"Blue",color:"#0066CC",start:"Franconia-Spfld",end:"Largo TC",stations:["Franconia-Spfld","Van Dorn","King St","Pentagon","Rosslyn","Foggy Bottom","McPherson Sq","Metro Center","Capitol South","Largo TC"]},
-      {name:"Orange",color:"#FF8000",start:"Vienna",end:"New Carrollton",stations:["Vienna","Dunn Loring","West Falls Ch","Ballston","Rosslyn","Foggy Bottom","McPherson Sq","Metro Center","New Carrollton"]},
-      {name:"Silver",color:"#A0A8B0",start:"Ashburn",end:"Largo TC",stations:["Ashburn","Dulles","Wiehle-Reston","McLean","Rosslyn","Foggy Bottom","McPherson Sq","L'Enfant","Largo TC"]},
-      {name:"Green",color:"#009933",start:"Branch Ave",end:"Greenbelt",stations:["Branch Ave","Southern Ave","Congress Hts","L'Enfant","Gallery Pl","U St","Columbia Hts","Fort Totten","Greenbelt"]},
-      {name:"Yellow",color:"#CCAA00",start:"Huntington",end:"Greenbelt",stations:["Huntington","Eisenhower","King St","Pentagon","L'Enfant","Gallery Pl","Fort Totten","Greenbelt"]},
-    ],stats:"98 stations · 6 lines · 129 miles of track"},
-    {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City",lines:[
-      {name:"Metro",color:"#003087",start:"Owings Mills",end:"Johns Hopkins",stations:["Owings Mills","Old Court","Milford Mill","Reisterstown","Rogers Ave","West Cold Spring","Mondawmin","Penn North","Upton","State Center","Lexington Mkt","Charles Center","Shot Tower","Johns Hopkins Hosp"]},
-      {name:"Light Rail",color:"#F0A500",start:"Hunt Valley",end:"Cromwell",stations:["Hunt Valley","Timonium","Lutherville","Penn Station","North Ave","Lexington Mkt","Camden Yards","Stadiums","Cherry Hill","Cromwell"]},
-    ],stats:"14 metro + 33 light rail stations"},
-    {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"Los Angeles County · SoCal",lines:[
-      {name:"A (Blue)",color:"#0072BC",start:"Santa Monica",end:"Long Beach",stations:["Santa Monica","Culver City","Expo/Western","Expo Pk/USC","7th/Metro","Pershing Sq","Pico","Long Beach TC"]},
-      {name:"B (Red)",color:"#E3051B",start:"Wilshire/Western",end:"North Hollywood",stations:["Wilshire/Western","Wilshire/Vermont","Koreatown","7th/Metro","Pershing Sq","Civic Center","Union Station","Hollywood/Vine","North Hollywood"]},
-      {name:"C (Green)",color:"#5B8731",start:"Redondo Beach",end:"Norwalk",stations:["Redondo Beach","Aviation/LAX","Hawthorne","Vermont","Harbor Fwy","Norwalk"]},
-      {name:"D (Purple)",color:"#8D1F8C",start:"Wilshire/Western",end:"Little Tokyo",stations:["Wilshire/Western","Wilshire/Vermont","7th/Metro","Pershing Sq","Little Tokyo"]},
-      {name:"E (Expo)",color:"#FDB913",start:"Downtown Santa Monica",end:"7th/Metro",stations:["Downtown Santa Monica","17th/SMC","Bergamot","Expo/Bundy","Palms","Expo/Crenshaw","Vermont/Expo","7th/Metro"]},
-    ],stats:"109 stations · 6 rail lines · 105 miles"},
-    {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA",lines:[
-      {name:"1/2/3",color:"#EE352E",start:"South Ferry",end:"Wakefield",stations:["South Ferry","Chambers St","Fulton St","14 St-Union Sq","Times Sq","72 St","96 St","116 St","145 St","168 St","Van Cortlandt"]},
-      {name:"4/5/6",color:"#00933C",start:"Bowling Green",end:"Woodlawn",stations:["Bowling Green","Fulton St","Grand Central","86 St","96 St","125 St","149 St-Grand Concourse","161 St-Yankee Stadium","Pelham Bay Pk","Woodlawn"]},
-      {name:"A/C/E",color:"#0039A6",start:"Far Rockaway",end:"207 St",stations:["Far Rockaway","Howard Beach","JFK AirTrain","Jay St","Fulton St","14 St","34 St-Penn","Times Sq","59 St-Columbus","125 St","207 St"]},
-      {name:"N/Q/R/W",color:"#FCCC0A",start:"Bay Ridge-95 St",end:"Astoria-Ditmars",stations:["Bay Ridge-95 St","Borough Hall","DeKalb Av","Atlantic Av","14 St-Union Sq","Times Sq","57 St-7 Av","Astoria-Ditmars"]},
-      {name:"L",color:"#A7A9AC",start:"8 Av",end:"Canarsie",stations:["8 Av","6 Av","14 St-Union Sq","1 Av","Graham Av","Myrtle-Wyckoff Avs","Canarsie"]},
-      {name:"7",color:"#B933AD",start:"34 St-Hudson Yards",end:"Flushing-Main St",stations:["34 St-Hudson Yards","Times Sq","5 Av","74 St-Roosevelt Av","Jackson Hts","Flushing-Main St"]},
-    ],stats:"472 stations · 36 lines · 245 miles of track"},
-    {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority · The Loop",lines:[
-      {name:"Red",color:"#C60C30",start:"95th/Dan Ryan",end:"Howard",stations:["95th/Dan Ryan","Sox-35th","Roosevelt","Harrison","Jackson","Grand/State","Chicago","Belmont","Addison","Lawrence","Loyola","Howard"]},
-      {name:"Blue",color:"#00A1DE",start:"Forest Park",end:"O'Hare",stations:["Forest Park","UIC-Halsted","Monroe","Jackson","Clark/Lake","Chicago","Logan Square","Jefferson Park","Rosemont","O'Hare"]},
-      {name:"Brown",color:"#62361B",start:"Kimball",end:"Loop",stations:["Kimball","Francisco","Western","Damen","Diversey","Fullerton","Belmont","Wellington","Southport","Paulina","Armitage","Sedgwick","Chicago","Merchandise Mart","Clark/Lake"]},
-      {name:"Green",color:"#009B3A",start:"Harlem/Lake",end:"Cottage Grove",stations:["Harlem/Lake","Oak Park","Laramie","Pulaski","Ashland","Clinton","Clark/Lake","State/Lake","Roosevelt","35th-Bronzeville","43rd St","Cottage Grove"]},
-      {name:"Orange",color:"#F9461C",start:"Midway",end:"Loop",stations:["Midway","Kedzie","Western","35th/Archer","Ashland","Halsted","Roosevelt","Harold Washington","Clark/Lake"]},
-      {name:"Purple",color:"#522398",start:"Linden",end:"Howard",stations:["Linden","Central","Noyes","Davis","Dempster","Howard"]},
-    ],stats:"145 stations · 8 lines · 224 miles of track"},
-  ];
-  const NON_TRANSIT=[
-    {key:"states",name:"US States",emoji:"🗺️",accent:"#1a3a8f",sub:"All 50 states · Geography & Capitals",desc:"Guess each US state based on region, size, coast, capital city, and year of admission. Seven geographic regions from New England to the Pacific Coast."},
-    {key:"nfl",name:"NFL Teams",emoji:"🏈",accent:"#013369",sub:"32 franchises · AFC & NFC",desc:"Identify NFL teams by conference, division, city, Super Bowl wins, and founding year. All 32 active franchises across 8 divisions."},
-  ];
-  const[selSys,setSelSys]=useState(TRANSIT_SYSTEMS[0].key);
-  const sys=TRANSIT_SYSTEMS.find(s=>s.key===selSys)||TRANSIT_SYSTEMS[0];
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",backdropFilter:"blur(6px)"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fafafa",borderRadius:20,width:"100%",maxWidth:680,maxHeight:"88vh",overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 100px rgba(0,0,0,0.5)",animation:"obIn .18s ease both"}}>
-        <style>{`@keyframes obIn{from{opacity:0;transform:scale(.96) translateY(16px)}to{opacity:1;transform:none}}.mg-sys-btn{transition:all .15s;}.mg-sys-btn:hover{opacity:.85;}.mg-line-station{font-size:10px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:6px;padding:4px 8px;color:#333;white-space:nowrap;}`}</style>
-        {/* Header */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(0,0,0,.08)"}}>
-          <div>
-            <div style={{fontFamily:"'Cinzel',serif",fontSize:"18px",fontWeight:700,color:"#0a0a0a",letterSpacing:1}}>Maps &amp; Guides</div>
-            <div style={{fontSize:"10px",color:"rgba(0,0,0,.35)",letterSpacing:2,marginTop:2}}>ALL GAMES · STATION MAPS · SYSTEM INFO</div>
-          </div>
-          <button onClick={onClose} style={{background:"none",border:"1px solid rgba(0,0,0,.12)",borderRadius:20,padding:"6px 16px",fontSize:"11px",color:"rgba(0,0,0,.38)",cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1,fontWeight:600}}>✕ CLOSE</button>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
+        <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
+        {/* Close handle */}
+        <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
+          <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
         </div>
-        {/* Tab bar */}
-        <div style={{display:"flex",borderBottom:"1px solid rgba(0,0,0,.08)",background:"#fff"}}>
-          {[["transit","🚊 Transit Systems"],["other","🗺️ Other Games"]].map(([id,label])=>(
-            <button key={id} onClick={()=>setTab(id as string)}
-              style={{flex:1,background:"transparent",border:"none",borderBottom:`2.5px solid ${tab===id?"#0a0a0a":"transparent"}`,padding:"12px 0",fontSize:"11px",fontWeight:tab===id?700:500,color:tab===id?"#0a0a0a":"rgba(0,0,0,.38)",cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1,transition:"all .15s"}}>
-              {label}
-            </button>
-          ))}
+        <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        {/* Content */}
-        <div style={{padding:"20px 24px 28px"}}>
-          {tab==="transit"&&(
-            <>
-              {/* System selector */}
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-                {TRANSIT_SYSTEMS.map(s=>(
-                  <button key={s.key} className="mg-sys-btn" onClick={()=>setSelSys(s.key)}
-                    style={{background:selSys===s.key?s.accent:"#fff",color:selSys===s.key?"#fff":"rgba(0,0,0,.55)",border:`1.5px solid ${selSys===s.key?s.accent:"rgba(0,0,0,.1)"}`,borderRadius:20,padding:"7px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:.5,display:"flex",alignItems:"center",gap:6}}>
-                    <span>{s.emoji}</span>{s.name}
-                  </button>
-                ))}
-              </div>
-              <TransitMapSVG key={selSys} systemKey={selSys} onPlay={()=>onSelectGame(selSys)}/>
-            </>
-          )}
-          {tab==="other"&&(
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              {NON_TRANSIT.map(g=>(
-                <div key={g.key} style={{background:"#fff",border:"1px solid rgba(0,0,0,.08)",borderRadius:14,overflow:"hidden"}}>
-                  <div style={{background:`linear-gradient(135deg,${g.accent},${g.accent}cc)`,padding:"14px 20px",color:"#fff",display:"flex",alignItems:"center",gap:12}}>
-                    <span style={{fontSize:"26px"}}>{g.emoji}</span>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:"15px",fontWeight:700}}>{g.name}</div>
-                      <div style={{fontSize:"10px",opacity:.7,marginTop:2,letterSpacing:.5}}>{g.sub}</div>
-                    </div>
-                    <button onClick={()=>onSelectGame(g.key)} style={{background:"rgba(255,255,255,.2)",border:"1.5px solid rgba(255,255,255,.5)",color:"#fff",borderRadius:20,padding:"7px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1}}>PLAY →</button>
-                  </div>
-                  <div style={{padding:"14px 20px",fontSize:"13px",color:"rgba(0,0,0,.55)",lineHeight:1.7}}>{g.desc}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <MapsInlineView onSelectGame={(gk)=>{onClose();onSelectGame(gk);}}/>
       </div>
     </div>
   );
