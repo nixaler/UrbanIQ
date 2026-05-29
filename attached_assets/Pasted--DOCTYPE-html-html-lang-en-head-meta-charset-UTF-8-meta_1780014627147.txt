@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UrbanIQ — Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { color-scheme: light only; }
+
+  :root {
+    --white: #FFFFFF;
+    --off: #F7F6F4;
+    --black: #0A0A0A;
+    --gray: #C8C5BF;
+    --mid: #888580;
+    --red: #E8294A;
+    --blue: #4169E1;
+    --purple: #A855F7;
+    --orange: #FF8C42;
+    --gold: #FFB800;
+    --green: #22C55E;
+  }
+
+  /* ===== FLOWING GRADIENT ANIMATION ===== */
+  @keyframes flow {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* The trick: wide background, animate position */
+  .live-gradient {
+    background: linear-gradient(
+      90deg,
+      #0A0A0A 0%,
+      #E8294A 15%,
+      #FF8C42 25%,
+      #FFB800 35%,
+      #4169E1 50%,
+      #A855F7 65%,
+      #E8294A 80%,
+      #0A0A0A 90%,
+      #E8294A 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: flow 3s linear infinite;
+    display: inline-block;
+  }
+
+  .live-gradient-fast {
+    background: linear-gradient(
+      90deg,
+      #E8294A 0%,
+      #FF8C42 20%,
+      #FFB800 40%,
+      #FF8C42 60%,
+      #E8294A 80%,
+      #FF8C42 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: flow 1.5s linear infinite;
+    display: inline-block;
+  }
+
+  .live-gradient-blue {
+    background: linear-gradient(
+      90deg,
+      #0A0A0A 0%,
+      #4169E1 20%,
+      #A855F7 40%,
+      #4169E1 60%,
+      #0A0A0A 80%,
+      #4169E1 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: flow 2.5s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes borderFlow {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .live-border-bottom {
+    position: relative;
+  }
+
+  .live-border-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #E8294A, #FF8C42, #FFB800, #4169E1, #A855F7, #22C55E, #E8294A, #FF8C42);
+    background-size: 200% auto;
+    animation: borderFlow 2s linear infinite;
+  }
+
+  @keyframes barFlow {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .live-bar {
+    background: linear-gradient(90deg, #E8294A, #FF8C42, #FFB800, #4169E1, #A855F7, #E8294A);
+    background-size: 300% auto;
+    animation: barFlow 2s linear infinite;
+    height: 100%;
+    border-radius: 2px;
+    width: 33%;
+  }
+
+  /* ===== BASE STYLES ===== */
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #FFFFFF;
+    color: var(--black);
+    max-width: 390px;
+    margin: 0 auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body, html, nav, .hero, .stats-ticker, .game-list,
+    .game-row, .progress-row, .yest, footer, .section {
+      background: #FFFFFF !important;
+      color: #0A0A0A !important;
+    }
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid #EDEBE8;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: var(--black);
+  }
+
+  .nav-r {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #E8E6E2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.2s;
+  }
+
+  .nav-icon.red { background: #FFF0F0; border-color: #FFD5D5; }
+
+  /* HERO */
+  .hero {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 0 48px;
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+  }
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://source.unsplash.com/800x600/?washington,dc,capitol,skyline');
+    background-size: cover;
+    background-position: center 40%;
+    opacity: 0.12;
+  }
+
+  .sculpture {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 65%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .rings-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.07);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .ring:nth-child(1)  { width: 40px;  height: 40px;  }
+  .ring:nth-child(2)  { width: 70px;  height: 70px;  }
+  .ring:nth-child(3)  { width: 100px; height: 100px; }
+  .ring:nth-child(4)  { width: 130px; height: 130px; }
+  .ring:nth-child(5)  { width: 160px; height: 160px; }
+  .ring:nth-child(6)  { width: 190px; height: 190px; }
+  .ring:nth-child(7)  { width: 220px; height: 220px; }
+  .ring:nth-child(8)  { width: 250px; height: 250px; }
+  .ring:nth-child(9)  { width: 280px; height: 280px; }
+  .ring:nth-child(10) { width: 310px; height: 310px; border-color: rgba(0,0,0,0.04); }
+  .ring:nth-child(11) { width: 340px; height: 340px; border-color: rgba(0,0,0,0.03); }
+  .ring:nth-child(12) { width: 370px; height: 370px; border-color: rgba(0,0,0,0.02); }
+
+  .skyline { position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(to top, #FFFFFF 20%, transparent); }
+
+  .city-svg { position: absolute; bottom: 0; left: 0; right: 0; width: 100%; opacity: 0.07; }
+
+  .hero-text { position: relative; padding: 0 24px; }
+
+  .day-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-label::before { content: ''; width: 24px; height: 1px; background: var(--gray); }
+
+  .hero-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 86px;
+    line-height: 0.9;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .hero-tagline {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 32px;
+    margin-top: 12px;
+  }
+
+  .hero-cta { display: flex; gap: 10px; align-items: center; }
+
+  .cta-main {
+    flex: 1;
+    background: var(--black);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cta-streak {
+    background: white;
+    border: 1px solid #E8E6E2;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 15px 16px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  /* STATS */
+  .stats-ticker {
+    display: flex;
+    position: relative;
+    background: white;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 18px 0;
+    text-align: center;
+    border-right: 1px solid #EDEBE8;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-n {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .stat-l {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  /* SECTION */
+  .section { padding: 40px 24px 0; }
+
+  .section-eyebrow {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow-line {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #E8294A, #FF8C42, #FFB800, #4169E1, #A855F7, #22C55E, #E8294A);
+    background-size: 200% auto;
+    animation: borderFlow 2s linear infinite;
+  }
+
+  /* FEATURED */
+  .featured {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    cursor: pointer;
+    position: relative;
+  }
+  .feat-photo {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://source.unsplash.com/800x500/?portland,oregon,city,skyline');
+    background-size: cover;
+    background-position: center 60%;
+    filter: brightness(0.75);
+  }
+  .feat-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.92) 0%,
+      rgba(0,0,0,0.5) 50%,
+      rgba(0,0,0,0.15) 100%
+    );
+  }
+
+  .feat-inner {
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feat-bg-text {
+    position: absolute;
+    right: -10px; bottom: -20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: 2px;
+  }
+
+  .feat-tag {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 10px;
+  }
+
+  .feat-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 1px;
+    line-height: 0.95;
+    margin-bottom: 12px;
+  }
+
+  .feat-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .feat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    border-radius: 3px;
+  }
+
+  /* GAME LIST */
+  .game-list {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 2px solid #E0DDD8;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  .game-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 20px 20px 16px;
+    background: white;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 2px solid #E8E5E0;
+    border-left: 5px solid transparent;
+  }
+
+  .game-row:last-child { border-bottom: none; }
+  .game-row:hover { background: #FAFAFA; }
+  .game-row.transit { border-left-color: #4169E1; }
+  .game-row.geo     { border-left-color: #22C55E; }
+  .game-row.sports  { border-left-color: #E8294A; }
+  .game-row.arcade  { border-left-color: #A855F7; }
+
+  .game-row-icon { font-size: 24px; width: 36px; text-align: center; flex-shrink: 0; }
+
+  .game-row-info { flex: 1; }
+
+  .game-row-cat {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 1px;
+  }
+
+  .game-row-name { font-size: 15px; font-weight: 700; color: var(--black); }
+
+  .game-row-arrow { font-size: 12px; color: var(--gray); flex-shrink: 0; }
+
+  .game-live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* PROGRESS */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-top: 1px solid #EDEBE8;
+    border-bottom: 1px solid #EDEBE8;
+    margin-bottom: 40px;
+    background: white;
+  }
+
+  .prog-icon { font-size: 28px; flex-shrink: 0; }
+  .prog-info { flex: 1; }
+  .prog-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+  .prog-sub { font-size: 11px; color: var(--mid); margin-bottom: 8px; }
+
+  .pbar { height: 5px; background: #EDEBE8; border-radius: 3px; overflow: hidden; }
+
+  .prog-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+  }
+
+  /* YESTERDAY */
+  .yest {
+    margin: 0 24px 40px;
+    padding: 20px;
+    border: 1px solid #EDEBE8;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    background: white;
+  }
+
+  .yest-icon { font-size: 26px; flex-shrink: 0; }
+  .yest-info { flex: 1; }
+
+  .yest-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 3px;
+  }
+
+  .yest-answer {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .yest-meta { font-size: 11px; color: var(--mid); }
+
+  .yest-play {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--black);
+    border: 1px solid var(--black);
+    padding: 10px 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  footer {
+    padding: 24px;
+    border-top: 1px solid #EDEBE8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+  }
+
+  .footer-l { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); }
+  .footer-r { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--gray); }
+
+  .mockup-tag {
+    text-align: center; padding: 14px;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--mid); border-bottom: 1px solid #EDEBE8;
+    background: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="mockup-tag">UrbanIQ — V9 Live Gradients</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Urban<span class="live-gradient">IQ</span></div>
+  <div class="nav-r">
+    <div class="nav-icon">🗺️</div>
+    <div class="nav-icon">💬</div>
+    <div class="nav-icon">📲</div>
+    <div class="nav-icon red">♥</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-photo"></div>
+  <div class="sculpture">
+    <div class="rings-container">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    </div>
+  </div>
+  <svg class="city-svg" viewBox="0 0 390 120" fill="black" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="60" width="20" height="60"/>
+    <rect x="35" y="40" width="15" height="80"/>
+    <rect x="55" y="50" width="25" height="70"/>
+    <rect x="85" y="20" width="18" height="100"/>
+    <rect x="108" y="35" width="22" height="85"/>
+    <rect x="135" y="10" width="30" height="110"/>
+    <rect x="170" y="30" width="20" height="90"/>
+    <rect x="195" y="45" width="16" height="75"/>
+    <rect x="216" y="15" width="28" height="105"/>
+    <rect x="249" y="38" width="19" height="82"/>
+    <rect x="273" y="55" width="24" height="65"/>
+    <rect x="302" y="25" width="22" height="95"/>
+    <rect x="329" y="42" width="18" height="78"/>
+    <rect x="352" y="60" width="28" height="60"/>
+  </svg>
+  <div class="skyline"></div>
+
+  <div class="hero-text">
+    <div class="day-label">Thursday, May 28 · Day 148</div>
+    <div class="hero-big">
+      <span class="live-gradient">DAILY</span><br>
+      <span class="live-gradient" style="animation-delay: -1s;">CITY</span><br>
+      <span class="live-gradient" style="animation-delay: -2s;">QUIZ</span>
+    </div>
+    <div class="hero-tagline">Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
+    <div class="hero-cta">
+      <div class="cta-main">Play Today →</div>
+      <div class="cta-streak">🔥 <span class="live-gradient-fast">1</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-ticker live-border-bottom">
+  <div class="stat-item">
+    <div class="stat-n"><span class="live-gradient-fast">1</span></div>
+    <div class="stat-l">Streak</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n"><span class="live-gradient-blue">5</span></div>
+    <div class="stat-l">Played</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n"><span class="live-gradient-blue" style="animation-delay:-0.5s">100%</span></div>
+    <div class="stat-l">Win %</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n"><span class="live-gradient-blue" style="animation-delay:-1s">1.0</span></div>
+    <div class="stat-l">Avg</div>
+  </div>
+</div>
+
+<!-- HOT TODAY -->
+<div class="section">
+  <div class="section-eyebrow">🔥 Hot Today <div class="eyebrow-line"></div></div>
+  <div class="featured">
+    <div class="feat-photo"></div>
+  <div class="feat-inner" style="position:relative;z-index:1;">
+      <div class="feat-bg-text">MAX</div>
+      <div class="feat-tag">Transit · Pacific NW · Light Rail</div>
+      <div class="feat-title">
+        <span class="live-gradient" style="background: linear-gradient(90deg,#fff 0%,#FFB800 20%,#FF8C42 40%,#E8294A 60%,#FFB800 80%,#fff 100%);background-size:200% auto;animation:flow 2s linear infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PORTLAND<br>MAX</span>
+      </div>
+      <div class="feat-meta">3 rounds · New today · Day #148</div>
+      <div class="feat-btn">Play Now →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ALL GAMES -->
+<div class="section">
+  <div class="section-eyebrow">All Games <div class="eyebrow-line"></div></div>
+  <div class="game-list">
+    <div class="game-row transit">
+      <div class="game-row-icon">🚇</div>
+      <div class="game-row-info">
+        <div class="game-row-cat">Transit</div>
+        <div class="game-row-name">DC Metro</div>
+      </div>
+      <div class="game-live-dot"></div>
+      <div class="game-row-arrow">→</div>
+    </div>
+    <div class="game-row geo">
+      <div class="game-row-icon">🗺️</div>
+      <div class="game-row-info">
+        <div class="game-row-cat">Geography</div>
+        <div class="game-row-name">US States</div>
+      </div>
+      <div class="game-row-arrow">→</div>
+    </div>
+    <div class="game-row sports">
+      <div class="game-row-icon">🏈</div>
+      <div class="game-row-info">
+        <div class="game-row-cat">Sports</div>
+        <div class="game-row-name">NFL Teams</div>
+      </div>
+      <div class="game-row-arrow">→</div>
+    </div>
+    <div class="game-row arcade">
+      <div class="game-row-icon">🕹️</div>
+      <div class="game-row-info">
+        <div class="game-row-cat">Arcade</div>
+        <div class="game-row-name">More Games</div>
+      </div>
+      <div class="game-row-arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-row">
+  <div class="prog-icon">🃏</div>
+  <div class="prog-info">
+    <div class="prog-title">Card Earned — Collect it</div>
+    <div class="prog-sub">3 wins today · open Cards tab</div>
+    <div class="pbar"><div class="live-bar"></div></div>
+  </div>
+  <div class="prog-count"><span class="live-gradient-fast">9</span></div>
+</div>
+
+<!-- YESTERDAY -->
+<div class="section">
+  <div class="section-eyebrow">Yesterday's Answer <div class="eyebrow-line"></div></div>
+</div>
+<div class="yest">
+  <div class="yest-icon">🏈</div>
+  <div class="yest-info">
+    <div class="yest-label">NFL Teams · South Division</div>
+    <div class="yest-answer"><span class="live-gradient">DALLAS COWBOYS</span></div>
+    <div class="yest-meta">Could you get it in 1 guess?</div>
+  </div>
+  <div class="yest-play">Play →</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-l">No Ads · No Tracking · Always Free</div>
+  <div class="footer-r">NIXALERLLC</div>
+</footer>
+
+</body>
+</html>
