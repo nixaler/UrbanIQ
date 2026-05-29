@@ -3734,15 +3734,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>DAILY TRIVIA</span>
           </div>
           <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
-          <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
-            <button className="lm-cta-main" style={{flex:"none"}} onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
-            {topStreak>0&&(
+          {topStreak>0&&(
+            <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
                 <span className="lm-grad-fast">{topStreak}</span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
