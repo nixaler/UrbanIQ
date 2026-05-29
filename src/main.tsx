@@ -3186,166 +3186,358 @@ function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>vo
   );
 }
 
-// ── TRANSIT MAP SVG ───────────────────────────────────────────────────────────
+// ── TRANSIT MAP SVG — CITY BRAIN EDITION ─────────────────────────────────────
 function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
   const[selLine,setSelLine]=useState<string|null>(null);
+  const[hovStation,setHovStation]=useState<string|null>(null);
   type Pt={x:number,y:number,label:string};
   type Line={name:string,color:string,pts:Pt[]};
-  type MapDef={w:number,h:number,lines:Line[],stats:string,name:string,emoji:string,accent:string};
+  type LineInfo={vibe:string,districts:string,hint:string};
+  type MapDef={w:number,h:number,lines:Line[],stats:string,name:string,emoji:string,accent:string,info:Record<string,LineInfo>};
   const MAPS:Record<string,MapDef>={
-    pdx:{w:480,h:330,emoji:"🚊",name:"Portland MAX",accent:"#028A48",stats:"97 stations · 5 lines · 60 mi",lines:[
-      {name:"Blue",color:"#0066CC",pts:[{x:22,y:172,label:"Hillsboro"},{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:185,y:172,label:"Goose Hollow"},{x:228,y:172,label:"Pioneer Sq"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:172,label:"Gresham"}]},
-      {name:"Red",color:"#CC0000",pts:[{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:335,y:172,label:"Gateway"},{x:432,y:72,label:"PDX Airport"}]},
-      {name:"Green",color:"#009933",pts:[{x:228,y:268,label:"PSU"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:268,label:"Clackamas TC"}]},
-      {name:"Orange",color:"#FF6600",pts:[{x:185,y:245,label:"SW Waterfront"},{x:202,y:268,label:"OMSI"},{x:222,y:290,label:"SE Main"},{x:245,y:308,label:"Park Ave"},{x:270,y:322,label:"Milwaukie"}]},
-      {name:"Yellow",color:"#CCAA00",pts:[{x:228,y:22,label:"Expo Center"},{x:228,y:55,label:"Lombard"},{x:228,y:90,label:"Delta Park"},{x:245,y:142,label:"Rose Quarter"}]},
-    ]},
-    dc:{w:480,h:360,emoji:"🚇",name:"DC Metro",accent:"#BF0000",stats:"98 stations · 6 lines · 129 mi",lines:[
-      {name:"Red",color:"#BF0000",pts:[{x:22,y:70,label:"Shady Grove"},{x:65,y:70,label:"Rockville"},{x:108,y:102,label:"Bethesda"},{x:140,y:130,label:"Friendship Hts"},{x:162,y:150,label:"Tenleytown"},{x:182,y:166,label:"Woodley Park"},{x:202,y:182,label:"Dupont Circle"},{x:225,y:194,label:"Farragut N"},{x:248,y:202,label:"Metro Center"},{x:278,y:192,label:"Union Station"},{x:312,y:140,label:"Fort Totten"},{x:352,y:102,label:"Silver Spring"},{x:425,y:60,label:"Glenmont"}]},
-      {name:"Blue",color:"#0066CC",pts:[{x:22,y:318,label:"Franconia"},{x:58,y:288,label:"Van Dorn"},{x:92,y:258,label:"King St"},{x:145,y:230,label:"Pentagon"},{x:185,y:218,label:"Rosslyn"},{x:212,y:211,label:"Foggy Bottom"},{x:232,y:206,label:"McPherson Sq"},{x:248,y:202,label:"Metro Center"},{x:275,y:212,label:"Capitol South"},{x:425,y:242,label:"Largo TC"}]},
-      {name:"Orange",color:"#FF8000",pts:[{x:22,y:242,label:"Vienna"},{x:60,y:242,label:"Dunn Loring"},{x:98,y:236,label:"W Falls Ch"},{x:145,y:230,label:"Ballston"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:222,label:"New Carrollton"}]},
-      {name:"Silver",color:"#A0A8B0",pts:[{x:22,y:178,label:"Ashburn"},{x:62,y:185,label:"Dulles"},{x:105,y:192,label:"Wiehle-Reston"},{x:148,y:204,label:"McLean"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:242,label:"Largo TC"}]},
-      {name:"Green",color:"#009933",pts:[{x:425,y:318,label:"Branch Ave"},{x:362,y:288,label:"Congress Hts"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:242,y:163,label:"U St"},{x:226,y:143,label:"Columbia Hts"},{x:312,y:140,label:"Fort Totten"},{x:375,y:70,label:"Greenbelt"}]},
-      {name:"Yellow",color:"#CCAA00",pts:[{x:55,y:282,label:"Huntington"},{x:145,y:230,label:"Pentagon"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:375,y:70,label:"Greenbelt"}]},
-    ]},
-    balt:{w:480,h:262,emoji:"🚉",name:"Baltimore MTA",accent:"#003087",stats:"14 metro + 33 light rail stations",lines:[
-      {name:"Metro",color:"#003087",pts:[{x:22,y:132,label:"Owings Mills"},{x:65,y:132,label:"Old Court"},{x:105,y:132,label:"Milford Mill"},{x:142,y:132,label:"Reisterstown"},{x:175,y:132,label:"Rogers Ave"},{x:205,y:132,label:"W Cold Spring"},{x:235,y:132,label:"Mondawmin"},{x:262,y:132,label:"Penn North"},{x:286,y:132,label:"Upton"},{x:310,y:132,label:"State Center"},{x:336,y:132,label:"Lexington Mkt"},{x:360,y:132,label:"Charles Center"},{x:390,y:132,label:"Shot Tower"},{x:432,y:132,label:"Johns Hopkins"}]},
-      {name:"Light Rail",color:"#F0A500",pts:[{x:228,y:22,label:"Hunt Valley"},{x:228,y:52,label:"Timonium"},{x:228,y:82,label:"Lutherville"},{x:228,y:112,label:"Penn Station"},{x:228,y:132,label:"North Ave"},{x:336,y:132,label:"Lexington Mkt"},{x:358,y:168,label:"Camden Yards"},{x:358,y:198,label:"Stadiums"},{x:358,y:228,label:"Cherry Hill"},{x:358,y:248,label:"Cromwell"}]},
-    ]},
-    la:{w:480,h:322,emoji:"🌴",name:"LA Metro",accent:"#E3051B",stats:"109 stations · 6 lines · 105 mi",lines:[
-      {name:"A (Blue)",color:"#0072BC",pts:[{x:22,y:172,label:"Santa Monica"},{x:68,y:172,label:"Culver City"},{x:108,y:172,label:"Expo/Western"},{x:145,y:172,label:"Expo Pk/USC"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:192,label:"Pico"},{x:342,y:252,label:"Long Beach"}]},
-      {name:"B (Red)",color:"#E3051B",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:102,y:144,label:"Koreatown"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:152,label:"Civic Center"},{x:292,y:136,label:"Union Station"},{x:348,y:76,label:"Hollywood/Vine"},{x:432,y:28,label:"N Hollywood"}]},
-      {name:"C (Green)",color:"#5B8731",pts:[{x:22,y:282,label:"Redondo Beach"},{x:78,y:272,label:"Aviation/LAX"},{x:128,y:262,label:"Hawthorne"},{x:188,y:252,label:"Vermont"},{x:248,y:240,label:"Harbor Fwy"},{x:342,y:222,label:"Norwalk"}]},
-      {name:"D (Purple)",color:"#8D1F8C",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:278,y:162,label:"Little Tokyo"}]},
-      {name:"E (Expo)",color:"#FDB913",pts:[{x:22,y:208,label:"Downtown SM"},{x:65,y:208,label:"17th/SMC"},{x:105,y:200,label:"Bergamot"},{x:142,y:193,label:"Expo/Bundy"},{x:172,y:186,label:"Palms"},{x:202,y:180,label:"Expo/Crenshaw"},{x:228,y:176,label:"Vermont/Expo"},{x:188,y:172,label:"7th/Metro"}]},
-    ]},
-    nyc:{w:480,h:348,emoji:"🗽",name:"NYC Subway",accent:"#0039A6",stats:"472 stations · 36 lines · 245 mi",lines:[
-      {name:"1/2/3",color:"#EE352E",pts:[{x:232,y:332,label:"South Ferry"},{x:232,y:295,label:"Chambers St"},{x:232,y:258,label:"Fulton St"},{x:232,y:222,label:"14 St"},{x:232,y:182,label:"Times Sq"},{x:232,y:142,label:"72 St"},{x:232,y:108,label:"96 St"},{x:232,y:78,label:"116 St"},{x:232,y:50,label:"145 St"},{x:232,y:24,label:"Van Cortlandt"}]},
-      {name:"4/5/6",color:"#00933C",pts:[{x:288,y:332,label:"Bowling Green"},{x:278,y:295,label:"Fulton St"},{x:272,y:248,label:"Grand Central"},{x:272,y:178,label:"86 St"},{x:272,y:148,label:"96 St"},{x:272,y:118,label:"125 St"},{x:285,y:90,label:"149 St"},{x:305,y:65,label:"161 St"},{x:350,y:45,label:"Pelham Bay"},{x:415,y:25,label:"Woodlawn"}]},
-      {name:"A/C/E",color:"#0039A6",pts:[{x:348,y:332,label:"Far Rockaway"},{x:305,y:305,label:"Howard Beach"},{x:262,y:258,label:"Jay St"},{x:252,y:238,label:"Fulton St"},{x:242,y:222,label:"14 St"},{x:242,y:182,label:"34 St-Penn"},{x:232,y:182,label:"Times Sq"},{x:218,y:145,label:"59 St"},{x:200,y:100,label:"125 St"},{x:185,y:38,label:"207 St"}]},
-      {name:"N/Q/R/W",color:"#c8a800",pts:[{x:348,y:332,label:"Bay Ridge-95 St"},{x:305,y:298,label:"Borough Hall"},{x:278,y:258,label:"DeKalb Av"},{x:265,y:240,label:"Atlantic Av"},{x:248,y:222,label:"14 St"},{x:242,y:185,label:"Times Sq"},{x:235,y:152,label:"57 St"},{x:205,y:100,label:"Astoria-Ditmars"}]},
-      {name:"L",color:"#A7A9AC",pts:[{x:185,y:222,label:"8 Av"},{x:205,y:222,label:"6 Av"},{x:232,y:222,label:"14 St"},{x:258,y:222,label:"1 Av"},{x:292,y:226,label:"Graham Av"},{x:328,y:232,label:"Myrtle-Wyckoff"},{x:415,y:240,label:"Canarsie"}]},
-      {name:"7",color:"#B933AD",pts:[{x:242,y:182,label:"34 St-Hudson Yds"},{x:232,y:182,label:"Times Sq"},{x:262,y:168,label:"5 Av"},{x:305,y:152,label:"74 St-Roosevelt"},{x:342,y:142,label:"Jackson Hts"},{x:420,y:135,label:"Flushing-Main St"}]},
-    ]},
-    chi:{w:480,h:348,emoji:"🌬️",name:"Chicago L",accent:"#C60C30",stats:"145 stations · 8 lines · 224 mi",lines:[
-      {name:"Red",color:"#C60C30",pts:[{x:235,y:338,label:"95th/Dan Ryan"},{x:235,y:295,label:"Sox-35th"},{x:235,y:252,label:"Roosevelt"},{x:235,y:225,label:"Harrison"},{x:235,y:200,label:"Jackson"},{x:235,y:175,label:"Grand/State"},{x:235,y:148,label:"Chicago"},{x:235,y:122,label:"Belmont"},{x:235,y:96,label:"Addison"},{x:235,y:70,label:"Lawrence"},{x:235,y:46,label:"Loyola"},{x:235,y:22,label:"Howard"}]},
-      {name:"Blue",color:"#00A1DE",pts:[{x:22,y:200,label:"Forest Park"},{x:72,y:200,label:"UIC-Halsted"},{x:130,y:200,label:"Monroe"},{x:175,y:200,label:"Jackson"},{x:235,y:200,label:"Clark/Lake"},{x:258,y:180,label:"Chicago"},{x:288,y:162,label:"Logan Square"},{x:328,y:145,label:"Jefferson Park"},{x:378,y:128,label:"Rosemont"},{x:430,y:112,label:"O'Hare"}]},
-      {name:"Brown",color:"#62361B",pts:[{x:152,y:58,label:"Kimball"},{x:168,y:78,label:"Francisco"},{x:183,y:98,label:"Western"},{x:198,y:118,label:"Damen"},{x:210,y:138,label:"Diversey"},{x:218,y:155,label:"Fullerton"},{x:224,y:172,label:"Belmont"},{x:230,y:188,label:"Wellington"},{x:234,y:200,label:"Clark/Lake"}]},
-      {name:"Green",color:"#009B3A",pts:[{x:22,y:232,label:"Harlem/Lake"},{x:72,y:232,label:"Oak Park"},{x:125,y:232,label:"Laramie"},{x:168,y:228,label:"Pulaski"},{x:205,y:224,label:"Ashland"},{x:226,y:218,label:"Clinton"},{x:235,y:200,label:"Clark/Lake"},{x:235,y:252,label:"Roosevelt"},{x:255,y:272,label:"35th-Bronzeville"},{x:272,y:305,label:"43rd St"},{x:288,y:332,label:"Cottage Grove"}]},
-      {name:"Orange",color:"#F9461C",pts:[{x:188,y:338,label:"Midway"},{x:205,y:312,label:"Kedzie"},{x:218,y:285,label:"Western"},{x:228,y:258,label:"35th/Archer"},{x:233,y:240,label:"Ashland"},{x:235,y:225,label:"Halsted"},{x:235,y:200,label:"Clark/Lake"}]},
-      {name:"Purple",color:"#522398",pts:[{x:50,y:22,label:"Linden"},{x:92,y:22,label:"Central"},{x:135,y:22,label:"Noyes"},{x:175,y:22,label:"Davis"},{x:212,y:22,label:"Dempster"},{x:235,y:22,label:"Howard"},{x:235,y:175,label:"Clark/Lake (Exp)"}]},
-    ]},
+    pdx:{w:480,h:330,emoji:"🚊",name:"Portland MAX",accent:"#028A48",stats:"97 stations · 5 lines · 60 mi",
+      info:{
+        Blue:{vibe:"All-day · High frequency · City backbone",districts:"Hillsboro · Beaverton · Downtown Portland · Lloyd District · Gresham",hint:"Longest line — runs the full east-west spine of the city"},
+        Red:{vibe:"Airport express · Peak service",districts:"Beaverton · Sunset · PDX Airport",hint:"Only line serving PDX Airport — branches off the Blue"},
+        Green:{vibe:"South corridor · University line",districts:"PSU · Lloyd District · Gateway · Clackamas",hint:"Connects Portland State to Gateway interchange"},
+        Orange:{vibe:"Milwaukie corridor · Newest build",districts:"SW Waterfront · OMSI · Milwaukie",hint:"Newest MAX line — opened 2015, crosses Tilikum Bridge"},
+        Yellow:{vibe:"North Portland express",districts:"Expo Center · Lombard · Rose Quarter",hint:"Shortest line — ends near downtown at Rose Quarter"},
+      },
+      lines:[
+        {name:"Blue",color:"#0066CC",pts:[{x:22,y:172,label:"Hillsboro"},{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:185,y:172,label:"Goose Hollow"},{x:228,y:172,label:"Pioneer Sq"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:172,label:"Gresham"}]},
+        {name:"Red",color:"#CC0000",pts:[{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:335,y:172,label:"Gateway"},{x:432,y:72,label:"PDX Airport"}]},
+        {name:"Green",color:"#009933",pts:[{x:228,y:268,label:"PSU"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:268,label:"Clackamas TC"}]},
+        {name:"Orange",color:"#FF6600",pts:[{x:185,y:245,label:"SW Waterfront"},{x:202,y:268,label:"OMSI"},{x:222,y:290,label:"SE Main"},{x:245,y:308,label:"Park Ave"},{x:270,y:322,label:"Milwaukie"}]},
+        {name:"Yellow",color:"#CCAA00",pts:[{x:228,y:22,label:"Expo Center"},{x:228,y:55,label:"Lombard"},{x:228,y:90,label:"Delta Park"},{x:245,y:142,label:"Rose Quarter"}]},
+      ]},
+    dc:{w:480,h:360,emoji:"🚇",name:"DC Metro",accent:"#BF0000",stats:"98 stations · 6 lines · 129 mi",
+      info:{
+        Red:{vibe:"Rush hour dominant · Longest line",districts:"Shady Grove · Bethesda · Dupont Circle · Metro Center · Glenmont",hint:"Only line that doesn't connect to every other line"},
+        Blue:{vibe:"Airport + Pentagon corridor",districts:"Franconia · King St · Pentagon · Rosslyn · Capitol Hill · Largo",hint:"Shares most of its route with Orange and Silver lines"},
+        Orange:{vibe:"Virginia suburb commuter",districts:"Vienna · Ballston · Rosslyn · Metro Center · New Carrollton",hint:"Shares 10+ stations with Blue — nearly identical downtown"},
+        Silver:{vibe:"Newest extension · Dulles access",districts:"Ashburn · Dulles · McLean · Rosslyn · Metro Center",hint:"Opened 2022 — extended to Dulles Airport"},
+        Green:{vibe:"Southeast-Northeast diagonal",districts:"Branch Ave · Congress Heights · L'Enfant · Gallery Pl · Greenbelt",hint:"Never touches the Red line anywhere on the system"},
+        Yellow:{vibe:"Express rush hour service",districts:"Huntington · Pentagon · L'Enfant · Gallery Pl · Greenbelt",hint:"Fewer stops than Green = faster commute on shared corridor"},
+      },
+      lines:[
+        {name:"Red",color:"#BF0000",pts:[{x:22,y:70,label:"Shady Grove"},{x:65,y:70,label:"Rockville"},{x:108,y:102,label:"Bethesda"},{x:140,y:130,label:"Friendship Hts"},{x:162,y:150,label:"Tenleytown"},{x:182,y:166,label:"Woodley Park"},{x:202,y:182,label:"Dupont Circle"},{x:225,y:194,label:"Farragut N"},{x:248,y:202,label:"Metro Center"},{x:278,y:192,label:"Union Station"},{x:312,y:140,label:"Fort Totten"},{x:352,y:102,label:"Silver Spring"},{x:425,y:60,label:"Glenmont"}]},
+        {name:"Blue",color:"#0066CC",pts:[{x:22,y:318,label:"Franconia"},{x:58,y:288,label:"Van Dorn"},{x:92,y:258,label:"King St"},{x:145,y:230,label:"Pentagon"},{x:185,y:218,label:"Rosslyn"},{x:212,y:211,label:"Foggy Bottom"},{x:232,y:206,label:"McPherson Sq"},{x:248,y:202,label:"Metro Center"},{x:275,y:212,label:"Capitol South"},{x:425,y:242,label:"Largo TC"}]},
+        {name:"Orange",color:"#FF8000",pts:[{x:22,y:242,label:"Vienna"},{x:60,y:242,label:"Dunn Loring"},{x:98,y:236,label:"W Falls Ch"},{x:145,y:230,label:"Ballston"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:222,label:"New Carrollton"}]},
+        {name:"Silver",color:"#A0A8B0",pts:[{x:22,y:178,label:"Ashburn"},{x:62,y:185,label:"Dulles"},{x:105,y:192,label:"Wiehle-Reston"},{x:148,y:204,label:"McLean"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:242,label:"Largo TC"}]},
+        {name:"Green",color:"#009933",pts:[{x:425,y:318,label:"Branch Ave"},{x:362,y:288,label:"Congress Hts"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:242,y:163,label:"U St"},{x:226,y:143,label:"Columbia Hts"},{x:312,y:140,label:"Fort Totten"},{x:375,y:70,label:"Greenbelt"}]},
+        {name:"Yellow",color:"#CCAA00",pts:[{x:55,y:282,label:"Huntington"},{x:145,y:230,label:"Pentagon"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:375,y:70,label:"Greenbelt"}]},
+      ]},
+    balt:{w:480,h:262,emoji:"🚉",name:"Baltimore MTA",accent:"#003087",stats:"14 metro + 33 light rail stations",
+      info:{
+        Metro:{vibe:"Underground rapid transit · East-West",districts:"Owings Mills · Mondawmin · Penn North · State Center · Johns Hopkins",hint:"Only subway line in Maryland — runs mostly underground"},
+        "Light Rail":{vibe:"North-South surface rail",districts:"Hunt Valley · Penn Station · Camden Yards · Cromwell",hint:"Passes through Camden Yards — game day service is iconic"},
+      },
+      lines:[
+        {name:"Metro",color:"#003087",pts:[{x:22,y:132,label:"Owings Mills"},{x:65,y:132,label:"Old Court"},{x:105,y:132,label:"Milford Mill"},{x:142,y:132,label:"Reisterstown"},{x:175,y:132,label:"Rogers Ave"},{x:205,y:132,label:"W Cold Spring"},{x:235,y:132,label:"Mondawmin"},{x:262,y:132,label:"Penn North"},{x:286,y:132,label:"Upton"},{x:310,y:132,label:"State Center"},{x:336,y:132,label:"Lexington Mkt"},{x:360,y:132,label:"Charles Center"},{x:390,y:132,label:"Shot Tower"},{x:432,y:132,label:"Johns Hopkins"}]},
+        {name:"Light Rail",color:"#F0A500",pts:[{x:228,y:22,label:"Hunt Valley"},{x:228,y:52,label:"Timonium"},{x:228,y:82,label:"Lutherville"},{x:228,y:112,label:"Penn Station"},{x:228,y:132,label:"North Ave"},{x:336,y:132,label:"Lexington Mkt"},{x:358,y:168,label:"Camden Yards"},{x:358,y:198,label:"Stadiums"},{x:358,y:228,label:"Cherry Hill"},{x:358,y:248,label:"Cromwell"}]},
+      ]},
+    la:{w:480,h:322,emoji:"🌴",name:"LA Metro",accent:"#E3051B",stats:"109 stations · 6 lines · 105 mi",
+      info:{
+        "A (Blue)":{vibe:"Longest line · Coast to east",districts:"Santa Monica · Culver City · USC · Downtown · Long Beach",hint:"Runs from beach to the east — crosses the entire basin"},
+        "B (Red)":{vibe:"Hollywood express · High ridership",districts:"Koreatown · Downtown · Union Station · Hollywood · North Hollywood",hint:"Most-used rail line in LA — goes under the Santa Monica Mountains"},
+        "C (Green)":{vibe:"Airport connector · Suburban",districts:"Redondo Beach · LAX · Hawthorne · Norwalk",hint:"Passes near but not into LAX — shuttle bus needed for airport"},
+        "D (Purple)":{vibe:"Wilshire corridor · Expanding",districts:"Wilshire · Koreatown · Downtown · Little Tokyo",hint:"Currently extending west to Beverly Hills and Santa Monica"},
+        "E (Expo)":{vibe:"Santa Monica connector",districts:"Downtown Santa Monica · Culver City · Crenshaw · Downtown",hint:"Opened 2012-2016 — brought rail back to the Westside"},
+      },
+      lines:[
+        {name:"A (Blue)",color:"#0072BC",pts:[{x:22,y:172,label:"Santa Monica"},{x:68,y:172,label:"Culver City"},{x:108,y:172,label:"Expo/Western"},{x:145,y:172,label:"Expo Pk/USC"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:192,label:"Pico"},{x:342,y:252,label:"Long Beach"}]},
+        {name:"B (Red)",color:"#E3051B",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:102,y:144,label:"Koreatown"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:152,label:"Civic Center"},{x:292,y:136,label:"Union Station"},{x:348,y:76,label:"Hollywood/Vine"},{x:432,y:28,label:"N Hollywood"}]},
+        {name:"C (Green)",color:"#5B8731",pts:[{x:22,y:282,label:"Redondo Beach"},{x:78,y:272,label:"Aviation/LAX"},{x:128,y:262,label:"Hawthorne"},{x:188,y:252,label:"Vermont"},{x:248,y:240,label:"Harbor Fwy"},{x:342,y:222,label:"Norwalk"}]},
+        {name:"D (Purple)",color:"#8D1F8C",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:278,y:162,label:"Little Tokyo"}]},
+        {name:"E (Expo)",color:"#FDB913",pts:[{x:22,y:208,label:"Downtown SM"},{x:65,y:208,label:"17th/SMC"},{x:105,y:200,label:"Bergamot"},{x:142,y:193,label:"Expo/Bundy"},{x:172,y:186,label:"Palms"},{x:202,y:180,label:"Expo/Crenshaw"},{x:228,y:176,label:"Vermont/Expo"},{x:188,y:172,label:"7th/Metro"}]},
+      ]},
+    nyc:{w:480,h:348,emoji:"🗽",name:"NYC Subway",accent:"#0039A6",stats:"472 stations · 36 lines · 245 mi",
+      info:{
+        "1/2/3":{vibe:"West Side corridor · 24/7",districts:"South Ferry · Wall St · 14th · Times Sq · Harlem · Bronx",hint:"Runs the entire west side of Manhattan — never sleeps"},
+        "4/5/6":{vibe:"East Side express + local",districts:"Bowling Green · Grand Central · 86th · 125th · Yankee Stadium · Woodlawn",hint:"4 and 5 are express — 6 is local on the same corridor"},
+        "A/C/E":{vibe:"Crosstown + Far Rockaway",districts:"Far Rockaway · JFK · Jay St · 14th · Penn Station · Harlem",hint:"A train is one of the longest lines in the system"},
+        "N/Q/R/W":{vibe:"Broadway line · Manhattan + Brooklyn",districts:"Bay Ridge · DeKalb · Atlantic Av · Union Sq · Times Sq · Astoria",hint:"Four trains on the same corridor — different stopping patterns"},
+        "L":{vibe:"Bushwick express · Hipster highway",districts:"8 Av · 6 Av · 14th St · Williamsburg · Bushwick · Canarsie",hint:"Only line running directly east from Manhattan into Brooklyn"},
+        "7":{vibe:"International Express · Queens",districts:"Hudson Yards · Times Sq · Queens · Jackson Heights · Flushing",hint:"Called the International Express for the many immigrant neighborhoods it passes through"},
+      },
+      lines:[
+        {name:"1/2/3",color:"#EE352E",pts:[{x:232,y:332,label:"South Ferry"},{x:232,y:295,label:"Chambers St"},{x:232,y:258,label:"Fulton St"},{x:232,y:222,label:"14 St"},{x:232,y:182,label:"Times Sq"},{x:232,y:142,label:"72 St"},{x:232,y:108,label:"96 St"},{x:232,y:78,label:"116 St"},{x:232,y:50,label:"145 St"},{x:232,y:24,label:"Van Cortlandt"}]},
+        {name:"4/5/6",color:"#00933C",pts:[{x:288,y:332,label:"Bowling Green"},{x:278,y:295,label:"Fulton St"},{x:272,y:248,label:"Grand Central"},{x:272,y:178,label:"86 St"},{x:272,y:148,label:"96 St"},{x:272,y:118,label:"125 St"},{x:285,y:90,label:"149 St"},{x:305,y:65,label:"161 St"},{x:350,y:45,label:"Pelham Bay"},{x:415,y:25,label:"Woodlawn"}]},
+        {name:"A/C/E",color:"#0039A6",pts:[{x:348,y:332,label:"Far Rockaway"},{x:305,y:305,label:"Howard Beach"},{x:262,y:258,label:"Jay St"},{x:252,y:238,label:"Fulton St"},{x:242,y:222,label:"14 St"},{x:242,y:182,label:"34 St-Penn"},{x:232,y:182,label:"Times Sq"},{x:218,y:145,label:"59 St"},{x:200,y:100,label:"125 St"},{x:185,y:38,label:"207 St"}]},
+        {name:"N/Q/R/W",color:"#c8a800",pts:[{x:348,y:332,label:"Bay Ridge-95 St"},{x:305,y:298,label:"Borough Hall"},{x:278,y:258,label:"DeKalb Av"},{x:265,y:240,label:"Atlantic Av"},{x:248,y:222,label:"14 St"},{x:242,y:185,label:"Times Sq"},{x:235,y:152,label:"57 St"},{x:205,y:100,label:"Astoria-Ditmars"}]},
+        {name:"L",color:"#A7A9AC",pts:[{x:185,y:222,label:"8 Av"},{x:205,y:222,label:"6 Av"},{x:232,y:222,label:"14 St"},{x:258,y:222,label:"1 Av"},{x:292,y:226,label:"Graham Av"},{x:328,y:232,label:"Myrtle-Wyckoff"},{x:415,y:240,label:"Canarsie"}]},
+        {name:"7",color:"#B933AD",pts:[{x:242,y:182,label:"34 St-Hudson Yds"},{x:232,y:182,label:"Times Sq"},{x:262,y:168,label:"5 Av"},{x:305,y:152,label:"74 St-Roosevelt"},{x:342,y:142,label:"Jackson Hts"},{x:420,y:135,label:"Flushing-Main St"}]},
+      ]},
+    chi:{w:480,h:348,emoji:"🌬️",name:"Chicago L",accent:"#C60C30",stats:"145 stations · 8 lines · 224 mi",
+      info:{
+        Red:{vibe:"North-South spine · Highest ridership",districts:"95th · Sox · Roosevelt · State/Lake · Chicago · Wrigley · Howard",hint:"Busiest line in the system — runs 24 hours a day"},
+        Blue:{vibe:"Airport express · O'Hare connector",districts:"Forest Park · UIC · The Loop · Logan Square · O'Hare",hint:"Only line connecting downtown to O'Hare Airport"},
+        Brown:{vibe:"North side elevated · Scenic route",districts:"Kimball · Wicker Park · Diversey · The Loop",hint:"Elevated track offers skyline views approaching the Loop"},
+        Green:{vibe:"East-West + South branches",districts:"Oak Park · The Loop · Bronzeville · Cottage Grove",hint:"Splits into two branches south of the Loop"},
+        Orange:{vibe:"Midway Airport connector",districts:"Midway · Kedzie · The Loop",hint:"Serves Midway Airport — Chicago's second airport"},
+        Purple:{vibe:"Evanston express · North Shore",districts:"Linden · Davis · Howard · Express to Loop",hint:"Runs express to downtown during rush hours only"},
+      },
+      lines:[
+        {name:"Red",color:"#C60C30",pts:[{x:235,y:338,label:"95th/Dan Ryan"},{x:235,y:295,label:"Sox-35th"},{x:235,y:252,label:"Roosevelt"},{x:235,y:225,label:"Harrison"},{x:235,y:200,label:"Jackson"},{x:235,y:175,label:"Grand/State"},{x:235,y:148,label:"Chicago"},{x:235,y:122,label:"Belmont"},{x:235,y:96,label:"Addison"},{x:235,y:70,label:"Lawrence"},{x:235,y:46,label:"Loyola"},{x:235,y:22,label:"Howard"}]},
+        {name:"Blue",color:"#00A1DE",pts:[{x:22,y:200,label:"Forest Park"},{x:72,y:200,label:"UIC-Halsted"},{x:130,y:200,label:"Monroe"},{x:175,y:200,label:"Jackson"},{x:235,y:200,label:"Clark/Lake"},{x:258,y:180,label:"Chicago"},{x:288,y:162,label:"Logan Square"},{x:328,y:145,label:"Jefferson Park"},{x:378,y:128,label:"Rosemont"},{x:430,y:112,label:"O'Hare"}]},
+        {name:"Brown",color:"#62361B",pts:[{x:152,y:58,label:"Kimball"},{x:168,y:78,label:"Francisco"},{x:183,y:98,label:"Western"},{x:198,y:118,label:"Damen"},{x:210,y:138,label:"Diversey"},{x:218,y:155,label:"Fullerton"},{x:224,y:172,label:"Belmont"},{x:230,y:188,label:"Wellington"},{x:234,y:200,label:"Clark/Lake"}]},
+        {name:"Green",color:"#009B3A",pts:[{x:22,y:232,label:"Harlem/Lake"},{x:72,y:232,label:"Oak Park"},{x:125,y:232,label:"Laramie"},{x:168,y:228,label:"Pulaski"},{x:205,y:224,label:"Ashland"},{x:226,y:218,label:"Clinton"},{x:235,y:200,label:"Clark/Lake"},{x:235,y:252,label:"Roosevelt"},{x:255,y:272,label:"35th-Bronzeville"},{x:272,y:305,label:"43rd St"},{x:288,y:332,label:"Cottage Grove"}]},
+        {name:"Orange",color:"#F9461C",pts:[{x:188,y:338,label:"Midway"},{x:205,y:312,label:"Kedzie"},{x:218,y:285,label:"Western"},{x:228,y:258,label:"35th/Archer"},{x:233,y:240,label:"Ashland"},{x:235,y:225,label:"Halsted"},{x:235,y:200,label:"Clark/Lake"}]},
+        {name:"Purple",color:"#522398",pts:[{x:50,y:22,label:"Linden"},{x:92,y:22,label:"Central"},{x:135,y:22,label:"Noyes"},{x:175,y:22,label:"Davis"},{x:212,y:22,label:"Dempster"},{x:235,y:22,label:"Howard"},{x:235,y:175,label:"Clark/Lake (Exp)"}]},
+      ]},
   };
   const map=MAPS[systemKey];
-  if(!map) return <div style={{padding:20,color:"#888"}}>Map not available</div>;
-  // Build unique station registry
+  if(!map) return <div style={{padding:20,color:"#666"}}>Map not available</div>;
   const stReg=new Map<string,{x:number,y:number,lines:string[]}>();
   map.lines.forEach(line=>line.pts.forEach(pt=>{
     if(!stReg.has(pt.label)) stReg.set(pt.label,{x:pt.x,y:pt.y,lines:[]});
     const s=stReg.get(pt.label)!;
     if(!s.lines.includes(line.name)) s.lines.push(line.name);
   }));
-  const vis=(n:string)=>selLine===null||selLine===n;
   const selLineObj=map.lines.find(l=>l.name===selLine);
+  const selInfo=selLine?map.info[selLine]:null;
+  const BG="#080c12";
+  const GRID="rgba(255,255,255,0.03)";
   return(
-    <div style={{fontFamily:"'Inter',sans-serif"}}>
-      {/* Header */}
-      <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 0 10px"}}>
-        <span style={{fontSize:22}}>{map.emoji}</span>
-        <div style={{flex:1}}>
-          <div style={{fontSize:14,fontWeight:700,color:"#0a0a0a"}}>{map.name}</div>
-          <div style={{fontSize:9,color:"#888",letterSpacing:.5,marginTop:1}}>{map.stats}</div>
-        </div>
-        {onPlay&&<button onClick={onPlay} style={{background:map.accent,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:10,fontWeight:700,letterSpacing:1,cursor:"pointer"}}>PLAY →</button>}
-      </div>
-      {/* SVG diagram */}
-      <div style={{background:"#f8f9fa",borderRadius:12,padding:"10px 6px",marginBottom:10,overflow:"hidden",border:"1px solid #eee"}}>
+    <div style={{fontFamily:"'Inter',sans-serif",background:BG,borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.06)"}}>
+      <style>{`
+        @keyframes tmBreath{0%,100%{opacity:.55}50%{opacity:.85}}
+        @keyframes tmPulse{0%,100%{r:3.5}50%{r:5.5}}
+        @keyframes tmSignal{0%{stroke-dashoffset:1200;opacity:0}8%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+        @keyframes tmSignalLoop{0%{stroke-dashoffset:1200}100%{stroke-dashoffset:-200}}
+        @keyframes tmGlowPulse{0%,100%{opacity:.6}50%{opacity:1}}
+        @keyframes tmPanelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+        @keyframes tmNodePop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+        .tm-line-btn:hover{opacity:1!important;transform:translateY(-1px)}
+        .tm-station-node{transition:r .2s,opacity .2s}
+        .tm-station-node:hover{cursor:pointer}
+      `}</style>
+      {/* SVG map */}
+      <div style={{position:"relative",padding:"8px 4px 4px"}}>
         <svg viewBox={`0 0 ${map.w} ${map.h}`} style={{width:"100%",height:"auto",display:"block"}}>
+          <defs>
+            {map.lines.map(l=>(
+              <filter key={l.name} id={`glow-${l.name.replace(/[^a-z]/gi,"")}`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation={selLine===l.name?"4":"1.5"} result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            ))}
+            <filter id="glow-node" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          {/* Subtle dot grid */}
+          {Array.from({length:12},(_,row)=>Array.from({length:16},(_,col)=>(
+            <circle key={`${row}-${col}`} cx={col*32+16} cy={row*28+14} r={0.8} fill={GRID}/>
+          )))}
+          {/* Ambient dim lines (always visible) */}
           {map.lines.map(line=>{
-            const active=vis(line.name);
             const d=line.pts.map((p,i)=>`${i===0?"M":"L"}${p.x},${p.y}`).join(" ");
-            return <path key={line.name} d={d} stroke={line.color} strokeWidth={active?5:2.5} fill="none" opacity={active?1:0.15} strokeLinecap="round" strokeLinejoin="round" style={{transition:"opacity .2s,stroke-width .2s"}}/>;
+            const isActive=selLine===null||selLine===line.name;
+            return(
+              <g key={`ambient-${line.name}`}>
+                {/* Glow bloom layer */}
+                <path d={d} stroke={line.color} strokeWidth={isActive?10:4} fill="none"
+                  opacity={isActive?0.12:0.04} strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Main line */}
+                <path d={d} stroke={line.color} strokeWidth={isActive?4:2} fill="none"
+                  opacity={isActive?0.9:0.18} strokeLinecap="round" strokeLinejoin="round"
+                  filter={isActive?`url(#glow-${line.name.replace(/[^a-z]/gi,"")})`:undefined}
+                  style={{animation:isActive&&selLine===null?`tmBreath ${2.5+map.lines.indexOf(line)*.4}s ease-in-out infinite`:undefined,transition:"opacity .35s,stroke-width .35s"}}/>
+                {/* Signal pulse — ambient on all lines when none selected */}
+                {(selLine===null||selLine===line.name)&&(
+                  <path d={d} stroke={line.color} strokeWidth={selLine===line.name?3:1.5} fill="none"
+                    strokeLinecap="round" strokeLinejoin="round" opacity={selLine===line.name?0.9:0.5}
+                    strokeDasharray={selLine===line.name?"25 1175":"12 1188"}
+                    style={{animation:`tmSignalLoop ${selLine===line.name?2.2:4+map.lines.indexOf(line)*.7}s linear infinite`}}/>
+                )}
+              </g>
+            );
           })}
+          {/* Station nodes */}
           {Array.from(stReg.entries()).map(([label,{x,y,lines:sl}])=>{
             const interchange=sl.length>1;
-            const active=selLine===null||sl.includes(selLine);
-            const col=map.lines.find(l=>l.name===sl[0])?.color||"#555";
+            const lineActive=selLine===null||sl.includes(selLine);
+            const isHov=hovStation===label;
+            const col=map.lines.find(l=>l.name===sl[0])?.color||"#fff";
+            const selCol=selLineObj?selLineObj.color:col;
             return(
-              <g key={label} opacity={active?1:0.12} style={{transition:"opacity .2s"}}>
-                {interchange
-                  ?<rect x={x-5} y={y-5} width={10} height={10} rx={2} fill="#fff" stroke="#222" strokeWidth={1.8} transform={`rotate(45,${x},${y})`}/>
-                  :<circle cx={x} cy={y} r={3.5} fill="#fff" stroke={col} strokeWidth={1.5}/>
-                }
-                {selLine&&sl.includes(selLine)&&(
-                  <text x={x} y={y-8} textAnchor="middle" fontSize={6.5} fill="#333" fontFamily="Inter,sans-serif" fontWeight="600">{label}</text>
+              <g key={label} opacity={lineActive?1:0.08} style={{transition:"opacity .3s"}}
+                onMouseEnter={()=>setHovStation(label)} onMouseLeave={()=>setHovStation(null)}
+                onClick={()=>setHovStation(hovStation===label?null:label)} className="tm-station-node">
+                {/* Node outer glow */}
+                {(isHov||interchange)&&(
+                  <circle cx={x} cy={y} r={interchange?10:8} fill={selCol} opacity={isHov?0.2:0.08}
+                    style={{animation:"tmGlowPulse 2s ease-in-out infinite"}}/>
+                )}
+                {/* Node core */}
+                {interchange?(
+                  <rect x={x-5} y={y-5} width={10} height={10} rx={1.5} fill={BG}
+                    stroke={isHov?"#fff":selCol} strokeWidth={isHov?2:1.5}
+                    transform={`rotate(45,${x},${y})`}
+                    style={{filter:isHov?`drop-shadow(0 0 4px ${selCol})`:"none",transition:"all .2s"}}/>
+                ):(
+                  <circle cx={x} cy={y} r={isHov?5.5:3.5} fill={BG}
+                    stroke={isHov?"#fff":selCol} strokeWidth={isHov?2:1.5}
+                    style={{filter:isHov?`drop-shadow(0 0 5px ${selCol})`:"none",transition:"all .2s",
+                      animation:selLine===null?`tmPulse ${2.8+sl[0].length*.2}s ease-in-out infinite`:undefined}}/>
+                )}
+                {/* Station label */}
+                {(isHov||(selLine&&sl.includes(selLine)))&&(
+                  <text x={x} y={y-(interchange?14:12)} textAnchor="middle" fontSize={isHov?7.5:6.5}
+                    fill={isHov?"#fff":"rgba(255,255,255,0.7)"} fontFamily="Inter,sans-serif" fontWeight="600"
+                    style={{pointerEvents:"none",textShadow:`0 0 8px ${selCol}`}}>
+                    {label}
+                  </text>
                 )}
               </g>
             );
           })}
         </svg>
+        {/* Tap hint */}
+        {!selLine&&<div style={{position:"absolute",bottom:12,right:12,fontSize:8,color:"rgba(255,255,255,0.2)",letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace"}}>TAP A LINE</div>}
       </div>
       {/* Line selector */}
-      <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>
-        {map.lines.map(line=>(
-          <div key={line.name} onClick={()=>setSelLine(selLine===line.name?null:line.name)}
-            style={{display:"flex",alignItems:"center",gap:5,padding:"5px 11px",borderRadius:20,
-              background:selLine===line.name?line.color:"#f0f0f0",
-              color:selLine===line.name?"#fff":"#333",
-              border:`1.5px solid ${selLine===line.name?line.color:"#ddd"}`,
-              cursor:"pointer",fontSize:10,fontWeight:700,letterSpacing:.5,
-              opacity:selLine!==null&&selLine!==line.name?0.4:1,
-              transition:"all .15s"}}>
-            <div style={{width:8,height:8,borderRadius:"50%",background:selLine===line.name?"rgba(255,255,255,.6)":line.color,flexShrink:0}}/>
-            {line.name}
-          </div>
-        ))}
-        {selLine&&<div onClick={()=>setSelLine(null)} style={{padding:"5px 11px",borderRadius:20,background:"#eee",color:"#555",border:"1.5px solid #ddd",cursor:"pointer",fontSize:10,fontWeight:600}}>✕ All</div>}
+      <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"10px 14px 8px",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+        {map.lines.map(line=>{
+          const active=selLine===line.name;
+          const dimmed=selLine!==null&&!active;
+          return(
+            <div key={line.name} onClick={()=>setSelLine(active?null:line.name)}
+              className="tm-line-btn"
+              style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,
+                background:active?`${line.color}22`:"rgba(255,255,255,0.04)",
+                color:active?line.color:"rgba(255,255,255,0.45)",
+                border:`1px solid ${active?line.color:"rgba(255,255,255,0.08)"}`,
+                cursor:"pointer",fontSize:10,fontWeight:700,letterSpacing:.5,
+                boxShadow:active?`0 0 12px ${line.color}40`:"none",
+                opacity:dimmed?0.3:1,transition:"all .2s"}}>
+              <div style={{width:7,height:7,borderRadius:"50%",background:line.color,
+                boxShadow:active?`0 0 6px ${line.color}`:"none",flexShrink:0}}/>
+              {line.name}
+            </div>
+          );
+        })}
+        {selLine&&(
+          <div onClick={()=>setSelLine(null)} className="tm-line-btn"
+            style={{padding:"5px 10px",borderRadius:20,background:"rgba(255,255,255,0.05)",
+              color:"rgba(255,255,255,0.3)",border:"1px solid rgba(255,255,255,0.08)",
+              cursor:"pointer",fontSize:9,letterSpacing:1,transition:"all .2s"}}>✕</div>
+        )}
       </div>
-      {/* Selected line station list */}
-      {selLineObj&&(
-        <div style={{background:`${selLineObj.color}12`,border:`1px solid ${selLineObj.color}30`,borderRadius:10,padding:"10px 14px"}}>
-          <div style={{fontSize:8,fontWeight:700,letterSpacing:2,color:selLineObj.color,marginBottom:8,textTransform:"uppercase"}}>{selLineObj.name} Line · {selLineObj.pts.length} stops</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+      {/* Info panel — slides in when line selected */}
+      {selLineObj&&selInfo&&(
+        <div style={{margin:"0 14px 14px",borderRadius:12,padding:"14px 16px",
+          background:`linear-gradient(135deg,${selLineObj.color}12,${selLineObj.color}06)`,
+          border:`1px solid ${selLineObj.color}30`,
+          animation:"tmPanelIn .25s ease both"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+            <div style={{width:3,borderRadius:2,alignSelf:"stretch",background:selLineObj.color,flexShrink:0,minHeight:32,
+              boxShadow:`0 0 8px ${selLineObj.color}`}}/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:11,fontWeight:700,color:selLineObj.color,letterSpacing:1,marginBottom:2}}>{selLineObj.name} LINE</div>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",letterSpacing:.3}}>{selInfo.vibe}</div>
+            </div>
+            <div style={{fontSize:8,color:"rgba(255,255,255,0.25)",letterSpacing:1}}>{selLineObj.pts.length} STOPS</div>
+          </div>
+          <div style={{fontSize:8,color:"rgba(255,255,255,0.35)",letterSpacing:1.5,marginBottom:6,textTransform:"uppercase"}}>Districts</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.65)",marginBottom:10,lineHeight:1.5}}>{selInfo.districts}</div>
+          <div style={{display:"flex",alignItems:"flex-start",gap:6,padding:"8px 10px",borderRadius:8,background:"rgba(255,255,255,0.04)"}}>
+            <span style={{fontSize:11,flexShrink:0}}>💡</span>
+            <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",lineHeight:1.5}}>{selInfo.hint}</div>
+          </div>
+          {/* Station chips */}
+          <div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:4}}>
             {selLineObj.pts.map((p,i)=>(
-              <div key={i} style={{background:"#fff",border:`1px solid ${selLineObj.color}35`,borderRadius:4,padding:"3px 8px",fontSize:9,color:"#333",display:"flex",alignItems:"center",gap:4}}>
-                <div style={{width:5,height:5,borderRadius:"50%",background:selLineObj.color,flexShrink:0}}/>
+              <div key={i} style={{background:"rgba(255,255,255,0.05)",border:`1px solid ${selLineObj.color}25`,
+                borderRadius:4,padding:"2px 7px",fontSize:8,color:"rgba(255,255,255,0.5)",
+                display:"flex",alignItems:"center",gap:3}}>
+                <div style={{width:4,height:4,borderRadius:"50%",background:selLineObj.color,opacity:.7,flexShrink:0}}/>
                 {p.label}
               </div>
             ))}
           </div>
         </div>
       )}
+      {/* PLAY button */}
+      {onPlay&&(
+        <div style={{padding:"0 14px 14px"}}>
+          <button onClick={onPlay}
+            style={{width:"100%",background:`linear-gradient(135deg,${map.accent},${map.accent}cc)`,
+              color:"#fff",border:"none",borderRadius:10,padding:"13px",
+              fontSize:11,fontWeight:700,letterSpacing:2,cursor:"pointer",
+              boxShadow:`0 4px 24px ${map.accent}40`,transition:"all .2s",
+              fontFamily:"'JetBrains Mono',monospace"}}>
+            ENTER THE NETWORK →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-// ── MAPS INLINE VIEW (tab) ────────────────────────────────────────────────────
+// ── MAPS INLINE VIEW (tab) — CITY BRAIN EDITION ───────────────────────────────
 function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const SYSTEMS=[
-    {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48"},
-    {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000"},
-    {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087"},
-    {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B"},
-    {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6"},
-    {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30"},
+    {key:"pdx",name:"Portland MAX",city:"Portland",emoji:"🚊",accent:"#028A48",lines:"5 LINES"},
+    {key:"dc",name:"DC Metro",city:"Washington DC",emoji:"🚇",accent:"#BF0000",lines:"6 LINES"},
+    {key:"balt",name:"Baltimore MTA",city:"Baltimore",emoji:"🚉",accent:"#003087",lines:"2 LINES"},
+    {key:"la",name:"LA Metro",city:"Los Angeles",emoji:"🌴",accent:"#E3051B",lines:"5 LINES"},
+    {key:"nyc",name:"NYC Subway",city:"New York",emoji:"🗽",accent:"#0039A6",lines:"6 LINES"},
+    {key:"chi",name:"Chicago L",city:"Chicago",emoji:"🌬️",accent:"#C60C30",lines:"6 LINES"},
   ];
-  const[selSys,setSelSys]=useState("pdx");
+  const[selSys,setSelSys]=useState<string|null>(null);
   return(
-    <div style={{padding:"14px 16px",fontFamily:"'Inter',sans-serif"}}>
-      {/* System selector pills */}
-      <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:14}}>
-        {SYSTEMS.map(s=>(
-          <div key={s.key} onClick={()=>setSelSys(s.key)}
-            style={{display:"flex",alignItems:"center",gap:5,padding:"6px 14px",borderRadius:20,
-              background:selSys===s.key?s.accent:"#f0f0f0",
-              color:selSys===s.key?"#fff":"#555",
-              border:`1.5px solid ${selSys===s.key?s.accent:"#ddd"}`,
-              cursor:"pointer",fontSize:10,fontWeight:700,transition:"all .15s"}}>
-            <span>{s.emoji}</span>{s.name}
-          </div>
-        ))}
+    <div style={{background:"#080c12",minHeight:"100%",fontFamily:"'Inter',sans-serif"}}>
+      <style>{`
+        @keyframes cityCardGlow{0%,100%{box-shadow:0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 20px var(--accent-glow)}}
+        .city-card{transition:all .25s;cursor:pointer}
+        .city-card:hover{transform:translateY(-2px)}
+      `}</style>
+      {/* Header */}
+      <div style={{padding:"18px 16px 12px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+        <div style={{fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.25)",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>NETWORK INTELLIGENCE</div>
+        <div style={{fontSize:18,fontWeight:700,color:"rgba(255,255,255,0.9)",letterSpacing:.3}}>Transit Systems</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>Select a city to explore its network</div>
       </div>
-      <TransitMapSVG key={selSys} systemKey={selSys} onPlay={()=>onSelectGame(selSys)}/>
+      {/* City grid */}
+      {!selSys&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"14px 16px"}}>
+          {SYSTEMS.map(s=>(
+            <div key={s.key} className="city-card"
+              onClick={()=>setSelSys(s.key)}
+              style={{"--accent-glow":`${s.accent}60`} as any}>
+              <div style={{background:`linear-gradient(135deg,${s.accent}18,${s.accent}06)`,
+                border:`1px solid ${s.accent}30`,borderRadius:12,padding:"16px 14px",
+                position:"relative",overflow:"hidden"}}>
+                {/* Subtle background glow */}
+                <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",
+                  background:s.accent,opacity:.06,filter:"blur(20px)",pointerEvents:"none"}}/>
+                <div style={{fontSize:24,marginBottom:8}}>{s.emoji}</div>
+                <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.9)",marginBottom:2,letterSpacing:.3}}>{s.city}</div>
+                <div style={{fontSize:8,color:s.accent,letterSpacing:1.5,fontWeight:600}}>{s.lines}</div>
+                <div style={{marginTop:10,display:"flex",alignItems:"center",gap:4}}>
+                  <div style={{flex:1,height:1.5,borderRadius:1,background:`linear-gradient(90deg,${s.accent}80,transparent)`}}/>
+                  <div style={{fontSize:8,color:"rgba(255,255,255,0.2)",letterSpacing:1}}>→</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* Selected system map */}
+      {selSys&&(
+        <div style={{padding:"12px 14px 20px"}}>
+          <button onClick={()=>setSelSys(null)}
+            style={{background:"transparent",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,
+              padding:"5px 14px",color:"rgba(255,255,255,0.35)",fontSize:9,letterSpacing:1.5,
+              cursor:"pointer",marginBottom:12,fontFamily:"'JetBrains Mono',monospace",transition:"all .2s"}}>
+            ← ALL CITIES
+          </button>
+          <TransitMapSVG key={selSys} systemKey={selSys} onPlay={()=>onSelectGame(selSys)}/>
+        </div>
+      )}
     </div>
   );
 }
