@@ -3957,7 +3957,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                 {mapsOpen&&(
                   <div style={{animation:"lmFadeIn .2s ease both",display:"flex",flexDirection:"column"}}>
                     {mapsSystems.map((s,i)=>(
-                      <div key={s.key} onClick={()=>{SoundEngine.play("select");onSelectGame(s.key);}}
+                      <div key={s.key} onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
                         style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderBottom:i<mapsSystems.length-1?"2px solid #E8E5E0":"none",borderLeft:`5px solid ${s.accent}`,cursor:"pointer",background:"#fff",transition:"background .15s"}}
                         onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
                         onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
@@ -3966,7 +3966,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                           <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{s.name}</div>
                           <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{s.sub}</div>
                         </div>
-                        <div style={{fontSize:"12px",color:"#C8C5BF",flexShrink:0}}>→</div>
+                        <div style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600,flexShrink:0}}>View Map →</div>
                       </div>
                     ))}
                   </div>
