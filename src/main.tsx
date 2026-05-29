@@ -3737,8 +3737,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
-        <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both"}}>
-          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+        <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
           </div>
@@ -3748,8 +3748,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span className="lm-grad" style={{display:"block",animationDelay:"-2s"}}>QUIZ</span>
           </div>
           <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:26,marginTop:10}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
-          <div style={{display:"flex",gap:10,alignItems:"center"}}>
-            <button className="lm-cta-main" onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
+          <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
+            <button className="lm-cta-main" style={{flex:"none"}} onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
             {topStreak>0&&(
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
