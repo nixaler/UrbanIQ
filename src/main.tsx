@@ -3971,6 +3971,44 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               </div>
             );
           })}
+          {/* MAPS accordion */}
+          {(()=>{
+            const mapsOpen=!lmCollapsed.has("MAPS");
+            const mapsSystems=[
+              {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest"},
+              {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital"},
+              {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City"},
+              {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"LA County · SoCal"},
+              {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA"},
+              {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority"},
+            ];
+            return(
+              <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+                <button onClick={()=>toggleLmSection("MAPS")}
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:mapsOpen?"#FAFAFA":"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
+                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
+                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:mapsOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                </button>
+                {mapsOpen&&(
+                  <div style={{animation:"lmFadeIn .2s ease both",display:"flex",flexDirection:"column"}}>
+                    {mapsSystems.map((s,i)=>(
+                      <div key={s.key} onClick={()=>{SoundEngine.play("select");onSelectGame(s.key);}}
+                        style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderBottom:i<mapsSystems.length-1?"2px solid #E8E5E0":"none",borderLeft:`5px solid ${s.accent}`,cursor:"pointer",background:"#fff",transition:"background .15s"}}
+                        onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
+                        onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
+                        <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{s.emoji}</div>
+                        <div style={{flex:1}}>
+                          <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{s.name}</div>
+                          <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{s.sub}</div>
+                        </div>
+                        <div style={{fontSize:"12px",color:"#C8C5BF",flexShrink:0}}>→</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
