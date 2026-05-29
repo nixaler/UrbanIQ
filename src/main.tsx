@@ -3417,7 +3417,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     }
   }
   const gameCards=[
-    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"/photo-pdx.jpg"},
+    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Portland_and_Mt._Hood_from_Pittock_Mansion.jpg/800px-Portland_and_Mt._Hood_from_Pittock_Mansion.jpg"},
     {key:"dc",   emoji:"🚇",name:"DC Metro",       tag:"TRANSIT",    sub:"Subway · Nation's capital",  color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",photo:"/photo-dc.jpg"},
     {key:"balt", emoji:"🚉",name:"Baltimore MTA",  tag:"TRANSIT",    sub:"Light Rail & Metro · MD",    color:"#003087",grad:"linear-gradient(135deg,#003087,#F0A500)",photo:"/photo-balt.jpg"},
     {key:"la",   emoji:"🌴",name:"LA Metro",       tag:"TRANSIT",    sub:"Metro Rail · Los Angeles, CA",color:"#0072bc",grad:"linear-gradient(135deg,#0072bc,#005a96)",photo:"/photo-la.jpg"},
