@@ -288,7 +288,7 @@ function getOrCreatePlayerId():string{let id=localStorage.getItem("urbaniq_playe
 function CardSystemTab({pendingCard,onClearPending}){
   const CARD_STORAGE={col:"tgg-card-col",deck:"tgg-card-deck"};
   const[tab,setTab]=useState("collection");
-  const[openTypes,setOpenTypes]=useState<Record<string,boolean>>({transit:true,geography:true,sports:true});
+  const[openTypes,setOpenTypes]=useState<Record<string,boolean>>({transit:false,geography:false,sports:false});
   const[openRarities,setOpenRarities]=useState<Record<string,boolean>>({});
   const[col,setCol]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.col)||"[]");}catch{return [];}});
   const[deck,setDeck]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.deck)||"[]");}catch{return [];}});
@@ -3188,7 +3188,7 @@ function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>vo
 
 // ── MAPS INLINE VIEW (tab) ────────────────────────────────────────────────────
 function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
-  const[openGuides,setOpenGuides]=useState(true);
+  const[openGuides,setOpenGuides]=useState(false);
   return(
     <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10,fontFamily:"'JetBrains Mono',monospace"}}>
       {/* Guides accordion */}
@@ -3543,7 +3543,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[activeTab,setActiveTab]=useState<string>("all");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
-  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
+  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE","MAPS"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
 
   const modals=(
