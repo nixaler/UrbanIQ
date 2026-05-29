@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
+import App from './App';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -288,8 +289,6 @@ function getOrCreatePlayerId():string{let id=localStorage.getItem("urbaniq_playe
 function CardSystemTab({pendingCard,onClearPending}){
   const CARD_STORAGE={col:"tgg-card-col",deck:"tgg-card-deck"};
   const[tab,setTab]=useState("collection");
-  const[openTypes,setOpenTypes]=useState<Record<string,boolean>>({transit:false,geography:false,sports:false});
-  const[openRarities,setOpenRarities]=useState<Record<string,boolean>>({});
   const[col,setCol]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.col)||"[]");}catch{return [];}});
   const[deck,setDeck]=useState(()=>{try{return JSON.parse(localStorage.getItem(CARD_STORAGE.deck)||"[]");}catch{return [];}});
   const[sel,setSel]=useState(null);
@@ -419,63 +418,12 @@ function CardSystemTab({pendingCard,onClearPending}){
                 <div style={{fontSize:12,color:txt2,marginBottom:6}}>No cards yet</div>
                 <div style={{fontSize:11,color:txt3,lineHeight:1.8}}>Win a daily puzzle round to earn your first card. Pro difficulty gives the best legendary drop rates.</div>
               </div>
-            ):(
-              <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                {([
-                  {type:"transit",  label:"Transit",   emoji:"🚊", accent:"#028A48"},
-                  {type:"geography",label:"Geography", emoji:"🗺️", accent:"#1a3a8f"},
-                  {type:"sports",   label:"Sports",    emoji:"🏈", accent:"#c43030"},
-                ] as {type:string,label:string,emoji:string,accent:string}[]).map(({type,label,emoji,accent})=>{
-                  const typeCards=col.filter(c=>c.cardType===type);
-                  if(typeCards.length===0) return null;
-                  const typeOpen=openTypes[type]!==false;
-                  return(
-                    <div key={type} style={{border:`1px solid ${border}`,borderRadius:12,overflow:"hidden"}}>
-                      {/* Type accordion header */}
-                      <div onClick={()=>setOpenTypes(p=>({...p,[type]:!typeOpen}))} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",background:card,cursor:"pointer",userSelect:"none"}}>
-                        <span style={{fontSize:16}}>{emoji}</span>
-                        <span style={{fontSize:11,fontWeight:700,letterSpacing:2,color:accent,textTransform:"uppercase",flex:1}}>{label}</span>
-                        <span style={{fontSize:9,color:txt3}}>{typeCards.length} CARDS</span>
-                        <span style={{fontSize:12,color:txt3,marginLeft:6,transition:"transform .2s",display:"inline-block",transform:typeOpen?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
-                      </div>
-                      {/* Type content */}
-                      {typeOpen&&(
-                        <div style={{padding:"10px 14px 14px",background:bg,display:"flex",flexDirection:"column",gap:6}}>
-                          {(["legendary","rare","uncommon","common"] as const).map(r=>{
-                            const rc=CARD_RARITY[r.toUpperCase()]?.color||"#555";
-                            const rarityCards=typeCards.filter(c=>c.rarityId===r);
-                            if(rarityCards.length===0) return null;
-                            const rKey=`${type}-${r}`;
-                            const rOpen=openRarities[rKey]!==false;
-                            return(
-                              <div key={r} style={{border:`1px solid ${border}`,borderRadius:8,overflow:"hidden"}}>
-                                {/* Rarity accordion header */}
-                                <div onClick={()=>setOpenRarities(p=>({...p,[rKey]:!rOpen}))} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:card,cursor:"pointer",userSelect:"none"}}>
-                                  <span style={{fontSize:9,fontWeight:700,letterSpacing:2,color:rc,textTransform:"uppercase",flex:1}}>{r}</span>
-                                  <span style={{fontSize:9,color:txt3}}>{rarityCards.length}</span>
-                                  <span style={{fontSize:10,color:txt3,marginLeft:6,transition:"transform .2s",display:"inline-block",transform:rOpen?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
-                                </div>
-                                {/* Rarity cards */}
-                                {rOpen&&(
-                                  <div style={{display:"flex",flexWrap:"wrap",gap:10,padding:"10px 12px 12px"}}>
-                                    {rarityCards.map(c=>(
-                                      <div key={c.id} style={{position:"relative"}}>
-                                        <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
-                                        {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            ):<div style={{display:"flex",flexWrap:"wrap",gap:10}}>{col.map(c=>(
+              <div key={c.id} style={{position:"relative"}}>
+                <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
+                {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
               </div>
-            )}
+            ))}</div>}
           </div>
         )}
 
@@ -3186,481 +3134,149 @@ function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>vo
   );
 }
 
-// ── TRANSIT MAP SVG — CITY BRAIN EDITION ─────────────────────────────────────
-function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
-  const[selLine,setSelLine]=useState<string|null>(null);
-  const[hovStation,setHovStation]=useState<string|null>(null);
-  type Pt={x:number,y:number,label:string};
-  type Line={name:string,color:string,pts:Pt[]};
-  type LineInfo={vibe:string,districts:string,hint:string};
-  type MapDef={w:number,h:number,lines:Line[],stats:string,name:string,emoji:string,accent:string,info:Record<string,LineInfo>};
-  const MAPS:Record<string,MapDef>={
-    pdx:{w:480,h:330,emoji:"🚊",name:"Portland MAX",accent:"#028A48",stats:"97 stations · 5 lines · 60 mi",
-      info:{
-        Blue:{vibe:"All-day · High frequency · City backbone",districts:"Hillsboro · Beaverton · Downtown Portland · Lloyd District · Gresham",hint:"Longest line — runs the full east-west spine of the city"},
-        Red:{vibe:"Airport express · Peak service",districts:"Beaverton · Sunset · PDX Airport",hint:"Only line serving PDX Airport — branches off the Blue"},
-        Green:{vibe:"South corridor · University line",districts:"PSU · Lloyd District · Gateway · Clackamas",hint:"Connects Portland State to Gateway interchange"},
-        Orange:{vibe:"Milwaukie corridor · Newest build",districts:"SW Waterfront · OMSI · Milwaukie",hint:"Newest MAX line — opened 2015, crosses Tilikum Bridge"},
-        Yellow:{vibe:"North Portland express",districts:"Expo Center · Lombard · Rose Quarter",hint:"Shortest line — ends near downtown at Rose Quarter"},
-      },
-      lines:[
-        {name:"Blue",color:"#0066CC",pts:[{x:22,y:172,label:"Hillsboro"},{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:185,y:172,label:"Goose Hollow"},{x:228,y:172,label:"Pioneer Sq"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:172,label:"Gresham"}]},
-        {name:"Red",color:"#CC0000",pts:[{x:82,y:172,label:"Beaverton TC"},{x:135,y:172,label:"Sunset TC"},{x:335,y:172,label:"Gateway"},{x:432,y:72,label:"PDX Airport"}]},
-        {name:"Green",color:"#009933",pts:[{x:228,y:268,label:"PSU"},{x:272,y:172,label:"Lloyd District"},{x:335,y:172,label:"Gateway"},{x:432,y:268,label:"Clackamas TC"}]},
-        {name:"Orange",color:"#FF6600",pts:[{x:185,y:245,label:"SW Waterfront"},{x:202,y:268,label:"OMSI"},{x:222,y:290,label:"SE Main"},{x:245,y:308,label:"Park Ave"},{x:270,y:322,label:"Milwaukie"}]},
-        {name:"Yellow",color:"#CCAA00",pts:[{x:228,y:22,label:"Expo Center"},{x:228,y:55,label:"Lombard"},{x:228,y:90,label:"Delta Park"},{x:245,y:142,label:"Rose Quarter"}]},
-      ]},
-    dc:{w:480,h:360,emoji:"🚇",name:"DC Metro",accent:"#BF0000",stats:"98 stations · 6 lines · 129 mi",
-      info:{
-        Red:{vibe:"Rush hour dominant · Longest line",districts:"Shady Grove · Bethesda · Dupont Circle · Metro Center · Glenmont",hint:"Only line that doesn't connect to every other line"},
-        Blue:{vibe:"Airport + Pentagon corridor",districts:"Franconia · King St · Pentagon · Rosslyn · Capitol Hill · Largo",hint:"Shares most of its route with Orange and Silver lines"},
-        Orange:{vibe:"Virginia suburb commuter",districts:"Vienna · Ballston · Rosslyn · Metro Center · New Carrollton",hint:"Shares 10+ stations with Blue — nearly identical downtown"},
-        Silver:{vibe:"Newest extension · Dulles access",districts:"Ashburn · Dulles · McLean · Rosslyn · Metro Center",hint:"Opened 2022 — extended to Dulles Airport"},
-        Green:{vibe:"Southeast-Northeast diagonal",districts:"Branch Ave · Congress Heights · L'Enfant · Gallery Pl · Greenbelt",hint:"Never touches the Red line anywhere on the system"},
-        Yellow:{vibe:"Express rush hour service",districts:"Huntington · Pentagon · L'Enfant · Gallery Pl · Greenbelt",hint:"Fewer stops than Green = faster commute on shared corridor"},
-      },
-      lines:[
-        {name:"Red",color:"#BF0000",pts:[{x:22,y:70,label:"Shady Grove"},{x:65,y:70,label:"Rockville"},{x:108,y:102,label:"Bethesda"},{x:140,y:130,label:"Friendship Hts"},{x:162,y:150,label:"Tenleytown"},{x:182,y:166,label:"Woodley Park"},{x:202,y:182,label:"Dupont Circle"},{x:225,y:194,label:"Farragut N"},{x:248,y:202,label:"Metro Center"},{x:278,y:192,label:"Union Station"},{x:312,y:140,label:"Fort Totten"},{x:352,y:102,label:"Silver Spring"},{x:425,y:60,label:"Glenmont"}]},
-        {name:"Blue",color:"#0066CC",pts:[{x:22,y:318,label:"Franconia"},{x:58,y:288,label:"Van Dorn"},{x:92,y:258,label:"King St"},{x:145,y:230,label:"Pentagon"},{x:185,y:218,label:"Rosslyn"},{x:212,y:211,label:"Foggy Bottom"},{x:232,y:206,label:"McPherson Sq"},{x:248,y:202,label:"Metro Center"},{x:275,y:212,label:"Capitol South"},{x:425,y:242,label:"Largo TC"}]},
-        {name:"Orange",color:"#FF8000",pts:[{x:22,y:242,label:"Vienna"},{x:60,y:242,label:"Dunn Loring"},{x:98,y:236,label:"W Falls Ch"},{x:145,y:230,label:"Ballston"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:222,label:"New Carrollton"}]},
-        {name:"Silver",color:"#A0A8B0",pts:[{x:22,y:178,label:"Ashburn"},{x:62,y:185,label:"Dulles"},{x:105,y:192,label:"Wiehle-Reston"},{x:148,y:204,label:"McLean"},{x:185,y:218,label:"Rosslyn"},{x:248,y:202,label:"Metro Center"},{x:425,y:242,label:"Largo TC"}]},
-        {name:"Green",color:"#009933",pts:[{x:425,y:318,label:"Branch Ave"},{x:362,y:288,label:"Congress Hts"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:242,y:163,label:"U St"},{x:226,y:143,label:"Columbia Hts"},{x:312,y:140,label:"Fort Totten"},{x:375,y:70,label:"Greenbelt"}]},
-        {name:"Yellow",color:"#CCAA00",pts:[{x:55,y:282,label:"Huntington"},{x:145,y:230,label:"Pentagon"},{x:252,y:240,label:"L'Enfant"},{x:260,y:190,label:"Gallery Pl"},{x:375,y:70,label:"Greenbelt"}]},
-      ]},
-    balt:{w:480,h:262,emoji:"🚉",name:"Baltimore MTA",accent:"#003087",stats:"14 metro + 33 light rail stations",
-      info:{
-        Metro:{vibe:"Underground rapid transit · East-West",districts:"Owings Mills · Mondawmin · Penn North · State Center · Johns Hopkins",hint:"Only subway line in Maryland — runs mostly underground"},
-        "Light Rail":{vibe:"North-South surface rail",districts:"Hunt Valley · Penn Station · Camden Yards · Cromwell",hint:"Passes through Camden Yards — game day service is iconic"},
-      },
-      lines:[
-        {name:"Metro",color:"#003087",pts:[{x:22,y:132,label:"Owings Mills"},{x:65,y:132,label:"Old Court"},{x:105,y:132,label:"Milford Mill"},{x:142,y:132,label:"Reisterstown"},{x:175,y:132,label:"Rogers Ave"},{x:205,y:132,label:"W Cold Spring"},{x:235,y:132,label:"Mondawmin"},{x:262,y:132,label:"Penn North"},{x:286,y:132,label:"Upton"},{x:310,y:132,label:"State Center"},{x:336,y:132,label:"Lexington Mkt"},{x:360,y:132,label:"Charles Center"},{x:390,y:132,label:"Shot Tower"},{x:432,y:132,label:"Johns Hopkins"}]},
-        {name:"Light Rail",color:"#F0A500",pts:[{x:228,y:22,label:"Hunt Valley"},{x:228,y:52,label:"Timonium"},{x:228,y:82,label:"Lutherville"},{x:228,y:112,label:"Penn Station"},{x:228,y:132,label:"North Ave"},{x:336,y:132,label:"Lexington Mkt"},{x:358,y:168,label:"Camden Yards"},{x:358,y:198,label:"Stadiums"},{x:358,y:228,label:"Cherry Hill"},{x:358,y:248,label:"Cromwell"}]},
-      ]},
-    la:{w:480,h:322,emoji:"🌴",name:"LA Metro",accent:"#E3051B",stats:"109 stations · 6 lines · 105 mi",
-      info:{
-        "A (Blue)":{vibe:"Longest line · Coast to east",districts:"Santa Monica · Culver City · USC · Downtown · Long Beach",hint:"Runs from beach to the east — crosses the entire basin"},
-        "B (Red)":{vibe:"Hollywood express · High ridership",districts:"Koreatown · Downtown · Union Station · Hollywood · North Hollywood",hint:"Most-used rail line in LA — goes under the Santa Monica Mountains"},
-        "C (Green)":{vibe:"Airport connector · Suburban",districts:"Redondo Beach · LAX · Hawthorne · Norwalk",hint:"Passes near but not into LAX — shuttle bus needed for airport"},
-        "D (Purple)":{vibe:"Wilshire corridor · Expanding",districts:"Wilshire · Koreatown · Downtown · Little Tokyo",hint:"Currently extending west to Beverly Hills and Santa Monica"},
-        "E (Expo)":{vibe:"Santa Monica connector",districts:"Downtown Santa Monica · Culver City · Crenshaw · Downtown",hint:"Opened 2012-2016 — brought rail back to the Westside"},
-      },
-      lines:[
-        {name:"A (Blue)",color:"#0072BC",pts:[{x:22,y:172,label:"Santa Monica"},{x:68,y:172,label:"Culver City"},{x:108,y:172,label:"Expo/Western"},{x:145,y:172,label:"Expo Pk/USC"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:192,label:"Pico"},{x:342,y:252,label:"Long Beach"}]},
-        {name:"B (Red)",color:"#E3051B",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:102,y:144,label:"Koreatown"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:262,y:152,label:"Civic Center"},{x:292,y:136,label:"Union Station"},{x:348,y:76,label:"Hollywood/Vine"},{x:432,y:28,label:"N Hollywood"}]},
-        {name:"C (Green)",color:"#5B8731",pts:[{x:22,y:282,label:"Redondo Beach"},{x:78,y:272,label:"Aviation/LAX"},{x:128,y:262,label:"Hawthorne"},{x:188,y:252,label:"Vermont"},{x:248,y:240,label:"Harbor Fwy"},{x:342,y:222,label:"Norwalk"}]},
-        {name:"D (Purple)",color:"#8D1F8C",pts:[{x:22,y:108,label:"Wilshire/Western"},{x:62,y:126,label:"Wilshire/Vermont"},{x:188,y:172,label:"7th/Metro"},{x:228,y:172,label:"Pershing Sq"},{x:278,y:162,label:"Little Tokyo"}]},
-        {name:"E (Expo)",color:"#FDB913",pts:[{x:22,y:208,label:"Downtown SM"},{x:65,y:208,label:"17th/SMC"},{x:105,y:200,label:"Bergamot"},{x:142,y:193,label:"Expo/Bundy"},{x:172,y:186,label:"Palms"},{x:202,y:180,label:"Expo/Crenshaw"},{x:228,y:176,label:"Vermont/Expo"},{x:188,y:172,label:"7th/Metro"}]},
-      ]},
-    nyc:{w:480,h:348,emoji:"🗽",name:"NYC Subway",accent:"#0039A6",stats:"472 stations · 36 lines · 245 mi",
-      info:{
-        "1/2/3":{vibe:"West Side corridor · 24/7",districts:"South Ferry · Wall St · 14th · Times Sq · Harlem · Bronx",hint:"Runs the entire west side of Manhattan — never sleeps"},
-        "4/5/6":{vibe:"East Side express + local",districts:"Bowling Green · Grand Central · 86th · 125th · Yankee Stadium · Woodlawn",hint:"4 and 5 are express — 6 is local on the same corridor"},
-        "A/C/E":{vibe:"Crosstown + Far Rockaway",districts:"Far Rockaway · JFK · Jay St · 14th · Penn Station · Harlem",hint:"A train is one of the longest lines in the system"},
-        "N/Q/R/W":{vibe:"Broadway line · Manhattan + Brooklyn",districts:"Bay Ridge · DeKalb · Atlantic Av · Union Sq · Times Sq · Astoria",hint:"Four trains on the same corridor — different stopping patterns"},
-        "L":{vibe:"Bushwick express · Hipster highway",districts:"8 Av · 6 Av · 14th St · Williamsburg · Bushwick · Canarsie",hint:"Only line running directly east from Manhattan into Brooklyn"},
-        "7":{vibe:"International Express · Queens",districts:"Hudson Yards · Times Sq · Queens · Jackson Heights · Flushing",hint:"Called the International Express for the many immigrant neighborhoods it passes through"},
-      },
-      lines:[
-        {name:"1/2/3",color:"#EE352E",pts:[{x:232,y:332,label:"South Ferry"},{x:232,y:295,label:"Chambers St"},{x:232,y:258,label:"Fulton St"},{x:232,y:222,label:"14 St"},{x:232,y:182,label:"Times Sq"},{x:232,y:142,label:"72 St"},{x:232,y:108,label:"96 St"},{x:232,y:78,label:"116 St"},{x:232,y:50,label:"145 St"},{x:232,y:24,label:"Van Cortlandt"}]},
-        {name:"4/5/6",color:"#00933C",pts:[{x:288,y:332,label:"Bowling Green"},{x:278,y:295,label:"Fulton St"},{x:272,y:248,label:"Grand Central"},{x:272,y:178,label:"86 St"},{x:272,y:148,label:"96 St"},{x:272,y:118,label:"125 St"},{x:285,y:90,label:"149 St"},{x:305,y:65,label:"161 St"},{x:350,y:45,label:"Pelham Bay"},{x:415,y:25,label:"Woodlawn"}]},
-        {name:"A/C/E",color:"#0039A6",pts:[{x:348,y:332,label:"Far Rockaway"},{x:305,y:305,label:"Howard Beach"},{x:262,y:258,label:"Jay St"},{x:252,y:238,label:"Fulton St"},{x:242,y:222,label:"14 St"},{x:242,y:182,label:"34 St-Penn"},{x:232,y:182,label:"Times Sq"},{x:218,y:145,label:"59 St"},{x:200,y:100,label:"125 St"},{x:185,y:38,label:"207 St"}]},
-        {name:"N/Q/R/W",color:"#c8a800",pts:[{x:348,y:332,label:"Bay Ridge-95 St"},{x:305,y:298,label:"Borough Hall"},{x:278,y:258,label:"DeKalb Av"},{x:265,y:240,label:"Atlantic Av"},{x:248,y:222,label:"14 St"},{x:242,y:185,label:"Times Sq"},{x:235,y:152,label:"57 St"},{x:205,y:100,label:"Astoria-Ditmars"}]},
-        {name:"L",color:"#A7A9AC",pts:[{x:185,y:222,label:"8 Av"},{x:205,y:222,label:"6 Av"},{x:232,y:222,label:"14 St"},{x:258,y:222,label:"1 Av"},{x:292,y:226,label:"Graham Av"},{x:328,y:232,label:"Myrtle-Wyckoff"},{x:415,y:240,label:"Canarsie"}]},
-        {name:"7",color:"#B933AD",pts:[{x:242,y:182,label:"34 St-Hudson Yds"},{x:232,y:182,label:"Times Sq"},{x:262,y:168,label:"5 Av"},{x:305,y:152,label:"74 St-Roosevelt"},{x:342,y:142,label:"Jackson Hts"},{x:420,y:135,label:"Flushing-Main St"}]},
-      ]},
-    chi:{w:480,h:348,emoji:"🌬️",name:"Chicago L",accent:"#C60C30",stats:"145 stations · 8 lines · 224 mi",
-      info:{
-        Red:{vibe:"North-South spine · Highest ridership",districts:"95th · Sox · Roosevelt · State/Lake · Chicago · Wrigley · Howard",hint:"Busiest line in the system — runs 24 hours a day"},
-        Blue:{vibe:"Airport express · O'Hare connector",districts:"Forest Park · UIC · The Loop · Logan Square · O'Hare",hint:"Only line connecting downtown to O'Hare Airport"},
-        Brown:{vibe:"North side elevated · Scenic route",districts:"Kimball · Wicker Park · Diversey · The Loop",hint:"Elevated track offers skyline views approaching the Loop"},
-        Green:{vibe:"East-West + South branches",districts:"Oak Park · The Loop · Bronzeville · Cottage Grove",hint:"Splits into two branches south of the Loop"},
-        Orange:{vibe:"Midway Airport connector",districts:"Midway · Kedzie · The Loop",hint:"Serves Midway Airport — Chicago's second airport"},
-        Purple:{vibe:"Evanston express · North Shore",districts:"Linden · Davis · Howard · Express to Loop",hint:"Runs express to downtown during rush hours only"},
-      },
-      lines:[
-        {name:"Red",color:"#C60C30",pts:[{x:235,y:338,label:"95th/Dan Ryan"},{x:235,y:295,label:"Sox-35th"},{x:235,y:252,label:"Roosevelt"},{x:235,y:225,label:"Harrison"},{x:235,y:200,label:"Jackson"},{x:235,y:175,label:"Grand/State"},{x:235,y:148,label:"Chicago"},{x:235,y:122,label:"Belmont"},{x:235,y:96,label:"Addison"},{x:235,y:70,label:"Lawrence"},{x:235,y:46,label:"Loyola"},{x:235,y:22,label:"Howard"}]},
-        {name:"Blue",color:"#00A1DE",pts:[{x:22,y:200,label:"Forest Park"},{x:72,y:200,label:"UIC-Halsted"},{x:130,y:200,label:"Monroe"},{x:175,y:200,label:"Jackson"},{x:235,y:200,label:"Clark/Lake"},{x:258,y:180,label:"Chicago"},{x:288,y:162,label:"Logan Square"},{x:328,y:145,label:"Jefferson Park"},{x:378,y:128,label:"Rosemont"},{x:430,y:112,label:"O'Hare"}]},
-        {name:"Brown",color:"#62361B",pts:[{x:152,y:58,label:"Kimball"},{x:168,y:78,label:"Francisco"},{x:183,y:98,label:"Western"},{x:198,y:118,label:"Damen"},{x:210,y:138,label:"Diversey"},{x:218,y:155,label:"Fullerton"},{x:224,y:172,label:"Belmont"},{x:230,y:188,label:"Wellington"},{x:234,y:200,label:"Clark/Lake"}]},
-        {name:"Green",color:"#009B3A",pts:[{x:22,y:232,label:"Harlem/Lake"},{x:72,y:232,label:"Oak Park"},{x:125,y:232,label:"Laramie"},{x:168,y:228,label:"Pulaski"},{x:205,y:224,label:"Ashland"},{x:226,y:218,label:"Clinton"},{x:235,y:200,label:"Clark/Lake"},{x:235,y:252,label:"Roosevelt"},{x:255,y:272,label:"35th-Bronzeville"},{x:272,y:305,label:"43rd St"},{x:288,y:332,label:"Cottage Grove"}]},
-        {name:"Orange",color:"#F9461C",pts:[{x:188,y:338,label:"Midway"},{x:205,y:312,label:"Kedzie"},{x:218,y:285,label:"Western"},{x:228,y:258,label:"35th/Archer"},{x:233,y:240,label:"Ashland"},{x:235,y:225,label:"Halsted"},{x:235,y:200,label:"Clark/Lake"}]},
-        {name:"Purple",color:"#522398",pts:[{x:50,y:22,label:"Linden"},{x:92,y:22,label:"Central"},{x:135,y:22,label:"Noyes"},{x:175,y:22,label:"Davis"},{x:212,y:22,label:"Dempster"},{x:235,y:22,label:"Howard"},{x:235,y:175,label:"Clark/Lake (Exp)"}]},
-      ]},
-  };
-  const map=MAPS[systemKey];
-  if(!map) return <div style={{padding:20,color:"#666"}}>Map not available</div>;
-  const stReg=new Map<string,{x:number,y:number,lines:string[]}>();
-  map.lines.forEach(line=>line.pts.forEach(pt=>{
-    if(!stReg.has(pt.label)) stReg.set(pt.label,{x:pt.x,y:pt.y,lines:[]});
-    const s=stReg.get(pt.label)!;
-    if(!s.lines.includes(line.name)) s.lines.push(line.name);
-  }));
-  const selLineObj=map.lines.find(l=>l.name===selLine);
-  const selInfo=selLine?map.info[selLine]:null;
-  const BG="#080c12";
-  const GRID="rgba(255,255,255,0.03)";
-  return(
-    <div style={{fontFamily:"'Inter',sans-serif",background:BG,borderRadius:16,overflow:"hidden",border:"1px solid rgba(255,255,255,0.06)"}}>
-      <style>{`
-        @keyframes tmBreath{0%,100%{opacity:.55}50%{opacity:.85}}
-        @keyframes tmPulse{0%,100%{r:3.5}50%{r:5.5}}
-        @keyframes tmSignal{0%{stroke-dashoffset:1200;opacity:0}8%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
-        @keyframes tmSignalLoop{0%{stroke-dashoffset:1200}100%{stroke-dashoffset:-200}}
-        @keyframes tmGlowPulse{0%,100%{opacity:.6}50%{opacity:1}}
-        @keyframes tmPanelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-        @keyframes tmNodePop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
-        .tm-line-btn:hover{opacity:1!important;transform:translateY(-1px)}
-        .tm-station-node{transition:r .2s,opacity .2s}
-        .tm-station-node:hover{cursor:pointer}
-      `}</style>
-      {/* SVG map */}
-      <div style={{position:"relative",padding:"8px 4px 4px"}}>
-        <svg viewBox={`0 0 ${map.w} ${map.h}`} style={{width:"100%",height:"auto",display:"block"}}>
-          <defs>
-            {map.lines.map(l=>(
-              <filter key={l.name} id={`glow-${l.name.replace(/[^a-z]/gi,"")}`} x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation={selLine===l.name?"4":"1.5"} result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            ))}
-            <filter id="glow-node" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          {/* Subtle dot grid */}
-          {Array.from({length:12},(_,row)=>Array.from({length:16},(_,col)=>(
-            <circle key={`${row}-${col}`} cx={col*32+16} cy={row*28+14} r={0.8} fill={GRID}/>
-          )))}
-          {/* Ambient dim lines (always visible) */}
-          {map.lines.map(line=>{
-            const d=line.pts.map((p,i)=>`${i===0?"M":"L"}${p.x},${p.y}`).join(" ");
-            const isActive=selLine===null||selLine===line.name;
-            return(
-              <g key={`ambient-${line.name}`}>
-                {/* Glow bloom layer */}
-                <path d={d} stroke={line.color} strokeWidth={isActive?10:4} fill="none"
-                  opacity={isActive?0.12:0.04} strokeLinecap="round" strokeLinejoin="round"/>
-                {/* Main line */}
-                <path d={d} stroke={line.color} strokeWidth={isActive?4:2} fill="none"
-                  opacity={isActive?0.9:0.18} strokeLinecap="round" strokeLinejoin="round"
-                  filter={isActive?`url(#glow-${line.name.replace(/[^a-z]/gi,"")})`:undefined}
-                  style={{animation:isActive&&selLine===null?`tmBreath ${2.5+map.lines.indexOf(line)*.4}s ease-in-out infinite`:undefined,transition:"opacity .35s,stroke-width .35s"}}/>
-                {/* Signal pulse — ambient on all lines when none selected */}
-                {(selLine===null||selLine===line.name)&&(
-                  <path d={d} stroke={line.color} strokeWidth={selLine===line.name?3:1.5} fill="none"
-                    strokeLinecap="round" strokeLinejoin="round" opacity={selLine===line.name?0.9:0.5}
-                    strokeDasharray={selLine===line.name?"25 1175":"12 1188"}
-                    style={{animation:`tmSignalLoop ${selLine===line.name?2.2:4+map.lines.indexOf(line)*.7}s linear infinite`}}/>
-                )}
-              </g>
-            );
-          })}
-          {/* Station nodes */}
-          {Array.from(stReg.entries()).map(([label,{x,y,lines:sl}])=>{
-            const interchange=sl.length>1;
-            const lineActive=selLine===null||sl.includes(selLine);
-            const isHov=hovStation===label;
-            const col=map.lines.find(l=>l.name===sl[0])?.color||"#fff";
-            const selCol=selLineObj?selLineObj.color:col;
-            return(
-              <g key={label} opacity={lineActive?1:0.08} style={{transition:"opacity .3s"}}
-                onMouseEnter={()=>setHovStation(label)} onMouseLeave={()=>setHovStation(null)}
-                onClick={()=>setHovStation(hovStation===label?null:label)} className="tm-station-node">
-                {/* Node outer glow */}
-                {(isHov||interchange)&&(
-                  <circle cx={x} cy={y} r={interchange?10:8} fill={selCol} opacity={isHov?0.2:0.08}
-                    style={{animation:"tmGlowPulse 2s ease-in-out infinite"}}/>
-                )}
-                {/* Node core */}
-                {interchange?(
-                  <rect x={x-5} y={y-5} width={10} height={10} rx={1.5} fill={BG}
-                    stroke={isHov?"#fff":selCol} strokeWidth={isHov?2:1.5}
-                    transform={`rotate(45,${x},${y})`}
-                    style={{filter:isHov?`drop-shadow(0 0 4px ${selCol})`:"none",transition:"all .2s"}}/>
-                ):(
-                  <circle cx={x} cy={y} r={isHov?5.5:3.5} fill={BG}
-                    stroke={isHov?"#fff":selCol} strokeWidth={isHov?2:1.5}
-                    style={{filter:isHov?`drop-shadow(0 0 5px ${selCol})`:"none",transition:"all .2s",
-                      animation:selLine===null?`tmPulse ${2.8+sl[0].length*.2}s ease-in-out infinite`:undefined}}/>
-                )}
-                {/* Station label */}
-                {(isHov||(selLine&&sl.includes(selLine)))&&(
-                  <text x={x} y={y-(interchange?14:12)} textAnchor="middle" fontSize={isHov?7.5:6.5}
-                    fill={isHov?"#fff":"rgba(255,255,255,0.7)"} fontFamily="Inter,sans-serif" fontWeight="600"
-                    style={{pointerEvents:"none",textShadow:`0 0 8px ${selCol}`}}>
-                    {label}
-                  </text>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-        {/* Tap hint */}
-        {!selLine&&<div style={{position:"absolute",bottom:12,right:12,fontSize:8,color:"rgba(255,255,255,0.2)",letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace"}}>TAP A LINE</div>}
-      </div>
-      {/* Line selector */}
-      <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"10px 14px 8px",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
-        {map.lines.map(line=>{
-          const active=selLine===line.name;
-          const dimmed=selLine!==null&&!active;
-          return(
-            <div key={line.name} onClick={()=>setSelLine(active?null:line.name)}
-              className="tm-line-btn"
-              style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,
-                background:active?`${line.color}22`:"rgba(255,255,255,0.04)",
-                color:active?line.color:"rgba(255,255,255,0.45)",
-                border:`1px solid ${active?line.color:"rgba(255,255,255,0.08)"}`,
-                cursor:"pointer",fontSize:10,fontWeight:700,letterSpacing:.5,
-                boxShadow:active?`0 0 12px ${line.color}40`:"none",
-                opacity:dimmed?0.3:1,transition:"all .2s"}}>
-              <div style={{width:7,height:7,borderRadius:"50%",background:line.color,
-                boxShadow:active?`0 0 6px ${line.color}`:"none",flexShrink:0}}/>
-              {line.name}
-            </div>
-          );
-        })}
-        {selLine&&(
-          <div onClick={()=>setSelLine(null)} className="tm-line-btn"
-            style={{padding:"5px 10px",borderRadius:20,background:"rgba(255,255,255,0.05)",
-              color:"rgba(255,255,255,0.3)",border:"1px solid rgba(255,255,255,0.08)",
-              cursor:"pointer",fontSize:9,letterSpacing:1,transition:"all .2s"}}>✕</div>
-        )}
-      </div>
-      {/* Info panel — slides in when line selected */}
-      {selLineObj&&selInfo&&(
-        <div style={{margin:"0 14px 14px",borderRadius:12,padding:"14px 16px",
-          background:`linear-gradient(135deg,${selLineObj.color}12,${selLineObj.color}06)`,
-          border:`1px solid ${selLineObj.color}30`,
-          animation:"tmPanelIn .25s ease both"}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
-            <div style={{width:3,borderRadius:2,alignSelf:"stretch",background:selLineObj.color,flexShrink:0,minHeight:32,
-              boxShadow:`0 0 8px ${selLineObj.color}`}}/>
-            <div style={{flex:1}}>
-              <div style={{fontSize:11,fontWeight:700,color:selLineObj.color,letterSpacing:1,marginBottom:2}}>{selLineObj.name} LINE</div>
-              <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",letterSpacing:.3}}>{selInfo.vibe}</div>
-            </div>
-            <div style={{fontSize:8,color:"rgba(255,255,255,0.25)",letterSpacing:1}}>{selLineObj.pts.length} STOPS</div>
-          </div>
-          <div style={{fontSize:8,color:"rgba(255,255,255,0.35)",letterSpacing:1.5,marginBottom:6,textTransform:"uppercase"}}>Districts</div>
-          <div style={{fontSize:10,color:"rgba(255,255,255,0.65)",marginBottom:10,lineHeight:1.5}}>{selInfo.districts}</div>
-          <div style={{display:"flex",alignItems:"flex-start",gap:6,padding:"8px 10px",borderRadius:8,background:"rgba(255,255,255,0.04)"}}>
-            <span style={{fontSize:11,flexShrink:0}}>💡</span>
-            <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",lineHeight:1.5}}>{selInfo.hint}</div>
-          </div>
-          {/* Station chips */}
-          <div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:4}}>
-            {selLineObj.pts.map((p,i)=>(
-              <div key={i} style={{background:"rgba(255,255,255,0.05)",border:`1px solid ${selLineObj.color}25`,
-                borderRadius:4,padding:"2px 7px",fontSize:8,color:"rgba(255,255,255,0.5)",
-                display:"flex",alignItems:"center",gap:3}}>
-                <div style={{width:4,height:4,borderRadius:"50%",background:selLineObj.color,opacity:.7,flexShrink:0}}/>
-                {p.label}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {/* PLAY button */}
-      {onPlay&&(
-        <div style={{padding:"0 14px 14px"}}>
-          <button onClick={onPlay}
-            style={{width:"100%",background:`linear-gradient(135deg,${map.accent},${map.accent}cc)`,
-              color:"#fff",border:"none",borderRadius:10,padding:"13px",
-              fontSize:11,fontWeight:700,letterSpacing:2,cursor:"pointer",
-              boxShadow:`0 4px 24px ${map.accent}40`,transition:"all .2s",
-              fontFamily:"'JetBrains Mono',monospace"}}>
-            PLAY →
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
-function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>void,defaultCity?:string}){
-  const[selSys,setSelSys]=useState<string>(defaultCity||"pdx");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
-  const SYSTEMS=[
-    {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
-      top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
-    {key:"dc",name:"DC Metro",city:"Washington, DC",emoji:"🚇",accent:"#BF0000",lines:6,stations:98,riders:"612K",health:88,tagline:"Power flows through every station.",
-      top:[{n:"Metro Center",t:"5:42 PM"},{n:"Union Station",t:"5:38 PM"},{n:"Gallery Pl",t:"5:31 PM"}]},
-    {key:"balt",name:"Baltimore MTA",city:"Baltimore, MD",emoji:"🚉",accent:"#003087",lines:2,stations:47,riders:"42K",health:79,tagline:"Charm City's underground intelligence.",
-      top:[{n:"Lexington Market",t:"5:15 PM"},{n:"Johns Hopkins",t:"5:08 PM"},{n:"Penn Station",t:"4:52 PM"}]},
-    {key:"la",name:"LA Metro",city:"Los Angeles, CA",emoji:"🌴",accent:"#E3051B",lines:5,stations:109,riders:"305K",health:91,tagline:"A city finally connected.",
-      top:[{n:"7th/Metro Center",t:"6:12 PM"},{n:"Union Station",t:"6:05 PM"},{n:"Hollywood/Vine",t:"5:58 PM"}]},
-    {key:"nyc",name:"NYC Subway",city:"New York City",emoji:"🗽",accent:"#0039A6",lines:6,stations:472,riders:"3.4M",health:97,tagline:"The city that never stops moving.",
-      top:[{n:"Times Sq-42 St",t:"6:35 PM"},{n:"Grand Central",t:"6:28 PM"},{n:"Fulton St",t:"6:22 PM"}]},
-    {key:"chi",name:"Chicago L",city:"Chicago, IL",emoji:"🌬️",accent:"#C60C30",lines:6,stations:145,riders:"218K",health:86,tagline:"The Loop. The L. The city.",
-      top:[{n:"Clark/Lake",t:"5:48 PM"},{n:"O'Hare",t:"5:40 PM"},{n:"Roosevelt",t:"5:32 PM"}]},
+// ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
+function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
+  const[tab,setTab]=useState("transit");
+  const TRANSIT_SYSTEMS=[
+    {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest",lines:[
+      {name:"Blue",color:"#0066CC",start:"Hillsboro",end:"Gresham",stations:["Hillsboro","Beaverton TC","Sunset TC","Goose Hollow","Pioneer Sq","Lloyd District","Gateway","Gresham"]},
+      {name:"Red",color:"#CC0000",start:"Beaverton TC",end:"PDX Airport",stations:["Beaverton TC","Sunset TC","Gateway","PDX Airport"]},
+      {name:"Green",color:"#009933",start:"PSU",end:"Clackamas TC",stations:["PSU","Lloyd District","Gateway","Clackamas TC"]},
+      {name:"Orange",color:"#FF6600",start:"SW Waterfront",end:"Milwaukie",stations:["SW Waterfront","OMSI","SE Main","Park Ave","Milwaukie"]},
+      {name:"Yellow",color:"#CCAA00",start:"Expo Center",end:"Rose Quarter",stations:["Expo Center","Lombard","Delta Park","Rose Quarter"]},
+    ],stats:"97 stations · 5 lines · 60 miles of track"},
+    {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital",lines:[
+      {name:"Red",color:"#BF0000",start:"Shady Grove",end:"Glenmont",stations:["Shady Grove","Rockville","Bethesda","Friendship Hts","Tenleytown","Woodley Park","Dupont Cir","Farragut N","Metro Center","Union Station","Glenmont"]},
+      {name:"Blue",color:"#0066CC",start:"Franconia-Spfld",end:"Largo TC",stations:["Franconia-Spfld","Van Dorn","King St","Pentagon","Rosslyn","Foggy Bottom","McPherson Sq","Metro Center","Capitol South","Largo TC"]},
+      {name:"Orange",color:"#FF8000",start:"Vienna",end:"New Carrollton",stations:["Vienna","Dunn Loring","West Falls Ch","Ballston","Rosslyn","Foggy Bottom","McPherson Sq","Metro Center","New Carrollton"]},
+      {name:"Silver",color:"#A0A8B0",start:"Ashburn",end:"Largo TC",stations:["Ashburn","Dulles","Wiehle-Reston","McLean","Rosslyn","Foggy Bottom","McPherson Sq","L'Enfant","Largo TC"]},
+      {name:"Green",color:"#009933",start:"Branch Ave",end:"Greenbelt",stations:["Branch Ave","Southern Ave","Congress Hts","L'Enfant","Gallery Pl","U St","Columbia Hts","Fort Totten","Greenbelt"]},
+      {name:"Yellow",color:"#CCAA00",start:"Huntington",end:"Greenbelt",stations:["Huntington","Eisenhower","King St","Pentagon","L'Enfant","Gallery Pl","Fort Totten","Greenbelt"]},
+    ],stats:"98 stations · 6 lines · 129 miles of track"},
+    {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City",lines:[
+      {name:"Metro",color:"#003087",start:"Owings Mills",end:"Johns Hopkins",stations:["Owings Mills","Old Court","Milford Mill","Reisterstown","Rogers Ave","West Cold Spring","Mondawmin","Penn North","Upton","State Center","Lexington Mkt","Charles Center","Shot Tower","Johns Hopkins Hosp"]},
+      {name:"Light Rail",color:"#F0A500",start:"Hunt Valley",end:"Cromwell",stations:["Hunt Valley","Timonium","Lutherville","Penn Station","North Ave","Lexington Mkt","Camden Yards","Stadiums","Cherry Hill","Cromwell"]},
+    ],stats:"14 metro + 33 light rail stations"},
+    {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"Los Angeles County · SoCal",lines:[
+      {name:"A (Blue)",color:"#0072BC",start:"Santa Monica",end:"Long Beach",stations:["Santa Monica","Culver City","Expo/Western","Expo Pk/USC","7th/Metro","Pershing Sq","Pico","Long Beach TC"]},
+      {name:"B (Red)",color:"#E3051B",start:"Wilshire/Western",end:"North Hollywood",stations:["Wilshire/Western","Wilshire/Vermont","Koreatown","7th/Metro","Pershing Sq","Civic Center","Union Station","Hollywood/Vine","North Hollywood"]},
+      {name:"C (Green)",color:"#5B8731",start:"Redondo Beach",end:"Norwalk",stations:["Redondo Beach","Aviation/LAX","Hawthorne","Vermont","Harbor Fwy","Norwalk"]},
+      {name:"D (Purple)",color:"#8D1F8C",start:"Wilshire/Western",end:"Little Tokyo",stations:["Wilshire/Western","Wilshire/Vermont","7th/Metro","Pershing Sq","Little Tokyo"]},
+      {name:"E (Expo)",color:"#FDB913",start:"Downtown Santa Monica",end:"7th/Metro",stations:["Downtown Santa Monica","17th/SMC","Bergamot","Expo/Bundy","Palms","Expo/Crenshaw","Vermont/Expo","7th/Metro"]},
+    ],stats:"109 stations · 6 rail lines · 105 miles"},
+    {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA",lines:[
+      {name:"1/2/3",color:"#EE352E",start:"South Ferry",end:"Wakefield",stations:["South Ferry","Chambers St","Fulton St","14 St-Union Sq","Times Sq","72 St","96 St","116 St","145 St","168 St","Van Cortlandt"]},
+      {name:"4/5/6",color:"#00933C",start:"Bowling Green",end:"Woodlawn",stations:["Bowling Green","Fulton St","Grand Central","86 St","96 St","125 St","149 St-Grand Concourse","161 St-Yankee Stadium","Pelham Bay Pk","Woodlawn"]},
+      {name:"A/C/E",color:"#0039A6",start:"Far Rockaway",end:"207 St",stations:["Far Rockaway","Howard Beach","JFK AirTrain","Jay St","Fulton St","14 St","34 St-Penn","Times Sq","59 St-Columbus","125 St","207 St"]},
+      {name:"N/Q/R/W",color:"#FCCC0A",start:"Bay Ridge-95 St",end:"Astoria-Ditmars",stations:["Bay Ridge-95 St","Borough Hall","DeKalb Av","Atlantic Av","14 St-Union Sq","Times Sq","57 St-7 Av","Astoria-Ditmars"]},
+      {name:"L",color:"#A7A9AC",start:"8 Av",end:"Canarsie",stations:["8 Av","6 Av","14 St-Union Sq","1 Av","Graham Av","Myrtle-Wyckoff Avs","Canarsie"]},
+      {name:"7",color:"#B933AD",start:"34 St-Hudson Yards",end:"Flushing-Main St",stations:["34 St-Hudson Yards","Times Sq","5 Av","74 St-Roosevelt Av","Jackson Hts","Flushing-Main St"]},
+    ],stats:"472 stations · 36 lines · 245 miles of track"},
+    {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority · The Loop",lines:[
+      {name:"Red",color:"#C60C30",start:"95th/Dan Ryan",end:"Howard",stations:["95th/Dan Ryan","Sox-35th","Roosevelt","Harrison","Jackson","Grand/State","Chicago","Belmont","Addison","Lawrence","Loyola","Howard"]},
+      {name:"Blue",color:"#00A1DE",start:"Forest Park",end:"O'Hare",stations:["Forest Park","UIC-Halsted","Monroe","Jackson","Clark/Lake","Chicago","Logan Square","Jefferson Park","Rosemont","O'Hare"]},
+      {name:"Brown",color:"#62361B",start:"Kimball",end:"Loop",stations:["Kimball","Francisco","Western","Damen","Diversey","Fullerton","Belmont","Wellington","Southport","Paulina","Armitage","Sedgwick","Chicago","Merchandise Mart","Clark/Lake"]},
+      {name:"Green",color:"#009B3A",start:"Harlem/Lake",end:"Cottage Grove",stations:["Harlem/Lake","Oak Park","Laramie","Pulaski","Ashland","Clinton","Clark/Lake","State/Lake","Roosevelt","35th-Bronzeville","43rd St","Cottage Grove"]},
+      {name:"Orange",color:"#F9461C",start:"Midway",end:"Loop",stations:["Midway","Kedzie","Western","35th/Archer","Ashland","Halsted","Roosevelt","Harold Washington","Clark/Lake"]},
+      {name:"Purple",color:"#522398",start:"Linden",end:"Howard",stations:["Linden","Central","Noyes","Davis","Dempster","Howard"]},
+    ],stats:"145 stations · 8 lines · 224 miles of track"},
   ];
-  const sys=SYSTEMS.find(s=>s.key===selSys);
-  const BG="#080c12";
-  const BORDER="rgba(255,255,255,0.06)";
-  const circumference=2*Math.PI*22;
+  const NON_TRANSIT=[
+    {key:"states",name:"US States",emoji:"🗺️",accent:"#1a3a8f",sub:"All 50 states · Geography & Capitals",desc:"Guess each US state based on region, size, coast, capital city, and year of admission. Seven geographic regions from New England to the Pacific Coast."},
+    {key:"nfl",name:"NFL Teams",emoji:"🏈",accent:"#013369",sub:"32 franchises · AFC & NFC",desc:"Identify NFL teams by conference, division, city, Super Bowl wins, and founding year. All 32 active franchises across 8 divisions."},
+  ];
+  const[selSys,setSelSys]=useState(TRANSIT_SYSTEMS[0].key);
+  const sys=TRANSIT_SYSTEMS.find(s=>s.key===selSys)||TRANSIT_SYSTEMS[0];
   return(
-    <div style={{background:BG,minHeight:"100%",fontFamily:"'Inter',sans-serif"}}>
-      <style>{`
-        @keyframes miv-wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-        @keyframes miv-flow{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-        @keyframes miv-fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-        @keyframes miv-ring{from{stroke-dashoffset:${circumference}}to{stroke-dashoffset:var(--dash-target)}}
-        .miv-city-card{transition:all .22s;cursor:pointer;border-radius:12px;overflow:hidden}
-        .miv-city-card:hover{transform:translateY(-2px)}
-        .miv-stat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 10px;text-align:center;flex:1}
-        .miv-station-row{display:flex;align-items:center;gap:10;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-        .miv-station-row:last-child{border-bottom:none}
-      `}</style>
-
-      {/* ── SYSTEM DASHBOARD ── */}
-      {sys&&(
-        <div style={{animation:"miv-fade .3s ease both"}}>
-          {/* Dropdown header */}
-          <div style={{padding:"14px 16px 12px",borderBottom:`1px solid ${BORDER}`}}>
-            <div style={{fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace",marginBottom:8}}>NETWORK INTELLIGENCE</div>
-            <select
-              value={selSys}
-              onChange={e=>setSelSys(e.target.value)}
-              style={{width:"100%",background:"rgba(255,255,255,0.06)",border:`1px solid ${sys.accent}50`,borderRadius:10,padding:"9px 12px",color:"rgba(255,255,255,0.88)",fontSize:13,fontWeight:700,fontFamily:"'Inter',sans-serif",cursor:"pointer",appearance:"none",WebkitAppearance:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"calc(100% - 12px) center"}}>
-              {SYSTEMS.map(s=><option key={s.key} value={s.key} style={{background:"#111"}}>{s.emoji} {s.city} — {s.lines} lines · {s.stations} stations</option>)}
-            </select>
-            <div style={{display:"flex",alignItems:"flex-start",gap:10,marginTop:12}}>
-              <span style={{fontSize:26}}>{sys.emoji}</span>
-              <div style={{flex:1}}>
-                <div style={{fontSize:16,fontWeight:700,color:"rgba(255,255,255,0.92)",letterSpacing:.2}}>{sys.name}</div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:1}}>{sys.city}</div>
-                <div style={{fontSize:9,color:"rgba(255,255,255,0.2)",marginTop:2,fontStyle:"italic"}}>{sys.tagline}</div>
-              </div>
-            </div>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",backdropFilter:"blur(6px)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fafafa",borderRadius:20,width:"100%",maxWidth:680,maxHeight:"88vh",overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 100px rgba(0,0,0,0.5)",animation:"obIn .18s ease both"}}>
+        <style>{`@keyframes obIn{from{opacity:0;transform:scale(.96) translateY(16px)}to{opacity:1;transform:none}}.mg-sys-btn{transition:all .15s;}.mg-sys-btn:hover{opacity:.85;}.mg-line-station{font-size:10px;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:6px;padding:4px 8px;color:#333;white-space:nowrap;}`}</style>
+        {/* Header */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 24px",borderBottom:"1px solid rgba(0,0,0,.08)"}}>
+          <div>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:"18px",fontWeight:700,color:"#0a0a0a",letterSpacing:1}}>Maps &amp; Guides</div>
+            <div style={{fontSize:"10px",color:"rgba(0,0,0,.35)",letterSpacing:2,marginTop:2}}>ALL GAMES · STATION MAPS · SYSTEM INFO</div>
           </div>
-
-          {/* Interactive map */}
-          <TransitMapSVG key={selSys} systemKey={selSys} onPlay={undefined}/>
-
-          {/* ── SYSTEM VITALS ── */}
-          <div style={{margin:"0 14px 12px",padding:"14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12}}>
-            <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:12,fontFamily:"'JetBrains Mono',monospace"}}>SYSTEM VITALS</div>
-            <div style={{display:"flex",alignItems:"center",gap:16}}>
-              {/* Health ring */}
-              <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-                <svg viewBox="0 0 52 52" style={{width:52,height:52}}>
-                  <circle cx="26" cy="26" r={22} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={3.5}/>
-                  <circle cx="26" cy="26" r={22} fill="none" stroke={sys.accent} strokeWidth={3.5}
-                    strokeLinecap="round"
-                    strokeDasharray={`${sys.health/100*circumference} ${circumference}`}
-                    transform="rotate(-90 26 26)"
-                    style={{"--dash-target":`${circumference-(sys.health/100*circumference)}`} as any}/>
-                  <text x="26" y="30" textAnchor="middle" fontSize={10} fontWeight="700" fill="white" fontFamily="Inter,sans-serif">{sys.health}%</text>
-                </svg>
-                <div style={{fontSize:7,color:"rgba(255,255,255,0.2)",letterSpacing:1}}>HEALTH</div>
+          <button onClick={onClose} style={{background:"none",border:"1px solid rgba(0,0,0,.12)",borderRadius:20,padding:"6px 16px",fontSize:"11px",color:"rgba(0,0,0,.38)",cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1,fontWeight:600}}>✕ CLOSE</button>
+        </div>
+        {/* Tab bar */}
+        <div style={{display:"flex",borderBottom:"1px solid rgba(0,0,0,.08)",background:"#fff"}}>
+          {[["transit","🚊 Transit Systems"],["other","🗺️ Other Games"]].map(([id,label])=>(
+            <button key={id} onClick={()=>setTab(id as string)}
+              style={{flex:1,background:"transparent",border:"none",borderBottom:`2.5px solid ${tab===id?"#0a0a0a":"transparent"}`,padding:"12px 0",fontSize:"11px",fontWeight:tab===id?700:500,color:tab===id?"#0a0a0a":"rgba(0,0,0,.38)",cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1,transition:"all .15s"}}>
+              {label}
+            </button>
+          ))}
+        </div>
+        {/* Content */}
+        <div style={{padding:"20px 24px 28px"}}>
+          {tab==="transit"&&(
+            <>
+              {/* System selector */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
+                {TRANSIT_SYSTEMS.map(s=>(
+                  <button key={s.key} className="mg-sys-btn" onClick={()=>setSelSys(s.key)}
+                    style={{background:selSys===s.key?s.accent:"#fff",color:selSys===s.key?"#fff":"rgba(0,0,0,.55)",border:`1.5px solid ${selSys===s.key?s.accent:"rgba(0,0,0,.1)"}`,borderRadius:20,padding:"7px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:.5,display:"flex",alignItems:"center",gap:6}}>
+                    <span>{s.emoji}</span>{s.name}
+                  </button>
+                ))}
               </div>
-              <div style={{flex:1,display:"flex",flexDirection:"column",gap:10}}>
-                {/* Active signals */}
-                <div>
-                  <div style={{fontSize:8,letterSpacing:1.5,color:"rgba(255,255,255,0.2)",marginBottom:5}}>ACTIVE SIGNALS</div>
-                  <div style={{display:"flex",gap:5}}>
-                    {["#0066CC","#CC0000","#009933","#FF6600","#CCAA00","#A0A8B0"].slice(0,sys.lines).map((c,i)=>(
-                      <div key={i} style={{width:8,height:8,borderRadius:"50%",background:c,
-                        boxShadow:`0 0 6px ${c}`,animation:`tmGlowPulse ${1.5+i*.3}s ease-in-out infinite`}}/>
-                    ))}
+              {/* System card */}
+              <div style={{background:"#fff",border:"1px solid rgba(0,0,0,.08)",borderRadius:14,overflow:"hidden",marginBottom:16}}>
+                <div style={{background:`linear-gradient(135deg,${sys.accent},${sys.accent}cc)`,padding:"16px 20px",color:"#fff"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <span style={{fontSize:"28px"}}>{sys.emoji}</span>
+                    <div>
+                      <div style={{fontSize:"16px",fontWeight:700,letterSpacing:.3}}>{sys.name}</div>
+                      <div style={{fontSize:"10px",opacity:.75,marginTop:2,letterSpacing:1}}>{sys.sub}</div>
+                    </div>
+                    <button onClick={()=>onSelectGame(sys.key)} style={{marginLeft:"auto",background:"rgba(255,255,255,.2)",border:"1.5px solid rgba(255,255,255,.5)",color:"#fff",borderRadius:20,padding:"8px 18px",fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1,backdropFilter:"blur(4px)"}}>PLAY →</button>
                   </div>
+                  <div style={{fontSize:"10px",opacity:.65,marginTop:10,letterSpacing:.5}}>{sys.stats}</div>
                 </div>
-                {/* Live flow bar */}
-                <div>
-                  <div style={{fontSize:8,letterSpacing:1.5,color:"rgba(255,255,255,0.2)",marginBottom:5}}>LIVE FLOW</div>
-                  <div style={{height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",position:"relative"}}>
-                    <div style={{position:"absolute",inset:0,background:`linear-gradient(90deg,transparent,${sys.accent},transparent)`,
-                      animation:"miv-flow 2s linear infinite"}}/>
-                  </div>
+                <div style={{padding:"16px 20px"}}>
+                  {sys.lines.map((ln:any)=>(
+                    <div key={ln.name} style={{marginBottom:12}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                        <div style={{background:ln.color,color:"#fff",fontSize:"9px",fontWeight:700,padding:"2px 8px",borderRadius:3,letterSpacing:.5,flexShrink:0}}>{ln.name}</div>
+                        <div style={{fontSize:"10px",color:"rgba(0,0,0,.35)",letterSpacing:.5}}>{ln.start} → {ln.end}</div>
+                      </div>
+                      <div style={{position:"relative",height:28,display:"flex",alignItems:"center"}}>
+                        <div style={{position:"absolute",left:0,right:0,height:3,background:ln.color,borderRadius:2,opacity:.25}}/>
+                        <div style={{display:"flex",gap:0,width:"100%",justifyContent:"space-between",position:"relative",zIndex:1,overflowX:"auto",paddingBottom:2}}>
+                          {ln.stations.map((st:string,i:number)=>(
+                            <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3,flexShrink:0}}>
+                              <div style={{width:8,height:8,borderRadius:"50%",background:ln.color,border:"2px solid #fff",boxShadow:`0 0 0 1px ${ln.color}`,flexShrink:0}}/>
+                              <div style={{fontSize:"7px",color:"rgba(0,0,0,.5)",whiteSpace:"nowrap",maxWidth:52,textOverflow:"ellipsis",overflow:"hidden",textAlign:"center",lineHeight:1.2}}>{st}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* ── SYSTEM STATS ── */}
-          <div style={{display:"flex",gap:8,margin:"0 14px 12px"}}>
-            {[
-              {label:"STATIONS",val:String(sys.stations)},
-              {label:"LINES",val:String(sys.lines)},
-              {label:"DAILY RIDERS",val:sys.riders},
-              {label:"HEALTH",val:`${sys.health}%`},
-            ].map(s=>(
-              <div key={s.label} className="miv-stat-box">
-                <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.9)",marginBottom:3}}>{s.val}</div>
-                <div style={{fontSize:6.5,letterSpacing:1.5,color:"rgba(255,255,255,0.25)",textTransform:"uppercase"}}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* ── TOP STATIONS + NETWORK ACTIVITY ── */}
-          <div style={{display:"flex",gap:10,margin:"0 14px 14px"}}>
-            {/* Top Stations */}
-            <div style={{flex:3,background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12,padding:"12px 14px"}}>
-              <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>TOP STATIONS</div>
-              {sys.top.map((st,i)=>(
-                <div key={i} className="miv-station-row">
-                  <div style={{width:16,height:16,borderRadius:"50%",background:sys.accent,opacity:.15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    <span style={{fontSize:8,fontWeight:700,color:sys.accent}}>{i+1}</span>
+              <div style={{fontSize:"10px",color:"rgba(0,0,0,.3)",textAlign:"center",letterSpacing:1}}>Station maps are simplified. Each game includes all major stations.</div>
+            </>
+          )}
+          {tab==="other"&&(
+            <div style={{display:"flex",flexDirection:"column",gap:12}}>
+              {NON_TRANSIT.map(g=>(
+                <div key={g.key} style={{background:"#fff",border:"1px solid rgba(0,0,0,.08)",borderRadius:14,overflow:"hidden"}}>
+                  <div style={{background:`linear-gradient(135deg,${g.accent},${g.accent}cc)`,padding:"14px 20px",color:"#fff",display:"flex",alignItems:"center",gap:12}}>
+                    <span style={{fontSize:"26px"}}>{g.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"15px",fontWeight:700}}>{g.name}</div>
+                      <div style={{fontSize:"10px",opacity:.7,marginTop:2,letterSpacing:.5}}>{g.sub}</div>
+                    </div>
+                    <button onClick={()=>onSelectGame(g.key)} style={{background:"rgba(255,255,255,.2)",border:"1.5px solid rgba(255,255,255,.5)",color:"#fff",borderRadius:20,padding:"7px 16px",fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:1}}>PLAY →</button>
                   </div>
-                  <div style={{flex:1,fontSize:10,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{st.n}</div>
-                  <div style={{fontSize:8,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace"}}>{st.t}</div>
+                  <div style={{padding:"14px 20px",fontSize:"13px",color:"rgba(0,0,0,.55)",lineHeight:1.7}}>{g.desc}</div>
                 </div>
               ))}
             </div>
-            {/* Network Activity */}
-            <div style={{flex:2,background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12,padding:"12px 12px"}}>
-              <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>ACTIVITY</div>
-              <svg viewBox="0 0 100 40" style={{width:"100%",height:40}}>
-                {Array.from({length:12},(_,i)=>{
-                  const heights=[18,8,22,12,26,10,20,14,24,8,18,12];
-                  const h=heights[i%heights.length];
-                  return(
-                    <rect key={i} x={i*8+2} y={40-h} width={5} height={h} rx={1.5}
-                      fill={sys.accent} opacity={.25+i*.04}
-                      style={{animation:`miv-wave ${1.2+i*.15}s ease-in-out ${i*.08}s infinite`,transformOrigin:`${i*8+4.5}px 40px`}}/>
-                  );
-                })}
-              </svg>
-              <div style={{fontSize:8,color:"rgba(255,255,255,0.15)",letterSpacing:1,marginTop:4,textAlign:"center"}}>REAL-TIME SIGNAL</div>
-            </div>
-          </div>
-
-          {/* ── PLAY BUTTON ── */}
-          <div style={{padding:"0 14px 20px"}}>
-            <button onClick={()=>onSelectGame(selSys)}
-              style={{width:"100%",background:`linear-gradient(135deg,${sys.accent},${sys.accent}bb)`,
-                color:"#fff",border:"none",borderRadius:12,padding:"16px",
-                fontSize:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",
-                boxShadow:`0 6px 32px ${sys.accent}50`,transition:"all .2s",
-                fontFamily:"'JetBrains Mono',monospace",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-              <span>PLAY</span>
-              <span style={{fontSize:11,opacity:.7}}>3 ROUNDS · MAX POINTS</span>
-              <span>→</span>
-            </button>
-          </div>
+          )}
         </div>
-      )}
-    </div>
-  );
-}
-
-// ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
-function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
-  const scrollRef=useRef<HTMLDivElement>(null);
-  const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
-  return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
-      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
-        <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
-        {/* Close handle */}
-        <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
-          <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
-        </div>
-        <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
-          <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
-        </div>
-        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined}/>
       </div>
     </div>
   );
@@ -3830,7 +3446,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[activeTab,setActiveTab]=useState<string>("all");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
-  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE","MAPS"]));
+  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
 
   const modals=(
@@ -4091,7 +3707,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </nav>
 
       {/* HERO */}
-      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{minHeight:"52vh",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -4106,7 +3722,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
-        <div style={{position:"relative",marginTop:"-35px",padding:"0 22px",animation:"lmFadeIn .4s ease both"}}>
+        <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
           <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
@@ -4115,10 +3731,11 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span className="lm-grad" style={{display:"block"}}>UrbanIQ</span>
           </div>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>/DAILY TRIVIA</span>
+            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}><div style={{position:"relative",marginTop:"-30px",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>DAILY TRIVIA</span>
           </div>
           <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
+            <button className="lm-cta-main" style={{flex:"none"}} onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
             {topStreak>0&&(
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
@@ -4223,44 +3840,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               </div>
             );
           })}
-          {/* MAPS accordion */}
-          {(()=>{
-            const mapsOpen=!lmCollapsed.has("MAPS");
-            const mapsSystems=[
-              {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest"},
-              {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital"},
-              {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City"},
-              {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"LA County · SoCal"},
-              {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA"},
-              {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority"},
-            ];
-            return(
-              <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
-                <button onClick={()=>toggleLmSection("MAPS")}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:mapsOpen?"#FAFAFA":"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
-                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:mapsOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-                </button>
-                {mapsOpen&&(
-                  <div style={{animation:"lmFadeIn .2s ease both",display:"flex",flexDirection:"column"}}>
-                    {mapsSystems.map((s,i)=>(
-                      <div key={s.key} onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-                        style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderBottom:i<mapsSystems.length-1?"2px solid #E8E5E0":"none",borderLeft:`5px solid ${s.accent}`,cursor:"pointer",background:"#fff",transition:"background .15s"}}
-                        onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
-                        onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
-                        <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{s.emoji}</div>
-                        <div style={{flex:1}}>
-                          <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{s.name}</div>
-                          <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{s.sub}</div>
-                        </div>
-                        <div style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600,flexShrink:0}}>View Map →</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
         </div>
       </div>
 
@@ -4277,7 +3856,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{animation:"lmFadeIn .4s ease both"}}>
             <div style={{padding:"0 22px",marginBottom:0}}>
               <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
-                Yesterday's Answer <div className="lm-eyebrow-line"/>
+                Yesterday\'s Answer <div className="lm-eyebrow-line"/>
               </div>
             </div>
             <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid #EDEBE8",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"white"}}
@@ -5238,11 +4817,10 @@ function GameHistoryCalendar({gameKey:gk,playHistory,T}:{gameKey:string,playHist
   const days=Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;const entry=hist.find((h:any)=>h.date===dateStr);return{dateStr,day:d.getDate(),entry};});
   return(<div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:6}}>{days.map((d:any,i:number)=>(<div key={i} title={d.dateStr} style={{width:20,height:20,borderRadius:4,background:d.entry?.won?T.cellBg.green:d.entry?T.cellBg.red:T.surface,border:`1px solid ${d.entry?.won?T.cellBorder.green:d.entry?T.cellBorder.red:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"8px",color:d.entry?.won?T.cellText.green:d.entry?T.cellText.red:T.textMuted}}>{d.entry?.won?"✓":d.entry?"✗":d.day}</div>))}</div>);
 }
-function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void}){
+function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean}){
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
   const[tab,setTab]=useState("play");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[tab]);
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
   const[profile,setProfile]=useState<any>({name:"",emoji:"🎯",bio:"",optIn:false});
   const[profInput,setProfInput]=useState<any>({name:"",emoji:"🎯",bio:""});
@@ -5295,7 +4873,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showItemOfWeek,setShowItemOfWeek]=useState(false);
   const[showTrivia,setShowTrivia]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
-  const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
   useEffect(()=>{if(initMode==="blitz")setShowBlitz(true);else if(initMode==="trivia")setShowTrivia(true);else if(initMode==="cards")setTab("cards");},[]);
   const inputRef=useRef<HTMLInputElement>(null);
@@ -5566,7 +5143,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     {showMoreMenu&&<div onClick={()=>setShowMoreMenu(false)} style={{position:"fixed",inset:0,zIndex:9001}}/>}
     {showMoreMenu&&(
       <div style={{position:"fixed",right:8,top:44,background:T.card,border:`1px solid ${T.border}`,borderRadius:10,boxShadow:"0 4px 24px rgba(0,0,0,.35)",zIndex:9002,minWidth:148,overflow:"hidden",animation:"slideDown .18s ease"}}>
-        {[["maps","🗺️ MAPS"],["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
+        {[["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
           <button key={id} onClick={()=>{setTab(id as any);setShowMoreMenu(false);}} style={{display:"block",width:"100%",background:tab===id?T.accent:"transparent",color:tab===id?"#fff":T.text,border:"none",borderBottom:`1px solid ${T.border}`,padding:"13px 18px",fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",textAlign:"left",transition:"background .15s"}}>
             {label}
           </button>
@@ -5724,7 +5301,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       {/* Tabs */}
       <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2,background:T.bg}}>
         <style>{`@media(min-width:768px){.tab-desktop{display:inline-flex!important}.tab-more{display:none!important}}`}</style>
-        {[[`play`,`${G.itemEmoji} PLAY`],[`leaderboard`,`🏆 BOARD`],[`maps`,`🗺️ MAPS`]].map(([id,label])=>(
+        {[[`play`,`${G.itemEmoji} PLAY`],[`leaderboard`,`🏆 BOARD`]].map(([id,label])=>(
           <button key={id} className={`tab-btn${tab===id?" on":""}`} onClick={()=>setTab(id)}>
             {label}
             {id==="play"&&unfinishedRounds<3&&unfinishedRounds>0&&<span style={{background:T.accent,color:"#fff",borderRadius:"50%",width:13,height:13,fontSize:"8px",fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center",marginLeft:3}}>{unfinishedRounds}</span>}
@@ -6068,12 +5645,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                   <div style={{fontSize:fs(7),color:isU?T.cellText.green:T.textMuted,lineHeight:1.2}}>{a.name}</div>
                 </div>);})}
               </div>
-              <button onClick={()=>{const t=`${G.emoji} UrbanIQ\n${profile.emoji} ${profile.name||"Player"}\n\n📊 Stats\n🔥 Streak: ${stats.streak}\n🏆 Wins: ${stats.wins}/${stats.played}\n\nPlay free 👉 urbaniq.quest`;navigator.clipboard?.writeText(t).then(()=>{setProfileCopied(true);setTimeout(()=>setProfileCopied(false),2000);});}} style={{width:"100%",background:profileCopied?"transparent":T.accent,color:profileCopied?T.accentB:"#fff",border:`1px solid ${profileCopied?T.accent:"transparent"}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,letterSpacing:2,padding:"11px",borderRadius:8,cursor:"pointer",transition:"all .2s"}}>{profileCopied?"✓ COPIED!":"📋 SHARE MY PROFILE"}</button>
+              <button onClick={()=>{const t=`${G.emoji} UrbanIQ\n${profile.emoji} ${profile.name||"Player"}\n\n📊 Stats\n🔥 Streak: ${stats.streak}\n🏆 Wins: ${stats.wins}/${stats.played}\n\nPlay free 👉 nixaler-transit.replit.app`;navigator.clipboard?.writeText(t).then(()=>{setProfileCopied(true);setTimeout(()=>setProfileCopied(false),2000);});}} style={{width:"100%",background:profileCopied?"transparent":T.accent,color:profileCopied?T.accentB:"#fff",border:`1px solid ${profileCopied?T.accent:"transparent"}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,letterSpacing:2,padding:"11px",borderRadius:8,cursor:"pointer",transition:"all .2s"}}>{profileCopied?"✓ COPIED!":"📋 SHARE MY PROFILE"}</button>
             </div>
           ):(
             <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:12,padding:"20px",marginBottom:14}}>
               <div style={{fontSize:fs(11),letterSpacing:2,color:T.accentB,marginBottom:14}}>✏️ EDIT PROFILE</div>
-              {[{label:"DISPLAY NAME",key:"name",ph:"Your name..."},{label:"BIO / CITY",key:"bio",ph:"WPortland, OR · Transit nerd..."}].map((f:any)=>(
+              {[{label:"DISPLAY NAME",key:"name",ph:"Your name..."},{label:"BIO / CITY",key:"bio",ph:"Portland, OR · Transit nerd..."}].map((f:any)=>(
                 <div key={f.key} style={{marginBottom:11}}>
                   <div style={{fontSize:fs(9),color:T.textMuted,letterSpacing:2,marginBottom:5}}>{f.label}</div>
                   <input value={profInput[f.key]} onChange={e=>setProfInput((p:any)=>({...p,[f.key]:e.target.value}))} maxLength={40} placeholder={f.ph}
@@ -6113,15 +5690,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       )}
 
       {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
-      {tab==="maps"&&(
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 20px",gap:14}}>
-          <div style={{fontSize:36}}>🗺️</div>
-          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:fs(13),fontWeight:700,color:T.text,letterSpacing:1}}>Transit Maps</div>
-          <div style={{fontSize:fs(9),color:T.textMuted,textAlign:"center",maxWidth:260,lineHeight:1.6}}>Explore interactive maps for every city. Switch between systems with the dropdown inside.</div>
-          <button onClick={()=>setShowMapsModal(true)} style={{marginTop:6,background:T.accent,color:"#fff",border:"none",borderRadius:30,padding:"13px 32px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,letterSpacing:2,cursor:"pointer",boxShadow:`0 4px 20px ${G.accent}44`}}>OPEN MAPS</button>
-        </div>
-      )}
-      {showMapsModal&&<MapsGuideModal onClose={()=>setShowMapsModal(false)} onSelectGame={(gk)=>{setShowMapsModal(false);onHome();setTimeout(()=>onSelectGame?.(gk),80);}}/>}
       {tab==="cards"&&(
         <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
       )}
@@ -6401,263 +5969,10 @@ function IntroScreen({onDone}:{onDone:()=>void}){
   );
 }
 
-// ── HYPE INTRO ────────────────────────────────────────────────────────────────
-function HypeIntro({onDone}:{onDone:()=>void}){
-  const doneRef=useRef(false);
-  const skip=useCallback(()=>{
-    if(doneRef.current)return;
-    doneRef.current=true;
-    localStorage.setItem('tgg:hype:seen','1');
-    const el=document.getElementById('hy-wrap');
-    if(el){el.style.transition='opacity .6s ease';el.style.opacity='0';}
-    setTimeout(onDone,650);
-  },[onDone]);
-
-  useEffect(()=>{
-    const sleep=(ms:number)=>new Promise<void>(r=>setTimeout(r,ms));
-    // canvas
-    const cv=document.getElementById('hy-bg') as HTMLCanvasElement;
-    const cx=cv.getContext('2d')!;
-    let W=0,H=0,nodes:any[]=[],edges:any[]=[],stopped=false;
-    const t0=performance.now();
-    const LC=['#BF0000','#0039A6','#FF9900','#009b3a','#C60C30','#028A48','#919D9D'];
-    function buildGraph(){
-      nodes=[];edges=[];
-      const cols=Math.ceil(W/110)+1,rows=Math.ceil(H/95)+1;
-      for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)
-        nodes.push({x:c*110+(r%2?55:0)+Math.random()*28-14,y:r*95+Math.random()*18-9,c:LC[Math.floor(Math.random()*LC.length)],r:Math.random()*2+1.2,ph:Math.random()*Math.PI*2});
-      nodes.forEach((a:any,i:number)=>nodes.forEach((b:any,j:number)=>{if(j<=i)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<140)edges.push({i,j,a:(1-d/140)*.08});}));
-    }
-    function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;buildGraph();}
-    function frame(now:number){
-      const t=(now-t0)/1000,fade=Math.min(1,t/1.5);
-      cx.clearRect(0,0,W,H);
-      edges.forEach((e:any)=>{cx.beginPath();cx.moveTo(nodes[e.i].x,nodes[e.i].y);cx.lineTo(nodes[e.j].x,nodes[e.j].y);cx.strokeStyle=`rgba(0,0,0,${e.a*fade*.4})`;cx.lineWidth=.5;cx.stroke();});
-      nodes.forEach((n:any)=>{const p=(Math.sin(n.ph+t*.9)+1)/2,a=fade*(.12+p*.2);cx.beginPath();cx.arc(n.x,n.y,n.r*(.8+p*.4),0,Math.PI*2);cx.fillStyle=n.c+Math.round(a*255).toString(16).padStart(2,'0');cx.fill();});
-      if(!stopped)requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-    window.addEventListener('resize',resize);resize();
-    // streaks
-    const wrap=document.getElementById('hy-wrap')!;
-    [{c:'#BF0000',t:'12%',s:'left:0',w:'62vw',d:300,ms:2600},{c:'#028A48',t:'28%',s:'left:0',w:'75vw',d:600,ms:2900},{c:'#0039A6',t:'58%',s:'right:0',w:'50vw',d:900,ms:2300},{c:'#FF9900',t:'72%',s:'left:0',w:'58vw',d:1200,ms:2700},{c:'#C60C30',t:'88%',s:'right:0',w:'44vw',d:1500,ms:2400}].forEach(({c,t,s,w,d,ms})=>{const el=document.createElement('div');el.className='hy-sk';el.style.cssText=`background:${c};top:${t};${s};--w:${w};--d:${ms}ms;`;wrap.appendChild(el);setTimeout(()=>el.classList.add('go'),d);});
-    // phase helpers
-    const phOn=(id:string)=>{const el=document.getElementById(id);if(el){el.style.opacity='1';el.style.pointerEvents='auto';}};
-    const phOff=(id:string)=>{const el=document.getElementById(id);if(el){el.style.opacity='0';el.style.pointerEvents='none';}};
-    const vis=(id:string)=>document.getElementById(id)?.classList.add('hy-v');
-    // ph1 sequence
-    phOn('hy-ph1');
-    [[80,'hy-l1'],[500,'hy-l2'],[920,'hy-l3'],[1300,'hy-ls'],[1650,'hy-lc']].forEach(([ms,id])=>setTimeout(()=>vis(id as string),ms as number));
-    // game demo
-    const GUESSES=[
-      {name:'WOODLEY PARK',cells:[{cls:'hy-G',text:'🔴 RED ONLY',tip:'Exact line match!'},{cls:'hy-G',text:'NW DC',tip:'Exact zone!'},{cls:'hy-Y',text:'🌒 QUIET ▲',tip:'1 level too low'},{cls:'hy-R',text:'✗'}]},
-      {name:'DUPONT CIRCLE',cells:[{cls:'hy-G hy-wpop',text:'🔴 RED ONLY',tip:''},{cls:'hy-G hy-wpop',text:'NW DC',tip:''},{cls:'hy-G hy-wpop',text:'🌔 BUSY',tip:''},{cls:'hy-G hy-wpop',text:'✓'}]},
-    ];
-    async function typeRow(rowIdx:number,guessIdx:number){
-      const g=GUESSES[guessIdx];
-      document.getElementById('hy-b'+rowIdx)?.remove();
-      const row=document.createElement('div');row.className='hy-grow';
-      const nc=document.createElement('div');nc.className='hy-cell hy-nc hy-ty';nc.textContent='';
-      row.appendChild(nc);
-      const cells:HTMLElement[]=[];
-      for(let i=0;i<4;i++){const c=document.createElement('div');c.className='hy-cell';c.textContent='—';row.appendChild(c);cells.push(c);}
-      const grid=document.getElementById('hy-grid')!;
-      const next=document.getElementById('hy-b'+(rowIdx+1));
-      next?grid.insertBefore(row,next):grid.appendChild(row);
-      for(let i=1;i<=g.name.length;i++){nc.textContent=g.name.slice(0,i);await sleep(32);}
-      nc.classList.remove('hy-ty');
-      await sleep(160);
-      for(let i=0;i<cells.length;i++){
-        const cell=cells[i],d=g.cells[i];
-        cell.classList.add('hy-flip');
-        await sleep(170);
-        cell.className='hy-cell hy-flip '+d.cls;
-        cell.textContent=d.text;
-        if(d.tip)cell.title=d.tip;
-        await sleep(170);
-        cell.classList.remove('hy-flip');
-      }
-    }
-    function burst(){
-      const cols=['#28b050','#c8a800','#0060ff','#BF0000','#028A48','#FF9900','#C60C30'];
-      for(let i=0;i<52;i++){
-        const el=document.createElement('div');el.className='hy-conf';
-        const sz=4+Math.random()*8;
-        el.style.cssText=`left:${20+Math.random()*60}%;top:${30+Math.random()*35}%;width:${sz}px;height:${sz}px;background:${cols[i%cols.length]};border-radius:${Math.random()>.4?'50%':'2px'};--x:${-100+Math.random()*200}px;--y:${-160-Math.random()*160}px;--r:${-540+Math.random()*1080}deg;--t:${.9+Math.random()*.8}s;animation-delay:${Math.random()*.3}s;`;
-        wrap.appendChild(el);requestAnimationFrame(()=>el.classList.add('go'));setTimeout(()=>el.remove(),2200);
-      }
-    }
-    async function run(){
-      await sleep(2100);phOff('hy-ph1');phOn('hy-ph2');
-      await sleep(700);await typeRow(0,0);await sleep(380);await typeRow(1,1);
-      const wf=document.getElementById('hy-wf');if(wf){wf.classList.add('hy-burst');setTimeout(()=>wf.classList.remove('hy-burst'),500);}
-      burst();
-      const wb=document.getElementById('hy-wb');if(wb){wb.textContent='🎉  DUPONT CIRCLE  ·  SOLVED IN 2 / 6';wb.classList.add('hy-on');}
-      await sleep(1000);phOff('hy-ph2');phOn('hy-ph3');
-      await sleep(200);vis('hy-ltag');vis('hy-stats');vis('hy-cta');
-    }
-    run();
-    const T=setTimeout(()=>skip(),10000);
-    return()=>{stopped=true;window.removeEventListener('resize',resize);clearTimeout(T);};
-  },[skip]);
-
-  const CSS=`
-    #hy-wrap{position:fixed;inset:0;background:#fff;z-index:99999;overflow:hidden;font-family:'Inter',sans-serif;}
-    #hy-bg{position:absolute;inset:0;pointer-events:none;}
-    #hy-bar{position:absolute;bottom:0;left:0;height:4px;z-index:100;width:0;background:linear-gradient(90deg,#028A48,#0060ff,#C60C30);animation:hy-bar 10s linear forwards;}
-    @keyframes hy-bar{to{width:100%}}
-    #hy-skip{position:absolute;top:18px;right:18px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#999;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:20px;padding:7px 15px;cursor:pointer;transition:all .2s;opacity:0;animation:hy-fi .3s .8s ease forwards;}
-    #hy-skip:hover{color:#000;border-color:rgba(0,0,0,.3);}
-    @keyframes hy-fi{to{opacity:1}}
-    .hy-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;opacity:0;pointer-events:none;transition:opacity .6s ease;z-index:10;}
-    .hy-sk{position:absolute;height:2px;border-radius:1px;pointer-events:none;z-index:1;opacity:0;}
-    .hy-sk.go{animation:hy-sk var(--d) ease forwards;}
-    @keyframes hy-sk{0%{width:0;opacity:0}8%{opacity:.9}80%{opacity:.6}100%{width:var(--w);opacity:0}}
-    .hy-hl{font-weight:900;letter-spacing:-2px;line-height:1.02;font-size:clamp(40px,11vw,92px);color:#0a0a0a;text-align:center;opacity:0;transform:translateY(24px);transition:opacity .42s ease,transform .42s ease;}
-    .hy-hl.hy-c{background:linear-gradient(90deg,#028A48,#0060ff 50%,#C60C30);-webkit-background-clip:text;background-clip:text;color:transparent;}
-    .hy-hl.hy-v{opacity:1;transform:none;}
-    .hy-sub{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,14px);letter-spacing:4px;color:#bbb;text-transform:uppercase;text-align:center;opacity:0;transition:opacity .4s ease;}
-    .hy-sub.hy-v{opacity:1;}
-    .hy-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px;opacity:0;transition:opacity .4s ease;}
-    .hy-chips.hy-v{opacity:1;}
-    .hy-chip{display:flex;align-items:center;gap:5px;border-radius:30px;padding:5px 13px;font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:.5px;border:2px solid;}
-    #hy-card{width:100%;max-width:420px;background:#111;border-radius:22px;box-shadow:0 20px 80px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.12);overflow:hidden;}
-    .hy-cbar{background:#000;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
-    .hy-cgame{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.8);font-weight:700;}
-    .hy-cday{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);margin-top:1px;}
-    .hy-lpills{display:flex;gap:5px;}
-    .hy-lp{height:7px;width:22px;border-radius:3px;}
-    .hy-cbody{padding:13px 13px 15px;}
-    .hy-myst{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 13px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;}
-    .hy-mlbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.2);}
-    .hy-mbs{display:flex;gap:3px;}
-    .hy-mb{height:9px;border-radius:2px;background:rgba(255,255,255,.12);animation:hy-mp 1.7s ease infinite;}
-    @keyframes hy-mp{0%,100%{opacity:.4}50%{opacity:1}}
-    .hy-hdrs{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;margin-bottom:5px;}
-    .hy-hdr{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:rgba(255,255,255,.22);text-align:center;cursor:default;padding:2px 0;position:relative;}
-    .hy-hdr:first-child{text-align:left;padding-left:3px;}
-    .hy-hdr:hover{color:rgba(255,255,255,.6);}
-    .hy-hdr:hover .hy-tip{opacity:1;transform:translateX(-50%) translateY(0);}
-    .hy-tip{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%) translateY(5px);background:#222;color:#ddd;font-size:9px;letter-spacing:.3px;line-height:1.6;padding:7px 10px;border-radius:7px;white-space:nowrap;border:1px solid rgba(255,255,255,.1);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:50;font-weight:400;}
-    .hy-tip::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom-color:#222;border-top:none;}
-    .hy-grid{display:flex;flex-direction:column;gap:4px;}
-    .hy-grow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;}
-    .hy-cell{border-radius:5px;padding:7px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:clamp(7px,1.7vw,9px);font-weight:700;letter-spacing:.3px;border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:rgba(255,255,255,.2);min-height:34px;display:flex;align-items:center;justify-content:center;line-height:1.2;}
-    .hy-nc{justify-content:flex-start;padding-left:7px;font-size:clamp(8px,1.9vw,10px);}
-    .hy-ty::after{content:'|';animation:hy-bl .5s step-end infinite;color:rgba(255,255,255,.35);}
-    @keyframes hy-bl{0%,100%{opacity:1}50%{opacity:0}}
-    .hy-G{background:#041508;border-color:#28b050;color:#7fffb0;}
-    .hy-Y{background:#1a1400;border-color:#c8a800;color:#ffe680;}
-    .hy-R{background:#180404;border-color:#c43030;color:#ffaaaa;}
-    .hy-flip{animation:hy-flip .34s ease forwards;}
-    @keyframes hy-flip{0%{transform:rotateY(0)}44%{transform:rotateY(-90deg);opacity:.15}56%{transform:rotateY(-90deg);opacity:.15}100%{transform:rotateY(0);opacity:1}}
-    .hy-wpop{animation:hy-wpop .4s ease forwards;}
-    @keyframes hy-wpop{0%{transform:scale(1)}45%{transform:scale(1.2)}100%{transform:scale(1)}}
-    .hy-brow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;opacity:.2;}
-    .hy-bc{height:34px;border-radius:5px;border:1.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);}
-    #hy-wb{margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#7fffb0;font-weight:700;text-align:center;background:#041508;border:1px solid #28b050;border-radius:7px;padding:9px;opacity:0;pointer-events:none;transition:opacity .35s ease;}
-    #hy-wb.hy-on{opacity:1;}
-    #hy-wf{position:absolute;inset:0;pointer-events:none;z-index:5;background:rgba(40,176,80,0);}
-    #hy-wf.hy-burst{animation:hy-wfb .5s ease forwards;}
-    @keyframes hy-wfb{0%{background:rgba(40,176,80,0)}30%{background:rgba(40,176,80,.14)}100%{background:rgba(40,176,80,0)}}
-    .hy-conf{position:absolute;pointer-events:none;z-index:80;opacity:0;border-radius:2px;}
-    .hy-conf.go{animation:hy-cf var(--t) ease forwards;}
-    @keyframes hy-cf{0%{opacity:1;transform:translate(0,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
-    .hy-lrow{display:flex;align-items:baseline;gap:3px;}
-    .hy-lu{font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;font-size:clamp(52px,13vw,110px);background:linear-gradient(90deg,#028A48,#0060ff,#028A48);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hy-ls 3s linear infinite;}
-    @keyframes hy-ls{0%{background-position:0%}100%{background-position:250%}}
-    .hy-lq{font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;font-size:clamp(52px,13vw,110px);color:#0a0a0a;}
-    .hy-ltag{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,11px);letter-spacing:5px;color:#bbb;text-transform:uppercase;margin-top:5px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;}
-    .hy-ltag.hy-v{opacity:1;transform:none;}
-    .hy-stats{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;opacity:0;transform:translateY(10px);transition:opacity .4s .12s ease,transform .4s .12s ease;}
-    .hy-stats.hy-v{opacity:1;transform:none;}
-    .hy-sb{background:#f5f5f5;border:1.5px solid #eee;border-radius:10px;padding:11px 18px;text-align:center;min-width:76px;}
-    .hy-sn{font-size:clamp(18px,5vw,28px);font-weight:900;color:#0a0a0a;line-height:1;}
-    .hy-sl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;color:#bbb;margin-top:3px;}
-    .hy-cta{display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:22px;opacity:0;transform:translateY(10px);transition:opacity .4s .26s ease,transform .4s .26s ease;}
-    .hy-cta.hy-v{opacity:1;transform:none;}
-    .hy-ctabtn{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,13px);letter-spacing:3px;font-weight:700;color:#fff;background:linear-gradient(135deg,#028A48,#0060ff);border:none;border-radius:30px;padding:15px 40px;cursor:pointer;position:relative;overflow:hidden;animation:hy-cp 2s .5s ease infinite;}
-    @keyframes hy-cp{0%,100%{box-shadow:0 0 0 0 rgba(0,152,80,.35)}50%{box-shadow:0 0 0 14px rgba(0,152,80,0)}}
-    .hy-ctabtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);}
-    .hy-ctasub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:#bbb;}
-  `;
-
-  return(
-    <div id="hy-wrap">
-      <style dangerouslySetInnerHTML={{__html:CSS}}/>
-      <canvas id="hy-bg"/>
-      <div id="hy-wf"/>
-      <div id="hy-bar"/>
-      <button id="hy-skip" onClick={skip}>SKIP ▶</button>
-      {/* Phase 1 */}
-      <div className="hy-ph" id="hy-ph1">
-        <div className="hy-hl" id="hy-l1">Six cities.</div>
-        <div className="hy-hl hy-c" id="hy-l2">868 stations.</div>
-        <div className="hy-hl" id="hy-l3">One puzzle. Every day.</div>
-        <div className="hy-sub" id="hy-ls">Can you guess today's station?</div>
-        <div className="hy-chips" id="hy-lc">
-          <div className="hy-chip" style={{borderColor:"#028A48",color:"#028A48"}}>🚊 Portland</div>
-          <div className="hy-chip" style={{borderColor:"#BF0000",color:"#BF0000"}}>🚇 DC</div>
-          <div className="hy-chip" style={{borderColor:"#EE352E",color:"#EE352E"}}>🗽 New York</div>
-          <div className="hy-chip" style={{borderColor:"#0072bc",color:"#0072bc"}}>🌴 LA</div>
-          <div className="hy-chip" style={{borderColor:"#C60C30",color:"#C60C30"}}>🌬️ Chicago</div>
-        </div>
-      </div>
-      {/* Phase 2 */}
-      <div className="hy-ph" id="hy-ph2">
-        <div id="hy-card">
-          <div className="hy-cbar">
-            <div><div className="hy-cgame">DC METRO · PUZZLE #247</div><div className="hy-cday">MEDIUM · 6 GUESSES</div></div>
-            <div className="hy-lpills">
-              {['#BF0000','#0039A6','#FF9900','#009b3a','#FFD700','#919D9D'].map(c=><div key={c} className="hy-lp" style={{background:c}}/>)}
-            </div>
-          </div>
-          <div className="hy-cbody">
-            <div className="hy-myst">
-              <div className="hy-mlbl">TODAY'S STATION</div>
-              <div className="hy-mbs">
-                {[11,19,25,15,21,13].map((w,i)=><div key={i} className="hy-mb" style={{width:w,animationDelay:`${i*.2}s`}}/>)}
-              </div>
-            </div>
-            <div className="hy-hdrs">
-              <div className="hy-hdr" style={{textAlign:"left",paddingLeft:3}}>STATION</div>
-              <div className="hy-hdr">LINES<div className="hy-tip">🟢 Exact match<br/>🟡 Partial overlap<br/>🔴 No shared lines</div></div>
-              <div className="hy-hdr">ZONE<div className="hy-tip">🟢 Same zone<br/>🟡 Adjacent zone<br/>🔴 Different area</div></div>
-              <div className="hy-hdr">BUSY<div className="hy-tip">🟢 Same traffic level<br/>🟡 1 level off (▲▼)<br/>🔴 Far off</div></div>
-              <div className="hy-hdr">✓</div>
-            </div>
-            <div className="hy-grid" id="hy-grid">
-              {[0,1,2,3,4,5].map(i=><div key={i} className="hy-brow" id={`hy-b${i}`}>{[0,1,2,3,4].map(j=><div key={j} className="hy-bc"/>)}</div>)}
-            </div>
-            <div id="hy-wb"/>
-          </div>
-        </div>
-      </div>
-      {/* Phase 3 */}
-      <div className="hy-ph" id="hy-ph3">
-        <div className="hy-lrow"><span className="hy-lu">Urban</span><span className="hy-lq">IQ</span></div>
-        <div className="hy-ltag" id="hy-ltag">Decode the city · Daily transit puzzle</div>
-        <div className="hy-stats" id="hy-stats">
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#028A48"}}>6</div><div className="hy-sl">CITIES</div></div>
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#0060ff"}}>868+</div><div className="hy-sl">STATIONS</div></div>
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#C60C30"}}>3</div><div className="hy-sl">ROUNDS/DAY</div></div>
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#c8a800"}}>FREE</div><div className="hy-sl">ALWAYS</div></div>
-        </div>
-        <div className="hy-cta" id="hy-cta">
-          <button className="hy-ctabtn" onClick={skip}>PLAY TODAY'S PUZZLE</button>
-          <div className="hy-ctasub">No account · No ads · Resets at midnight</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Root(){
   const[phase,setPhase]=useState<Phase>("start");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
   const[selectedDiff,setSelectedDiff]=useState("medium");
-  const[showHype,setShowHype]=useState(()=>!localStorage.getItem("tgg:hype:seen"));
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
@@ -6789,7 +6104,7 @@ function Root(){
   }
 
   if(phase==="play"){
-    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>setPhase("start")} shieldActivated={streakShieldFired} onSelectGame={handleSelectGame}/>;
+    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>setPhase("start")} shieldActivated={streakShieldFired}/>;
   }
 
   if(phase==="mini-games"){
@@ -6810,7 +6125,6 @@ function Root(){
 
   return(
     <>
-    {showHype&&<HypeIntro onDone={()=>setShowHype(false)}/>}
     {pendingDailyCards.length>0&&<PackOpening isDaily={true} card={pendingDailyCards[0]} onDone={()=>{const _e=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._e,pendingDailyCards[0]]));setPendingDailyCards(p=>p.slice(1));}}/>}
     {showOnboarding&&<OnboardingOverlay onDone={()=>{setShowOnboarding(false);setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");}} onStartGame={(gk)=>{setShowOnboarding(false);setSelectedGame(gk);setSelectedDiff("medium");setPhase("play");}}/>}
     <div key={phase==="select-game"?"start":phase} style={{animation:"pageIn .32s ease both"}}>
@@ -6948,5 +6262,4 @@ if("serviceWorker" in navigator){
 // ── MOUNT ─────────────────────────────────────────────────────────────────────
 const rootEl=document.getElementById("root") as HTMLElement;
 const root=ReactDOM.createRoot(rootEl);
-function App(){ return <Root/>; }
 root.render(<App/>);
