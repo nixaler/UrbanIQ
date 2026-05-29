@@ -5837,19 +5837,19 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       {/* Tabs */}
       <div style={{display:"flex",borderBottom:`1px solid ${T.border}`,position:"relative",zIndex:2,background:T.bg}}>
         <style>{`@media(min-width:768px){.tab-desktop{display:inline-flex!important}.tab-more{display:none!important}}`}</style>
-        {[[`play`,`${G.itemEmoji} PLAY`],[`leaderboard`,`🏆 BOARD`]].map(([id,label])=>(
+        {[[`play`,`${G.itemEmoji} PLAY`],[`leaderboard`,`🏆 BOARD`],[`maps`,`🗺️ MAPS`]].map(([id,label])=>(
           <button key={id} className={`tab-btn${tab===id?" on":""}`} onClick={()=>setTab(id)}>
             {label}
             {id==="play"&&unfinishedRounds<3&&unfinishedRounds>0&&<span style={{background:T.accent,color:"#fff",borderRadius:"50%",width:13,height:13,fontSize:"8px",fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center",marginLeft:3}}>{unfinishedRounds}</span>}
           </button>
         ))}
-        {[["maps","🗺️ MAPS"],["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
+        {[["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
           <button key={id} className={`tab-btn${tab===id?" on":""} tab-desktop`} style={{display:"none"}} onClick={()=>{setShowMoreMenu(false);setTab(id);}}>
             {label}
           </button>
         ))}
         <div className="tab-more" style={{marginLeft:"auto"}}>
-          <button className={`tab-btn${["maps","cards","profile","help"].includes(tab)?" on":""}`} onClick={()=>setShowMoreMenu(m=>!m)} style={{whiteSpace:"nowrap"}}>
+          <button className={`tab-btn${["cards","profile","help"].includes(tab)?" on":""}`} onClick={()=>setShowMoreMenu(m=>!m)} style={{whiteSpace:"nowrap"}}>
             ⋯ MORE
           </button>
         </div>
