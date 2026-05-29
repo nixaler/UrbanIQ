@@ -25,7 +25,7 @@ const CARD_DROP={
   hard:  {common:38,uncommon:30,rare:22,legendary:10},
   pro:   {common:22,uncommon:30,rare:30,legendary:18},
 };
-const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",states:"geography",nfl:"sports"};
+const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",nyc:"transit",chi:"transit",bos:"transit",atl:"transit",states:"geography",nfl:"sports"};
 const CARD_TYPE_ADV={transit:{beats:"geography",bonus:1.18},geography:{beats:"sports",bonus:1.18},sports:{beats:"transit",bonus:1.18}};
 
 const DC_UNIQUE_CARDS={
@@ -2941,7 +2941,7 @@ function Confetti(){
 }
 function Particles({gameKey}:{gameKey:string}){
   const[pts]=useState(()=>Array.from({length:22},(_,i)=>({id:i,x:Math.random()*110-5,delay:Math.random()*8,dur:5+Math.random()*5,size:5+Math.random()*8,drift:Math.random()*70-35,op:0.08+Math.random()*0.18})));
-  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨"};
+  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨",bos:"🦞",atl:"🍑"};
   const shape=shapes[gameKey]||"✨";
   return(<div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0}}>{pts.map(p=>(<div key={p.id} style={{position:"absolute",left:`${p.x}%`,top:0,fontSize:`${p.size}px`,animation:`tpPetal ${p.dur}s ${p.delay}s ease-in infinite`,"--drift":`${p.drift}px`,"--op":p.op,opacity:0} as any}>{shape}</div>))}</div>);
 }
@@ -3967,7 +3967,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [heroImgFailed,setHeroImgFailed]=useState(false);
   useEffect(()=>{
     setHeroImgUrl(null);setHeroImgFailed(false);
-    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",states:"United States Capitol",nfl:"National Football League",minigames:"Arcade game"};
+    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",bos:"Massachusetts Bay Transportation Authority",atl:"Atlanta MARTA",states:"United States Capitol",nfl:"National Football League",minigames:"Arcade game"};
     const term=wikiTerms[hotGameKey]||hotCard.name;
     getWikiImage(term).then(url=>{if(url)setHeroImgUrl(url);else setHeroImgFailed(true);});
   },[hotGameKey]);
@@ -4451,46 +4451,16 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               </div>
             );
           })}
-          {/* MAPS accordion */}
-          {(()=>{
-            const mapsOpen=!lmCollapsed.has("MAPS");
-            const mapsSystems=[
-              {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest"},
-              {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital"},
-              {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City"},
-              {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"LA County · SoCal"},
-              {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA"},
-              {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority"},
-              {key:"bos",name:"Boston T",emoji:"🦞",accent:"#DA291C",sub:"MBTA · Boston, MA"},
-              {key:"atl",name:"Atlanta MARTA",emoji:"🍑",accent:"#CE1141",sub:"MARTA · Atlanta, GA"},
-            ];
-            return(
-              <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
-                <button onClick={()=>toggleLmSection("MAPS")}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:mapsOpen?"#FAFAFA":"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
-                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:mapsOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-                </button>
-                {mapsOpen&&(
-                  <div style={{animation:"lmFadeIn .2s ease both",display:"flex",flexDirection:"column"}}>
-                    {mapsSystems.map((s,i)=>(
-                      <div key={s.key} onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-                        style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",borderBottom:i<mapsSystems.length-1?"2px solid #E8E5E0":"none",borderLeft:`5px solid ${s.accent}`,cursor:"pointer",background:"#fff",transition:"background .15s"}}
-                        onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
-                        onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
-                        <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{s.emoji}</div>
-                        <div style={{flex:1}}>
-                          <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{s.name}</div>
-                          <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{s.sub}</div>
-                        </div>
-                        <div style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600,flexShrink:0}}>View Map →</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
+          {/* MAPS single button */}
+          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+            <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
+              onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
+              onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
+              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
+              <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -6969,7 +6939,7 @@ function Root(){
       if(anyPlayed)markActivityDay(getDayNum());
       // Daily visit card
       const dvToday=getToday();const dvLast=localStorage.getItem("tgg:daily-cards:date");
-      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","states","nfl"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="nfl"?NFL_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
+      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","bos","atl","states","nfl"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="bos"?BOS_STATIONS:dvGk==="atl"?ATL_STATIONS:dvGk==="nfl"?NFL_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
       setLoaded(true);
     })();
   },[]);
