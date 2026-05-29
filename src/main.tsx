@@ -3461,7 +3461,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[activeTab,setActiveTab]=useState<string>("all");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
-  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set());
+  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
 
   const modals=(
@@ -3722,7 +3722,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </nav>
 
       {/* HERO */}
-      <div style={{minHeight:"72vh",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 40px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{minHeight:"52vh",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -3737,19 +3737,20 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
-        <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both"}}>
-          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+        <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
           </div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(70px,18vw,92px)",lineHeight:0.9,letterSpacing:1,marginBottom:4}}>
-            <span className="lm-grad" style={{display:"block"}}>DAILY</span>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY</span>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-2s"}}>QUIZ</span>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,12vw,64px)",fontWeight:900,letterSpacing:"-1px",lineHeight:1,marginBottom:2}}>
+            <span className="lm-grad" style={{display:"block"}}>UrbanIQ</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:26,marginTop:10}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
-          <div style={{display:"flex",gap:10,alignItems:"center"}}>
-            <button className="lm-cta-main" onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
+            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>DAILY TRIVIA</span>
+          </div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
+          <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
+            <button className="lm-cta-main" style={{flex:"none"}} onClick={()=>{SoundEngine.play("select");onSelectGame(hotCard.key);}}>Play Today →</button>
             {topStreak>0&&(
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
