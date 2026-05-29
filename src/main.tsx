@@ -3469,7 +3469,7 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
               fontSize:11,fontWeight:700,letterSpacing:2,cursor:"pointer",
               boxShadow:`0 4px 24px ${map.accent}40`,transition:"all .2s",
               fontFamily:"'JetBrains Mono',monospace"}}>
-            ENTER THE NETWORK →
+            PLAY →
           </button>
         </div>
       )}
@@ -3477,65 +3477,191 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
   );
 }
 
-// ── MAPS INLINE VIEW (tab) — CITY BRAIN EDITION ───────────────────────────────
+// ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
 function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
-  const SYSTEMS=[
-    {key:"pdx",name:"Portland MAX",city:"Portland",emoji:"🚊",accent:"#028A48",lines:"5 LINES"},
-    {key:"dc",name:"DC Metro",city:"Washington DC",emoji:"🚇",accent:"#BF0000",lines:"6 LINES"},
-    {key:"balt",name:"Baltimore MTA",city:"Baltimore",emoji:"🚉",accent:"#003087",lines:"2 LINES"},
-    {key:"la",name:"LA Metro",city:"Los Angeles",emoji:"🌴",accent:"#E3051B",lines:"5 LINES"},
-    {key:"nyc",name:"NYC Subway",city:"New York",emoji:"🗽",accent:"#0039A6",lines:"6 LINES"},
-    {key:"chi",name:"Chicago L",city:"Chicago",emoji:"🌬️",accent:"#C60C30",lines:"6 LINES"},
-  ];
   const[selSys,setSelSys]=useState<string|null>(null);
+  const SYSTEMS=[
+    {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
+      top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
+    {key:"dc",name:"DC Metro",city:"Washington, DC",emoji:"🚇",accent:"#BF0000",lines:6,stations:98,riders:"612K",health:88,tagline:"Power flows through every station.",
+      top:[{n:"Metro Center",t:"5:42 PM"},{n:"Union Station",t:"5:38 PM"},{n:"Gallery Pl",t:"5:31 PM"}]},
+    {key:"balt",name:"Baltimore MTA",city:"Baltimore, MD",emoji:"🚉",accent:"#003087",lines:2,stations:47,riders:"42K",health:79,tagline:"Charm City's underground intelligence.",
+      top:[{n:"Lexington Market",t:"5:15 PM"},{n:"Johns Hopkins",t:"5:08 PM"},{n:"Penn Station",t:"4:52 PM"}]},
+    {key:"la",name:"LA Metro",city:"Los Angeles, CA",emoji:"🌴",accent:"#E3051B",lines:5,stations:109,riders:"305K",health:91,tagline:"A city finally connected.",
+      top:[{n:"7th/Metro Center",t:"6:12 PM"},{n:"Union Station",t:"6:05 PM"},{n:"Hollywood/Vine",t:"5:58 PM"}]},
+    {key:"nyc",name:"NYC Subway",city:"New York City",emoji:"🗽",accent:"#0039A6",lines:6,stations:472,riders:"3.4M",health:97,tagline:"The city that never stops moving.",
+      top:[{n:"Times Sq-42 St",t:"6:35 PM"},{n:"Grand Central",t:"6:28 PM"},{n:"Fulton St",t:"6:22 PM"}]},
+    {key:"chi",name:"Chicago L",city:"Chicago, IL",emoji:"🌬️",accent:"#C60C30",lines:6,stations:145,riders:"218K",health:86,tagline:"The Loop. The L. The city.",
+      top:[{n:"Clark/Lake",t:"5:48 PM"},{n:"O'Hare",t:"5:40 PM"},{n:"Roosevelt",t:"5:32 PM"}]},
+  ];
+  const sys=SYSTEMS.find(s=>s.key===selSys);
+  const BG="#080c12";
+  const BORDER="rgba(255,255,255,0.06)";
+  const circumference=2*Math.PI*22;
   return(
-    <div style={{background:"#080c12",minHeight:"100%",fontFamily:"'Inter',sans-serif"}}>
+    <div style={{background:BG,minHeight:"100%",fontFamily:"'Inter',sans-serif"}}>
       <style>{`
-        @keyframes cityCardGlow{0%,100%{box-shadow:0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 20px var(--accent-glow)}}
-        .city-card{transition:all .25s;cursor:pointer}
-        .city-card:hover{transform:translateY(-2px)}
+        @keyframes miv-wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+        @keyframes miv-flow{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+        @keyframes miv-fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        @keyframes miv-ring{from{stroke-dashoffset:${circumference}}to{stroke-dashoffset:var(--dash-target)}}
+        .miv-city-card{transition:all .22s;cursor:pointer;border-radius:12px;overflow:hidden}
+        .miv-city-card:hover{transform:translateY(-2px)}
+        .miv-stat-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 10px;text-align:center;flex:1}
+        .miv-station-row{display:flex;align-items:center;gap:10;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+        .miv-station-row:last-child{border-bottom:none}
       `}</style>
-      {/* Header */}
-      <div style={{padding:"18px 16px 12px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
-        <div style={{fontSize:9,letterSpacing:3,color:"rgba(255,255,255,0.25)",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>NETWORK INTELLIGENCE</div>
-        <div style={{fontSize:18,fontWeight:700,color:"rgba(255,255,255,0.9)",letterSpacing:.3}}>Transit Systems</div>
-        <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginTop:2}}>Select a city to explore its network</div>
-      </div>
-      {/* City grid */}
+
+      {/* ── CITY SELECTOR ── */}
       {!selSys&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"14px 16px"}}>
-          {SYSTEMS.map(s=>(
-            <div key={s.key} className="city-card"
-              onClick={()=>setSelSys(s.key)}
-              style={{"--accent-glow":`${s.accent}60`} as any}>
-              <div style={{background:`linear-gradient(135deg,${s.accent}18,${s.accent}06)`,
-                border:`1px solid ${s.accent}30`,borderRadius:12,padding:"16px 14px",
-                position:"relative",overflow:"hidden"}}>
-                {/* Subtle background glow */}
-                <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",
-                  background:s.accent,opacity:.06,filter:"blur(20px)",pointerEvents:"none"}}/>
-                <div style={{fontSize:24,marginBottom:8}}>{s.emoji}</div>
-                <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.9)",marginBottom:2,letterSpacing:.3}}>{s.city}</div>
-                <div style={{fontSize:8,color:s.accent,letterSpacing:1.5,fontWeight:600}}>{s.lines}</div>
-                <div style={{marginTop:10,display:"flex",alignItems:"center",gap:4}}>
-                  <div style={{flex:1,height:1.5,borderRadius:1,background:`linear-gradient(90deg,${s.accent}80,transparent)`}}/>
-                  <div style={{fontSize:8,color:"rgba(255,255,255,0.2)",letterSpacing:1}}>→</div>
+        <div style={{animation:"miv-fade .3s ease both"}}>
+          <div style={{padding:"18px 16px 12px",borderBottom:`1px solid ${BORDER}`}}>
+            <div style={{fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>NETWORK INTELLIGENCE</div>
+            <div style={{fontSize:17,fontWeight:700,color:"rgba(255,255,255,0.88)"}}>Transit Systems</div>
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.22)",marginTop:2}}>Select a city to decode its network</div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"14px 16px"}}>
+            {SYSTEMS.map(s=>(
+              <div key={s.key} className="miv-city-card" onClick={()=>setSelSys(s.key)}
+                style={{background:`linear-gradient(135deg,${s.accent}15,${s.accent}05)`,border:`1px solid ${s.accent}28`,position:"relative"}}>
+                <div style={{position:"absolute",top:-15,right:-15,width:70,height:70,borderRadius:"50%",background:s.accent,opacity:.07,filter:"blur(18px)",pointerEvents:"none"}}/>
+                <div style={{padding:"15px 13px"}}>
+                  <div style={{fontSize:22,marginBottom:7}}>{s.emoji}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.88)",marginBottom:2}}>{s.city}</div>
+                  <div style={{fontSize:8,color:s.accent,letterSpacing:1.5,fontWeight:600,marginBottom:8}}>{s.lines} LINES · {s.stations} STATIONS</div>
+                  <div style={{height:1.5,borderRadius:1,background:`linear-gradient(90deg,${s.accent}70,transparent)`}}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── SYSTEM DASHBOARD ── */}
+      {selSys&&sys&&(
+        <div style={{animation:"miv-fade .3s ease both"}}>
+          {/* Back + header */}
+          <div style={{padding:"14px 16px 12px",borderBottom:`1px solid ${BORDER}`}}>
+            <button onClick={()=>setSelSys(null)}
+              style={{background:"transparent",border:`1px solid ${BORDER}`,borderRadius:20,
+                padding:"4px 12px",color:"rgba(255,255,255,0.28)",fontSize:8,letterSpacing:1.5,
+                cursor:"pointer",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>
+              ← ALL CITIES
+            </button>
+            <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+              <span style={{fontSize:26}}>{sys.emoji}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:16,fontWeight:700,color:"rgba(255,255,255,0.92)",letterSpacing:.2}}>{sys.name}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:1}}>{sys.city}</div>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.2)",marginTop:2,fontStyle:"italic"}}>{sys.tagline}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive map */}
+          <TransitMapSVG key={selSys} systemKey={selSys} onPlay={undefined}/>
+
+          {/* ── SYSTEM VITALS ── */}
+          <div style={{margin:"0 14px 12px",padding:"14px",background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12}}>
+            <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:12,fontFamily:"'JetBrains Mono',monospace"}}>SYSTEM VITALS</div>
+            <div style={{display:"flex",alignItems:"center",gap:16}}>
+              {/* Health ring */}
+              <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                <svg viewBox="0 0 52 52" style={{width:52,height:52}}>
+                  <circle cx="26" cy="26" r={22} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={3.5}/>
+                  <circle cx="26" cy="26" r={22} fill="none" stroke={sys.accent} strokeWidth={3.5}
+                    strokeLinecap="round"
+                    strokeDasharray={`${sys.health/100*circumference} ${circumference}`}
+                    transform="rotate(-90 26 26)"
+                    style={{"--dash-target":`${circumference-(sys.health/100*circumference)}`} as any}/>
+                  <text x="26" y="30" textAnchor="middle" fontSize={10} fontWeight="700" fill="white" fontFamily="Inter,sans-serif">{sys.health}%</text>
+                </svg>
+                <div style={{fontSize:7,color:"rgba(255,255,255,0.2)",letterSpacing:1}}>HEALTH</div>
+              </div>
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:10}}>
+                {/* Active signals */}
+                <div>
+                  <div style={{fontSize:8,letterSpacing:1.5,color:"rgba(255,255,255,0.2)",marginBottom:5}}>ACTIVE SIGNALS</div>
+                  <div style={{display:"flex",gap:5}}>
+                    {["#0066CC","#CC0000","#009933","#FF6600","#CCAA00","#A0A8B0"].slice(0,sys.lines).map((c,i)=>(
+                      <div key={i} style={{width:8,height:8,borderRadius:"50%",background:c,
+                        boxShadow:`0 0 6px ${c}`,animation:`tmGlowPulse ${1.5+i*.3}s ease-in-out infinite`}}/>
+                    ))}
+                  </div>
+                </div>
+                {/* Live flow bar */}
+                <div>
+                  <div style={{fontSize:8,letterSpacing:1.5,color:"rgba(255,255,255,0.2)",marginBottom:5}}>LIVE FLOW</div>
+                  <div style={{height:3,background:"rgba(255,255,255,0.06)",borderRadius:2,overflow:"hidden",position:"relative"}}>
+                    <div style={{position:"absolute",inset:0,background:`linear-gradient(90deg,transparent,${sys.accent},transparent)`,
+                      animation:"miv-flow 2s linear infinite"}}/>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-      {/* Selected system map */}
-      {selSys&&(
-        <div style={{padding:"12px 14px 20px"}}>
-          <button onClick={()=>setSelSys(null)}
-            style={{background:"transparent",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,
-              padding:"5px 14px",color:"rgba(255,255,255,0.35)",fontSize:9,letterSpacing:1.5,
-              cursor:"pointer",marginBottom:12,fontFamily:"'JetBrains Mono',monospace",transition:"all .2s"}}>
-            ← ALL CITIES
-          </button>
-          <TransitMapSVG key={selSys} systemKey={selSys} onPlay={()=>onSelectGame(selSys)}/>
+          </div>
+
+          {/* ── SYSTEM STATS ── */}
+          <div style={{display:"flex",gap:8,margin:"0 14px 12px"}}>
+            {[
+              {label:"STATIONS",val:String(sys.stations)},
+              {label:"LINES",val:String(sys.lines)},
+              {label:"DAILY RIDERS",val:sys.riders},
+              {label:"HEALTH",val:`${sys.health}%`},
+            ].map(s=>(
+              <div key={s.label} className="miv-stat-box">
+                <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.9)",marginBottom:3}}>{s.val}</div>
+                <div style={{fontSize:6.5,letterSpacing:1.5,color:"rgba(255,255,255,0.25)",textTransform:"uppercase"}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── TOP STATIONS + NETWORK ACTIVITY ── */}
+          <div style={{display:"flex",gap:10,margin:"0 14px 14px"}}>
+            {/* Top Stations */}
+            <div style={{flex:3,background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12,padding:"12px 14px"}}>
+              <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>TOP STATIONS</div>
+              {sys.top.map((st,i)=>(
+                <div key={i} className="miv-station-row">
+                  <div style={{width:16,height:16,borderRadius:"50%",background:sys.accent,opacity:.15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    <span style={{fontSize:8,fontWeight:700,color:sys.accent}}>{i+1}</span>
+                  </div>
+                  <div style={{flex:1,fontSize:10,color:"rgba(255,255,255,0.65)",marginLeft:6}}>{st.n}</div>
+                  <div style={{fontSize:8,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace"}}>{st.t}</div>
+                </div>
+              ))}
+            </div>
+            {/* Network Activity */}
+            <div style={{flex:2,background:"rgba(255,255,255,0.02)",border:`1px solid ${BORDER}`,borderRadius:12,padding:"12px 12px"}}>
+              <div style={{fontSize:8,letterSpacing:2.5,color:"rgba(255,255,255,0.2)",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>ACTIVITY</div>
+              <svg viewBox="0 0 100 40" style={{width:"100%",height:40}}>
+                {Array.from({length:12},(_,i)=>{
+                  const heights=[18,8,22,12,26,10,20,14,24,8,18,12];
+                  const h=heights[i%heights.length];
+                  return(
+                    <rect key={i} x={i*8+2} y={40-h} width={5} height={h} rx={1.5}
+                      fill={sys.accent} opacity={.25+i*.04}
+                      style={{animation:`miv-wave ${1.2+i*.15}s ease-in-out ${i*.08}s infinite`,transformOrigin:`${i*8+4.5}px 40px`}}/>
+                  );
+                })}
+              </svg>
+              <div style={{fontSize:8,color:"rgba(255,255,255,0.15)",letterSpacing:1,marginTop:4,textAlign:"center"}}>REAL-TIME SIGNAL</div>
+            </div>
+          </div>
+
+          {/* ── PLAY BUTTON ── */}
+          <div style={{padding:"0 14px 20px"}}>
+            <button onClick={()=>onSelectGame(selSys)}
+              style={{width:"100%",background:`linear-gradient(135deg,${sys.accent},${sys.accent}bb)`,
+                color:"#fff",border:"none",borderRadius:12,padding:"16px",
+                fontSize:13,fontWeight:700,letterSpacing:2.5,cursor:"pointer",
+                boxShadow:`0 6px 32px ${sys.accent}50`,transition:"all .2s",
+                fontFamily:"'JetBrains Mono',monospace",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+              <span>PLAY</span>
+              <span style={{fontSize:11,opacity:.7}}>3 ROUNDS · MAX POINTS</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
