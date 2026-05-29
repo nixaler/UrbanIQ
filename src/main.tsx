@@ -3188,44 +3188,9 @@ function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>vo
 
 // ── MAPS INLINE VIEW (tab) ────────────────────────────────────────────────────
 function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
-  const GAMES_LIST=[
-    {key:"pdx",name:"Portland MAX",emoji:"🚊",accent:"#028A48",sub:"TriMet Light Rail · Pacific Northwest",type:"transit"},
-    {key:"dc",name:"DC Metro",emoji:"🚇",accent:"#BF0000",sub:"WMATA · Nation's Capital",type:"transit"},
-    {key:"balt",name:"Baltimore MTA",emoji:"🚉",accent:"#003087",sub:"Maryland Transit · Charm City",type:"transit"},
-    {key:"la",name:"LA Metro",emoji:"🌴",accent:"#E3051B",sub:"Los Angeles County · SoCal",type:"transit"},
-    {key:"nyc",name:"NYC Subway",emoji:"🗽",accent:"#0039A6",sub:"New York City Transit · MTA",type:"transit"},
-    {key:"chi",name:"Chicago L",emoji:"🌬️",accent:"#C60C30",sub:"Chicago Transit Authority · The Loop",type:"transit"},
-    {key:"states",name:"US States",emoji:"🗺️",accent:"#1a3a8f",sub:"All 50 states · Geography & Capitals",type:"geography"},
-    {key:"nfl",name:"NFL Teams",emoji:"🏈",accent:"#013369",sub:"32 franchises · AFC & NFC",type:"sports"},
-  ];
-  const[openMini,setOpenMini]=useState(true);
   const[openGuides,setOpenGuides]=useState(true);
   return(
     <div style={{padding:"14px 16px",display:"flex",flexDirection:"column",gap:10,fontFamily:"'JetBrains Mono',monospace"}}>
-      {/* Mini Games accordion */}
-      <div style={{border:"1px solid rgba(0,0,0,.1)",borderRadius:12,overflow:"hidden"}}>
-        <div onClick={()=>setOpenMini(p=>!p)} style={{display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"#f5f5f5",cursor:"pointer",userSelect:"none"}}>
-          <span style={{fontSize:18}}>🎮</span>
-          <span style={{fontSize:11,fontWeight:700,letterSpacing:2,flex:1,color:"#0a0a0a",textTransform:"uppercase"}}>Mini Games</span>
-          <span style={{fontSize:12,color:"#888",transition:"transform .2s",display:"inline-block",transform:openMini?"rotate(0deg)":"rotate(-90deg)"}}>▼</span>
-        </div>
-        {openMini&&(
-          <div style={{display:"flex",flexDirection:"column",gap:8,padding:"12px 14px 14px",background:"#fff"}}>
-            {GAMES_LIST.map(g=>(
-              <div key={g.key} onClick={()=>onSelectGame(g.key)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 18px",borderRadius:10,border:`1.5px solid ${g.accent}22`,background:`linear-gradient(135deg,${g.accent}11,${g.accent}05)`,cursor:"pointer",transition:"all .15s"}}
-                onMouseEnter={e=>(e.currentTarget.style.background=`linear-gradient(135deg,${g.accent}22,${g.accent}11)`)}
-                onMouseLeave={e=>(e.currentTarget.style.background=`linear-gradient(135deg,${g.accent}11,${g.accent}05)`)}>
-                <span style={{fontSize:28,flexShrink:0}}>{g.emoji}</span>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"#0a0a0a",letterSpacing:.3}}>{g.name}</div>
-                  <div style={{fontSize:9,color:"#888",marginTop:2,letterSpacing:.5}}>{g.sub}</div>
-                </div>
-                <div style={{background:g.accent,color:"#fff",fontSize:9,fontWeight:700,padding:"6px 14px",borderRadius:20,letterSpacing:1,flexShrink:0}}>PLAY →</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
       {/* Guides accordion */}
       <div style={{border:"1px solid rgba(0,0,0,.1)",borderRadius:12,overflow:"hidden"}}>
         <div onClick={()=>setOpenGuides(p=>!p)} style={{display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"#f5f5f5",cursor:"pointer",userSelect:"none"}}>
