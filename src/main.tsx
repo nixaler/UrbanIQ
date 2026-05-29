@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -6262,4 +6261,5 @@ if("serviceWorker" in navigator){
 // ── MOUNT ─────────────────────────────────────────────────────────────────────
 const rootEl=document.getElementById("root") as HTMLElement;
 const root=ReactDOM.createRoot(rootEl);
+function App(){ return <Root/>; }
 root.render(<App/>);
