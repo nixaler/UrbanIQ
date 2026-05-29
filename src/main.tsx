@@ -6653,7 +6653,7 @@ function HypeIntro({onDone}:{onDone:()=>void}){
     const vis=(id:string)=>document.getElementById(id)?.classList.add('hy-v');
     // ph1 sequence
     phOn('hy-ph1');
-    [[80,'hy-l1'],[500,'hy-l2'],[920,'hy-l3'],[1300,'hy-ls'],[1650,'hy-lc']].forEach(([ms,id])=>setTimeout(()=>vis(id as string),ms as number));
+    [[60,'hy-l1'],[220,'hy-l2'],[390,'hy-l3'],[530,'hy-ls'],[650,'hy-lc']].forEach(([ms,id])=>setTimeout(()=>vis(id as string),ms as number));
     // game demo
     const GUESSES=[
       {name:'WOODLEY PARK',cells:[{cls:'hy-G',text:'🔴 RED ONLY',tip:'Exact line match!'},{cls:'hy-G',text:'NW DC',tip:'Exact zone!'},{cls:'hy-Y',text:'🌒 QUIET ▲',tip:'1 level too low'},{cls:'hy-R',text:'✗'}]},
@@ -6694,23 +6694,23 @@ function HypeIntro({onDone}:{onDone:()=>void}){
       }
     }
     async function run(){
-      await sleep(2100);phOff('hy-ph1');phOn('hy-ph2');
-      await sleep(700);await typeRow(0,0);await sleep(380);await typeRow(1,1);
+      await sleep(900);phOff('hy-ph1');phOn('hy-ph2');
+      await sleep(300);await typeRow(0,0);await sleep(180);await typeRow(1,1);
       const wf=document.getElementById('hy-wf');if(wf){wf.classList.add('hy-burst');setTimeout(()=>wf.classList.remove('hy-burst'),500);}
       burst();
       const wb=document.getElementById('hy-wb');if(wb){wb.textContent='🎉  DUPONT CIRCLE  ·  SOLVED IN 2 / 6';wb.classList.add('hy-on');}
-      await sleep(1000);phOff('hy-ph2');phOn('hy-ph3');
-      await sleep(200);vis('hy-ltag');vis('hy-stats');vis('hy-cta');
+      await sleep(450);phOff('hy-ph2');phOn('hy-ph3');
+      await sleep(150);vis('hy-ltag');vis('hy-stats');vis('hy-cta');
     }
     run();
-    const T=setTimeout(()=>skip(),10000);
+    const T=setTimeout(()=>skip(),5000);
     return()=>{stopped=true;window.removeEventListener('resize',resize);clearTimeout(T);};
   },[skip]);
 
   const CSS=`
     #hy-wrap{position:fixed;inset:0;background:#fff;z-index:99999;overflow:hidden;font-family:'Inter',sans-serif;}
     #hy-bg{position:absolute;inset:0;pointer-events:none;}
-    #hy-bar{position:absolute;bottom:0;left:0;height:4px;z-index:100;width:0;background:linear-gradient(90deg,#028A48,#0060ff,#C60C30);animation:hy-bar 10s linear forwards;}
+    #hy-bar{position:absolute;bottom:0;left:0;height:4px;z-index:100;width:0;background:linear-gradient(90deg,#028A48,#0060ff,#C60C30);animation:hy-bar 5s linear forwards;}
     @keyframes hy-bar{to{width:100%}}
     #hy-skip{position:absolute;top:18px;right:18px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#999;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:20px;padding:7px 15px;cursor:pointer;transition:all .2s;opacity:0;animation:hy-fi .3s .8s ease forwards;}
     #hy-skip:hover{color:#000;border-color:rgba(0,0,0,.3);}
