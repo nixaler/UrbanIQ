@@ -4090,7 +4090,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </nav>
 
       {/* HERO */}
-      <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"24px 0 24px",position:"relative",background:"#FFFFFF",overflow:"clip"}}>
+      <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"8px 0 16px",position:"relative",background:"#FFFFFF",overflow:"clip"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -4105,7 +4105,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </svg>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
-        <div style={{position:"relative",marginTop:"-35px",padding:"0 22px",animation:"lmFadeIn .4s ease both"}}>
+        <div style={{position:"relative",padding:"0 22px",textAlign:"center",animation:"lmFadeIn .4s ease both"}}>
           <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
@@ -4222,19 +4222,28 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               </div>
             );
           })}
-          {/* MAPS section */}
-          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
-            <div style={{borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",background:"#fff"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
+          {/* MAPS accordion */}
+          {(()=>{
+            const mapsOpen=!lmCollapsed.has("MAPS");
+            return(
+              <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+                <button onClick={()=>toggleLmSection("MAPS")}
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:mapsOpen?"#FAFAFA":"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
+                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps</span>
+                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:mapsOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                </button>
+                {mapsOpen&&(
+                  <div style={{animation:"lmFadeIn .2s ease both",padding:"14px 16px 16px",borderTop:"1px solid #F0EDE9"}}>
+                    <p style={{margin:"0 0 12px",fontSize:"11px",color:"#888580",lineHeight:1.6}}>Interactive transit maps for every city — explore lines, stations, and routes.</p>
+                    <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
+                      style={{width:"100%",background:"#0ea5e9",color:"#fff",border:"none",borderRadius:6,padding:"13px 16px",fontSize:"12px",fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Outfit',sans-serif",textTransform:"uppercase"}}>
+                      Open Transit Maps →
+                    </button>
+                  </div>
+                )}
               </div>
-              <p style={{margin:"0 0 12px",fontSize:"11px",color:"#888580",lineHeight:1.6}}>Interactive transit maps for every city — explore lines, stations, and routes.</p>
-              <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-                style={{width:"100%",background:"#0ea5e9",color:"#fff",border:"none",borderRadius:6,padding:"13px 16px",fontSize:"12px",fontWeight:700,letterSpacing:2,cursor:"pointer",fontFamily:"'Outfit',sans-serif",textTransform:"uppercase"}}>
-                Open Transit Maps →
-              </button>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       </div>
 
