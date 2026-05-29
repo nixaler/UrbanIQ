@@ -3432,15 +3432,15 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     }
   }
   const gameCards=[
-    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Portland_Oregon_skyline_with_Mt_Hood.jpg/800px-Portland_Oregon_skyline_with_Mt_Hood.jpg"},
-    {key:"dc",   emoji:"🚇",name:"DC Metro",       tag:"TRANSIT",    sub:"Subway · Nation's capital",  color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Washington_Metro_Center_station.jpg/800px-Washington_Metro_Center_station.jpg"},
-    {key:"balt", emoji:"🚉",name:"Baltimore MTA",  tag:"TRANSIT",    sub:"Light Rail & Metro · MD",    color:"#003087",grad:"linear-gradient(135deg,#003087,#F0A500)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Baltimore_Inner_Harbor.jpg/800px-Baltimore_Inner_Harbor.jpg"},
-    {key:"la",   emoji:"🌴",name:"LA Metro",       tag:"TRANSIT",    sub:"Metro Rail · Los Angeles, CA",color:"#0072bc",grad:"linear-gradient(135deg,#0072bc,#005a96)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Los_Angeles_Union_Station_train_hall.jpg/800px-Los_Angeles_Union_Station_train_hall.jpg"},
-    {key:"nyc",  emoji:"🗽",name:"NYC Subway",     tag:"TRANSIT",    sub:"MTA · New York City, NY",    color:"#EE352E",grad:"linear-gradient(135deg,#EE352E,#a01010)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Times_Square_station_42nd_Street.jpg/800px-Times_Square_station_42nd_Street.jpg"},
-    {key:"chi",  emoji:"🌬️",name:"Chicago L",    tag:"TRANSIT",    sub:"CTA · Chicago, IL",           color:"#C60C30",grad:"linear-gradient(135deg,#C60C30,#850920)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Clark-Lake_station_Chicago_L.jpg/800px-Clark-Lake_station_Chicago_L.jpg"},
-    {key:"states",emoji:"🗺️",name:"US States",   tag:"GEOGRAPHY",  sub:"50 states · Regions",        color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/United_States_Capitol_west_front_edit2.jpg/800px-United_States_Capitol_west_front_edit2.jpg"},
-    {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Lambeau_Field_aerial_view.jpg/800px-Lambeau_Field_aerial_view.jpg"},
-    {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Pac-man_arcade_game.jpg/800px-Pac-man_arcade_game.jpg"},
+    {key:"pdx",  emoji:"🚊",name:"Portland MAX",   tag:"TRANSIT",    sub:"Light rail · Pacific NW",   color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",photo:"/photo-pdx.jpg"},
+    {key:"dc",   emoji:"🚇",name:"DC Metro",       tag:"TRANSIT",    sub:"Subway · Nation's capital",  color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",photo:"/photo-dc.jpg"},
+    {key:"balt", emoji:"🚉",name:"Baltimore MTA",  tag:"TRANSIT",    sub:"Light Rail & Metro · MD",    color:"#003087",grad:"linear-gradient(135deg,#003087,#F0A500)",photo:"/photo-balt.jpg"},
+    {key:"la",   emoji:"🌴",name:"LA Metro",       tag:"TRANSIT",    sub:"Metro Rail · Los Angeles, CA",color:"#0072bc",grad:"linear-gradient(135deg,#0072bc,#005a96)",photo:"/photo-la.jpg"},
+    {key:"nyc",  emoji:"🗽",name:"NYC Subway",     tag:"TRANSIT",    sub:"MTA · New York City, NY",    color:"#EE352E",grad:"linear-gradient(135deg,#EE352E,#a01010)",photo:"/photo-nyc.jpg"},
+    {key:"chi",  emoji:"🌬️",name:"Chicago L",    tag:"TRANSIT",    sub:"CTA · Chicago, IL",           color:"#C60C30",grad:"linear-gradient(135deg,#C60C30,#850920)",photo:"/photo-chi.jpg"},
+    {key:"states",emoji:"🗺️",name:"US States",   tag:"GEOGRAPHY",  sub:"50 states · Regions",        color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",photo:"/photo-states.jpg"},
+    {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"/photo-nfl.jpg"},
+    {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"/photo-arcade.jpg"},
   ];
   const dateStr=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
   const dark=settings?.dark===true;
@@ -3461,6 +3461,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[activeTab,setActiveTab]=useState<string>("all");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
+  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set());
+  const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
 
   const modals=(
     <>
@@ -3803,25 +3805,55 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </div>
 
-      {/* ALL GAMES */}
+      {/* ALL GAMES — Category Accordions */}
       <div style={{padding:"32px 22px 0",animation:"lmFadeIn .35s ease both"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           All Games <div className="lm-eyebrow-line"/>
         </div>
-        <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden",marginBottom:36}}>
-          {gameCards.map((g,i)=>(
-            <div key={g.key} className="lm-game-row"
-              onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
-              style={{borderLeftColor:tagBorderColor(g.tag),borderBottom:i<gameCards.length-1?"2px solid #E8E5E0":"none"}}>
-              <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:"9px",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"#C8C5BF",marginBottom:1}}>{g.tag}</div>
-                <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
+        <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
+          {[
+            {tag:"TRANSIT",label:"🚊 Transit",color:"#4169E1"},
+            {tag:"GEOGRAPHY",label:"🗺️ Geography",color:"#22C55E"},
+            {tag:"SPORTS",label:"🏈 Sports",color:"#E8294A"},
+            {tag:"ARCADE",label:"🎮 Arcade",color:"#A855F7"},
+          ].map(({tag,label,color})=>{
+            const cards=gameCards.filter(g=>g.tag===tag);
+            if(cards.length===0)return null;
+            const isOpen=!lmCollapsed.has(tag);
+            return(
+              <div key={tag} style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+                <button onClick={()=>toggleLmSection(tag)}
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"#FAFAFA":"#fff",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
+                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>{label}</span>
+                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                </button>
+                {isOpen&&(
+                  <div style={{animation:"lmFadeIn .2s ease both"}}>
+                    {cards.map((g,i)=>(
+                      <div key={g.key} className="lm-game-row"
+                        onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+                        style={{borderBottom:i<cards.length-1?"2px solid #E8E5E0":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
+                        {g.photo&&(
+                          <div style={{width:80,minHeight:70,flexShrink:0,position:"relative",overflow:"hidden"}}>
+                            <img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.85) saturate(1.1)"}}/>
+                          </div>
+                        )}
+                        <div style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
+                          <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
+                          <div style={{flex:1}}>
+                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
+                            <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{g.sub}</div>
+                          </div>
+                          {g.key===hotGameKey&&<div className="lm-live-dot"/>}
+                          <div style={{fontSize:"12px",color:"#C8C5BF",flexShrink:0}}>→</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              {g.key===hotGameKey&&<div className="lm-live-dot"/>}
-              <div style={{fontSize:"12px",color:"#C8C5BF",flexShrink:0}}>→</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
