@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
+import App from './App';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -8,22 +9,6 @@ window.onerror = (msg, src, line, col, err) => {
 window.addEventListener('unhandledrejection', (e) => {
   console.error('Unhandled rejection:', e.reason);
 });
-
-// ── ERROR BOUNDARY ────────────────────────────────────────────────────────────
-class ErrorBoundary extends Component<{children:React.ReactNode},{hasError:boolean,error:any}> {
-  constructor(props:any){super(props);this.state={hasError:false,error:null};}
-  static getDerivedStateFromError(error:any){return{hasError:true,error};}
-  componentDidCatch(error:any,info:any){console.error('React error:',error,info);}
-  render(){
-    if(this.state.hasError){
-      return <div style={{padding:20,fontFamily:'monospace',color:'red',background:'#fff0f0',minHeight:'100vh'}}>
-        <h2>App Error</h2>
-        <pre style={{whiteSpace:'pre-wrap',fontSize:12}}>{String(this.state.error)}</pre>
-      </div>;
-    }
-    return this.props.children;
-  }
-}
 
 
 // ══════════════════════════════════════════════════════
@@ -6267,10 +6252,6 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   );
 }
 
-// ── QUERY CLIENT ──────────────────────────────────────────────────────────────
-
-function App(){ return <Root/>; }
-
 // ── PWA SERVICE WORKER REGISTRATION ──────────────────────────────────────────
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
@@ -6281,4 +6262,4 @@ if("serviceWorker" in navigator){
 // ── MOUNT ─────────────────────────────────────────────────────────────────────
 const rootEl=document.getElementById("root") as HTMLElement;
 const root=ReactDOM.createRoot(rootEl);
-root.render(<ErrorBoundary><App/></ErrorBoundary>);
+root.render(<App/>);
