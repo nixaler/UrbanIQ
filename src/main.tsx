@@ -3478,8 +3478,8 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
 }
 
 // ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
-function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
-  const[selSys,setSelSys]=useState<string|null>(null);
+function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>void,defaultCity?:string}){
+  const[selSys,setSelSys]=useState<string>(defaultCity||"pdx");
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
   const SYSTEMS=[
     {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
@@ -3513,43 +3513,19 @@ function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         .miv-station-row:last-child{border-bottom:none}
       `}</style>
 
-      {/* ── CITY SELECTOR ── */}
-      {!selSys&&(
-        <div style={{animation:"miv-fade .3s ease both"}}>
-          <div style={{padding:"18px 16px 12px",borderBottom:`1px solid ${BORDER}`}}>
-            <div style={{fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>NETWORK INTELLIGENCE</div>
-            <div style={{fontSize:17,fontWeight:700,color:"rgba(255,255,255,0.88)"}}>Transit Systems</div>
-            <div style={{fontSize:10,color:"rgba(255,255,255,0.22)",marginTop:2}}>Select a city to decode its network</div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,padding:"14px 16px"}}>
-            {SYSTEMS.map(s=>(
-              <div key={s.key} className="miv-city-card" onClick={()=>setSelSys(s.key)}
-                style={{background:`linear-gradient(135deg,${s.accent}15,${s.accent}05)`,border:`1px solid ${s.accent}28`,position:"relative"}}>
-                <div style={{position:"absolute",top:-15,right:-15,width:70,height:70,borderRadius:"50%",background:s.accent,opacity:.07,filter:"blur(18px)",pointerEvents:"none"}}/>
-                <div style={{padding:"15px 13px"}}>
-                  <div style={{fontSize:22,marginBottom:7}}>{s.emoji}</div>
-                  <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.88)",marginBottom:2}}>{s.city}</div>
-                  <div style={{fontSize:8,color:s.accent,letterSpacing:1.5,fontWeight:600,marginBottom:8}}>{s.lines} LINES · {s.stations} STATIONS</div>
-                  <div style={{height:1.5,borderRadius:1,background:`linear-gradient(90deg,${s.accent}70,transparent)`}}/>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ── SYSTEM DASHBOARD ── */}
-      {selSys&&sys&&(
+      {sys&&(
         <div style={{animation:"miv-fade .3s ease both"}}>
-          {/* Back + header */}
+          {/* Dropdown header */}
           <div style={{padding:"14px 16px 12px",borderBottom:`1px solid ${BORDER}`}}>
-            <button onClick={()=>setSelSys(null)}
-              style={{background:"transparent",border:`1px solid ${BORDER}`,borderRadius:20,
-                padding:"4px 12px",color:"rgba(255,255,255,0.28)",fontSize:8,letterSpacing:1.5,
-                cursor:"pointer",marginBottom:10,fontFamily:"'JetBrains Mono',monospace"}}>
-              ← ALL CITIES
-            </button>
-            <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+            <div style={{fontSize:8,letterSpacing:3,color:"rgba(255,255,255,0.2)",fontFamily:"'JetBrains Mono',monospace",marginBottom:8}}>NETWORK INTELLIGENCE</div>
+            <select
+              value={selSys}
+              onChange={e=>setSelSys(e.target.value)}
+              style={{width:"100%",background:"rgba(255,255,255,0.06)",border:`1px solid ${sys.accent}50`,borderRadius:10,padding:"9px 12px",color:"rgba(255,255,255,0.88)",fontSize:13,fontWeight:700,fontFamily:"'Inter',sans-serif",cursor:"pointer",appearance:"none",WebkitAppearance:"none",backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"calc(100% - 12px) center"}}>
+              {SYSTEMS.map(s=><option key={s.key} value={s.key} style={{background:"#111"}}>{s.emoji} {s.city} — {s.lines} lines · {s.stations} stations</option>)}
+            </select>
+            <div style={{display:"flex",alignItems:"flex-start",gap:10,marginTop:12}}>
               <span style={{fontSize:26}}>{sys.emoji}</span>
               <div style={{flex:1}}>
                 <div style={{fontSize:16,fontWeight:700,color:"rgba(255,255,255,0.92)",letterSpacing:.2}}>{sys.name}</div>
@@ -3684,7 +3660,7 @@ function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(g
         <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
           <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        <MapsInlineView onSelectGame={handleSelect}/>
+        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined}/>
       </div>
     </div>
   );
@@ -5319,6 +5295,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showItemOfWeek,setShowItemOfWeek]=useState(false);
   const[showTrivia,setShowTrivia]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
+  const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
   useEffect(()=>{if(initMode==="blitz")setShowBlitz(true);else if(initMode==="trivia")setShowTrivia(true);else if(initMode==="cards")setTab("cards");},[]);
   const inputRef=useRef<HTMLInputElement>(null);
@@ -6137,8 +6114,14 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
       {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
       {tab==="maps"&&(
-        <MapsInlineView onSelectGame={(gk)=>{onHome();setTimeout(()=>onSelectGame?.(gk),80);}}/>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 20px",gap:14}}>
+          <div style={{fontSize:36}}>🗺️</div>
+          <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:fs(13),fontWeight:700,color:T.text,letterSpacing:1}}>Transit Maps</div>
+          <div style={{fontSize:fs(9),color:T.textMuted,textAlign:"center",maxWidth:260,lineHeight:1.6}}>Explore interactive maps for every city. Switch between systems with the dropdown inside.</div>
+          <button onClick={()=>setShowMapsModal(true)} style={{marginTop:6,background:T.accent,color:"#fff",border:"none",borderRadius:30,padding:"13px 32px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,letterSpacing:2,cursor:"pointer",boxShadow:`0 4px 20px ${G.accent}44`}}>OPEN MAPS</button>
+        </div>
       )}
+      {showMapsModal&&<MapsGuideModal onClose={()=>setShowMapsModal(false)} onSelectGame={(gk)=>{setShowMapsModal(false);onHome();setTimeout(()=>onSelectGame?.(gk),80);}}/>}
       {tab==="cards"&&(
         <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
       )}
@@ -6414,6 +6397,257 @@ function IntroScreen({onDone}:{onDone:()=>void}){
         </div>
         <span style={{fontVariantNumeric:"tabular-nums",opacity:0.5,minWidth:"18px"}}>{countdown}s</span>
       </button>
+    </div>
+  );
+}
+
+// ── HYPE INTRO ────────────────────────────────────────────────────────────────
+function HypeIntro({onDone}:{onDone:()=>void}){
+  const doneRef=useRef(false);
+  const skip=useCallback(()=>{
+    if(doneRef.current)return;
+    doneRef.current=true;
+    localStorage.setItem('tgg:hype:seen','1');
+    const el=document.getElementById('hy-wrap');
+    if(el){el.style.transition='opacity .6s ease';el.style.opacity='0';}
+    setTimeout(onDone,650);
+  },[onDone]);
+
+  useEffect(()=>{
+    const sleep=(ms:number)=>new Promise<void>(r=>setTimeout(r,ms));
+    // canvas
+    const cv=document.getElementById('hy-bg') as HTMLCanvasElement;
+    const cx=cv.getContext('2d')!;
+    let W=0,H=0,nodes:any[]=[],edges:any[]=[],stopped=false;
+    const t0=performance.now();
+    const LC=['#BF0000','#0039A6','#FF9900','#009b3a','#C60C30','#028A48','#919D9D'];
+    function buildGraph(){
+      nodes=[];edges=[];
+      const cols=Math.ceil(W/110)+1,rows=Math.ceil(H/95)+1;
+      for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)
+        nodes.push({x:c*110+(r%2?55:0)+Math.random()*28-14,y:r*95+Math.random()*18-9,c:LC[Math.floor(Math.random()*LC.length)],r:Math.random()*2+1.2,ph:Math.random()*Math.PI*2});
+      nodes.forEach((a:any,i:number)=>nodes.forEach((b:any,j:number)=>{if(j<=i)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<140)edges.push({i,j,a:(1-d/140)*.08});}));
+    }
+    function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;buildGraph();}
+    function frame(now:number){
+      const t=(now-t0)/1000,fade=Math.min(1,t/1.5);
+      cx.clearRect(0,0,W,H);
+      edges.forEach((e:any)=>{cx.beginPath();cx.moveTo(nodes[e.i].x,nodes[e.i].y);cx.lineTo(nodes[e.j].x,nodes[e.j].y);cx.strokeStyle=`rgba(0,0,0,${e.a*fade*.4})`;cx.lineWidth=.5;cx.stroke();});
+      nodes.forEach((n:any)=>{const p=(Math.sin(n.ph+t*.9)+1)/2,a=fade*(.12+p*.2);cx.beginPath();cx.arc(n.x,n.y,n.r*(.8+p*.4),0,Math.PI*2);cx.fillStyle=n.c+Math.round(a*255).toString(16).padStart(2,'0');cx.fill();});
+      if(!stopped)requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    window.addEventListener('resize',resize);resize();
+    // streaks
+    const wrap=document.getElementById('hy-wrap')!;
+    [{c:'#BF0000',t:'12%',s:'left:0',w:'62vw',d:300,ms:2600},{c:'#028A48',t:'28%',s:'left:0',w:'75vw',d:600,ms:2900},{c:'#0039A6',t:'58%',s:'right:0',w:'50vw',d:900,ms:2300},{c:'#FF9900',t:'72%',s:'left:0',w:'58vw',d:1200,ms:2700},{c:'#C60C30',t:'88%',s:'right:0',w:'44vw',d:1500,ms:2400}].forEach(({c,t,s,w,d,ms})=>{const el=document.createElement('div');el.className='hy-sk';el.style.cssText=`background:${c};top:${t};${s};--w:${w};--d:${ms}ms;`;wrap.appendChild(el);setTimeout(()=>el.classList.add('go'),d);});
+    // phase helpers
+    const phOn=(id:string)=>{const el=document.getElementById(id);if(el){el.style.opacity='1';el.style.pointerEvents='auto';}};
+    const phOff=(id:string)=>{const el=document.getElementById(id);if(el){el.style.opacity='0';el.style.pointerEvents='none';}};
+    const vis=(id:string)=>document.getElementById(id)?.classList.add('hy-v');
+    // ph1 sequence
+    phOn('hy-ph1');
+    [[80,'hy-l1'],[500,'hy-l2'],[920,'hy-l3'],[1300,'hy-ls'],[1650,'hy-lc']].forEach(([ms,id])=>setTimeout(()=>vis(id as string),ms as number));
+    // game demo
+    const GUESSES=[
+      {name:'WOODLEY PARK',cells:[{cls:'hy-G',text:'🔴 RED ONLY',tip:'Exact line match!'},{cls:'hy-G',text:'NW DC',tip:'Exact zone!'},{cls:'hy-Y',text:'🌒 QUIET ▲',tip:'1 level too low'},{cls:'hy-R',text:'✗'}]},
+      {name:'DUPONT CIRCLE',cells:[{cls:'hy-G hy-wpop',text:'🔴 RED ONLY',tip:''},{cls:'hy-G hy-wpop',text:'NW DC',tip:''},{cls:'hy-G hy-wpop',text:'🌔 BUSY',tip:''},{cls:'hy-G hy-wpop',text:'✓'}]},
+    ];
+    async function typeRow(rowIdx:number,guessIdx:number){
+      const g=GUESSES[guessIdx];
+      document.getElementById('hy-b'+rowIdx)?.remove();
+      const row=document.createElement('div');row.className='hy-grow';
+      const nc=document.createElement('div');nc.className='hy-cell hy-nc hy-ty';nc.textContent='';
+      row.appendChild(nc);
+      const cells:HTMLElement[]=[];
+      for(let i=0;i<4;i++){const c=document.createElement('div');c.className='hy-cell';c.textContent='—';row.appendChild(c);cells.push(c);}
+      const grid=document.getElementById('hy-grid')!;
+      const next=document.getElementById('hy-b'+(rowIdx+1));
+      next?grid.insertBefore(row,next):grid.appendChild(row);
+      for(let i=1;i<=g.name.length;i++){nc.textContent=g.name.slice(0,i);await sleep(32);}
+      nc.classList.remove('hy-ty');
+      await sleep(160);
+      for(let i=0;i<cells.length;i++){
+        const cell=cells[i],d=g.cells[i];
+        cell.classList.add('hy-flip');
+        await sleep(170);
+        cell.className='hy-cell hy-flip '+d.cls;
+        cell.textContent=d.text;
+        if(d.tip)cell.title=d.tip;
+        await sleep(170);
+        cell.classList.remove('hy-flip');
+      }
+    }
+    function burst(){
+      const cols=['#28b050','#c8a800','#0060ff','#BF0000','#028A48','#FF9900','#C60C30'];
+      for(let i=0;i<52;i++){
+        const el=document.createElement('div');el.className='hy-conf';
+        const sz=4+Math.random()*8;
+        el.style.cssText=`left:${20+Math.random()*60}%;top:${30+Math.random()*35}%;width:${sz}px;height:${sz}px;background:${cols[i%cols.length]};border-radius:${Math.random()>.4?'50%':'2px'};--x:${-100+Math.random()*200}px;--y:${-160-Math.random()*160}px;--r:${-540+Math.random()*1080}deg;--t:${.9+Math.random()*.8}s;animation-delay:${Math.random()*.3}s;`;
+        wrap.appendChild(el);requestAnimationFrame(()=>el.classList.add('go'));setTimeout(()=>el.remove(),2200);
+      }
+    }
+    async function run(){
+      await sleep(2100);phOff('hy-ph1');phOn('hy-ph2');
+      await sleep(700);await typeRow(0,0);await sleep(380);await typeRow(1,1);
+      const wf=document.getElementById('hy-wf');if(wf){wf.classList.add('hy-burst');setTimeout(()=>wf.classList.remove('hy-burst'),500);}
+      burst();
+      const wb=document.getElementById('hy-wb');if(wb){wb.textContent='🎉  DUPONT CIRCLE  ·  SOLVED IN 2 / 6';wb.classList.add('hy-on');}
+      await sleep(1000);phOff('hy-ph2');phOn('hy-ph3');
+      await sleep(200);vis('hy-ltag');vis('hy-stats');vis('hy-cta');
+    }
+    run();
+    const T=setTimeout(()=>skip(),10000);
+    return()=>{stopped=true;window.removeEventListener('resize',resize);clearTimeout(T);};
+  },[skip]);
+
+  const CSS=`
+    #hy-wrap{position:fixed;inset:0;background:#fff;z-index:99999;overflow:hidden;font-family:'Inter',sans-serif;}
+    #hy-bg{position:absolute;inset:0;pointer-events:none;}
+    #hy-bar{position:absolute;bottom:0;left:0;height:4px;z-index:100;width:0;background:linear-gradient(90deg,#028A48,#0060ff,#C60C30);animation:hy-bar 10s linear forwards;}
+    @keyframes hy-bar{to{width:100%}}
+    #hy-skip{position:absolute;top:18px;right:18px;z-index:100;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#999;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:20px;padding:7px 15px;cursor:pointer;transition:all .2s;opacity:0;animation:hy-fi .3s .8s ease forwards;}
+    #hy-skip:hover{color:#000;border-color:rgba(0,0,0,.3);}
+    @keyframes hy-fi{to{opacity:1}}
+    .hy-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;opacity:0;pointer-events:none;transition:opacity .6s ease;z-index:10;}
+    .hy-sk{position:absolute;height:2px;border-radius:1px;pointer-events:none;z-index:1;opacity:0;}
+    .hy-sk.go{animation:hy-sk var(--d) ease forwards;}
+    @keyframes hy-sk{0%{width:0;opacity:0}8%{opacity:.9}80%{opacity:.6}100%{width:var(--w);opacity:0}}
+    .hy-hl{font-weight:900;letter-spacing:-2px;line-height:1.02;font-size:clamp(40px,11vw,92px);color:#0a0a0a;text-align:center;opacity:0;transform:translateY(24px);transition:opacity .42s ease,transform .42s ease;}
+    .hy-hl.hy-c{background:linear-gradient(90deg,#028A48,#0060ff 50%,#C60C30);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .hy-hl.hy-v{opacity:1;transform:none;}
+    .hy-sub{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,14px);letter-spacing:4px;color:#bbb;text-transform:uppercase;text-align:center;opacity:0;transition:opacity .4s ease;}
+    .hy-sub.hy-v{opacity:1;}
+    .hy-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px;opacity:0;transition:opacity .4s ease;}
+    .hy-chips.hy-v{opacity:1;}
+    .hy-chip{display:flex;align-items:center;gap:5px;border-radius:30px;padding:5px 13px;font-size:clamp(9px,2vw,11px);font-weight:700;letter-spacing:.5px;border:2px solid;}
+    #hy-card{width:100%;max-width:420px;background:#111;border-radius:22px;box-shadow:0 20px 80px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.12);overflow:hidden;}
+    .hy-cbar{background:#000;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
+    .hy-cgame{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.8);font-weight:700;}
+    .hy-cday{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);margin-top:1px;}
+    .hy-lpills{display:flex;gap:5px;}
+    .hy-lp{height:7px;width:22px;border-radius:3px;}
+    .hy-cbody{padding:13px 13px 15px;}
+    .hy-myst{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px 13px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;}
+    .hy-mlbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.2);}
+    .hy-mbs{display:flex;gap:3px;}
+    .hy-mb{height:9px;border-radius:2px;background:rgba(255,255,255,.12);animation:hy-mp 1.7s ease infinite;}
+    @keyframes hy-mp{0%,100%{opacity:.4}50%{opacity:1}}
+    .hy-hdrs{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;margin-bottom:5px;}
+    .hy-hdr{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:rgba(255,255,255,.22);text-align:center;cursor:default;padding:2px 0;position:relative;}
+    .hy-hdr:first-child{text-align:left;padding-left:3px;}
+    .hy-hdr:hover{color:rgba(255,255,255,.6);}
+    .hy-hdr:hover .hy-tip{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hy-tip{position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%) translateY(5px);background:#222;color:#ddd;font-size:9px;letter-spacing:.3px;line-height:1.6;padding:7px 10px;border-radius:7px;white-space:nowrap;border:1px solid rgba(255,255,255,.1);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:50;font-weight:400;}
+    .hy-tip::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom-color:#222;border-top:none;}
+    .hy-grid{display:flex;flex-direction:column;gap:4px;}
+    .hy-grow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;}
+    .hy-cell{border-radius:5px;padding:7px 4px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:clamp(7px,1.7vw,9px);font-weight:700;letter-spacing:.3px;border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:rgba(255,255,255,.2);min-height:34px;display:flex;align-items:center;justify-content:center;line-height:1.2;}
+    .hy-nc{justify-content:flex-start;padding-left:7px;font-size:clamp(8px,1.9vw,10px);}
+    .hy-ty::after{content:'|';animation:hy-bl .5s step-end infinite;color:rgba(255,255,255,.35);}
+    @keyframes hy-bl{0%,100%{opacity:1}50%{opacity:0}}
+    .hy-G{background:#041508;border-color:#28b050;color:#7fffb0;}
+    .hy-Y{background:#1a1400;border-color:#c8a800;color:#ffe680;}
+    .hy-R{background:#180404;border-color:#c43030;color:#ffaaaa;}
+    .hy-flip{animation:hy-flip .34s ease forwards;}
+    @keyframes hy-flip{0%{transform:rotateY(0)}44%{transform:rotateY(-90deg);opacity:.15}56%{transform:rotateY(-90deg);opacity:.15}100%{transform:rotateY(0);opacity:1}}
+    .hy-wpop{animation:hy-wpop .4s ease forwards;}
+    @keyframes hy-wpop{0%{transform:scale(1)}45%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .hy-brow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;opacity:.2;}
+    .hy-bc{height:34px;border-radius:5px;border:1.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);}
+    #hy-wb{margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:#7fffb0;font-weight:700;text-align:center;background:#041508;border:1px solid #28b050;border-radius:7px;padding:9px;opacity:0;pointer-events:none;transition:opacity .35s ease;}
+    #hy-wb.hy-on{opacity:1;}
+    #hy-wf{position:absolute;inset:0;pointer-events:none;z-index:5;background:rgba(40,176,80,0);}
+    #hy-wf.hy-burst{animation:hy-wfb .5s ease forwards;}
+    @keyframes hy-wfb{0%{background:rgba(40,176,80,0)}30%{background:rgba(40,176,80,.14)}100%{background:rgba(40,176,80,0)}}
+    .hy-conf{position:absolute;pointer-events:none;z-index:80;opacity:0;border-radius:2px;}
+    .hy-conf.go{animation:hy-cf var(--t) ease forwards;}
+    @keyframes hy-cf{0%{opacity:1;transform:translate(0,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+    .hy-lrow{display:flex;align-items:baseline;gap:3px;}
+    .hy-lu{font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;font-size:clamp(52px,13vw,110px);background:linear-gradient(90deg,#028A48,#0060ff,#028A48);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hy-ls 3s linear infinite;}
+    @keyframes hy-ls{0%{background-position:0%}100%{background-position:250%}}
+    .hy-lq{font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;font-size:clamp(52px,13vw,110px);color:#0a0a0a;}
+    .hy-ltag{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,11px);letter-spacing:5px;color:#bbb;text-transform:uppercase;margin-top:5px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;}
+    .hy-ltag.hy-v{opacity:1;transform:none;}
+    .hy-stats{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;opacity:0;transform:translateY(10px);transition:opacity .4s .12s ease,transform .4s .12s ease;}
+    .hy-stats.hy-v{opacity:1;transform:none;}
+    .hy-sb{background:#f5f5f5;border:1.5px solid #eee;border-radius:10px;padding:11px 18px;text-align:center;min-width:76px;}
+    .hy-sn{font-size:clamp(18px,5vw,28px);font-weight:900;color:#0a0a0a;line-height:1;}
+    .hy-sl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;color:#bbb;margin-top:3px;}
+    .hy-cta{display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:22px;opacity:0;transform:translateY(10px);transition:opacity .4s .26s ease,transform .4s .26s ease;}
+    .hy-cta.hy-v{opacity:1;transform:none;}
+    .hy-ctabtn{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,13px);letter-spacing:3px;font-weight:700;color:#fff;background:linear-gradient(135deg,#028A48,#0060ff);border:none;border-radius:30px;padding:15px 40px;cursor:pointer;position:relative;overflow:hidden;animation:hy-cp 2s .5s ease infinite;}
+    @keyframes hy-cp{0%,100%{box-shadow:0 0 0 0 rgba(0,152,80,.35)}50%{box-shadow:0 0 0 14px rgba(0,152,80,0)}}
+    .hy-ctabtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);}
+    .hy-ctasub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:#bbb;}
+  `;
+
+  return(
+    <div id="hy-wrap">
+      <style dangerouslySetInnerHTML={{__html:CSS}}/>
+      <canvas id="hy-bg"/>
+      <div id="hy-wf"/>
+      <div id="hy-bar"/>
+      <button id="hy-skip" onClick={skip}>SKIP ▶</button>
+      {/* Phase 1 */}
+      <div className="hy-ph" id="hy-ph1">
+        <div className="hy-hl" id="hy-l1">Six cities.</div>
+        <div className="hy-hl hy-c" id="hy-l2">868 stations.</div>
+        <div className="hy-hl" id="hy-l3">One puzzle. Every day.</div>
+        <div className="hy-sub" id="hy-ls">Can you guess today's station?</div>
+        <div className="hy-chips" id="hy-lc">
+          <div className="hy-chip" style={{borderColor:"#028A48",color:"#028A48"}}>🚊 Portland</div>
+          <div className="hy-chip" style={{borderColor:"#BF0000",color:"#BF0000"}}>🚇 DC</div>
+          <div className="hy-chip" style={{borderColor:"#EE352E",color:"#EE352E"}}>🗽 New York</div>
+          <div className="hy-chip" style={{borderColor:"#0072bc",color:"#0072bc"}}>🌴 LA</div>
+          <div className="hy-chip" style={{borderColor:"#C60C30",color:"#C60C30"}}>🌬️ Chicago</div>
+        </div>
+      </div>
+      {/* Phase 2 */}
+      <div className="hy-ph" id="hy-ph2">
+        <div id="hy-card">
+          <div className="hy-cbar">
+            <div><div className="hy-cgame">DC METRO · PUZZLE #247</div><div className="hy-cday">MEDIUM · 6 GUESSES</div></div>
+            <div className="hy-lpills">
+              {['#BF0000','#0039A6','#FF9900','#009b3a','#FFD700','#919D9D'].map(c=><div key={c} className="hy-lp" style={{background:c}}/>)}
+            </div>
+          </div>
+          <div className="hy-cbody">
+            <div className="hy-myst">
+              <div className="hy-mlbl">TODAY'S STATION</div>
+              <div className="hy-mbs">
+                {[11,19,25,15,21,13].map((w,i)=><div key={i} className="hy-mb" style={{width:w,animationDelay:`${i*.2}s`}}/>)}
+              </div>
+            </div>
+            <div className="hy-hdrs">
+              <div className="hy-hdr" style={{textAlign:"left",paddingLeft:3}}>STATION</div>
+              <div className="hy-hdr">LINES<div className="hy-tip">🟢 Exact match<br/>🟡 Partial overlap<br/>🔴 No shared lines</div></div>
+              <div className="hy-hdr">ZONE<div className="hy-tip">🟢 Same zone<br/>🟡 Adjacent zone<br/>🔴 Different area</div></div>
+              <div className="hy-hdr">BUSY<div className="hy-tip">🟢 Same traffic level<br/>🟡 1 level off (▲▼)<br/>🔴 Far off</div></div>
+              <div className="hy-hdr">✓</div>
+            </div>
+            <div className="hy-grid" id="hy-grid">
+              {[0,1,2,3,4,5].map(i=><div key={i} className="hy-brow" id={`hy-b${i}`}>{[0,1,2,3,4].map(j=><div key={j} className="hy-bc"/>)}</div>)}
+            </div>
+            <div id="hy-wb"/>
+          </div>
+        </div>
+      </div>
+      {/* Phase 3 */}
+      <div className="hy-ph" id="hy-ph3">
+        <div className="hy-lrow"><span className="hy-lu">Urban</span><span className="hy-lq">IQ</span></div>
+        <div className="hy-ltag" id="hy-ltag">Decode the city · Daily transit puzzle</div>
+        <div className="hy-stats" id="hy-stats">
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#028A48"}}>6</div><div className="hy-sl">CITIES</div></div>
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#0060ff"}}>868+</div><div className="hy-sl">STATIONS</div></div>
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#C60C30"}}>3</div><div className="hy-sl">ROUNDS/DAY</div></div>
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#c8a800"}}>FREE</div><div className="hy-sl">ALWAYS</div></div>
+        </div>
+        <div className="hy-cta" id="hy-cta">
+          <button className="hy-ctabtn" onClick={skip}>PLAY TODAY'S PUZZLE</button>
+          <div className="hy-ctasub">No account · No ads · Resets at midnight</div>
+        </div>
+      </div>
     </div>
   );
 }
