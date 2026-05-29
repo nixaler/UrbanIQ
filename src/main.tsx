@@ -418,12 +418,32 @@ function CardSystemTab({pendingCard,onClearPending}){
                 <div style={{fontSize:12,color:txt2,marginBottom:6}}>No cards yet</div>
                 <div style={{fontSize:11,color:txt3,lineHeight:1.8}}>Win a daily puzzle round to earn your first card. Pro difficulty gives the best legendary drop rates.</div>
               </div>
-            ):<div style={{display:"flex",flexWrap:"wrap",gap:10}}>{col.map(c=>(
-              <div key={c.id} style={{position:"relative"}}>
-                <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
-                {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+):(
+              <div>
+                {["legendary","rare","uncommon","common"].map(rid=>{
+                  const rcards=col.filter(c=>c.rarityId===rid);
+                  if(!rcards.length)return null;
+                  const rc=CARD_RARITY[rid.toUpperCase()]?.color||"#555";
+                  return(
+                    <div key={rid} style={{marginBottom:20}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                        <div style={{height:2,flex:1,background:`${rc}40`,borderRadius:1}}/>
+                        <div style={{fontSize:9,fontWeight:700,letterSpacing:2,color:rc}}>{rid.toUpperCase()} · {rcards.length}</div>
+                        <div style={{height:2,flex:1,background:`${rc}40`,borderRadius:1}}/>
+                      </div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+                        {rcards.map(c=>(
+                          <div key={c.id} style={{position:"relative"}}>
+                            <CardVisual card={c} size="md" onClick={()=>setSel(c)} selected={!!deck.find(d=>d.id===c.id)}/>
+                            {!canUseCardPowerup(c)&&<div style={{position:"absolute",top:4,right:4,background:"rgba(0,0,0,.7)",borderRadius:4,padding:"2px 5px",fontSize:8,color:"#ff9900"}}>CD</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}</div>}
+            )}
           </div>
         )}
 
@@ -6262,4 +6282,4 @@ if("serviceWorker" in navigator){
 // ── MOUNT ─────────────────────────────────────────────────────────────────────
 const rootEl=document.getElementById("root") as HTMLElement;
 const root=ReactDOM.createRoot(rootEl);
-root.render(<App/>);
+root.render(<Root/>);
