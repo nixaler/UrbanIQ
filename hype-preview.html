@@ -3,309 +3,265 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>UrbanIQ — Hype Intro Preview</title>
+<title>UrbanIQ — Intro Preview</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#fff;overflow:hidden;}
+body{background:#fff;overflow:hidden;font-family:'Inter',sans-serif;}
 
-/* ─── WRAPPER ─── */
-#intro{
-  position:fixed;inset:0;background:#fff;z-index:9999;overflow:hidden;
-  font-family:'Inter',sans-serif;
+#intro{position:fixed;inset:0;background:#fff;z-index:9999;overflow:hidden;}
+#bg{position:absolute;inset:0;pointer-events:none;}
+
+/* progress */
+#bar{
+  position:absolute;bottom:0;left:0;height:4px;z-index:100;width:0;
+  background:linear-gradient(90deg,#028A48,#0060ff,#C60C30);
+  animation:bar 10s linear forwards;
 }
+@keyframes bar{to{width:100%}}
 
-/* ─── CANVAS ─── */
-#bg{position:absolute;inset:0;pointer-events:none;z-index:0;}
-
-/* ─── ALWAYS-ON TOP ─── */
-#progress{
-  position:absolute;bottom:0;left:0;height:3px;z-index:100;
-  background:linear-gradient(90deg,#028A48,#0060ff,#C60C30,#028A48);
-  background-size:300% auto;
-  animation:progFill 10s linear forwards, shimBar 3s linear infinite;
-}
-@keyframes progFill{from{width:0}to{width:100%}}
-@keyframes shimBar{0%{background-position:0%}100%{background-position:300%}}
-
-#skip-btn{
+/* skip */
+#skip{
   position:absolute;top:18px;right:18px;z-index:100;
   font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;
-  color:#aaa;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);
-  border-radius:20px;padding:7px 15px;cursor:pointer;
-  transition:color .2s,border-color .2s;
-  opacity:0;animation:fadeIn .4s .6s ease forwards;
+  color:#999;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);
+  border-radius:20px;padding:7px 15px;cursor:pointer;transition:all .2s;
+  opacity:0;animation:fi .3s .8s ease forwards;
 }
-#skip-btn:hover{color:#000;border-color:rgba(0,0,0,.3);}
-@keyframes fadeIn{to{opacity:1}}
+#skip:hover{color:#000;border-color:rgba(0,0,0,.3);}
+@keyframes fi{to{opacity:1}}
 
-/* ─── PHASE SYSTEM ───
-   All phases are position:absolute + opacity.
-   NO display:none. Cross-fade by toggling opacity + pointer-events.
-─────────────────────── */
-.phase{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px 20px;
-  opacity:0;pointer-events:none;
-  transition:opacity .55s ease;
-  z-index:10;
+/* ── PHASES: always in DOM, opacity-only transitions ── */
+.ph{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:24px 20px;
+  opacity:0;pointer-events:none;transition:opacity .6s ease;z-index:10;
 }
-.phase.in{opacity:1;pointer-events:auto;}
-.phase.out{opacity:0;pointer-events:none;}
+.ph.on{opacity:1;pointer-events:auto;}
 
-/* ═══════════════════════════════════════
-   PHASE 1 — HOOK TEXT  (0 → 2.4s)
-═══════════════════════════════════════ */
-#ph1{gap:6px;}
-
-.hook{
-  font-weight:900;letter-spacing:-1.5px;line-height:1.05;
-  text-align:center;color:#0a0a0a;
-  font-size:clamp(38px,10vw,86px);
-  opacity:0;transform:translateY(22px);
-  transition:opacity .45s ease, transform .45s ease;
+/* ══════════════════════════════
+   PH1 — HOOK  (0 → 2s)
+══════════════════════════════ */
+.hl{
+  font-weight:900;letter-spacing:-2px;line-height:1.02;
+  font-size:clamp(40px,11vw,92px);color:#0a0a0a;text-align:center;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .42s ease,transform .42s ease;
 }
-.hook.grad{
-  background:linear-gradient(90deg,#028A48 0%,#0060ff 50%,#C60C30 100%);
+.hl.c{
+  background:linear-gradient(90deg,#028A48,#0060ff 50%,#C60C30);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.hook.show{opacity:1;transform:translateY(0);}
+.hl.v{opacity:1;transform:none;}
 
-.hook-sub{
-  font-size:clamp(12px,2.8vw,17px);letter-spacing:3px;color:#bbb;
-  text-transform:uppercase;font-weight:400;margin-top:14px;
-  font-family:'JetBrains Mono',monospace;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .4s ease,transform .4s ease;
+.hsub{
+  margin-top:16px;font-family:'JetBrains Mono',monospace;
+  font-size:clamp(10px,2.5vw,14px);letter-spacing:4px;color:#bbb;
+  text-transform:uppercase;text-align:center;
+  opacity:0;transition:opacity .4s ease;
 }
-.hook-sub.show{opacity:1;transform:translateY(0);}
+.hsub.v{opacity:1;}
 
-/* city chips row */
 .chips{
-  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .4s ease,transform .4s ease;
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px;
+  opacity:0;transition:opacity .4s ease;
 }
-.chips.show{opacity:1;transform:translateY(0);}
+.chips.v{opacity:1;}
 .chip{
   display:flex;align-items:center;gap:5px;border-radius:30px;
-  padding:5px 13px;font-size:clamp(9px,2.2vw,12px);font-weight:700;
+  padding:5px 13px;font-size:clamp(9px,2vw,11px);font-weight:700;
   letter-spacing:.5px;border:2px solid;
 }
 
-/* ═══════════════════════════════════════
-   PHASE 2 — GAME DEMO  (2.0 → 7.8s)
-═══════════════════════════════════════ */
-#ph2{justify-content:center;padding:16px 16px 20px;}
+/* metro streaks */
+.sk{
+  position:absolute;height:2px;border-radius:1px;pointer-events:none;
+  z-index:1;opacity:0;
+}
+.sk.go{animation:sk var(--d) ease forwards;}
+@keyframes sk{0%{width:0;opacity:0}8%{opacity:.9}80%{opacity:.6}100%{width:var(--w);opacity:0}}
 
-/* Phone-style card */
-#game-card{
-  width:100%;max-width:430px;
-  background:#fff;border-radius:22px;
-  box-shadow:0 12px 70px rgba(0,0,0,.13),0 2px 10px rgba(0,0,0,.06);
-  border:1px solid rgba(0,0,0,.07);
+/* ══════════════════════════════
+   PH2 — GAME DEMO  (1.8 → 7.5s)
+══════════════════════════════ */
+#card{
+  width:100%;max-width:420px;
+  background:#111;border-radius:22px;
+  box-shadow:0 20px 80px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.12);
   overflow:hidden;
 }
 
-/* Card top bar */
-.card-bar{
-  background:#0a0a0a;padding:11px 16px;
+/* top bar */
+.cbar{
+  background:#000;padding:11px 15px;
   display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-.card-bar-left{display:flex;flex-direction:column;gap:2px;}
-.card-game{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.85);font-weight:700;}
-.card-day{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.3);}
-.card-lines{display:flex;gap:5px;align-items:center;}
-.lp{height:7px;border-radius:3px;}
+.cgame{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.8);font-weight:700;}
+.cday{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);margin-top:1px;}
+.lpills{display:flex;gap:5px;}
+.lp{height:7px;width:22px;border-radius:3px;}
 
-/* Card body */
-.card-body{padding:13px 13px 15px;}
+/* body */
+.cbody{padding:13px 13px 15px;}
 
 /* mystery */
-.mystery{
-  background:#f7f7f7;border:1px solid #eee;border-radius:8px;
-  padding:9px 13px;margin-bottom:11px;
+.myst{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:9px 13px;margin-bottom:11px;
   display:flex;align-items:center;justify-content:space-between;
 }
-.mystery-lbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:#bbb;}
-.mystery-blocks{display:flex;gap:3px;align-items:center;}
-.mb{height:9px;border-radius:2px;background:#e8e8e8;animation:mPulse 1.6s ease infinite;}
-@keyframes mPulse{0%,100%{opacity:.45}50%{opacity:1}}
+.mlbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:3px;color:rgba(255,255,255,.2);}
+.mbs{display:flex;gap:3px;}
+.mb{height:9px;border-radius:2px;background:rgba(255,255,255,.12);animation:mp 1.7s ease infinite;}
+@keyframes mp{0%,100%{opacity:.4}50%{opacity:1}}
 
 /* col headers */
 .hdrs{
-  display:grid;gap:3px;margin-bottom:5px;
-  grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;
+  display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;
+  gap:3px;margin-bottom:5px;
 }
 .hdr{
   font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;
-  color:#ccc;text-align:center;padding:2px 0;cursor:default;position:relative;
+  color:rgba(255,255,255,.22);text-align:center;cursor:default;padding:2px 0;
+  position:relative;
 }
 .hdr:first-child{text-align:left;padding-left:3px;}
-.hdr:hover{color:#666;}
+.hdr:hover{color:rgba(255,255,255,.6);}
 .hdr:hover .tip{opacity:1;transform:translateX(-50%) translateY(0);}
 .tip{
   position:absolute;top:calc(100% + 5px);left:50%;
   transform:translateX(-50%) translateY(5px);
-  background:#111;color:#fff;font-size:9px;letter-spacing:.3px;line-height:1.55;
-  padding:7px 10px;border-radius:7px;white-space:nowrap;
+  background:#222;color:#ddd;font-size:9px;letter-spacing:.3px;line-height:1.6;
+  padding:7px 10px;border-radius:7px;white-space:nowrap;border:1px solid rgba(255,255,255,.1);
   opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:50;font-weight:400;
 }
-.tip::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom-color:#111;border-top:none;}
+.tip::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom-color:#222;border-top:none;}
 
-/* guess grid */
+/* grid */
 .grid{display:flex;flex-direction:column;gap:4px;}
-.grow{display:grid;gap:3px;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;}
+.grow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;}
 
 /* cells */
 .cell{
   border-radius:5px;padding:7px 4px;text-align:center;
   font-family:'JetBrains Mono',monospace;
   font-size:clamp(7px,1.7vw,9px);font-weight:700;letter-spacing:.3px;
-  border:1.5px solid #eee;background:#fafafa;color:#ccc;
-  min-height:33px;display:flex;align-items:center;justify-content:center;
+  border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.2);
+  min-height:34px;display:flex;align-items:center;justify-content:center;
   line-height:1.2;
 }
-.cell.nc{justify-content:flex-start;padding-left:7px;font-size:clamp(7.5px,1.8vw,10px);}
-.cell.nc.typing::after{content:'|';animation:blink .5s step-end infinite;color:#aaa;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cell.nc{justify-content:flex-start;padding-left:7px;font-size:clamp(8px,1.9vw,10px);}
+.cell.nc.ty::after{content:'|';animation:bl .5s step-end infinite;color:rgba(255,255,255,.35);}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
 
 /* color states */
-.cell.G{background:#d4f5e0;border-color:#28b050;color:#005020;}
-.cell.Y{background:#fffacc;border-color:#c8a800;color:#5a3800;}
-.cell.R{background:#fdd0d0;border-color:#c43030;color:#5a0000;}
+.cell.G{background:#041508;border-color:#28b050;color:#7fffb0;}
+.cell.Y{background:#1a1400;border-color:#c8a800;color:#ffe680;}
+.cell.R{background:#180404;border-color:#c43030;color:#ffaaaa;}
 
 /* cell flip */
-.cell.flip{animation:flip .38s ease forwards;}
+.cell.flip{animation:flip .34s ease forwards;}
 @keyframes flip{
   0%{transform:rotateY(0);}
-  45%{transform:rotateY(-90deg);opacity:.2;}
-  55%{transform:rotateY(-90deg);opacity:.2;}
+  44%{transform:rotateY(-90deg);opacity:.15;}
+  56%{transform:rotateY(-90deg);opacity:.15;}
   100%{transform:rotateY(0);opacity:1;}
 }
-/* win pop */
-.cell.win{animation:wPop .45s ease forwards;}
-@keyframes wPop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.cell.wpop{animation:wpop .4s ease forwards;}
+@keyframes wpop{0%{transform:scale(1)}45%{transform:scale(1.2)}100%{transform:scale(1)}}
 
 /* blank rows */
-.brow{display:grid;gap:3px;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;opacity:.35;}
-.bcell{height:33px;border-radius:5px;border:1.5px solid #eee;background:#fafafa;}
+.brow{display:grid;grid-template-columns:1.9fr 1.1fr .85fr .85fr .4fr;gap:3px;opacity:.2;}
+.bc{height:34px;border-radius:5px;border:1.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);}
 
 /* win bar */
-#win-bar{
+#wb{
   margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:10px;
-  letter-spacing:2px;color:#005020;font-weight:700;text-align:center;
-  background:#d4f5e0;border:1px solid #28b050;border-radius:7px;
-  padding:8px;opacity:0;pointer-events:none;
-  transition:opacity .35s ease;
+  letter-spacing:2px;color:#7fffb0;font-weight:700;text-align:center;
+  background:#041508;border:1px solid #28b050;border-radius:7px;
+  padding:9px;opacity:0;pointer-events:none;transition:opacity .35s ease;
 }
-#win-bar.show{opacity:1;}
+#wb.on{opacity:1;}
 
-/* ═══════════════════════════════════════
-   PHASE 3 — LOGO + CTA  (7.5s → 10s)
-═══════════════════════════════════════ */
-#ph3{gap:4px;}
+/* win flash */
+#wf{position:absolute;inset:0;pointer-events:none;z-index:5;background:rgba(40,176,80,0);}
+#wf.burst{animation:wfb .5s ease forwards;}
+@keyframes wfb{0%{background:rgba(40,176,80,0)}30%{background:rgba(40,176,80,.14)}100%{background:rgba(40,176,80,0)}}
 
-.logo-row{display:flex;align-items:baseline;gap:3px;}
-.logo-u{
+/* confetti */
+.conf{position:absolute;pointer-events:none;z-index:80;opacity:0;border-radius:2px;}
+.conf.go{animation:cf var(--t) ease forwards;}
+@keyframes cf{0%{opacity:1;transform:translate(0,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+
+/* ══════════════════════════════
+   PH3 — LOGO  (7.3 → 10s)
+══════════════════════════════ */
+#ph3{gap:5px;}
+.lrow{display:flex;align-items:baseline;gap:3px;}
+.lu{
   font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;
-  font-size:clamp(50px,13vw,108px);
+  font-size:clamp(52px,13vw,110px);
   background:linear-gradient(90deg,#028A48,#0060ff,#028A48);
-  background-size:250% auto;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:logoShim 3s linear infinite;
+  background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:ls 3s linear infinite;
 }
-@keyframes logoShim{0%{background-position:0%}100%{background-position:250%}}
-.logo-q{
-  font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;
-  font-size:clamp(50px,13vw,108px);color:#0a0a0a;
-}
-.logo-tag{
+@keyframes ls{0%{background-position:0%}100%{background-position:250%}}
+.lq{font-family:'Cinzel',serif;font-weight:900;letter-spacing:5px;line-height:1;font-size:clamp(52px,13vw,110px);color:#0a0a0a;}
+.ltag{
   font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,11px);
   letter-spacing:5px;color:#bbb;text-transform:uppercase;margin-top:5px;
-  opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;
+  opacity:0;transition:opacity .4s ease,transform .4s ease;transform:translateY(8px);
 }
-.logo-tag.show{opacity:1;transform:translateY(0);}
+.ltag.v{opacity:1;transform:none;}
 
 .stats{
   display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;
-  opacity:0;transform:translateY(10px);transition:opacity .4s .1s ease,transform .4s .1s ease;
+  opacity:0;transform:translateY(10px);transition:opacity .4s .12s ease,transform .4s .12s ease;
 }
-.stats.show{opacity:1;transform:translateY(0);}
-.sbox{
-  background:#f8f8f8;border:1.5px solid #eee;border-radius:10px;
-  padding:11px 18px;text-align:center;min-width:76px;
-}
-.sn{font-size:clamp(18px,5vw,30px);font-weight:900;color:#0a0a0a;line-height:1;}
+.stats.v{opacity:1;transform:none;}
+.sb{background:#f5f5f5;border:1.5px solid #eee;border-radius:10px;padding:11px 18px;text-align:center;min-width:76px;}
+.sn{font-size:clamp(18px,5vw,28px);font-weight:900;color:#0a0a0a;line-height:1;}
 .sl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;color:#bbb;margin-top:3px;}
 
 .cta{
   display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:22px;
-  opacity:0;transform:translateY(10px);transition:opacity .4s .22s ease,transform .4s .22s ease;
+  opacity:0;transform:translateY(10px);transition:opacity .4s .26s ease,transform .4s .26s ease;
 }
-.cta.show{opacity:1;transform:translateY(0);}
-.cta-btn{
+.cta.v{opacity:1;transform:none;}
+.ctabtn{
   font-family:'JetBrains Mono',monospace;font-size:clamp(10px,2.5vw,13px);
   letter-spacing:3px;font-weight:700;color:#fff;
   background:linear-gradient(135deg,#028A48,#0060ff);
   border:none;border-radius:30px;padding:15px 40px;cursor:pointer;
   position:relative;overflow:hidden;
-  animation:ctaPulse 2s .6s ease infinite;
+  animation:cp 2s .5s ease infinite;
 }
-@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,152,80,.35)}50%{box-shadow:0 0 0 14px rgba(0,152,80,0)}}
-.cta-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);}
-.cta-sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:#bbb;}
+@keyframes cp{0%,100%{box-shadow:0 0 0 0 rgba(0,152,80,.35)}50%{box-shadow:0 0 0 14px rgba(0,152,80,0)}}
+.ctabtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);}
+.ctasub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:#bbb;}
 
-/* ─── CONFETTI ─── */
-.conf{
-  position:absolute;pointer-events:none;z-index:80;
-  border-radius:2px;opacity:0;
-}
-.conf.go{animation:confPop var(--t) ease forwards;}
-@keyframes confPop{
-  0%{opacity:1;transform:translate(0,0) rotate(0) scale(1);}
-  15%{opacity:1;}
-  100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.4);}
-}
-
-/* ─── WIN FLASH ─── */
-#win-flash{
-  position:absolute;inset:0;pointer-events:none;z-index:5;
-  background:rgba(40,176,80,0);transition:background .08s;
-}
-#win-flash.burst{background:rgba(40,176,80,.12);}
-
-/* ─── METRO STREAKS ─── */
-.streak{
-  position:absolute;height:2px;border-radius:1px;
-  pointer-events:none;z-index:1;opacity:0;
-}
-.streak.go{animation:streakGo var(--dur) ease forwards;}
-@keyframes streakGo{
-  0%{width:0;opacity:0;}8%{opacity:.8;}80%{opacity:.5;}100%{width:var(--w);opacity:0;}
-}
-
-/* ─── EXIT ─── */
-#intro.bye{animation:byeOut .65s ease forwards;}
-@keyframes byeOut{to{opacity:0;pointer-events:none;}}
+/* exit */
+#intro.bye{animation:bye .65s ease forwards;}
+@keyframes bye{to{opacity:0;pointer-events:none;}}
 </style>
 </head>
 <body>
 
 <div id="intro">
   <canvas id="bg"></canvas>
-  <div id="win-flash"></div>
-  <div id="progress"></div>
-  <button id="skip-btn" onclick="skip()">SKIP ▶</button>
+  <div id="wf"></div>
+  <div id="bar"></div>
+  <button id="skip" onclick="skip()">SKIP ▶</button>
 
-  <!-- PHASE 1: Hook -->
-  <div class="phase" id="ph1">
-    <div class="hook" id="h1">Six cities.</div>
-    <div class="hook grad" id="h2">868 stations.</div>
-    <div class="hook" id="h3">One puzzle. Every day.</div>
-    <div class="hook-sub" id="hsub">Can you name today's station?</div>
-    <div class="chips" id="hchips">
+  <!-- PH1: Hook -->
+  <div class="ph" id="ph1">
+    <div class="hl"    id="l1">Six cities.</div>
+    <div class="hl c"  id="l2">868 stations.</div>
+    <div class="hl"    id="l3">One puzzle. Every day.</div>
+    <div class="hsub"  id="ls">Can you guess today's station?</div>
+    <div class="chips" id="lc">
       <div class="chip" style="border-color:#028A48;color:#028A48;">🚊 Portland</div>
       <div class="chip" style="border-color:#BF0000;color:#BF0000;">🚇 DC</div>
       <div class="chip" style="border-color:#EE352E;color:#EE352E;">🗽 New York</div>
@@ -314,28 +270,25 @@ body{background:#fff;overflow:hidden;}
     </div>
   </div>
 
-  <!-- PHASE 2: Game demo -->
-  <div class="phase" id="ph2">
-    <div id="game-card">
-      <div class="card-bar">
-        <div class="card-bar-left">
-          <div class="card-game">DC METRO · PUZZLE #247</div>
-          <div class="card-day">DAY 247 · MEDIUM DIFFICULTY</div>
-        </div>
-        <div class="card-lines">
-          <div class="lp" style="width:22px;background:#BF0000;"></div>
-          <div class="lp" style="width:22px;background:#0039A6;"></div>
-          <div class="lp" style="width:22px;background:#FF9900;"></div>
-          <div class="lp" style="width:22px;background:#009b3a;"></div>
-          <div class="lp" style="width:22px;background:#FFD700;"></div>
-          <div class="lp" style="width:22px;background:#919D9D;"></div>
+  <!-- PH2: Game demo -->
+  <div class="ph" id="ph2">
+    <div id="card">
+      <div class="cbar">
+        <div><div class="cgame">DC METRO · PUZZLE #247</div><div class="cday">MEDIUM · 6 GUESSES</div></div>
+        <div class="lpills">
+          <div class="lp" style="background:#BF0000;"></div>
+          <div class="lp" style="background:#0039A6;"></div>
+          <div class="lp" style="background:#FF9900;"></div>
+          <div class="lp" style="background:#009b3a;"></div>
+          <div class="lp" style="background:#FFD700;"></div>
+          <div class="lp" style="background:#919D9D;"></div>
         </div>
       </div>
-      <div class="card-body">
-        <div class="mystery">
-          <div class="mystery-lbl">TODAY'S STATION</div>
-          <div class="mystery-blocks">
-            <div class="mb" style="width:11px;animation-delay:0s;"></div>
+      <div class="cbody">
+        <div class="myst">
+          <div class="mlbl">TODAY'S STATION</div>
+          <div class="mbs">
+            <div class="mb" style="width:11px;"></div>
             <div class="mb" style="width:19px;animation-delay:.2s;"></div>
             <div class="mb" style="width:25px;animation-delay:.4s;"></div>
             <div class="mb" style="width:15px;animation-delay:.6s;"></div>
@@ -351,304 +304,222 @@ body{background:#fff;overflow:hidden;}
           <div class="hdr">✓</div>
         </div>
         <div class="grid" id="grid">
-          <div class="brow" id="b0"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
-          <div class="brow" id="b1"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
-          <div class="brow" id="b2"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
-          <div class="brow" id="b3"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
-          <div class="brow" id="b4"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
-          <div class="brow" id="b5"><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div><div class="bcell"></div></div>
+          <div class="brow" id="b0"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
+          <div class="brow" id="b1"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
+          <div class="brow" id="b2"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
+          <div class="brow" id="b3"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
+          <div class="brow" id="b4"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
+          <div class="brow" id="b5"><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div><div class="bc"></div></div>
         </div>
-        <div id="win-bar"></div>
+        <div id="wb"></div>
       </div>
     </div>
   </div>
 
-  <!-- PHASE 3: Logo + CTA -->
-  <div class="phase" id="ph3">
-    <div class="logo-row">
-      <span class="logo-u">Urban</span><span class="logo-q">IQ</span>
-    </div>
-    <div class="logo-tag" id="ltag">Decode the city · Daily transit puzzle</div>
+  <!-- PH3: Logo -->
+  <div class="ph" id="ph3">
+    <div class="lrow"><span class="lu">Urban</span><span class="lq">IQ</span></div>
+    <div class="ltag" id="ltag">Decode the city · Daily transit puzzle</div>
     <div class="stats" id="stats">
-      <div class="sbox"><div class="sn" style="color:#028A48;">6</div><div class="sl">CITIES</div></div>
-      <div class="sbox"><div class="sn" style="color:#0060ff;">868+</div><div class="sl">STATIONS</div></div>
-      <div class="sbox"><div class="sn" style="color:#C60C30;">3</div><div class="sl">ROUNDS/DAY</div></div>
-      <div class="sbox"><div class="sn" style="color:#c8a800;">FREE</div><div class="sl">ALWAYS</div></div>
+      <div class="sb"><div class="sn" style="color:#028A48;">6</div><div class="sl">CITIES</div></div>
+      <div class="sb"><div class="sn" style="color:#0060ff;">868+</div><div class="sl">STATIONS</div></div>
+      <div class="sb"><div class="sn" style="color:#C60C30;">3</div><div class="sl">ROUNDS/DAY</div></div>
+      <div class="sb"><div class="sn" style="color:#c8a800;">FREE</div><div class="sl">ALWAYS</div></div>
     </div>
     <div class="cta" id="cta">
-      <button class="cta-btn" onclick="skip()">PLAY TODAY'S PUZZLE</button>
-      <div class="cta-sub">No account · No ads · Daily reset at midnight</div>
+      <button class="ctabtn" onclick="skip()">PLAY TODAY'S PUZZLE</button>
+      <div class="ctasub">No account · No ads · Resets at midnight</div>
     </div>
   </div>
 </div>
 
-<!-- App behind the intro -->
-<div style="background:#f8f8f8;height:100vh;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#ccc;">
-  ← App loads here
+<div style="height:100vh;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#ccc;background:#f8f8f8;">
+  ← App loads here after intro
 </div>
 
 <script>
-/* ──────────────────────────────────────────
-   CANVAS: light metro-map network on white
-────────────────────────────────────────── */
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let W, H, nodes=[], edges=[], animDone=false, t0=performance.now();
-const LINE_CLR=['#BF0000','#0039A6','#FF9900','#009b3a','#C60C30','#028A48','#919D9D','#EE352E'];
+/* ── helpers ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const $ = id => document.getElementById(id);
+const show = (id, ms=0) => setTimeout(() => $(id).classList.add('v'), ms);
+const intro = $('intro');
 
-function resize(){
-  W=canvas.width=window.innerWidth;
-  H=canvas.height=window.innerHeight;
+function phOn(el)  { el.classList.add('on'); }
+function phOff(el) { el.classList.remove('on'); }
+
+/* ── canvas: soft metro dots on white ── */
+const cv = $('bg'), cx = cv.getContext('2d');
+let W, H, nodes=[], edges=[], stopped=false, t0=performance.now();
+const LC=['#BF0000','#0039A6','#FF9900','#009b3a','#C60C30','#028A48','#919D9D'];
+
+function buildGraph(){
   nodes=[];edges=[];
   const cols=Math.ceil(W/110)+1, rows=Math.ceil(H/95)+1;
-  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
-    nodes.push({
-      x:c*110+(r%2?55:0)+Math.random()*28-14,
-      y:r*95+Math.random()*18-9,
-      c:LINE_CLR[Math.floor(Math.random()*LINE_CLR.length)],
-      r:Math.random()*2+1.2,
-      ph:Math.random()*Math.PI*2,
-    });
-  }
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++)
+    nodes.push({x:c*110+(r%2?55:0)+Math.random()*28-14,y:r*95+Math.random()*18-9,
+      c:LC[Math.floor(Math.random()*LC.length)],r:Math.random()*2+1.2,ph:Math.random()*Math.PI*2});
   nodes.forEach((a,i)=>nodes.forEach((b,j)=>{
-    if(j<=i)return;
-    const d=Math.hypot(a.x-b.x,a.y-b.y);
-    if(d<145) edges.push({i,j,a:(1-d/145)*0.1});
+    if(j<=i)return;const d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d<140)edges.push({i,j,a:(1-d/140)*.08});
   }));
 }
-
-function drawBg(now){
+function resize(){ W=cv.width=innerWidth; H=cv.height=innerHeight; buildGraph(); }
+function frame(now){
   const t=(now-t0)/1000, fade=Math.min(1,t/1.5);
-  ctx.clearRect(0,0,W,H);
+  cx.clearRect(0,0,W,H);
   edges.forEach(e=>{
-    ctx.beginPath();ctx.moveTo(nodes[e.i].x,nodes[e.i].y);ctx.lineTo(nodes[e.j].x,nodes[e.j].y);
-    ctx.strokeStyle=`rgba(0,0,0,${e.a*fade*0.5})`;ctx.lineWidth=0.5;ctx.stroke();
+    cx.beginPath();cx.moveTo(nodes[e.i].x,nodes[e.i].y);cx.lineTo(nodes[e.j].x,nodes[e.j].y);
+    cx.strokeStyle=`rgba(0,0,0,${e.a*fade*.4})`;cx.lineWidth=.5;cx.stroke();
   });
   nodes.forEach(n=>{
-    const p=(Math.sin(n.ph+t*0.8)+1)/2;
-    const alpha=fade*(0.15+p*0.22);
-    ctx.beginPath();ctx.arc(n.x,n.y,n.r*(0.8+p*0.45),0,Math.PI*2);
-    ctx.fillStyle=n.c+Math.round(alpha*255).toString(16).padStart(2,'0');
-    ctx.fill();
+    const p=(Math.sin(n.ph+t*.9)+1)/2, a=fade*(.12+p*.2);
+    cx.beginPath();cx.arc(n.x,n.y,n.r*(.8+p*.4),0,Math.PI*2);
+    cx.fillStyle=n.c+Math.round(a*255).toString(16).padStart(2,'0');cx.fill();
   });
-  if(!animDone) requestAnimationFrame(drawBg);
+  if(!stopped) requestAnimationFrame(frame);
 }
-requestAnimationFrame(drawBg);
-window.addEventListener('resize',resize);
-resize();
+requestAnimationFrame(frame);
+window.addEventListener('resize',resize); resize();
 
-/* ──────────────────────────────────────────
-   METRO STREAKS
-────────────────────────────────────────── */
-const intro=document.getElementById('intro');
-[
-  {c:'#BF0000',top:'15%',left:'0',w:'65vw',delay:200, dur:2400},
-  {c:'#028A48',top:'30%',left:'0',w:'78vw',delay:600, dur:2800},
-  {c:'#0039A6',top:'62%',right:'0',w:'55vw',delay:1000,dur:2200},
-  {c:'#FF9900',top:'75%',left:'0',w:'60vw',delay:1400,dur:2600},
-  {c:'#C60C30',top:'88%',right:'0',w:'48vw',delay:1800,dur:2000},
-].forEach(s=>{
-  const el=document.createElement('div');
-  el.className='streak';
-  el.style.cssText=`background:${s.c};top:${s.top};${s.right?'right:'+s.right:'left:'+s.left};--w:${s.w};--dur:${s.dur}ms;`;
-  intro.appendChild(el);
-  setTimeout(()=>el.classList.add('go'),s.delay);
+/* ── metro line streaks ── */
+[{c:'#BF0000',t:'12%',s:'left:0',w:'62vw',d:300,ms:2600},
+ {c:'#028A48',t:'28%',s:'left:0',w:'75vw',d:600,ms:2900},
+ {c:'#0039A6',t:'58%',s:'right:0',w:'50vw',d:900,ms:2300},
+ {c:'#FF9900',t:'72%',s:'left:0',w:'58vw',d:1200,ms:2700},
+ {c:'#C60C30',t:'88%',s:'right:0',w:'44vw',d:1500,ms:2400},
+].forEach(({c,t,s,w,d,ms})=>{
+  const el=document.createElement('div');el.className='sk';
+  el.style.cssText=`background:${c};top:${t};${s};--w:${w};--d:${ms}ms;`;
+  intro.appendChild(el);setTimeout(()=>el.classList.add('go'),d);
 });
 
-/* ──────────────────────────────────────────
-   PHASE SWITCHER — pure opacity, no display:none
-────────────────────────────────────────── */
-const ph1=document.getElementById('ph1');
-const ph2=document.getElementById('ph2');
-const ph3=document.getElementById('ph3');
+/* ── PH1 text sequence ── */
+phOn($('ph1'));
+show('l1', 80); show('l2', 500); show('l3', 920); show('ls',1300); show('lc',1650);
 
-function showPhase(el){ el.classList.add('in'); el.classList.remove('out'); }
-function hidePhase(el){ el.classList.remove('in'); el.classList.add('out'); }
-
-/* ──────────────────────────────────────────
-   PHASE 1 ANIMATIONS
-────────────────────────────────────────── */
-showPhase(ph1);
-const show=(id,ms)=>setTimeout(()=>document.getElementById(id).classList.add('show'),ms);
-show('h1',  100);
-show('h2',  520);
-show('h3',  940);
-show('hsub',1360);
-show('hchips',1700);
-
-/* ──────────────────────────────────────────
-   GAME DEMO DATA
-   Target: DUPONT CIRCLE (Red only, NW, Busy=4)
-   Guess 1: GALLERY PLACE  → Y Y Y ✗
-   Guess 2: WOODLEY PARK   → G G Y ✗
-   Guess 3: DUPONT CIRCLE  → G G G ✓
-────────────────────────────────────────── */
-const GUESSES=[
-  {
-    name:'GALLERY PLACE',
+/* ── game demo data ──
+   Target: DUPONT CIRCLE (Red only, NW, Busy=4 "Busy")
+   Guess 1: WOODLEY PARK  → G G Y ✗  (so close!)
+   Guess 2: DUPONT CIRCLE → G G G ✓  (WIN!)
+── */
+const GUESSES = [
+  { name:'WOODLEY PARK',
     cells:[
-      {cls:'Y',text:'Red ∩ Multi',tip:'Shares Red line but not exact'},
-      {cls:'Y',text:'ADJACENT ▲',tip:'Zone is adjacent — go NW'},
-      {cls:'Y',text:'🌕 PACKED ▼',tip:'1 level too busy — go lower'},
-      {cls:'R',text:'✗'},
-    ]
-  },
-  {
-    name:'WOODLEY PARK',
+      {cls:'G', text:'🔴 RED ONLY', tip:'Exact line match!'},
+      {cls:'G', text:'NW DC',       tip:'Exact zone match!'},
+      {cls:'Y', text:'🌒 QUIET ▲',  tip:'1 level too low — go busier'},
+      {cls:'R', text:'✗'},
+    ]},
+  { name:'DUPONT CIRCLE',
     cells:[
-      {cls:'G',text:'🔴 RED ONLY',tip:'Exact line match!'},
-      {cls:'G',text:'NW DC',tip:'Exact zone match!'},
-      {cls:'Y',text:'🌒 QUIET ▲',tip:'1 level too low — go higher'},
-      {cls:'R',text:'✗'},
-    ]
-  },
-  {
-    name:'DUPONT CIRCLE',
-    cells:[
-      {cls:'G',text:'🔴 RED ONLY',tip:''},
-      {cls:'G',text:'NW DC',tip:''},
-      {cls:'G',text:'🌔 BUSY',tip:''},
-      {cls:'G win',text:'✓'},
-    ]
-  },
+      {cls:'G wpop', text:'🔴 RED ONLY', tip:''},
+      {cls:'G wpop', text:'NW DC',       tip:''},
+      {cls:'G wpop', text:'🌔 BUSY',     tip:''},
+      {cls:'G wpop', text:'✓'},
+    ]},
 ];
 
-function typeAndFlip(rowIndex, guessIndex){
-  return new Promise(res=>{
-    const guess=GUESSES[guessIndex];
-    // Remove blank row
-    const blank=document.getElementById('b'+rowIndex);
-    if(blank) blank.remove();
+async function typeRow(rowIdx, guessIdx){
+  const g = GUESSES[guessIdx];
+  $('b'+rowIdx)?.remove();
 
-    // Build row
-    const row=document.createElement('div');
-    row.className='grow';
+  const row = document.createElement('div'); row.className='grow';
+  const nc  = document.createElement('div'); nc.className='cell nc ty'; nc.textContent='';
+  row.appendChild(nc);
 
-    // Name cell
-    const nc=document.createElement('div');
-    nc.className='cell nc typing';
-    row.appendChild(nc);
+  const cells=[];
+  for(let i=0;i<4;i++){
+    const c=document.createElement('div');c.className='cell';c.textContent='—';
+    row.appendChild(c);cells.push(c);
+  }
 
-    // Value cells (placeholder)
-    const cells=[];
-    for(let i=0;i<4;i++){
-      const c=document.createElement('div');
-      c.className='cell';
-      c.textContent='—';
-      row.appendChild(c);
-      cells.push(c);
-    }
+  const grid=$('grid'), next=$('b'+(rowIdx+1));
+  next ? grid.insertBefore(row,next) : grid.appendChild(row);
 
-    // Insert before next blank (or at end of grid)
-    const grid=document.getElementById('grid');
-    const nextBlank=document.getElementById('b'+(rowIndex+1));
-    if(nextBlank) grid.insertBefore(row,nextBlank);
-    else grid.appendChild(row);
+  /* type name */
+  for(let i=1;i<=g.name.length;i++){
+    nc.textContent=g.name.slice(0,i);
+    await sleep(32);
+  }
+  nc.classList.remove('ty');
+  await sleep(160);
 
-    // Type name
-    let i=0;
-    const iv=setInterval(()=>{
-      i++;
-      nc.textContent=guess.name.slice(0,i);
-      if(i>=guess.name.length){
-        clearInterval(iv);
-        nc.classList.remove('typing');
-        // Short pause then flip
-        setTimeout(()=>flipNext(cells,guess.cells,0,res),280);
-      }
-    },52);
-  });
-}
-
-function flipNext(placeholders,data,idx,done){
-  if(idx>=placeholders.length){done();return;}
-  const cell=placeholders[idx];
-  const d=data[idx];
-  cell.classList.add('flip');
-  // At halfway point of flip: apply color class + text
-  setTimeout(()=>{
+  /* flip each cell */
+  for(let i=0;i<cells.length;i++){
+    const cell=cells[i], d=g.cells[i];
+    cell.classList.add('flip');
+    await sleep(170);
     cell.className='cell flip '+d.cls;
     cell.textContent=d.text;
-    if(d.tip) cell.title=d.tip;
-  },185);
-  // After flip complete: next cell
-  setTimeout(()=>{
+    if(d.tip)cell.title=d.tip;
+    await sleep(170);
     cell.classList.remove('flip');
-    flipNext(placeholders,data,idx+1,done);
-  },380);
+  }
 }
 
-function confetti(){
-  const colors=['#28b050','#c8a800','#0060ff','#BF0000','#028A48','#FF9900','#C60C30'];
-  for(let i=0;i<40;i++){
-    const el=document.createElement('div');
-    el.className='conf';
-    const size=4+Math.random()*7;
+function burst(){
+  const cols=['#28b050','#c8a800','#0060ff','#BF0000','#028A48','#FF9900','#C60C30','#fff'];
+  for(let i=0;i<52;i++){
+    const el=document.createElement('div');el.className='conf';
+    const sz=4+Math.random()*8;
     el.style.cssText=`
-      left:${25+Math.random()*50}%;top:${35+Math.random()*30}%;
-      width:${size}px;height:${size}px;
-      background:${colors[i%colors.length]};
-      border-radius:${Math.random()>.45?'50%':'2px'};
-      --dx:${-80+Math.random()*160}px;
-      --dy:${-120-Math.random()*140}px;
-      --r:${-360+Math.random()*720}deg;
-      --t:${0.8+Math.random()*0.7}s;
-      animation-delay:${Math.random()*0.25}s;
+      left:${20+Math.random()*60}%;top:${30+Math.random()*35}%;
+      width:${sz}px;height:${sz}px;
+      background:${cols[i%cols.length]};
+      border-radius:${Math.random()>.4?'50%':'2px'};
+      --x:${-100+Math.random()*200}px;
+      --y:${-160-Math.random()*160}px;
+      --r:${-540+Math.random()*1080}deg;
+      --t:${.9+Math.random()*.8}s;
+      animation-delay:${Math.random()*.3}s;
     `;
     intro.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('go'));
-    setTimeout(()=>el.remove(),2000);
+    setTimeout(()=>el.remove(),2200);
   }
 }
 
-/* ──────────────────────────────────────────
-   MASTER TIMELINE
-────────────────────────────────────────── */
-// 2.1s: crossfade to game demo
-setTimeout(()=>{ hidePhase(ph1); showPhase(ph2); }, 2100);
+/* ── MASTER SEQUENCE (chained async — no overlapping timers) ── */
+async function run(){
+  /* Phase 1 visible for 2.1s */
+  await sleep(2100);
 
-// 2.7s: guess 1
-setTimeout(async()=>{
-  await typeAndFlip(0,0);
-},2700);
+  /* Crossfade to game demo */
+  phOff($('ph1')); phOn($('ph2'));
+  await sleep(700); /* let card settle */
 
-// 4.3s: guess 2
-setTimeout(async()=>{
-  await typeAndFlip(1,1);
-},4300);
+  /* Guess 1 */
+  await typeRow(0,0);
+  await sleep(380);
 
-// 5.8s: guess 3 + win
-setTimeout(async()=>{
-  await typeAndFlip(2,2);
-  // Win effects
-  const wf=document.getElementById('win-flash');
-  wf.classList.add('burst');
-  setTimeout(()=>wf.classList.remove('burst'),400);
-  confetti();
-  const wb=document.getElementById('win-bar');
-  wb.textContent='🎉  DUPONT CIRCLE  ·  SOLVED IN 3 / 6';
-  wb.classList.add('show');
-},5800);
+  /* Guess 2 — win! */
+  await typeRow(1,1);
 
-// 7.6s: crossfade to logo
-setTimeout(()=>{
-  hidePhase(ph2);
-  showPhase(ph3);
-  setTimeout(()=>{
-    document.getElementById('ltag').classList.add('show');
-    document.getElementById('stats').classList.add('show');
-    document.getElementById('cta').classList.add('show');
-  },200);
-},7600);
+  /* Win effects */
+  $('wf').classList.add('burst');
+  setTimeout(()=>$('wf').classList.remove('burst'),500);
+  burst();
+  $('wb').textContent='🎉  DUPONT CIRCLE  ·  SOLVED IN 2 / 6';
+  $('wb').classList.add('on');
 
-// 10s: auto-dismiss
-let done=false;
-const autoTimer=setTimeout(()=>skip(),10000);
+  await sleep(1000);
 
+  /* Crossfade to logo */
+  phOff($('ph2')); phOn($('ph3'));
+  await sleep(200);
+  $('ltag').classList.add('v');
+  $('stats').classList.add('v');
+  $('cta').classList.add('v');
+}
+
+run();
+
+/* ── auto-dismiss at 10s ── */
+let gone=false;
+const T=setTimeout(()=>skip(),10000);
 function skip(){
-  if(done)return;
-  done=true;animDone=true;
-  clearTimeout(autoTimer);
+  if(gone)return; gone=true; stopped=true;
+  clearTimeout(T);
   intro.classList.add('bye');
   setTimeout(()=>intro.style.display='none',700);
 }
