@@ -4101,7 +4101,21 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [isSupporter]=useState(()=>!!localStorage.getItem("supporter_email"));
   const [supporterEmail]=useState(()=>localStorage.getItem("supporter_email")||"");
   const [topStreak,setTopStreak]=useState(0);
-  useEffect(()=>{(async()=>{const keys=["pdx","dc","states","nfl","balt","la","nyc","chi"];const streaks=await Promise.all(keys.map(k=>getFromStorage(`${k}:stats`,{streak:0}).then((s:any)=>s?.streak||0)));setTopStreak(Math.max(...streaks));})();},[]);
+  const [pageStats,setPageStats]=useState({played:0,winPct:0,avg:"—"});
+  useEffect(()=>{(async()=>{
+    const keys=["pdx","dc","states","nfl","balt","la","nyc","chi"];
+    const stats=await Promise.all(keys.map(k=>getFromStorage(`${k}:stats`,{streak:0,wins:0,played:0,totalGuesses:0}).then((s:any)=>s||{})));
+    const streaks=stats.map((s:any)=>s?.streak||0);
+    setTopStreak(Math.max(...streaks));
+    const totalPlayed=stats.reduce((a:number,s:any)=>a+(s?.played||0),0);
+    const totalWins=stats.reduce((a:number,s:any)=>a+(s?.wins||0),0);
+    const totalGuesses=stats.reduce((a:number,s:any)=>a+(s?.totalGuesses||0),0);
+    setPageStats({
+      played:totalPlayed,
+      winPct:totalPlayed>0?Math.round(totalWins/totalPlayed*100):0,
+      avg:totalWins>0?(totalGuesses/totalWins).toFixed(1):"—"
+    });
+  })();},[]);
   const [notifEnabled,setNotifEnabled]=useState(()=>localStorage.getItem("tgg:notif:sub")==="1");
   const [notifLoading,setNotifLoading]=useState(false);
   const [notifMsg,setNotifMsg]=useState<string|null>(null);
@@ -4385,215 +4399,207 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     );
   }
 
-  /* ── LIGHT MODE — Clean white hub ─────────────────────────────────────── */
+  /* ── LIGHT MODE V9 — Live Gradients ──────────────────────────────────────── */
   return(
-    <div style={{minHeight:"100dvh",background:"var(--bg-primary,#fafafa)",color:"var(--text-main,#0a0a0a)",fontFamily:"'Inter','Helvetica Neue',sans-serif",display:"flex",flexDirection:"column",position:"relative"}}>
+    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:390,margin:"0 auto",overflowX:"hidden"}}>
       <link rel="manifest" href="/manifest.json"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;700&display=swap" rel="stylesheet"/>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
       <style>{`
-        @keyframes spFadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-        @keyframes spLineGrow{from{width:0}to{width:48px}}
-        @keyframes spShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-        @keyframes spCardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-        @keyframes spHotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,120,0,0)}50%{box-shadow:0 0 0 6px rgba(255,120,0,0.18)}}
-        @keyframes spFlame{0%,100%{transform:scaleY(1) rotate(-2deg)}33%{transform:scaleY(1.15) rotate(2deg)}66%{transform:scaleY(0.9) rotate(-1deg)}}
-        @keyframes blob1{0%,100%{transform:translate(0px,0px) scale(1)}25%{transform:translate(80px,-60px) scale(1.12)}50%{transform:translate(-40px,80px) scale(0.92)}75%{transform:translate(50px,40px) scale(1.06)}}
-        @keyframes blob2{0%,100%{transform:translate(0px,0px) scale(1)}25%{transform:translate(-70px,50px) scale(0.9)}50%{transform:translate(60px,-70px) scale(1.1)}75%{transform:translate(-30px,-40px) scale(0.95)}}
-        @keyframes blob3{0%,100%{transform:translate(0px,0px) scale(1)}25%{transform:translate(40px,60px) scale(1.08)}50%{transform:translate(-50px,-50px) scale(0.94)}75%{transform:translate(70px,-30px) scale(1.04)}}
-        @keyframes tabSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-        .sp-nav-btn{font-size:11px;letter-spacing:2px;color:rgba(0,0,0,0.3);cursor:pointer;transition:color .2s;background:none;border:none;font-family:'Inter',sans-serif;padding:0;white-space:nowrap;}
-        .sp-nav-btn:hover{color:rgba(0,0,0,0.7);}
-        .sp-game-card{cursor:pointer;border-radius:10px;padding:0;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;border:2px solid rgba(0,0,0,0.10);background:#fff;}
-        .sp-game-card:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 10px 32px rgba(0,0,0,0.15);}
-        .sp-game-card:active{transform:scale(.97);}
-        .sp-game-card.hot{animation:spHotPulse 2.4s ease infinite;}
-        .sp-feat-card{cursor:pointer;border-radius:16px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;border:2px solid transparent;}
-        .sp-feat-card:hover{transform:translateY(-3px) scale(1.01);}
-        .sp-feat-card:active{transform:scale(.98);}
-        .sp-tab-btn{font-size:11px;letter-spacing:1.5px;font-weight:700;padding:8px 16px;border-radius:20px;border:1.5px solid transparent;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;white-space:nowrap;}
-        .sp-tab-btn:hover{transform:translateY(-1px);}
-        @media(max-width:600px){
-          .sp-nav{padding:14px 16px !important;}
-          .sp-nav-right{gap:10px !important;}
-          .sp-nav-logo{font-size:10px !important;letter-spacing:2px !important;}
-          .sp-nav-day{display:none !important;}
-          .sp-hero-pad{padding:24px 16px 12px !important;}
-          .sp-grid-wrap{padding:0 12px 28px !important;}
-          .sp-tab-btn{padding:6px 12px !important;font-size:10px !important;}
-        }
-        :root{--bg-primary:#f5f6fa;--text-main:#0a0a0a;--border-color:rgba(0,0,0,0.08);}
-        .gs-card{border-radius:12px !important;}
+        @keyframes v9flow{0%{background-position:0% center}100%{background-position:200% center}}
+        @keyframes v9borderFlow{0%{background-position:0% center}100%{background-position:200% center}}
+        @keyframes v9barFlow{0%{background-position:-200% center}100%{background-position:200% center}}
+        @keyframes v9blink{0%,100%{opacity:1}50%{opacity:.3}}
+        .v9-lg{background:linear-gradient(90deg,#0A0A0A 0%,#E8294A 15%,#FF8C42 25%,#FFB800 35%,#4169E1 50%,#A855F7 65%,#E8294A 80%,#0A0A0A 90%,#E8294A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:v9flow 3s linear infinite;display:inline-block;}
+        .v9-lg-fast{background:linear-gradient(90deg,#E8294A 0%,#FF8C42 20%,#FFB800 40%,#FF8C42 60%,#E8294A 80%,#FF8C42 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:v9flow 1.5s linear infinite;display:inline-block;}
+        .v9-lg-blue{background:linear-gradient(90deg,#0A0A0A 0%,#4169E1 20%,#A855F7 40%,#4169E1 60%,#0A0A0A 80%,#4169E1 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:v9flow 2.5s linear infinite;display:inline-block;}
+        .v9-eyeline{flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A);background-size:200% auto;animation:v9borderFlow 2s linear infinite;}
+        .v9-stats{position:relative;}.v9-stats::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A,#FF8C42);background-size:200% auto;animation:v9borderFlow 2s linear infinite;}
+        .v9-bar{background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A);background-size:300% auto;animation:v9barFlow 2s linear infinite;height:100%;border-radius:2px;width:33%;}
+        .v9-dot{width:7px;height:7px;border-radius:50%;background:#E8294A;flex-shrink:0;animation:v9blink 1.5s infinite;}
+        .v9-icon{width:38px;height:38px;border-radius:50%;border:1px solid #E8E6E2;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:white;transition:all .2s;}
+        .v9-row{display:flex;align-items:center;gap:16px;padding:20px 20px 20px 16px;background:white;cursor:pointer;transition:background .15s;border-bottom:2px solid #E8E5E0;}
+        .v9-row:last-child{border-bottom:none;}
+        .v9-row:hover{background:#FAFAFA;}
+        @media(prefers-color-scheme:dark){body,.v9-icon,.v9-row{background:#FFFFFF!important;color:#0A0A0A!important;}}
       `}</style>
 
-      {/* Ambient animated blob background — Roku TV style */}
-      <div aria-hidden="true" style={{position:"fixed",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
-        <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(2,138,72,0.18) 0%,transparent 70%)",top:"-15%",left:"-10%",animation:"blob1 22s ease-in-out infinite",filter:"blur(48px)"}}/>
-        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(26,58,143,0.15) 0%,transparent 70%)",top:"20%",right:"-12%",animation:"blob2 28s ease-in-out infinite",filter:"blur(52px)"}}/>
-        <div style={{position:"absolute",width:450,height:450,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.1) 0%,transparent 70%)",bottom:"-10%",left:"25%",animation:"blob3 34s ease-in-out infinite",filter:"blur(56px)"}}/>
-        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(191,0,0,0.08) 0%,transparent 70%)",top:"55%",right:"10%",animation:"blob3 19s ease-in-out infinite reverse",filter:"blur(44px)"}}/>
-        <div style={{position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px)",backgroundSize:"80px 80px",opacity:.6}}/>
-      </div>
-
       {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:8,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.18)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
-      <nav className="sp-nav" style={{position:"relative",zIndex:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"22px 40px",borderBottom:"1px solid rgba(0,0,0,0.06)",animation:"spFadeIn .4s ease both"}}>
-        <div className="sp-nav-logo" style={{fontSize:"13px",fontWeight:700,letterSpacing:3,color:"#0a0a0a"}}>UrbanIQ</div>
-        <div className="sp-nav-right" style={{display:"flex",gap:28,alignItems:"center"}}>
-          <span className="sp-nav-day" style={{fontSize:"10px",letterSpacing:2,color:"rgba(0,0,0,0.3)"}}>DAY #{dayNum}</span>
-          <button className="sp-nav-btn" onClick={()=>setShowMaps(true)}>🗺️ MAPS</button>
-          <button className="sp-nav-btn" onClick={()=>setShowBeta(true)}>💬 FEEDBACK</button>
-          {!installed&&<button className="sp-nav-btn" onClick={()=>setShowInstall(true)}>📲 INSTALL</button>}
-          {pushSupported&&<button className="sp-nav-btn" onClick={toggleNotif} disabled={notifLoading} title={notifEnabled?"Turn off daily reminders":"Turn on daily reminders"} style={{opacity:notifLoading?0.5:1,color:notifEnabled?"#028A48":"rgba(0,0,0,0.3)"}}>{notifEnabled?"🔔 REMINDERS":"🔕 REMINDERS"}</button>}
-          {isSupporter
-            ?<span className="sp-nav-btn" onClick={()=>setShowSupport(true)} style={{color:"#028A48",cursor:"pointer"}}>❤️ SUPPORTER</span>
-            :<button className="sp-nav-btn" onClick={()=>setShowSupport(true)} style={{color:"rgba(0,0,0,0.5)"}}>❤️ SUPPORT</button>
-          }
+
+      {/* NAV */}
+      <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,color:"#0A0A0A"}}>URBAN<span className="v9-lg">IQ</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <div className="v9-icon" onClick={()=>setShowMaps(true)}>🗺️</div>
+          <div className="v9-icon" onClick={()=>setShowBeta(true)}>💬</div>
+          {!installed&&<div className="v9-icon" onClick={()=>setShowInstall(true)}>📲</div>}
+          {pushSupported&&<div className="v9-icon" onClick={toggleNotif} style={{color:notifEnabled?"#028A48":undefined}}>{notifEnabled?"🔔":"🔕"}</div>}
+          <div className="v9-icon" style={{background:isSupporter?"#FFF0F0":"white",borderColor:isSupporter?"#FFD5D5":"#E8E6E2"}} onClick={()=>setShowSupport(true)}>♥</div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="sp-hero-pad" style={{position:"relative",zIndex:10,textAlign:"center",padding:"32px 40px 0px"}}>
-        <div style={{fontSize:"10px",letterSpacing:4,color:"rgba(0,0,0,0.28)",marginBottom:20,animation:"spFadeIn .2s ease both"}}>{dateStr} · DAY #{dayNum}</div>
-        <h1 style={{fontWeight:700,fontSize:"clamp(36px,6vw,72px)",letterSpacing:-1,lineHeight:1.05,margin:"0 0 6px",animation:"spFadeIn .2s ease both"}}>
-          <span style={{backgroundImage:"linear-gradient(90deg,#028A48,#1a3a8f,#BF0000,#028A48)",backgroundSize:"300% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"spShimmer 4s linear infinite"}}>UrbanIQ</span>
-        </h1>
-        <div style={{fontWeight:300,fontSize:"clamp(11px,2vw,15px)",color:"rgba(0,0,0,0.35)",letterSpacing:5,marginBottom:20,animation:"spFadeIn .2s ease both"}}>A Guessing Game</div>
-        {/* City photo hero banner — light mode */}
-        {!heroImgFailed&&heroImgUrl&&<div style={{position:"relative",height:"clamp(150px,26vw,260px)",overflow:"hidden",borderRadius:14,animation:"spFadeIn .5s ease both"}}>
-          <img src={heroImgUrl} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:0.88,filter:"brightness(0.78) saturate(1.2)"}} onError={()=>setHeroImgFailed(true)}/>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(255,255,255,0.1) 0%,transparent 30%,transparent 50%,rgba(255,255,255,0.9) 100%)"}}/>
-          <div style={{position:"absolute",bottom:14,left:0,right:0,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-            <span style={{fontSize:"9px",letterSpacing:3,color:hotCard.color,fontWeight:700,background:"rgba(255,255,255,0.9)",padding:"3px 10px",borderRadius:12,boxShadow:"0 1px 6px rgba(0,0,0,0.12)"}}>🔥 HOT TODAY</span>
-            <span style={{fontSize:"10px",color:"#0a0a0a",fontWeight:700,letterSpacing:.5,background:"rgba(255,255,255,0.9)",padding:"3px 10px",borderRadius:12,boxShadow:"0 1px 6px rgba(0,0,0,0.12)"}}>{hotCard.emoji} {hotCard.name}</span>
+      {/* HERO */}
+      <div style={{minHeight:"82vh",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 48px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+        {/* Concentric rings */}
+        <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+          <div style={{position:"relative",width:300,height:300}}>
+            {[40,70,100,130,160,190,220,250,280,310,340,370].map((s,i)=>(
+              <div key={i} style={{position:"absolute",width:s,height:s,borderRadius:"50%",border:`1.5px solid rgba(0,0,0,${i>=9?.03:i>=8?.04:i>=7?.05:.07})`,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
+            ))}
           </div>
-        </div>}
-        <div style={{width:40,height:1,background:"rgba(0,0,0,0.12)",margin:"18px auto 14px",animation:"spLineGrow .25s ease both"}}/>
-        <p style={{fontSize:"12px",fontWeight:300,color:"rgba(0,0,0,0.42)",letterSpacing:.3,lineHeight:1.8,maxWidth:300,margin:"0 auto 6px",animation:"spFadeIn .2s ease both"}}>
-          Five daily puzzles. Three rounds each.<br/>One new challenge every day.
-        </p>
-        {topStreak>0&&(
-          <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,120,0,0.07)",border:"1px solid rgba(255,120,0,0.18)",borderRadius:20,padding:"5px 14px",marginTop:10,animation:"spFadeIn .2s ease both"}}>
-            <span style={{fontSize:"16px",display:"inline-block",animation:"spFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
-            <span style={{fontSize:"12px",fontWeight:700,color:topStreak>=14?"#e05000":topStreak>=7?"#c06000":"#a07020",letterSpacing:1}}>{topStreak} DAY STREAK</span>
+        </div>
+        {/* City skyline SVG */}
+        <svg style={{position:"absolute",bottom:0,left:0,right:0,width:"100%",opacity:.07}} viewBox="0 0 390 120" fill="black" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="60" width="20" height="60"/><rect x="35" y="40" width="15" height="80"/>
+          <rect x="55" y="50" width="25" height="70"/><rect x="85" y="20" width="18" height="100"/>
+          <rect x="108" y="35" width="22" height="85"/><rect x="135" y="10" width="30" height="110"/>
+          <rect x="170" y="30" width="20" height="90"/><rect x="195" y="45" width="16" height="75"/>
+          <rect x="216" y="15" width="28" height="105"/><rect x="249" y="38" width="19" height="82"/>
+          <rect x="273" y="55" width="24" height="65"/><rect x="302" y="25" width="22" height="95"/>
+          <rect x="329" y="42" width="18" height="78"/><rect x="352" y="60" width="28" height="60"/>
+        </svg>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)"}}/>
+        {/* Hero text */}
+        <div style={{position:"relative",padding:"0 24px"}}>
+          <div style={{fontSize:10,fontWeight:600,letterSpacing:3,textTransform:"uppercase",color:"#888580",marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
+            <span style={{width:24,height:1,background:"#C8C5BF",display:"inline-block"}}/>
+            {dateStr} · DAY #{dayNum}
           </div>
-        )}
-      </div>
-
-      {/* Accordion game selector */}
-      <div className="sp-grid-wrap" style={{position:"relative",zIndex:10,padding:"0 20px 32px",maxWidth:640,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
-
-        {/* Featured HOT TODAY card */}
-        {(()=>{const swipeGames=gameCards.filter(gc=>gc.key!=="minigames");const si=hotIdx%swipeGames.length;const g=swipeGames[si];return(
-          <div style={{marginBottom:18,animation:"spCardIn .2s ease both"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <div style={{fontSize:"9px",letterSpacing:3,color:"rgba(0,0,0,0.28)",fontWeight:700}}>🔥 HOT TODAY</div>
-              <div style={{display:"flex",gap:4,alignItems:"center"}}>
-                {swipeGames.map((_,i)=>(
-                  <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?14:5,height:5,borderRadius:3,background:i===si?g.color:"rgba(0,0,0,0.12)",transition:"all .2s",cursor:"pointer"}}/>
-                ))}
-              </div>
-            </div>
-            <div className="sp-feat-card"
-              onPointerDown={e=>{hotDragStart.current=e.clientX;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);}}
-              onPointerUp={e=>{if(hotDragStart.current===null)return;const dx=e.clientX-hotDragStart.current;hotDragStart.current=null;if(Math.abs(dx)<10){SoundEngine.play("select");onSelectGame(g.key);}else if(dx<-40)setHotIdx(i=>(i+1)%swipeGames.length);else if(dx>40)setHotIdx(i=>(i-1+swipeGames.length)%swipeGames.length);}}
-              onMouseEnter={()=>setFeatHov(true)} onMouseLeave={()=>setFeatHov(false)}
-              style={{background:g.grad,boxShadow:featHov?`0 16px 48px ${g.color}44`:`0 8px 28px ${g.color}28`,userSelect:"none",touchAction:"pan-y",cursor:"pointer",overflow:"hidden",position:"relative"}}>
-              {g.photo&&<img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:featHov?0.55:0.42,transition:"opacity .3s",filter:"brightness(0.7) saturate(1.3)"}}/>}
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(0,0,0,0.3) 0%,transparent 100%)"}}/>
-              <div style={{padding:"24px 20px 22px",display:"flex",alignItems:"center",gap:16,position:"relative",zIndex:1}}>
-                <div style={{width:62,height:62,borderRadius:14,background:"rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"30px",flexShrink:0,boxShadow:"0 4px 14px rgba(0,0,0,0.2)"}}>{g.emoji}</div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:"10px",letterSpacing:3,color:"rgba(255,255,255,0.65)",fontWeight:700,marginBottom:4}}>{g.tag}</div>
-                  <div style={{fontSize:"22px",fontWeight:800,color:"#fff",letterSpacing:-0.5,marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{g.name}</div>
-                  <div style={{fontSize:"11px",color:"rgba(255,255,255,0.6)"}}>{g.sub}</div>
-                </div>
-                <div style={{flexShrink:0,background:"rgba(255,255,255,0.95)",color:g.color,fontFamily:"'Inter',sans-serif",fontSize:"11px",fontWeight:800,letterSpacing:2,padding:"11px 18px",borderRadius:9,cursor:"pointer",whiteSpace:"nowrap",boxShadow:"0 2px 10px rgba(0,0,0,0.15)",transition:"transform .15s",transform:featHov?"scale(1.04)":"none"}}>PLAY →</div>
-              </div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:86,lineHeight:.9,letterSpacing:1,marginBottom:4}}>
+            <span className="v9-lg">DAILY</span><br/>
+            <span className="v9-lg" style={{animationDelay:"-1s"}}>CITY</span><br/>
+            <span className="v9-lg" style={{animationDelay:"-2s"}}>QUIZ</span>
+          </div>
+          <div style={{fontSize:12,fontWeight:400,letterSpacing:2,textTransform:"uppercase",color:"#888580",marginBottom:32,marginTop:12}}>
+            TRANSIT · GEOGRAPHY · SPORTS · 5 PUZZLES · 3 ROUNDS
+          </div>
+          <div style={{display:"flex",gap:10,alignItems:"center"}}>
+            <div onClick={()=>{SoundEngine.play("select");onSelectGame(hotGameKey);}} style={{flex:1,background:"#0A0A0A",color:"white",fontSize:12,fontWeight:600,letterSpacing:2,textTransform:"uppercase",padding:"16px 20px",borderRadius:4,textAlign:"center",cursor:"pointer",userSelect:"none"}}>PLAY TODAY →</div>
+            <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:13,fontWeight:700,padding:"15px 16px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
+              🔥 <span className="v9-lg-fast">{topStreak||1}</span>
             </div>
           </div>
-        );})()}
-
-        {/* Category accordion sections — light mode */}
-        {(()=>{
-          const spTagMeta:{tag:string,label:string,cols:number,color:string}[]=[
-            {tag:"TRANSIT",   label:"🚊 TRANSIT",   cols:3,color:"#028A48"},
-            {tag:"GEOGRAPHY", label:"🗺️ GEOGRAPHY", cols:2,color:"#1a3a8f"},
-            {tag:"SPORTS",    label:"🏈 SPORTS",    cols:2,color:"#013369"},
-            {tag:"ARCADE",    label:"🎮 ARCADE",    cols:1,color:"#7c3aed"},
-          ];
-          const allNonHot=gameCards;
-          return spTagMeta.map(({tag,label,cols,color})=>{
-            const cards=tag==="ARCADE"
-              ?allNonHot.filter(g=>g.key==="minigames")
-              :allNonHot.filter(g=>g.tag===tag&&g.key!=="minigames");
-            if(cards.length===0)return null;
-            const collapsed=collapsedSections.has(tag);
-            return(
-              <div key={tag} style={{marginBottom:12,animation:"spCardIn .2s ease both"}}>
-                <button onClick={()=>toggleSection(tag)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:collapsed?"rgba(0,0,0,0.03)":"rgba(255,255,255,0.92)",border:`2px solid ${collapsed?"rgba(0,0,0,0.08)":color+"35"}`,borderRadius:10,padding:"13px 16px",cursor:"pointer",transition:"all .2s",fontFamily:"'Inter',sans-serif",backdropFilter:"blur(6px)",boxShadow:collapsed?"none":`0 2px 14px ${color}12`}}>
-                  <span style={{fontSize:"11px",letterSpacing:3,color:collapsed?"rgba(0,0,0,0.32)":color,fontWeight:800}}>{label}</span>
-                  <span style={{fontSize:"11px",color:"rgba(0,0,0,0.2)",transition:"transform .25s",display:"inline-block",transform:collapsed?"rotate(0deg)":"rotate(180deg)"}}>▼</span>
-                </button>
-                {!collapsed&&(
-                  <div style={{marginTop:8,display:"grid",gridTemplateColumns:`repeat(${Math.min(cols,cards.length)},1fr)`,gap:10,animation:"spCardIn .25s ease both"}}>
-                    {cards.map((g,i)=>(
-                      <div key={g.key} className="sp-game-card"
-                        onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
-                        onMouseEnter={()=>setHoveredGame(g.key)} onMouseLeave={()=>setHoveredGame(null)}
-                        style={{animation:"spCardIn .2s ease both",borderColor:hoveredGame===g.key?g.color:"rgba(0,0,0,0.07)",boxShadow:hoveredGame===g.key?`0 8px 28px ${g.color}22`:"none",padding:0,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-                        {g.photo?<div style={{height:130,overflow:"hidden",position:"relative",flexShrink:0}}>
-                          <img src={g.photo} alt={g.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .35s",transform:hoveredGame===g.key?"scale(1.07)":"scale(1)"}}/>
-                          <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.52) 100%)`}}/>
-                          <div style={{position:"absolute",bottom:9,left:12,fontSize:"12px",fontWeight:800,color:"rgba(255,255,255,0.95)",textShadow:"0 1px 6px rgba(0,0,0,0.7)",letterSpacing:.3}}>{g.emoji} {g.name}</div>
-                          <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.45)",color:"rgba(255,255,255,0.7)",fontSize:"8px",fontWeight:700,letterSpacing:1.5,padding:"3px 7px",borderRadius:4}}>{g.tag}</div>
-                        </div>:<div style={{height:130,background:g.grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"32px",flexShrink:0,position:"relative"}}>
-                          <div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.3)",color:"rgba(255,255,255,0.65)",fontSize:"8px",fontWeight:700,letterSpacing:1.5,padding:"3px 7px",borderRadius:4}}>{g.tag}</div>
-                          {g.emoji}
-                        </div>}
-                        <div style={{padding:"12px 14px 14px",flex:1,display:"flex",flexDirection:"column",gap:5}}>
-                          <div style={{fontSize:"13px",fontWeight:800,color:"#0a0a0a",lineHeight:1.3}}>{g.name}</div>
-                          <div style={{fontSize:"10px",color:"rgba(0,0,0,0.42)",lineHeight:1.4}}>{g.sub}</div>
-                          <div style={{marginTop:"auto",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                            <div style={{fontSize:"10px",fontWeight:800,letterSpacing:1,color:g.color}}>PLAY →</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          });
-        })()}
-
-        <div style={{textAlign:"center",marginTop:24,fontSize:"9px",letterSpacing:3,color:"rgba(0,0,0,0.18)",animation:"spFadeIn .2s ease both"}}>
-          NO ADS · NO TRACKING · ALWAYS FREE
         </div>
       </div>
 
-      {/* Card progress widget — light mode (below mini games) */}
+      {/* STATS TICKER */}
+      <div className="v9-stats" style={{display:"flex",position:"relative",background:"white"}}>
+        {[
+          {n:<span className="v9-lg-fast">{topStreak||1}</span>,l:"STREAK"},
+          {n:<span className="v9-lg-blue">{pageStats.played||"—"}</span>,l:"PLAYED"},
+          {n:<span className="v9-lg-blue" style={{animationDelay:"-.5s"}}>{pageStats.played>0?`${pageStats.winPct}%`:"—"}</span>,l:"WIN %"},
+          {n:<span className="v9-lg-blue" style={{animationDelay:"-1s"}}>{pageStats.avg}</span>,l:"AVG"}
+        ].map((s,i,a)=>(
+          <div key={i} style={{flex:1,padding:"18px 0",textAlign:"center",borderRight:i<a.length-1?"1px solid #EDEBE8":"none"}}>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,letterSpacing:1,lineHeight:1,marginBottom:2}}>{s.n}</div>
+            <div style={{fontSize:8,fontWeight:600,letterSpacing:2,textTransform:"uppercase",color:"#C8C5BF"}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* HOT TODAY */}
+      {(()=>{
+        const swipeGames=gameCards.filter(gc=>gc.key!=="minigames");
+        const si=hotIdx%swipeGames.length;
+        const g=swipeGames[si];
+        return(
+          <div style={{padding:"40px 24px 0"}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"#0A0A0A",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+              🔥 HOT TODAY <div className="v9-eyeline"/>
+            </div>
+            <div
+              onPointerDown={e=>{hotDragStart.current=e.clientX;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);}}
+              onPointerUp={e=>{if(hotDragStart.current===null)return;const dx=e.clientX-hotDragStart.current;hotDragStart.current=null;if(Math.abs(dx)<10){SoundEngine.play("select");onSelectGame(g.key);}else if(dx<-40)setHotIdx(p=>(p+1)%swipeGames.length);else if(dx>40)setHotIdx(p=>(p-1+swipeGames.length)%swipeGames.length);}}
+              style={{borderRadius:12,overflow:"hidden",marginBottom:12,cursor:"pointer",position:"relative",userSelect:"none",touchAction:"pan-y",minHeight:200}}>
+              {g.photo&&<img src={g.photo} alt="" onError={e=>{(e.target as HTMLElement).style.display="none";}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.75)"}}/>}
+              {!g.photo&&<div style={{position:"absolute",inset:0,background:g.grad}}/>}
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 50%,rgba(0,0,0,.15) 100%)"}}/>
+              <div style={{padding:"28px 24px",position:"relative",zIndex:1,overflow:"hidden"}}>
+                <div style={{position:"absolute",right:-10,bottom:-20,fontFamily:"'Bebas Neue',sans-serif",fontSize:100,color:"rgba(255,255,255,.04)",lineHeight:1,pointerEvents:"none"}}>{g.tag}</div>
+                <div style={{fontSize:9,fontWeight:600,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,255,255,.4)",marginBottom:10}}>{g.tag} · {g.sub}</div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:48,letterSpacing:1,lineHeight:.95,marginBottom:12}}>
+                  <span style={{background:"linear-gradient(90deg,#fff 0%,#FFB800 20%,#FF8C42 40%,#E8294A 60%,#FFB800 80%,#fff 100%)",backgroundSize:"200% auto",animation:"v9flow 2s linear infinite",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{g.name.toUpperCase()}</span>
+                </div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,.45)",letterSpacing:1,marginBottom:24,textTransform:"uppercase"}}>3 ROUNDS · NEW TODAY · DAY #{dayNum}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"white",color:"#0A0A0A",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",padding:"12px 20px",borderRadius:3}}>PLAY NOW →</div>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:4,alignItems:"center",marginBottom:24}}>
+              {swipeGames.map((_,i)=>(
+                <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?14:5,height:5,borderRadius:3,background:i===si?"#0A0A0A":"rgba(0,0,0,.12)",transition:"all .2s",cursor:"pointer"}}/>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ALL GAMES */}
+      {(()=>{
+        const catMap:{tag:string,label:string,color:string}[]=[
+          {tag:"TRANSIT",   label:"Transit",   color:"#4169E1"},
+          {tag:"GEOGRAPHY", label:"Geography", color:"#22C55E"},
+          {tag:"SPORTS",    label:"Sports",    color:"#E8294A"},
+          {tag:"ARCADE",    label:"Arcade",    color:"#A855F7"},
+        ];
+        const rows=catMap.flatMap(({tag,label,color})=>{
+          const cats=tag==="ARCADE"?gameCards.filter(g=>g.key==="minigames"):gameCards.filter(g=>g.tag===tag&&g.key!=="minigames");
+          return cats.map(g=>({g,label,color}));
+        });
+        return(
+          <div style={{padding:"0 24px"}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"#0A0A0A",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+              ALL GAMES <div className="v9-eyeline"/>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",background:"white",border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden",marginBottom:40}}>
+              {rows.map(({g,label,color},i)=>(
+                <div key={g.key} className="v9-row" onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+                  style={{borderLeft:`5px solid ${color}`,borderBottom:i<rows.length-1?"2px solid #E8E5E0":"none"}}>
+                  <div style={{fontSize:24,width:36,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:9,fontWeight:600,letterSpacing:2,textTransform:"uppercase",color:"#C8C5BF",marginBottom:1}}>{label}</div>
+                    <div style={{fontSize:15,fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
+                  </div>
+                  <div className="v9-dot"/>
+                  <div style={{fontSize:12,color:"#C8C5BF",flexShrink:0}}>→</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* CARD PROGRESS */}
       <CardProgressWidget dark={false} onOpenCards={()=>onSelectGame("cards")}/>
 
-      {/* Yesterday's Answer Teaser — light mode */}
-      {(()=>{const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:STATES;const yest=getYesterday(yItems,hotGameKey);const G2=GAMES[hotGameKey];if(!yest)return null;return(
-        <div style={{maxWidth:600,margin:"0 auto",padding:"0 24px 8px",boxSizing:"border-box",animation:"spFadeIn .2s ease both"}}>
-          <div style={{background:"rgba(0,0,0,0.025)",border:"1px solid rgba(0,0,0,0.07)",borderRadius:12,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
-            <div style={{width:34,height:34,borderRadius:9,background:G2.accentDark||G2.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"17px",flexShrink:0,opacity:.9}}>{G2.emoji}</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"8px",letterSpacing:2.5,color:"rgba(0,0,0,0.35)",fontWeight:700,marginBottom:3}}>YESTERDAY'S ANSWER</div>
-              <div style={{fontSize:"13px",fontWeight:700,color:"#0a0a0a",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{yest.name}</div>
-              <div style={{fontSize:"9px",color:"rgba(0,0,0,0.38)",marginTop:2}}>{G2.name}{yest.zone?` · ${yest.zone}`:yest.region?` · ${yest.region}`:""}</div>
+      {/* YESTERDAY'S ANSWER */}
+      {(()=>{
+        const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:STATES;
+        const yest=getYesterday(yItems,hotGameKey);
+        const G2=GAMES[hotGameKey];
+        if(!yest)return null;
+        return(
+          <div style={{padding:"0 24px"}}>
+            <div style={{fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"#0A0A0A",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+              YESTERDAY'S ANSWER <div className="v9-eyeline"/>
             </div>
-            <div onClick={()=>{SoundEngine.play("select");onSelectGame(hotGameKey);}} style={{flexShrink:0,background:"#0a0a0a",color:"#fff",fontSize:"9px",fontWeight:700,letterSpacing:1.5,padding:"7px 13px",borderRadius:7,cursor:"pointer",whiteSpace:"nowrap"}}>PLAY TODAY</div>
+            <div onClick={()=>{SoundEngine.play("select");onSelectGame(hotGameKey);}} style={{margin:"0 0 40px",padding:20,border:"1px solid #EDEBE8",borderRadius:6,display:"flex",alignItems:"center",gap:16,cursor:"pointer",background:"white"}}>
+              <div style={{fontSize:26,flexShrink:0}}>{G2.emoji}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:9,fontWeight:600,letterSpacing:2.5,textTransform:"uppercase",color:"#C8C5BF",marginBottom:3}}>{G2.name}{yest.zone?` · ${yest.zone}`:yest.region?` · ${yest.region}`:""}</div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:.5,lineHeight:1,marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  <span className="v9-lg">{yest.name.toUpperCase()}</span>
+                </div>
+                <div style={{fontSize:11,color:"#888580"}}>Could you get it in 1 guess?</div>
+              </div>
+              <div style={{fontSize:11,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",color:"#0A0A0A",border:"1px solid #0A0A0A",padding:"10px 14px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>Play →</div>
+            </div>
           </div>
-        </div>
-      );})()}
+        );
+      })()}
 
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 28px",borderTop:"1px solid rgba(0,0,0,0.05)"}}>
-        <div style={{fontSize:"9px",letterSpacing:2,color:"rgba(0,0,0,0.18)"}}>BY NIXALERLLC</div>
-        <div style={{display:"flex",gap:5,alignItems:"center"}}>
-          {["#028A48","#BF0000","#1a3a8f"].map((c,i)=>(<div key={i} style={{width:5,height:5,borderRadius:"50%",background:c,opacity:.5}}/>))}
-        </div>
+      {/* FOOTER */}
+      <div style={{padding:24,borderTop:"1px solid #EDEBE8",display:"flex",justifyContent:"space-between",alignItems:"center",background:"white"}}>
+        <div style={{fontSize:10,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",color:"#C8C5BF"}}>No Ads · No Tracking · Always Free</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:14,letterSpacing:2,color:"#C8C5BF"}}>NIXALERLLC</div>
       </div>
       {modals}
     </div>
