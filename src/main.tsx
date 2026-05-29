@@ -3480,6 +3480,7 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
 // ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
 function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[selSys,setSelSys]=useState<string|null>(null);
+  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
   const SYSTEMS=[
     {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
       top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
@@ -3670,9 +3671,11 @@ function MapsInlineView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
 
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
 function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
+  const scrollRef=useRef<HTMLDivElement>(null);
+  const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
+      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
         {/* Close handle */}
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
@@ -3681,7 +3684,7 @@ function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(g
         <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
           <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        <MapsInlineView onSelectGame={(gk)=>{onClose();onSelectGame(gk);}}/>
+        <MapsInlineView onSelectGame={handleSelect}/>
       </div>
     </div>
   );
@@ -5263,6 +5266,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
   const[tab,setTab]=useState("play");
+  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[tab]);
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
   const[profile,setProfile]=useState<any>({name:"",emoji:"🎯",bio:"",optIn:false});
   const[profInput,setProfInput]=useState<any>({name:"",emoji:"🎯",bio:""});
@@ -6416,6 +6420,7 @@ function IntroScreen({onDone}:{onDone:()=>void}){
 
 function Root(){
   const[phase,setPhase]=useState<Phase>("start");
+  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
   const[selectedDiff,setSelectedDiff]=useState("medium");
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
