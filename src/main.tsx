@@ -5174,7 +5174,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
     {showMoreMenu&&<div onClick={()=>setShowMoreMenu(false)} style={{position:"fixed",inset:0,zIndex:9001}}/>}
     {showMoreMenu&&(
       <div style={{position:"fixed",right:8,top:44,background:T.card,border:`1px solid ${T.border}`,borderRadius:10,boxShadow:"0 4px 24px rgba(0,0,0,.35)",zIndex:9002,minWidth:148,overflow:"hidden",animation:"slideDown .18s ease"}}>
-        {[["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
+        {[["maps","🗺️ MAPS"],["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
           <button key={id} onClick={()=>{setTab(id as any);setShowMoreMenu(false);}} style={{display:"block",width:"100%",background:tab===id?T.accent:"transparent",color:tab===id?"#fff":T.text,border:"none",borderBottom:`1px solid ${T.border}`,padding:"13px 18px",fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",textAlign:"left",transition:"background .15s"}}>
             {label}
           </button>
@@ -5338,13 +5338,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
             {id==="play"&&unfinishedRounds<3&&unfinishedRounds>0&&<span style={{background:T.accent,color:"#fff",borderRadius:"50%",width:13,height:13,fontSize:"8px",fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center",marginLeft:3}}>{unfinishedRounds}</span>}
           </button>
         ))}
-        {[["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
+        {[["maps","🗺️ MAPS"],["cards","🃏 CARDS"],["profile","👤 ME"],["help","❓ HOW"]].map(([id,label])=>(
           <button key={id} className={`tab-btn${tab===id?" on":""} tab-desktop`} style={{display:"none"}} onClick={()=>{setShowMoreMenu(false);setTab(id);}}>
             {label}
           </button>
         ))}
         <div className="tab-more" style={{marginLeft:"auto"}}>
-          <button className={`tab-btn${["cards","profile","help"].includes(tab)?" on":""}`} onClick={()=>setShowMoreMenu(m=>!m)} style={{whiteSpace:"nowrap"}}>
+          <button className={`tab-btn${["maps","cards","profile","help"].includes(tab)?" on":""}`} onClick={()=>setShowMoreMenu(m=>!m)} style={{whiteSpace:"nowrap"}}>
             ⋯ MORE
           </button>
         </div>
@@ -5721,6 +5721,9 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
       )}
 
       {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
+      {tab==="maps"&&(
+        <MapsGuideModal onClose={()=>setTab("play")} onSelectGame={(gk)=>{onHome();}}/>
+      )}
       {tab==="cards"&&(
         <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
       )}
