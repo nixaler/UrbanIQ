@@ -5353,7 +5353,7 @@ function GameHistoryCalendar({gameKey:gk,playHistory,T}:{gameKey:string,playHist
   const days=Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;const entry=hist.find((h:any)=>h.date===dateStr);return{dateStr,day:d.getDate(),entry};});
   return(<div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:6}}>{days.map((d:any,i:number)=>(<div key={i} title={d.dateStr} style={{width:20,height:20,borderRadius:4,background:d.entry?.won?T.cellBg.green:d.entry?T.cellBg.red:T.surface,border:`1px solid ${d.entry?.won?T.cellBorder.green:d.entry?T.cellBorder.red:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"8px",color:d.entry?.won?T.cellText.green:d.entry?T.cellText.red:T.textMuted}}>{d.entry?.won?"✓":d.entry?"✗":d.day}</div>))}</div>);
 }
-function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean}){
+function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void}){
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
   const[tab,setTab]=useState("play");
@@ -6227,7 +6227,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated}:{
 
       {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
       {tab==="maps"&&(
-        <MapsInlineView onSelectGame={(gk)=>{onHome();}}/>
+        <MapsInlineView onSelectGame={(gk)=>{onHome();setTimeout(()=>onSelectGame?.(gk),80);}}/>
       )}
       {tab==="cards"&&(
         <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
@@ -6643,7 +6643,7 @@ function Root(){
   }
 
   if(phase==="play"){
-    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>setPhase("start")} shieldActivated={streakShieldFired}/>;
+    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>setPhase("start")} shieldActivated={streakShieldFired} onSelectGame={handleSelectGame}/>;
   }
 
   if(phase==="mini-games"){
