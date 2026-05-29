@@ -25,7 +25,7 @@ const CARD_DROP={
   hard:  {common:38,uncommon:30,rare:22,legendary:10},
   pro:   {common:22,uncommon:30,rare:30,legendary:18},
 };
-const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",states:"geography",nfl:"sports"};
+const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",nyc:"transit",chi:"transit",bos:"transit",atl:"transit",states:"geography",nfl:"sports"};
 const CARD_TYPE_ADV={transit:{beats:"geography",bonus:1.18},geography:{beats:"sports",bonus:1.18},sports:{beats:"transit",bonus:1.18}};
 
 const DC_UNIQUE_CARDS={
@@ -2941,7 +2941,7 @@ function Confetti(){
 }
 function Particles({gameKey}:{gameKey:string}){
   const[pts]=useState(()=>Array.from({length:22},(_,i)=>({id:i,x:Math.random()*110-5,delay:Math.random()*8,dur:5+Math.random()*5,size:5+Math.random()*8,drift:Math.random()*70-35,op:0.08+Math.random()*0.18})));
-  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨"};
+  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨",bos:"🦞",atl:"🍑"};
   const shape=shapes[gameKey]||"✨";
   return(<div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0}}>{pts.map(p=>(<div key={p.id} style={{position:"absolute",left:`${p.x}%`,top:0,fontSize:`${p.size}px`,animation:`tpPetal ${p.dur}s ${p.delay}s ease-in infinite`,"--drift":`${p.drift}px`,"--op":p.op,opacity:0} as any}>{shape}</div>))}</div>);
 }
@@ -3967,7 +3967,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [heroImgFailed,setHeroImgFailed]=useState(false);
   useEffect(()=>{
     setHeroImgUrl(null);setHeroImgFailed(false);
-    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",states:"United States Capitol",nfl:"National Football League",minigames:"Arcade game"};
+    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",bos:"Massachusetts Bay Transportation Authority",atl:"Atlanta MARTA",states:"United States Capitol",nfl:"National Football League",minigames:"Arcade game"};
     const term=wikiTerms[hotGameKey]||hotCard.name;
     getWikiImage(term).then(url=>{if(url)setHeroImgUrl(url);else setHeroImgFailed(true);});
   },[hotGameKey]);
@@ -6969,7 +6969,7 @@ function Root(){
       if(anyPlayed)markActivityDay(getDayNum());
       // Daily visit card
       const dvToday=getToday();const dvLast=localStorage.getItem("tgg:daily-cards:date");
-      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","states","nfl"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="nfl"?NFL_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
+      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","bos","atl","states","nfl"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="bos"?BOS_STATIONS:dvGk==="atl"?ATL_STATIONS:dvGk==="nfl"?NFL_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
       setLoaded(true);
     })();
   },[]);
