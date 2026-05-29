@@ -3742,10 +3742,11 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
           </div>
-          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(70px,18vw,92px)",lineHeight:0.9,letterSpacing:1,marginBottom:4}}>
-            <span className="lm-grad" style={{display:"block"}}>DAILY</span>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY</span>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-2s"}}>QUIZ</span>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,12vw,64px)",fontWeight:900,letterSpacing:"-1px",lineHeight:1,marginBottom:6}}>
+            <span className="lm-grad" style={{display:"block"}}>UrbanIQ</span>
+          </div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:4}}>
+            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>DAILY CITY QUIZ</span>
           </div>
           <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:26,marginTop:10}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
