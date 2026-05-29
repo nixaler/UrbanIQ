@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, Component } from 'react';
 import ReactDOM from 'react-dom/client';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
