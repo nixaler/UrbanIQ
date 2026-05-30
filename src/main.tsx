@@ -3899,7 +3899,7 @@ function MapsInlineView({onSelectGame,defaultCity,scrollContainer}:{onSelectGame
 }
 
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
-function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
+function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onSelectGame:(gk:string)=>void,defaultCity?:string}){
   const scrollRef=useRef<HTMLDivElement>(null);
   useEffect(()=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[]);
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
@@ -3907,14 +3907,13 @@ function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(g
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
       <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
-        {/* Close handle */}
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
           <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
         </div>
         <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
           <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined} scrollContainer={scrollRef}/>
+        <MapsInlineView onSelectGame={handleSelect} defaultCity={defaultCity} scrollContainer={scrollRef}/>
       </div>
     </div>
   );
@@ -4661,16 +4660,44 @@ const MICRO_QUESTS:{[k:string]:{id:string,title:string,desc:string,xp:number,shi
   bos:[{id:"bos_q1",title:"Red Line Run",desc:"Ride the Red Line from Alewife to Braintree — the full length.",xp:150,shield:true},{id:"bos_q2",title:"Freedom Trail",desc:"Walk part of the Freedom Trail from Downtown Crossing station.",xp:75,shield:false},{id:"bos_q3",title:"Cannoli Run",desc:"Get a cannoli from the North End near Haymarket station.",xp:50,shield:false}],
   atl:[{id:"atl_q1",title:"Red Line Run",desc:"Ride MARTA's Red Line from Airport to North Springs — end to end.",xp:150,shield:true},{id:"atl_q2",title:"BeltLine Walk",desc:"Find the Atlanta BeltLine near North Avenue or King Memorial station.",xp:75,shield:false},{id:"atl_q3",title:"Southern Comfort",desc:"Get chicken & waffles or biscuits near any MARTA stop.",xp:50,shield:false}],
 };
+const CITY_TRANSIT_INFO:{[k:string]:{health:number,stations:number,riders:string,officialMap:string,status:{line:string,color:string,ok:boolean}[]}}={
+  pdx:{health:94,stations:97,riders:"95K/day",officialMap:"https://trimet.org/ride/system-map.htm",
+    status:[{line:"Red",color:"#D4251E",ok:true},{line:"Blue",color:"#0067B1",ok:true},{line:"Green",color:"#008752",ok:true},{line:"Yellow",color:"#FFD100",ok:true},{line:"Orange",color:"#E07C31",ok:false}]},
+  dc:{health:88,stations:98,riders:"612K/day",officialMap:"https://www.wmata.com/rider-guide/maps/",
+    status:[{line:"Red",color:"#BF0000",ok:true},{line:"Blue",color:"#007DC5",ok:true},{line:"Orange",color:"#ED8B00",ok:true},{line:"Silver",color:"#A2AAAD",ok:false},{line:"Green",color:"#00B140",ok:true},{line:"Yellow",color:"#FFD100",ok:true}]},
+  balt:{health:79,stations:47,riders:"42K/day",officialMap:"https://www.mta.maryland.gov/transit-map",
+    status:[{line:"Metro SubwayLink",color:"#003087",ok:true},{line:"Light Rail",color:"#007DC5",ok:true}]},
+  la:{health:91,stations:109,riders:"305K/day",officialMap:"https://www.metro.net/riding/maps/",
+    status:[{line:"A Line",color:"#00AEEF",ok:true},{line:"B Line",color:"#E3051B",ok:true},{line:"C Line",color:"#59A65E",ok:true},{line:"D Line",color:"#6B449A",ok:false},{line:"E Line",color:"#E3A519",ok:true}]},
+  nyc:{health:97,stations:472,riders:"3.4M/day",officialMap:"https://new.mta.info/maps",
+    status:[{line:"1/2/3",color:"#EE352E",ok:true},{line:"4/5/6",color:"#00933C",ok:true},{line:"A/C/E",color:"#0039A6",ok:true},{line:"B/D/F/M",color:"#FF6319",ok:true},{line:"N/Q/R/W",color:"#FCCC0A",ok:false}]},
+  chi:{health:86,stations:145,riders:"218K/day",officialMap:"https://www.transitchicago.com/maps/",
+    status:[{line:"Red",color:"#C60C30",ok:true},{line:"Blue",color:"#00A1DE",ok:true},{line:"Brown",color:"#62361B",ok:false},{line:"Green",color:"#009B3A",ok:true},{line:"Orange",color:"#F9461C",ok:true},{line:"Purple",color:"#522398",ok:true}]},
+  bos:{health:82,stations:53,riders:"315K/day",officialMap:"https://www.mbta.com/maps",
+    status:[{line:"Red",color:"#DA291C",ok:true},{line:"Orange",color:"#ED8B00",ok:false},{line:"Blue",color:"#003DA5",ok:true},{line:"Green",color:"#00843D",ok:true},{line:"Silver",color:"#7C878E",ok:true}]},
+  atl:{health:85,stations:38,riders:"195K/day",officialMap:"https://www.itsmarta.com/system-map.aspx",
+    status:[{line:"Red",color:"#CE1141",ok:true},{line:"Gold",color:"#B5A21E",ok:true},{line:"Blue",color:"#0047AB",ok:true},{line:"Green",color:"#228B22",ok:false}]},
+};
+const SIM_DESTS:{[k:string]:string[]}={
+  pdx:["Hillsboro","Gresham/Cleveland Ave","Airport MAX","Clackamas TC","Milwaukie","City Center"],
+  dc:["Shady Grove","Glenmont","Franconia-Springfield","Largo Town Ctr","Ashburn","Greenbelt","Huntington","New Carrollton"],
+  balt:["Owings Mills","Johns Hopkins","Penn Station","Cromwell","Hunt Valley","BWI Airport"],
+  la:["Santa Monica","Azusa","Long Beach","Expo/Crenshaw","Culver City","Union Station","Norwalk"],
+  nyc:["Uptown","Downtown","Coney Island","Far Rockaway","Jamaica","Bronx","Brooklyn","Queens"],
+  chi:["O'Hare","Forest Park","Kimball","Howard","Linden","Harlem/Lake","Loop","95th/Dan Ryan"],
+  bos:["Alewife","Braintree/Ashmont","Wonderland","Heath Street","Lechmere","Forest Hills","Logan Airport"],
+  atl:["Airport","North Springs","Doraville","Indian Creek","Five Points","Bankhead"],
+};
 function getSimPulse(cityKey:string,station:string,tick:number):{line:string,lineColor:string,dest:string,mins:number,crowd:number}[]{
   const meta=EXPLORE_CITY_META[cityKey];
   if(!meta)return[];
   const hash=(s:string)=>s.split("").reduce((a,c,i)=>((a<<5)-a+c.charCodeAt(0)*(i+1))>>>0,0);
   const sh=hash(station);
+  const cityDests=SIM_DESTS[cityKey]||["Northbound","Southbound","Inbound","Outbound","Express","To Downtown"];
   return meta.lines.slice(0,4).map((ln,i)=>{
     const mins=((sh*31+i*137+tick*17)%11)+1;
     const crowd=((sh*7+i*53+tick*3)%70)+20;
-    const dests=["Northbound","Southbound","Inbound","Outbound","Express","To Airport","To Downtown"];
-    const dest=dests[(sh+i*3)%dests.length];
+    const dest=cityDests[(sh+i*3)%cityDests.length];
     return{line:ln.name,lineColor:ln.color,dest,mins,crowd};
   });
 }
@@ -4751,6 +4778,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[shieldPop,setShieldPop]=useState(false);
   const[xpPop,setXpPop]=useState<number|null>(null);
   const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
+  const[showExploreMap,setShowExploreMap]=useState(false);
   useEffect(()=>{const id=setInterval(()=>setTick(t=>t+1),30000);return()=>clearInterval(id);},[]);
   const meta=EXPLORE_CITY_META[cityKey];
   const hub=selStation||meta.hubs[0];
@@ -4833,29 +4861,78 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         </div>
       </div>
       <div style={{padding:"0 22px 20px"}}>
+        {(()=>{
+          const cti=CITY_TRANSIT_INFO[cityKey];
+          if(!cti)return null;
+          const okCount=cti.status.filter(s=>s.ok).length;
+          const allOk=okCount===cti.status.length;
+          return(
+            <div style={{border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",marginBottom:12,overflow:"hidden"}}>
+              <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
+                  <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const}}>
+                    {cti.status.map(s=>(
+                      <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
+                        <div style={{width:20,height:7,borderRadius:2,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.5}}/>
+                        {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{textAlign:"right",flexShrink:0}}>
+                  <div style={{fontSize:"13px",fontWeight:800,color:allOk?"#22C55E":"#FF8C42",lineHeight:1}}>{allOk?"✓ Normal":"⚠ Delays"}</div>
+                  <div style={{fontSize:"9px",color:"#888580",marginTop:2}}>{okCount}/{cti.status.length} lines clear</div>
+                </div>
+              </div>
+              <div style={{padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
+                <div style={{flex:1,display:"flex",gap:16}}>
+                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.stations}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>STATIONS</div></div>
+                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.riders}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>RIDERS</div></div>
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:4}}>
+                      <div style={{fontSize:"13px",fontWeight:800,color:cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A"}}>{cti.health}%</div>
+                    </div>
+                    <div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>HEALTH</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,flexShrink:0}}>
+                  <button onClick={()=>setShowExploreMap(true)}
+                    style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                    🗺️ MAP
+                  </button>
+                  <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
+                    style={{padding:"8px 12px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
+                    LIVE ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",gap:8}}>
           <span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#E8294A",animation:"lmBlink 1.5s infinite"}}/>
-          DEPARTURES — {hub}
-          <span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>live feed</span>
+          NEXT ARRIVALS — {hub}
+          <span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>simulated</span>
         </div>
-        <div style={{background:"#0D0D0D",borderRadius:10,overflow:"hidden",border:"1px solid rgba(255,255,255,0.06)"}}>
+        <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
           {pulse.map((p,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<pulse.length-1?"1px solid rgba(255,255,255,0.05)":"none"}}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<pulse.length-1?"1px solid #EDEBE8":"none",background:"#fff"}}>
               <div style={{width:28,height:18,borderRadius:3,background:p.lineColor,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{fontSize:"8px",fontWeight:900,color:"#fff",letterSpacing:"0.5px"}}>{p.line.split(" ")[0].slice(0,3).toUpperCase()}</span>
               </div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:"13px",fontWeight:700,color:"#F5F0E8",letterSpacing:"0.3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.dest}</div>
+                <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",letterSpacing:"0.3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.dest}</div>
                 <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
-                  <div style={{width:36,height:2,borderRadius:1,background:"rgba(255,255,255,0.1)",overflow:"hidden"}}>
+                  <div style={{width:36,height:2,borderRadius:1,background:"#EDEBE8",overflow:"hidden"}}>
                     <div style={{width:`${p.crowd}%`,height:"100%",background:p.crowd>75?"#E8294A":p.crowd>50?"#FFB800":"#22C55E",borderRadius:1}}/>
                   </div>
-                  <span style={{fontSize:"8px",color:"rgba(255,255,255,0.3)",letterSpacing:"0.5px"}}>{p.crowd>75?"CROWDED":p.crowd>50?"BUSY":"CLEAR"}</span>
+                  <span style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>{p.crowd>75?"CROWDED":p.crowd>50?"BUSY":"CLEAR"}</span>
                 </div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
-                <div style={{fontSize:"20px",fontWeight:900,color:p.mins<=2?"#E8294A":p.mins<=5?"#FF8C42":"#F5F0E8",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{p.mins}</div>
-                <div style={{fontSize:"8px",color:"rgba(255,255,255,0.35)",letterSpacing:"1px",marginTop:1}}>MIN</div>
+                <div style={{fontSize:"20px",fontWeight:900,color:p.mins<=2?"#E8294A":p.mins<=5?"#FF8C42":"#0A0A0A",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{p.mins}</div>
+                <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:1}}>MIN</div>
               </div>
             </div>
           ))}
@@ -4913,6 +4990,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         </div>
       </div>
       {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
+      {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
     </div>
   );
 }
