@@ -4,7 +4,17 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "dist")));
+
+// Cache hashed assets (JS/CSS) for 1 year; HTML and SW never cached
+app.use(express.static(path.join(__dirname, "dist"), {
+  setHeaders(res, filePath) {
+    if (/\.(js|css|woff2?|ttf|otf|eot|png|jpg|jpeg|svg|ico|webp)$/.test(filePath)) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    } else if (filePath.endsWith(".html") || filePath.endsWith("sw.js")) {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    }
+  }
+}));
 
 // Replit DB with in-memory fallback
 let db = null;

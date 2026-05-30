@@ -9,4 +9,14 @@ export default defineConfig({
     allowedHosts: true,
   },
   publicDir: 'public',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
 });
