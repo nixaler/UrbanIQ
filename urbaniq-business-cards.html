@@ -2,69 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>UrbanIQ — Print Cards</title>
+  <title>UrbanIQ — 28 Cards Per Sheet</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #d0d0d0;
+      background: #c8c8c8;
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      padding: 0.45in;
+      padding: 0.3in;
     }
 
     .instructions {
       font-size: 11px;
       color: #444;
       text-align: center;
-      margin-bottom: 18px;
-      letter-spacing: 0.5px;
-      line-height: 1.7;
+      margin-bottom: 14px;
+      line-height: 1.8;
+      letter-spacing: 0.3px;
     }
     .instructions strong { color: #111; }
 
-    /* 2 columns × 4 rows = 8 cards per sheet */
+    /* 4 cols × 7 rows = 28 cards on one 8.5×11 sheet */
     .sheet {
-      width: 7.5in;
+      width: 8in;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(2, 3.5in);
+      grid-template-columns: repeat(4, 2in);
+      grid-template-rows: repeat(7, 1.5in);
       background: white;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.3);
     }
 
-    /* 3.5" × 2.5" each */
+    /* 2" × 1.5" card */
     .card {
-      width: 3.5in;
-      height: 2.5in;
+      width: 2in;
+      height: 1.5in;
       background: #ffffff;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 0.18in 0.2in;
-      outline: 0.5pt dashed #ccc;
-      gap: 0;
+      justify-content: space-between;
+      padding: 0.1in 0.1in 0.1in 0.12in;
+      outline: 0.5pt dashed #bbb;
     }
 
-    /* ── TRANSIT DOTS ── */
+    /* LEFT: branding */
+    .left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 5px;
+      flex: 1;
+    }
+
     .dots-row {
       display: flex;
-      gap: 5px;
-      margin-bottom: 9px;
+      gap: 3px;
     }
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
     }
 
-    /* ── WORDMARK ── */
     .wordmark {
-      font-size: 50px;
+      font-size: 26px;
       font-weight: 900;
-      letter-spacing: -2.5px;
+      letter-spacing: -1px;
       line-height: 1;
-      margin-bottom: 5px;
       display: flex;
       align-items: baseline;
     }
@@ -73,88 +78,67 @@
     .b  { color: #F5C518; }
     .a  { color: #22C55E; }
     .n  { color: #007DC5; }
-    .dl { color: #555; font-size: 46px; }
+    .dl { color: #555; }
     .i  { color: #9B59B6; }
     .q  { color: #E8294A; }
 
-    /* ── SUBTITLE ── */
     .subtitle {
-      font-size: 7.5px;
+      font-size: 5px;
       font-weight: 700;
-      letter-spacing: 3.5px;
-      color: #999;
-      text-transform: uppercase;
-      margin-bottom: 9px;
-    }
-
-    /* ── CITY PILLS ── */
-    .pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-    .pill {
-      border-radius: 20px;
-      border: 1.5px solid;
-      padding: 2.5px 8px;
-      font-size: 6px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
+      letter-spacing: 2px;
+      color: #aaa;
       text-transform: uppercase;
     }
 
-    /* ── BOTTOM ROW ── */
-    .bottom-row {
+    .url-line {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: #111;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 16px;
+      gap: 1px;
     }
+    .url-line .dot-accent { color: #007DC5; }
+    .url-line .sep        { color: #ccc; margin: 0 3px; font-weight: 400; }
+    .url-line .quest      { color: #22C55E; }
 
-    .url-block {
+    /* RIGHT: QR */
+    .right {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
-    .url-line {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      color: #111;
-    }
-    .url-line .accent { color: #007DC5; }
-    .url-line .sep    { color: #ccc; margin: 0 4px; font-weight: 400; font-size: 11px; }
-    .url-line .quest  { color: #22C55E; }
-
-    .scan-hint {
-      font-size: 6px;
-      color: #bbb;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+      margin-left: 6px;
     }
 
     .qr-wrap {
-      border: 1.5px solid #eee;
-      border-radius: 8px;
-      padding: 4px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      padding: 3px;
       background: white;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.08);
     }
     .qr-wrap img {
       display: block;
-      width: 0.7in;
-      height: 0.7in;
+      width: 0.57in;
+      height: 0.57in;
       image-rendering: pixelated;
     }
 
-    /* ── PRINT ── */
+    .scan-label {
+      font-size: 4.5px;
+      font-weight: 700;
+      color: #bbb;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* PRINT */
     @media print {
       body {
         background: white;
-        padding: 0.25in 0.5in;
+        padding: 0.25in;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -167,63 +151,48 @@
 <body>
 
 <p class="instructions">
-  <strong>How to print:</strong> Open in Chrome → Cmd+P → Paper: Letter · Scale: 100% · Margins: None · ✅ Background graphics → Print on white cardstock → Cut on dashed lines
+  <strong>28 cards per sheet.</strong>
+  Chrome → Cmd+P → Paper: Letter · Scale: 100% · Margins: Minimum · ✅ Background graphics → Print on cardstock → Cut on dashed lines
 </p>
 
 <div class="sheet" id="sheet"></div>
 
 <script>
-// QR code for https://urbaniq.quest — pre-generated, no internet needed
-const QR_B64 = "iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAAB9UlEQVR4nO2ZS6rcMBRET0WGHqqhF9BLkXf21pQd2EvpBQTsYYNMZSC5X/IySAgYf9oeCNucQYGvS6V7Zf5+9d/+AYKTOqkdUaPq1TKJXhIA89tmLV1vQQXbtmFs0McQrHZsINm2h/V0vQdVy5tQ3b+/Z8oP0a6q69hU8+XZ/f2pP/bfrao/EBUzpCEU99mQrkNTtjPAJOkKamMGou1uVV3Hp6YSaGC8mPRoKHXfS+VTbFv9fqkG4sveRyjG018Dv5r+VtXvnpq9XS3gbpRIfpa4f9b9ghT2EOyO4Ho3u3y1+mi726r6fVMNMJVQKQgoPYQhZBF/NO7bJm9X/TGo+FQNO9HWh3Ot+zSsq+vIVImX9lCPtMV9umjPPYVwes5CFPYApaHTUe+Al/Offr8Y1QAhw3grBk/fhgyAQJjx9PulqNlu4qtnGW1SSTy1xXDW/aJUGqbSs5zj5SS148XlqLV19TulqtV77tXPyxz3y0awVfW7pz7nVjEj3V0Sj1qgnno3rH7n1GtuBdgPif46n2v763q6jk6VXo5K2AGUvocsmAQEtJau96NC3VyT63L27xekvs4M6RWyGW8GpoY03FbR9T7UPLcCdzGjFpB0OedWS1OfcyuJNEzV5JOfWlXX0anf5lZlVhUMZPxp/5tVf1In9X/UTwm1HccdeqnAAAAAAElFTkSuQmCC";
+const QR = "iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAAB9UlEQVR4nO2ZS6rcMBRET0WGHqqhF9BLkXf21pQd2EvpBQTsYYNMZSC5X/IySAgYf9oeCNucQYGvS6V7Zf5+9d/+AYKTOqkdUaPq1TKJXhIA89tmLV1vQQXbtmFs0McQrHZsINm2h/V0vQdVy5tQ3b+/Z8oP0a6q69hU8+XZ/f2pP/bfrao/EBUzpCEU99mQrkNTtjPAJOkKamMGou1uVV3Hp6YSaGC8mPRoKHXfS+VTbFv9fqkG4sveRyjG018Dv5r+VtXvnpq9XS3gbpRIfpa4f9b9ghT2EOyO4Ho3u3y1+mi726r6fVMNMJVQKQgoPYQhZBF/NO7bJm9X/TGo+FQNO9HWh3Ot+zSsq+vIVImX9lCPtMV9umjPPYVwes5CFPYApaHTUe+Al/Offr8Y1QAhw3grBk/fhgyAQJjx9PulqNlu4qtnGW1SSTy1xXDW/aJUGqbSs5zj5SS148XlqLV19TulqtV77tXPyxz3y0awVfW7pz7nVjEj3V0Sj1qgnno3rH7n1GtuBdgPif46n2v763q6jk6VXo5K2AGUvocsmAQEtJau96NC3VyT63L27xekvs4M6RWyGW8GpoY03FbR9T7UPLcCdzGjFpB0OedWS1OfcyuJNEzV5JOfWlXX0anf5lZlVhUMZPxp/5tVf1In9X/UTwm1HccdeqnAAAAAAElFTkSuQmCC";
 
-const CARD_HTML = `
-  <div class="dots-row">
-    <div class="dot" style="background:#E8294A"></div>
-    <div class="dot" style="background:#FF8C42"></div>
-    <div class="dot" style="background:#F5C518"></div>
-    <div class="dot" style="background:#22C55E"></div>
-    <div class="dot" style="background:#007DC5"></div>
-    <div class="dot" style="background:#9B59B6"></div>
-  </div>
-
-  <div class="wordmark">
-    <span class="u">U</span><span class="r">R</span><span class="b">B</span><span class="a">A</span><span class="n">N</span><span class="dl">.</span><span class="i">I</span><span class="q">Q</span>
-  </div>
-
-  <div class="subtitle">Daily Transit Puzzles</div>
-
-  <div class="pills">
-    <span class="pill" style="color:#E8294A;border-color:#E8294A">DC Metro</span>
-    <span class="pill" style="color:#0039A6;border-color:#0039A6">NYC Subway</span>
-    <span class="pill" style="color:#028A48;border-color:#028A48">Portland MAX</span>
-    <span class="pill" style="color:#9B59B6;border-color:#9B59B6">US States</span>
-    <span class="pill" style="color:#E3051B;border-color:#E3051B">LA Metro</span>
-    <span class="pill" style="color:#C60C30;border-color:#C60C30">Chicago L</span>
-    <span class="pill" style="color:#DA291C;border-color:#DA291C">Boston T</span>
-    <span class="pill" style="color:#CE1141;border-color:#CE1141">Atlanta MARTA</span>
-  </div>
-
-  <div class="bottom-row">
-    <div class="url-block">
-      <div class="url-line">
-        Urban<span class="accent">.</span>IQ<span class="sep">·</span><span class="quest">Quest</span>
-      </div>
-      <div class="scan-hint">Scan to play free</div>
+const CARD = `
+  <div class="left">
+    <div class="dots-row">
+      <div class="dot" style="background:#E8294A"></div>
+      <div class="dot" style="background:#FF8C42"></div>
+      <div class="dot" style="background:#F5C518"></div>
+      <div class="dot" style="background:#22C55E"></div>
+      <div class="dot" style="background:#007DC5"></div>
+      <div class="dot" style="background:#9B59B6"></div>
     </div>
+    <div class="wordmark">
+      <span class="u">U</span><span class="r">R</span><span class="b">B</span><span class="a">A</span><span class="n">N</span><span class="dl">.</span><span class="i">I</span><span class="q">Q</span>
+    </div>
+    <div class="subtitle">Daily Transit Puzzles</div>
+    <div class="url-line">
+      Urban<span class="dot-accent">.</span>IQ<span class="sep">·</span><span class="quest">Quest</span>
+    </div>
+  </div>
+  <div class="right">
     <div class="qr-wrap">
-      <img src="data:image/png;base64,${QR_B64}" alt="QR — urbaniq.quest"/>
+      <img src="data:image/png;base64,${QR}" alt="urbaniq.quest"/>
     </div>
+    <div class="scan-label">Scan to Play</div>
   </div>
 `;
 
 const sheet = document.getElementById('sheet');
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 28; i++) {
   const card = document.createElement('div');
   card.className = 'card';
-  card.innerHTML = CARD_HTML;
+  card.innerHTML = CARD;
   sheet.appendChild(card);
 }
 </script>
-
 </body>
 </html>
