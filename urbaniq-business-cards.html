@@ -23,7 +23,7 @@
       margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(4, 2in);
-      grid-template-rows: repeat(7, 1.5in);
+      grid-template-rows: repeat(5, 1.5in);
       background: white;
       box-shadow: 0 6px 48px rgba(0,0,0,0.35);
     }
@@ -195,7 +195,7 @@
 <body>
 
 <p class="note">
-  <strong>28 cards per sheet · 2" × 1.5"</strong> — Chrome → Cmd+P → Letter · Scale 100% · Margins: Minimum · ✅ Background graphics → Cardstock → Cut
+  <strong>20 cards per sheet · 2" × 1.5"</strong> — Chrome → Cmd+P → Letter · Scale 100% · Margins: Minimum · ✅ Background graphics → Cardstock → Cut
 </p>
 
 <div class="sheet" id="sheet"></div>
@@ -244,7 +244,7 @@ const CARD = `
 `;
 
 const sheet = document.getElementById('sheet');
-for (let i = 0; i < 28; i++) {
+for (let i = 0; i < 20; i++) {
   const c = document.createElement('div');
   c.className = 'card';
   c.innerHTML = CARD;
