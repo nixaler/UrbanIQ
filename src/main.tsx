@@ -3978,6 +3978,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showInstall,setShowInstall]=useState(false);
   const [showSupport,setShowSupport]=useState(!!initialShowSupport);
   const [showMaps,setShowMaps]=useState(false);
+  const [showRewards,setShowRewards]=useState(false);
   const [betaCode]=useState(()=>getBetaCode());
   const {canNativeInstall,install,isIOS,installed}=usePWAInstall();
   const [hoveredGame,setHoveredGame]=useState<string|null>(null);
@@ -4106,6 +4107,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showInstall&&<InstallModal isIOS={isIOS} hasNativePrompt={canNativeInstall} onInstall={install} onClose={()=>setShowInstall(false)}/>}
       {showSupport&&<SupporterModal isSupporter={isSupporter} supporterEmail={supporterEmail} onClose={()=>setShowSupport(false)}/>}
       {showMaps&&<MapsGuideModal onClose={()=>setShowMaps(false)} onSelectGame={onSelectGame}/>}
+      {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
     </>
   );
 
@@ -4517,6 +4519,19 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
             </button>
           </div>
+          {/* REWARDS single button */}
+          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+            <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
+              onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
+              onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
+                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"#FFF8E1",border:"1px solid #FFE082",borderRadius:4,padding:"2px 6px"}}>{getRP()} pts</span>
+              </div>
+              <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -4580,6 +4595,77 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 // ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
 function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
 function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+amount));}
+function getRP():number{return Number(localStorage.getItem("tgg:rp")||0);}
+function addRP(n:number):void{localStorage.setItem("tgg:rp",String(getRP()+n));}
+const REWARD_TIERS=[
+  {pts:100,label:"Transit Day Pass",sub:"1-day unlimited bus/rail",emoji:"🎟️",color:"#028A48"},
+  {pts:250,label:"$5 Gift Card",sub:"Amazon, Starbucks, or Uber",emoji:"🎁",color:"#007DC5"},
+  {pts:500,label:"$10 Cash",sub:"Venmo or PayPal",emoji:"💵",color:"#FFB800"},
+];
+function RewardsModal({onClose}:{onClose:()=>void}){
+  const[rp,setRp]=useState(getRP());
+  const[claimTier,setClaimTier]=useState<number|null>(null);
+  const[email,setEmail]=useState("");
+  const[claimed,setClaimed]=useState<string|null>(null);
+  function handleClaim(){if(!email.trim())return;setClaimed(REWARD_TIERS[claimTier!].label);setClaimTier(null);}
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+        <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"rgba(0,0,0,0.3)",lineHeight:1}}>×</button>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:36,marginBottom:8}}>🏆</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:4}}>Rewards</div>
+          <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)"}}>Earn points every correct guess. Redeem for real rewards.</div>
+        </div>
+        <div style={{background:"#FFFBF0",border:"1px solid #FFE082",borderRadius:10,padding:"12px 16px",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
+          <span style={{fontSize:26}}>⚡</span>
+          <div>
+            <div style={{fontSize:"22px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{rp} pts</div>
+            <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)",letterSpacing:1}}>YOUR BALANCE</div>
+          </div>
+          <div style={{flex:1,textAlign:"right",fontSize:"10px",color:"rgba(0,0,0,.4)",lineHeight:1.7}}>1 try → +50<br/>2 tries → +35<br/>3 tries → +25<br/>4+ → +15</div>
+        </div>
+        {claimed?(
+          <div style={{textAlign:"center",padding:"20px 0"}}>
+            <div style={{fontSize:40,marginBottom:12}}>✅</div>
+            <div style={{fontSize:"16px",fontWeight:700,color:"#0a0a0a",marginBottom:6}}>Redemption Request Sent!</div>
+            <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)",lineHeight:1.8}}>We'll email you within 48 hours about your <strong>{claimed}</strong>.</div>
+          </div>
+        ):claimTier!==null?(
+          <div>
+            <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:4}}>Claim {REWARD_TIERS[claimTier].emoji} {REWARD_TIERS[claimTier].label}</div>
+            <div style={{fontSize:"11px",color:"rgba(0,0,0,.45)",marginBottom:12}}>{REWARD_TIERS[claimTier].sub}</div>
+            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{width:"100%",border:"1.5px solid rgba(0,0,0,0.12)",borderRadius:8,padding:"10px 12px",fontSize:"13px",fontFamily:"'Inter',sans-serif",boxSizing:"border-box",marginBottom:10,outline:"none"}}/>
+            <button onClick={handleClaim} style={{width:"100%",background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontSize:"13px",fontWeight:700,cursor:"pointer",marginBottom:8}}>SUBMIT REQUEST</button>
+            <button onClick={()=>setClaimTier(null)} style={{width:"100%",background:"transparent",color:"rgba(0,0,0,.4)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:10,padding:"11px",fontSize:"12px",cursor:"pointer"}}>CANCEL</button>
+          </div>
+        ):(
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {REWARD_TIERS.map((t,i)=>{
+              const pct=Math.min(1,rp/t.pts);const canClaim=rp>=t.pts;
+              return(
+                <div key={t.pts} style={{border:`1.5px solid ${canClaim?t.color+"55":"rgba(0,0,0,0.08)"}`,borderRadius:12,padding:"14px 16px",background:canClaim?`${t.color}08`:"#fff"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                    <span style={{fontSize:22}}>{t.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"13px",fontWeight:700,color:"#0a0a0a"}}>{t.label}</div>
+                      <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)"}}>{t.sub}</div>
+                    </div>
+                    <span style={{fontSize:"11px",fontWeight:700,color:t.color,background:`${t.color}18`,border:`1px solid ${t.color}40`,borderRadius:5,padding:"3px 8px",flexShrink:0}}>{t.pts} pts</span>
+                  </div>
+                  <div style={{height:5,background:"rgba(0,0,0,0.07)",borderRadius:3,overflow:"hidden",marginBottom:canClaim?10:0}}>
+                    <div style={{width:`${pct*100}%`,height:"100%",background:t.color,borderRadius:3,transition:"width .4s ease"}}/>
+                  </div>
+                  {canClaim&&<button onClick={()=>setClaimTier(i)} style={{width:"100%",background:t.color,color:"#fff",border:"none",borderRadius:8,padding:"10px",fontSize:"12px",fontWeight:700,cursor:"pointer",marginTop:8,letterSpacing:1}}>REDEEM →</button>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 function getShieldCount():number{return Number(localStorage.getItem("tgg:shields")||0);}
 function addShield():void{localStorage.setItem("tgg:shields",String(getShieldCount()+1));}
 function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;localStorage.setItem("tgg:shields",String(n-1));return true;}
@@ -6238,7 +6324,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);incGlobalStreak();setGameHudXP(getXP());}
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);addRP(newGuesses.length===1?50:newGuesses.length===2?35:newGuesses.length===3?25:15);incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -7558,7 +7644,7 @@ function Root(){
 // ── ONBOARDING OVERLAY ─────────────────────────────────────────────────────────
 function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(gk:string)=>void}){
   const [screen,setScreen]=useState(0);
-  const [cityPref,setCityPref]=useState(localStorage.getItem("tgg:cityPref")||"pdx");
+  const [cityPref,setCityPref]=useState(localStorage.getItem("tgg:cityPref")||"");
   const [openCats,setOpenCats]=useState<Set<string>>(new Set());
   const CITY_OPTS=[
     {key:"pdx",   label:"Portland MAX",  emoji:"🚊", sub:"TriMet light rail",           cat:"TRANSIT"},
@@ -7631,7 +7717,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
         })}
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:8}}>
-        <button onClick={()=>setScreen(2)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT →</button>
+        <button onClick={()=>setScreen(2)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → HOW IT WORKS</button>
         <button onClick={skipToHome} style={{background:"transparent",color:"rgba(0,0,0,.38)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:10,padding:"11px",fontSize:"12px",fontWeight:600,letterSpacing:1,cursor:"pointer",width:"100%",fontFamily:"'Inter',sans-serif"}}>SKIP → GO TO HOME</button>
       </div>
     </div>,
@@ -7655,6 +7741,36 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
           </div>
         ))}
       </div>
+      <button onClick={()=>setScreen(3)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → EARN REWARDS</button>
+    </div>,
+    /* screen 3 — earn rewards */
+    <div key="s3">
+      <div style={{textAlign:"center",marginBottom:18}}>
+        <div style={{fontSize:32,marginBottom:8}}>🏆</div>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:5}}>Earn Rewards</div>
+        <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)",lineHeight:1.7}}>Guess correctly to earn points. Redeem for real rewards.</div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
+        {[{label:"1 try",pts:"+50 pts",pct:100,color:"#028A48"},{label:"2 tries",pts:"+35 pts",pct:70,color:"#007DC5"},{label:"3 tries",pts:"+25 pts",pct:50,color:"#FFB800"},{label:"4+ tries",pts:"+15 pts",pct:30,color:"rgba(0,0,0,0.25)"}].map(r=>(
+          <div key={r.label} style={{background:"rgba(0,0,0,0.025)",border:"1px solid rgba(0,0,0,0.07)",borderRadius:10,padding:"10px 14px",display:"flex",gap:10,alignItems:"center"}}>
+            <span style={{fontSize:13,fontWeight:700,color:"rgba(0,0,0,0.55)",minWidth:64}}>{r.label}</span>
+            <div style={{flex:1,height:6,background:"rgba(0,0,0,0.07)",borderRadius:3,overflow:"hidden"}}><div style={{width:`${r.pct}%`,height:"100%",background:r.color,borderRadius:3}}/></div>
+            <span style={{fontSize:12,fontWeight:700,color:r.color,minWidth:42,textAlign:"right"}}>{r.pts}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{background:"#FFFBF0",border:"1px solid #FFE082",borderRadius:10,padding:"12px 14px",marginBottom:20,display:"flex",flexDirection:"column",gap:8}}>
+        {REWARD_TIERS.map(t=>(
+          <div key={t.pts} style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:18}}>{t.emoji}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:"12px",fontWeight:700,color:"#0a0a0a"}}>{t.label}</div>
+              <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)"}}>{t.sub}</div>
+            </div>
+            <span style={{fontSize:"11px",fontWeight:700,color:t.color,background:`${t.color}18`,border:`1px solid ${t.color}40`,borderRadius:5,padding:"3px 8px",flexShrink:0}}>{t.pts} pts</span>
+          </div>
+        ))}
+      </div>
       <button onClick={finish} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>START PLAYING 🎉</button>
     </div>,
   ];
@@ -7664,7 +7780,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
       <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:400,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",animation:"obIn .3s ease both",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
         {/* Step dots */}
         <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:24}}>
-          {[0,1,2].map(i=>(
+          {[0,1,2,3].map(i=>(
             <div key={i} style={{width:i===screen?22:7,height:7,borderRadius:4,background:i===screen?"#0a0a0a":"rgba(0,0,0,0.12)",transition:"all .25s"}}/>
           ))}
         </div>
