@@ -3898,6 +3898,7 @@ function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>vo
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
 function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
   const scrollRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[]);
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
