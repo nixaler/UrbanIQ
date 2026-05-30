@@ -6891,7 +6891,7 @@ function Root(){
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
   const[selectedDiff,setSelectedDiff]=useState("medium");
-  const[showHype,setShowHype]=useState(()=>!localStorage.getItem("tgg:hype:seen"));
+  const[showHype,setShowHype]=useState(false);
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
