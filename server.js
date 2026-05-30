@@ -178,6 +178,73 @@ app.get("/api/battle/leaderboard", async (req, res) => {
 // GET /api/health — lets frontend detect if PvP API is available
 app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!db }));
 
+// ── WMATA PROXY ──────────────────────────────────────────────────────────────
+const WMATA_KEY = process.env.WMATA_API_KEY || null;
+const WMATA_BASE = "https://api.wmata.com";
+
+function simulateArrivals(code) {
+  const lines = ["Red","Blue","Orange","Silver","Green","Yellow"];
+  const dests = {
+    Red:["Shady Grove","Glenmont","Silver Spring","Bethesda"],
+    Blue:["Franconia-Springfield","Largo Town Center","Pentagon City","Reagan Airport"],
+    Orange:["Vienna","New Carrollton","Ballston","Stadium-Armory"],
+    Silver:["Ashburn","Largo Town Center","McLean","Wiehle-Reston East"],
+    Green:["Greenbelt","Branch Ave","College Park","Navy Yard"],
+    Yellow:["Huntington","Mt Vernon Sq","Pentagon","Archives"]
+  };
+  const count = 3 + Math.floor(Math.random() * 2);
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    const destList = dests[line] || ["Terminal"];
+    const dest = destList[Math.floor(Math.random() * destList.length)];
+    result.push({
+      Line: line, DestinationName: dest,
+      Min: String(1 + Math.floor(Math.random() * 18)),
+      Car: String([4,6,8][Math.floor(Math.random()*3)])
+    });
+  }
+  return result.sort((a,b) => Number(a.Min) - Number(b.Min));
+}
+
+app.get("/api/wmata/arrivals", async (req, res) => {
+  const { stationCode } = req.query;
+  if (!stationCode) return res.status(400).json({ error: "stationCode required" });
+  if (!WMATA_KEY) return res.json({ simulated: true, Trains: simulateArrivals(stationCode) });
+  try {
+    const https = require("https");
+    const url = `${WMATA_BASE}/StationPrediction.svc/json/GetPrediction/${stationCode}?api_key=${WMATA_KEY}`;
+    const data = await new Promise((resolve, reject) => {
+      https.get(url, r => {
+        let body = "";
+        r.on("data", c => body += c);
+        r.on("end", () => { try { resolve(JSON.parse(body)); } catch { reject(new Error("JSON parse")); } });
+      }).on("error", reject);
+    });
+    res.json(data);
+  } catch (e) {
+    res.json({ simulated: true, Trains: simulateArrivals(stationCode) });
+  }
+});
+
+app.get("/api/wmata/incidents", async (req, res) => {
+  if (!WMATA_KEY) return res.json({ Incidents: [] });
+  try {
+    const https = require("https");
+    const url = `${WMATA_BASE}/Incidents.svc/json/Incidents?api_key=${WMATA_KEY}`;
+    const data = await new Promise((resolve, reject) => {
+      https.get(url, r => {
+        let body = "";
+        r.on("data", c => body += c);
+        r.on("end", () => { try { resolve(JSON.parse(body)); } catch { reject(new Error("JSON parse")); } });
+      }).on("error", reject);
+    });
+    res.json(data);
+  } catch (e) {
+    res.json({ Incidents: [] });
+  }
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
