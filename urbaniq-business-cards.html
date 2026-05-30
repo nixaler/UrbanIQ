@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UrbanIQ — Print Cards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #d4d4d4;
+      font-family: 'Outfit', 'Helvetica Neue', sans-serif;
+      padding: 0.5in;
+    }
+
+    .instructions {
+      font-size: 11px;
+      color: #555;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── SHEET: 2 columns × 4 rows = 8 cards per page ── */
+    .sheet {
+      width: 7.5in;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(2, 3.5in);
+      gap: 0;
+      background: white;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.25);
+    }
+
+    /* ── CARD: 3.5" × 2.5" promotional card ── */
+    .card {
+      width: 3.5in;
+      height: 2.5in;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2in 0.22in 0.18in;
+      outline: 0.5pt dashed #bbb;
+      gap: 0;
+    }
+
+    /* Transit line dot row */
+    .dots-row {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* URBAN.IQ wordmark */
+    .wordmark {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+    }
+    .wordmark .u  { color: #E8294A; }
+    .wordmark .r  { color: #FF8C42; }
+    .wordmark .b  { color: #FFD100; }
+    .wordmark .a  { color: #22C55E; }
+    .wordmark .n  { color: #007DC5; }
+    .wordmark .dot-letter { color: #555; font-size: 44px; margin: 0 1px; }
+    .wordmark .i  { color: #9B59B6; }
+    .wordmark .q  { color: #E8294A; }
+
+    /* Subtitle */
+    .subtitle {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 3.5px;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* City pills */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .pill {
+      border-radius: 20px;
+      border: 1.5px solid;
+      padding: 3px 9px;
+      font-size: 6.5px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* URL + QR row */
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .url-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
+    }
+    .url-line {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .url-line .dot-u { color: #007DC5; }
+    .url-line .dot-q { color: #22C55E; font-weight: 900; }
+    .url-line .sep   { color: #bbb; margin: 0 4px; font-weight: 400; }
+    .url-line .quest { color: #22C55E; font-weight: 800; }
+
+    .scan-hint {
+      font-size: 6px;
+      color: #aaa;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .qr-box {
+      background: #fff;
+      border: 1.5px solid #eee;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+    }
+    .qr-box img {
+      display: block;
+      width: 0.72in;
+      height: 0.72in;
+      image-rendering: pixelated;
+    }
+
+    /* ── PRINT ─────────────────────────────────── */
+    @media print {
+      body {
+        background: white;
+        padding: 0.25in 0.5in;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .instructions { display: none; }
+      .sheet { box-shadow: none; }
+      .card { outline: 0.25pt solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<p class="instructions">
+  Open in Chrome → File → Print → "More settings" → Paper: Letter, Scale: 100%, Margins: None → Print on white cardstock → Cut on dashed lines
+</p>
+
+<div class="sheet" id="sheet"></div>
+
+<script>
+const CARD = `
+  <div class="dots-row">
+    <div class="dot" style="background:#E8294A"></div>
+    <div class="dot" style="background:#FF8C42"></div>
+    <div class="dot" style="background:#FFD100"></div>
+    <div class="dot" style="background:#22C55E"></div>
+    <div class="dot" style="background:#007DC5"></div>
+    <div class="dot" style="background:#9B59B6"></div>
+  </div>
+
+  <div class="wordmark">
+    <span class="u">U</span><span class="r">R</span><span class="b">B</span><span class="a">A</span><span class="n">N</span><span class="dot-letter">.</span><span class="i">I</span><span class="q">Q</span>
+  </div>
+
+  <div class="subtitle">Daily Transit Puzzles</div>
+
+  <div class="pills">
+    <span class="pill" style="color:#E8294A;border-color:#E8294A">DC Metro</span>
+    <span class="pill" style="color:#0039A6;border-color:#0039A6">NYC Subway</span>
+    <span class="pill" style="color:#028A48;border-color:#028A48">Portland MAX</span>
+    <span class="pill" style="color:#9B59B6;border-color:#9B59B6">US States</span>
+    <span class="pill" style="color:#E3051B;border-color:#E3051B">LA Metro</span>
+    <span class="pill" style="color:#C60C30;border-color:#C60C30">Chicago L</span>
+    <span class="pill" style="color:#DA291C;border-color:#DA291C">Boston T</span>
+    <span class="pill" style="color:#CE1141;border-color:#CE1141">Atlanta MARTA</span>
+  </div>
+
+  <div class="bottom-row">
+    <div class="url-block">
+      <div class="url-line">
+        <span>Urban</span><span class="dot-u">.</span><span>IQ</span>
+        <span class="sep">·</span>
+        <span class="quest">Quest</span>
+      </div>
+      <div class="scan-hint">Scan to play free</div>
+    </div>
+    <div class="qr-box">
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Furbaniq.quest&bgcolor=FFFFFF&color=000000&margin=4&qzone=1"
+        alt="QR Code — urbaniq.quest"
+        crossorigin="anonymous"
+      />
+    </div>
+  </div>
+`;
+
+const sheet = document.getElementById('sheet');
+for (let i = 0; i < 8; i++) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = CARD;
+  sheet.appendChild(card);
+}
+</script>
+
+</body>
+</html>
