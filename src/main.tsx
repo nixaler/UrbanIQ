@@ -1935,10 +1935,11 @@ const LA_RAW:any[]=[
   ["San Pedro St",["A","E"],"Downtown LA",3,2012,"South of Downtown — edge of the Historic Core","San Pedro Street connects Downtown LA to Historic South Central neighborhoods via the A and E Lines."],
   // ── A Line Downtown unique ─────────────────────────────────────────────────
   ["Chinatown",["A"],"Downtown LA",3,2003,"LA Chinatown — rebuilt 1938, cultural landmark since","LA's Chinatown was relocated and rebuilt in 1938 — the neighborhood's Central Plaza and Dragon Gate remain iconic landmarks."],
-  ["Little Tokyo/Arts District",["A"],"Downtown LA",3,2003,"Nikkei hub and booming Arts District gateway","Little Tokyo is the cultural heart of Japanese American LA — the adjacent Arts District transformed from warehouses into a creative hotspot."],
+  ["Little Tokyo/Arts District",["A","E"],"Downtown LA",3,2009,"Nikkei hub, Arts District gateway — A & E Regional Connector","Little Tokyo is the cultural heart of Japanese American LA — the Regional Connector brought the E Line underground here in 2023."],
   // ── A Line Northeast (Gold Line, Pasadena corridor) ───────────────────────
   ["Lincoln/Cypress",["A"],"East LA",2,2003,"Lincoln Heights and Cypress Park neighborhoods","Lincoln Heights is one of LA's oldest neighborhoods, founded in the 1870s — the Arroyo Seco parkway runs nearby."],
   ["Heritage Square/Arroyo",["A"],"East LA",2,2003,"Heritage Square Museum and the Arroyo Seco","Heritage Square Museum preserves 8 Victorian-era structures relocated from across LA — a living museum of 19th-century architecture."],
+  ["Southwest Museum",["A"],"East LA",1,2003,"Southwest Museum — one of the nation's oldest Western heritage museums","The Southwest Museum (now the Autry's Southwest Museum) opened in 1914 — one of the oldest museums in Los Angeles, perched on a hilltop above the Arroyo."],
   ["Fillmore",["A"],"East LA",3,2003,"Highland Park — one of LA's fastest-evolving neighborhoods","Fillmore anchors Highland Park's transformation — York Boulevard has become one of LA's most celebrated restaurant streets."],
   ["Del Mar",["A"],"Pasadena/SGV",3,2003,"Old Pasadena — Rose Parade route, Colorado Blvd","Del Mar drops riders into Old Pasadena's Colorado Blvd — the Rose Parade route and one of SoCal's premier dining corridors."],
   ["Memorial Park",["A"],"Pasadena/SGV",3,2003,"Pasadena's civic green — near City Hall","Memorial Park honors Pasadena's veterans and provides green space in the heart of one of the region's most walkable cities."],
@@ -1983,12 +1984,12 @@ const LA_RAW:any[]=[
   // ── B LINE (Red Subway) ───────────────────────────────────────────────────
   ["North Hollywood",["B"],"North Hollywood",5,2000,"NoHo Arts District — northern terminus of B Line","North Hollywood's Arts District grew around the B Line terminus — NoHo has become one of the San Fernando Valley's top creative hubs."],
   ["Universal City/Studio City",["B"],"Hollywood",4,1999,"Universal Studios Hollywood — 9 million visitors annually","Universal Studios Hollywood draws 9 million visitors per year — this is one of the most tourist-heavy B Line stations."],
-  ["Hollywood/Highland",["B"],"Hollywood",5,1999,"Walk of Fame — Dolby Theatre — Academy Awards","The Dolby Theatre hosts the Academy Awards — Hollywood/Highland is one of the most photographed Metro stations in the system."],
+  ["Hollywood/Highland",["B"],"Hollywood",5,2000,"Walk of Fame — Dolby Theatre — Academy Awards","The Dolby Theatre hosts the Academy Awards — Hollywood/Highland is one of the most photographed Metro stations in the system."],
   ["Hollywood/Vine",["B"],"Hollywood",4,1999,"The most famous intersection in Hollywood","Hollywood and Vine has been the symbolic center of Hollywood since the 1920s — the station features a striking mosaic art installation."],
-  ["Hollywood/Western",["B"],"Hollywood",3,1993,"Hollywood's eastern edge — major bus transfer point","Hollywood/Western serves a vital stretch of Hollywood — a key junction for multiple cross-town bus lines serving the area."],
-  ["Vermont/Sunset",["B"],"Hollywood",3,1993,"Vermont and Sunset — gateway to Los Feliz","Vermont and Sunset marks the gateway to Los Feliz — one of LA's most walkable and culturally vibrant neighborhoods."],
-  ["Vermont/Santa Monica",["B"],"Hollywood",3,1993,"Vermont and Santa Monica Blvd — East Hollywood","Vermont/Santa Monica serves East Hollywood's dense residential corridors — a heavily used commuter stop on the B Line."],
-  ["Vermont/Beverly",["B"],"Mid-Wilshire",3,1993,"Vermont and Beverly — edge of Koreatown","Vermont/Beverly is the southernmost B-Line-only station, sitting at the northern edge of Koreatown."],
+  ["Hollywood/Western",["B"],"Hollywood",3,1999,"Hollywood's eastern edge — major bus transfer point","Hollywood/Western serves a vital stretch of Hollywood — a key junction for multiple cross-town bus lines serving the area."],
+  ["Vermont/Sunset",["B"],"Hollywood",3,1999,"Vermont and Sunset — gateway to Los Feliz","Vermont and Sunset marks the gateway to Los Feliz — one of LA's most walkable and culturally vibrant neighborhoods."],
+  ["Vermont/Santa Monica",["B"],"Hollywood",3,1999,"Vermont and Santa Monica Blvd — East Hollywood","Vermont/Santa Monica serves East Hollywood's dense residential corridors — a heavily used commuter stop on the B Line."],
+  ["Vermont/Beverly",["B"],"Mid-Wilshire",3,1999,"Vermont and Beverly — edge of Koreatown","Vermont/Beverly is the southernmost B-Line-only station, sitting at the northern edge of Koreatown."],
   // ── B+D SHARED ────────────────────────────────────────────────────────────
   ["Wilshire/Vermont",["B","D"],"Mid-Wilshire",4,1993,"Major Koreatown hub — B and D Lines diverge here","Wilshire/Vermont is where the B Line heads north and D Line diverges west — one of the system's busiest transfer stations."],
   ["Wilshire/Normandie",["B","D"],"Mid-Wilshire",3,1993,"Koreatown's commercial heart along Wilshire","Koreatown along Wilshire Blvd is one of the densest urban neighborhoods in the US, with thriving Korean cultural institutions."],
@@ -2001,8 +2002,11 @@ const LA_RAW:any[]=[
   ["Wilshire/Rodeo",["D"],"Mid-Wilshire",3,2025,"Rodeo Drive and Beverly Hills — Phase 2","Wilshire/Rodeo puts riders steps from world-famous Rodeo Drive — the heart of Beverly Hills luxury retail."],
   ["Westwood/UCLA",["D"],"West LA/Santa Monica",4,2026,"UCLA campus — 46,000 students served by rail","With 46,000 students, UCLA generates enormous demand — Westwood/UCLA is one of the most anticipated D Line Phase 2 stations."],
   ["Westwood/VA Hospital",["D"],"West LA/Santa Monica",2,2026,"VA West LA campus — western terminus of D Line","Westwood/VA Hospital serves the Veterans Affairs campus and marks the 2026 western terminus of the D Line Phase 2 extension."],
+  // ── REGIONAL CONNECTOR underground (A + E, 2023) ────────────────────────
+  ["Grand Ave Arts/Bunker Hill",["A","E"],"Downtown LA",4,2023,"New underground hub — MOCA, Broad Museum, Disney Hall","Grand Ave Arts/Bunker Hill opened with the 2023 Regional Connector — MOCA, the Broad, and Walt Disney Concert Hall are steps away."],
+  ["Historic Broadway",["A","E"],"Downtown LA",3,2023,"Historic Broadway district — Regional Connector underground","Historic Broadway station is in the heart of LA's historic theater district, connecting the A and E lines under Downtown LA."],
   // ── E LINE (Expo) ─────────────────────────────────────────────────────────
-  ["LATTC/Ortho Institute",["E"],"Downtown LA",2,2012,"LA Trade Tech College — eastern E Line stop","LATTC/Ortho Institute marks the eastern gateway of the E Line — one of California's top trade colleges is served here."],
+  ["LATTC/Ortho Institute",["E"],"Downtown LA",2,2012,"LA Trade Tech College — E Line stop on Flower St","LATTC/Ortho Institute is distinct from Grand/LATTC — it serves the western side of the LA Trade Tech campus on Flower Street."],
   ["Jefferson/USC",["E"],"South LA",4,2012,"University of Southern California — Coliseum adjacent","USC with 48,000 students drives massive ridership — the LA Memorial Coliseum next door makes this an event-night powerhouse stop."],
   ["Expo/Vermont",["E"],"South LA",3,2012,"Vermont Ave and Expo Blvd — near Exposition Park","Expo/Vermont serves South LA's Exposition Park area — home to the California Science Center, Natural History Museum, and the Coliseum."],
   ["Expo/Western",["E"],"South LA",2,2012,"Western Ave and Expo Blvd — South LA bus connector","Expo/Western serves South LA's Western Avenue corridor, one of the area's major north-south bus corridors."],
