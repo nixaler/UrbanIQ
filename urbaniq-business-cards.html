@@ -173,6 +173,17 @@
     .free-dot { width: 4px; height: 4px; border-radius: 50%; background: #22C55E; }
     .free-txt { font-size: 5px; font-weight: 700; color: #16a34a; letter-spacing: 0.5px; text-transform: uppercase; }
 
+    /* QR defined ONCE here — browser/printer loads it once, not 28× */
+    .qr-img {
+      display: block;
+      width: 0.52in;
+      height: 0.52in;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAAKUAQAAAACStJWRAAADMklEQVR4nO3dS47DIAyAYXvUPbn/7eYG5ASeRSCYRzZpM4LqZ1ElAT6VleVAQE0+Xfafj5MimJiYmJiYmJiYmJiYT5tiZtbnSMFMJJiVWrOYKtKzMO5mFlcZOyYmJibmfGaOMz4A/aqqboNOu+plt4f/JyYmJibmd5qvcpliTIiuukmB7GgXLDcedltl7JiYmJiY85ivy5oScXwUClFEdm0DVVVWGTsmJiYm5jzmdTxKUUhETPYtP9v1ssNZVhk7JiYmJuY8potHo5THZN+O1EiOUFS9qrvotsrYMTExMTHnMXM86vMelRDdXJGfNToq4rDbQ/8TExMTE/O7zSMejVMjESkRx65++rLK2DExMTExpzRVNxE9ypZu02dGe7fyW1XPRd95+XdusuDYMTExMTGnMH10Ob5pPT+AFX+VYk8bgPzVo/8TExMTE/NbzTx/VGaDhjNJaT1DWXMn7fyR67bK2DExMTEx5zGr/YKa1Cj4rYLKLkFdDzu7GfsFYWJiYmLeK0048VU5PDW71jWNfSgiHmFiYmJi3iyj/VS7JKmJR1WPEtDYTxUTExMT83bpwkn/+m4clKIHqh6rjB0TExMTcx6zikcXt/6qeYcXyY8wMTExMT9Smvdw3W2sX99J94bPN2H+CBMTExPzZmnSm+5lXDxbhjo8Wb28IZYmq4wdExMTE3Me0wWW7rZ61iyjSxWxxohHmJiYmJg3Sz/9M8iZpK6tKljvjYmJiYn5gdLkR/7qokkzf9SvcVhl7JiYmJiYs5lNVuQjTkj7qZbUqGy02kWmp/8nJiYmJua3msf+dd2WdSG68ybMHVUu/pDY8qwCVhk7JiYmJuY8ZrWfai56/kjaSnWTEpnKIbElN6qypFXGjomJiYk5pVmOPkolmJn9+oMofO2e2nP+ESYmJibm++V1WVPOlii5kJ2HTvgm+fjyXLHK2DExMTExVzBV9VzFYP6Q2FSRn4lIvdDhC8aOiYmJifnfpsuPmpVydswaNUsZ5EyI5MyZRERk38iPMDExMTHvl/Ga7ebbVxl8p1T15fsjTExMTMy3ig6+H3qz7KuMHRMTExMTExMTExMT05c/pXjEaFHQNnAAAAAASUVORK5CYII=");
+      background-size: cover;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+    }
+
     @media print {
       body { background: white; padding: 0.25in; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .note { display: none; }
@@ -190,8 +201,6 @@
 <div class="sheet" id="sheet"></div>
 
 <script>
-const QR = "iVBORw0KGgoAAAANSUhEUgAAApQAAAKUAQAAAACStJWRAAADMklEQVR4nO3dS47DIAyAYXvUPbn/7eYG5ASeRSCYRzZpM4LqZ1ElAT6VleVAQE0+Xfafj5MimJiYmJiYmJiYmJiYT5tiZtbnSMFMJJiVWrOYKtKzMO5mFlcZOyYmJibmfGaOMz4A/aqqboNOu+plt4f/JyYmJibmd5qvcpliTIiuukmB7GgXLDcedltl7JiYmJiY85ivy5oScXwUClFEdm0DVVVWGTsmJiYm5jzmdTxKUUhETPYtP9v1ssNZVhk7JiYmJuY8potHo5THZN+O1EiOUFS9qrvotsrYMTExMTHnMXM86vMelRDdXJGfNToq4rDbQ/8TExMTE/O7zSMejVMjESkRx65++rLK2DExMTExpzRVNxE9ypZu02dGe7fyW1XPRd95+XdusuDYMTExMTGnMH10Ob5pPT+AFX+VYk8bgPzVo/8TExMTE/NbzTx/VGaDhjNJaT1DWXMn7fyR67bK2DExMTEx5zGr/YKa1Cj4rYLKLkFdDzu7GfsFYWJiYmLeK0048VU5PDW71jWNfSgiHmFiYmJi3iyj/VS7JKmJR1WPEtDYTxUTExMT83bpwkn/+m4clKIHqh6rjB0TExMTcx6zikcXt/6qeYcXyY8wMTExMT9Smvdw3W2sX99J94bPN2H+CBMTExPzZmnSm+5lXDxbhjo8Wb28IZYmq4wdExMTE3Me0wWW7rZ61iyjSxWxxohHmJiYmJg3Sz/9M8iZpK6tKljvjYmJiYn5gdLkR/7qokkzf9SvcVhl7JiYmJiYs5lNVuQjTkj7qZbUqGy02kWmp/8nJiYmJua3msf+dd2WdSG68ybMHVUu/pDY8qwCVhk7JiYmJuY8ZrWfai56/kjaSnWTEpnKIbElN6qypFXGjomJiYk5pVmOPkolmJn9+oMofO2e2nP+ESYmJibm++V1WVPOlii5kJ2HTvgm+fjyXLHK2DExMTExVzBV9VzFYP6Q2FSRn4lIvdDhC8aOiYmJifnfpsuPmpVydswaNUsZ5EyI5MyZRERk38iPMDExMTHvl/Ga7ebbVxl8p1T15fsjTExMTMy3ig6+H3qz7KuMHRMTExMTExMTExMT05c/pXjEaFHQNnAAAAAASUVORK5CYII=";
-
 const CARD = `
   <div class="stripe">
     <span style="background:#E8294A"></span>
@@ -223,7 +232,7 @@ const CARD = `
     <div class="divider"></div>
     <div class="bottom">
       <div class="qr-box">
-        <img src="data:image/png;base64,${QR}" alt="urbaniq.quest"/>
+        <div class="qr-img"></div>
       </div>
       <div class="url-block">
         <div class="url-main"><span class="um">Urban</span><span class="ua">.</span><span class="um">IQ</span><span class="us">·</span><span class="uq">Quest</span></div>
