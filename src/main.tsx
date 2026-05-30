@@ -4357,7 +4357,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
-      <PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>
+      {activeSection==="home"&&<PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>}
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
@@ -4452,7 +4452,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
           {/* EXPLORE — first item */}
           <div style={{border:"2px solid #0A0A0A",borderRadius:10,overflow:"hidden"}}>
-            <button onClick={()=>setActiveSection("explore")}
+            <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
               style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#0A0A0A",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:"20px"}}>🧭</span>
@@ -4563,7 +4563,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {/* BOTTOM TAB BAR */}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(255,255,255,0.97)",borderTop:"1px solid #EDEBE8",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",display:"flex",zIndex:200,boxSizing:"border-box"}}>
         {([{id:"home",icon:"🏠",label:"HOME"},{id:"explore",icon:"🧭",label:"EXPLORE"}] as {id:string,icon:string,label:string}[]).map(({id,icon,label})=>(
-          <button key={id} onClick={()=>setActiveSection(id as "home"|"explore")}
+          <button key={id} onClick={()=>{setActiveSection(id as "home"|"explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
             style={{flex:1,padding:"10px 0 14px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
             <span style={{fontSize:"20px"}}>{icon}</span>
             <span style={{fontSize:"9px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",color:activeSection===id?"#0A0A0A":"#C8C5BF",transition:"color .18s"}}>{label}</span>
@@ -4767,7 +4767,7 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string
 }
 function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const TRANSIT_KEYS=["pdx","dc","balt","la","nyc","chi","bos","atl"];
-  const[cityKey,setCityKey]=useState<string>("dc");
+  const[cityKey,setCityKey]=useState<string>("");
   const[selStation,setSelStation]=useState<string|null>(null);
   const[stationSearch,setStationSearch]=useState("");
   const[tick,setTick]=useState(0);
@@ -4780,12 +4780,12 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
   const[showExploreMap,setShowExploreMap]=useState(false);
   useEffect(()=>{const id=setInterval(()=>setTick(t=>t+1),30000);return()=>clearInterval(id);},[]);
-  const meta=EXPLORE_CITY_META[cityKey];
-  const hub=selStation||meta.hubs[0];
-  const pulse=getSimPulse(cityKey,hub,tick);
+  const meta=EXPLORE_CITY_META[cityKey]||EXPLORE_CITY_META["dc"];
+  const hub=selStation||(meta?.hubs[0]||"");
+  const pulse=cityKey?getSimPulse(cityKey,hub,tick):[];
   const picks=EXPLORE_PICKS[cityKey]||[];
   const quests=MICRO_QUESTS[cityKey]||[];
-  const G=GAMES[cityKey];
+  const G=GAMES[cityKey]||GAMES["dc"];
   function completeQuest(qid:string,xp:number,isShield:boolean){
     if(completedQuests.has(qid))return;
     const next=new Set([...completedQuests,qid]);
@@ -4801,7 +4801,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
       <div style={{padding:"20px 22px 0"}}>
         <div style={{marginBottom:18}}>
           <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:4}}>CITY GUIDE</div>
-          <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {meta.emoji}</div>
+          <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {cityKey?meta.emoji:"🧭"}</div>
           {hasShield&&<div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(65,105,225,0.06)",border:"1px solid rgba(65,105,225,0.2)",borderRadius:20,padding:"4px 12px",marginTop:8,fontSize:"11px",fontWeight:700,color:"#4169E1"}}>🛡️ Streak Shield Active Today</div>}
         </div>
         <div style={{marginBottom:20}}>
@@ -4815,7 +4815,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
               const filtered=isOpen&&cm.stations?stList.filter(s=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())):stList;
               return(
                 <div key={k} style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none"}}>
-                  <div onClick={()=>{setCityKey(k);setSelStation(null);setStationSearch("");}}
+                  <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
                     style={{padding:"13px 16px",background:isOpen?(G2.accent+"0f"):"#fff",cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"background .15s",WebkitTapHighlightColor:"transparent"}}>
                     <div style={{width:18,height:18,borderRadius:"50%",background:isOpen?G2.accent:"#EDEBE8",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:isOpen?"#fff":"#888580",flexShrink:0}}>{isOpen?"▼":"▶"}</div>
                     <span style={{fontSize:"16px"}}>{cm.emoji}</span>
@@ -4938,7 +4938,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
           ))}
         </div>
       </div>
-      <div style={{padding:"0 22px 20px"}}>
+      {cityKey&&<div style={{padding:"0 22px 20px"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
           {picks.map((p,i)=>(
@@ -4952,8 +4952,8 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
             </div>
           ))}
         </div>
-      </div>
-      <div style={{padding:"0 22px 24px"}}>
+      </div>}
+      {cityKey&&<div style={{padding:"0 22px 24px"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>MICRO-QUESTS</div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
           {quests.map((q,i)=>{
@@ -4988,7 +4988,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
             <div style={{fontSize:"10px",color:"#888580",marginTop:1}}>Play {meta.name} Trivia →</div>
           </div>
         </div>
-      </div>
+      </div>}
       {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
       {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
     </div>
