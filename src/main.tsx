@@ -2863,6 +2863,30 @@ const PDX_TRIVIA=[
   {q:"Gateway Transit Center is a hub for which combination of MAX lines?",opts:["Blue and Green","Blue, Green and Red","Red and Orange","Green and Yellow"],ans:1},
   {q:"What is the eastern terminus of the MAX Blue Line?",opts:["Clackamas Town Center","Gresham Central TC","Cleveland Ave","Gateway TC"],ans:2},
 ];
+const BOS_TRIVIA=[
+  {q:"What year did the Boston T (Green Line) first open, making it the oldest subway in the Western Hemisphere?",opts:["1890","1897","1902","1910"],ans:1},
+  {q:"Which MBTA line is named after Harvard University's crimson color?",opts:["Orange Line","Green Line","Red Line","Blue Line"],ans:2},
+  {q:"Which MBTA line directly connects downtown Boston to Logan Airport?",opts:["Red Line","Orange Line","Silver Line","Blue Line"],ans:3},
+  {q:"How many MBTA rapid transit lines are there?",opts:["3","4","5","6"],ans:2},
+  {q:"Park Street station is notable because it is one of the oldest continuously operating subway stations in the US. What year did it open?",opts:["1895","1897","1900","1904"],ans:1},
+  {q:"The Green Line Extension opened new stations in which two communities?",opts:["Waltham and Newton","Somerville and Medford","Quincy and Braintree","Revere and Lynn"],ans:1},
+  {q:"Harvard station on the Red Line is notable for being the deepest in the MBTA system. How deep underground is it?",opts:["55 feet","80 feet","105 feet","130 feet"],ans:2},
+  {q:"Which MBTA line serves Fenway Park closest?",opts:["Red Line","Orange Line","Green Line","Blue Line"],ans:2},
+  {q:"What is the southern terminus of the Red Line?",opts:["Quincy Center","Braintree","Ashmont","Both Braintree and Ashmont"],ans:3},
+  {q:"The Silver Line uses a unique hybrid propulsion system. What powers it underground?",opts:["Diesel","Electric overhead wire","Third rail","Battery"],ans:1},
+];
+const ATL_TRIVIA=[
+  {q:"What year did MARTA open, making it the first rapid transit system in the American South?",opts:["1972","1975","1979","1983"],ans:2},
+  {q:"Which MARTA station is the hub where all four rail lines intersect?",opts:["Peachtree Center","Airport","Five Points","Midtown"],ans:2},
+  {q:"MARTA provides direct rail access to which major airport, the world's busiest by passenger count?",opts:["Hartsfield-Jackson Atlanta International","Charlotte Douglas","Nashville International","Orlando International"],ans:0},
+  {q:"How many rail lines does MARTA operate?",opts:["2","3","4","5"],ans:2},
+  {q:"What is the northern terminus of the MARTA Red Line?",opts:["Doraville","North Springs","Sandy Springs","Dunwoody"],ans:1},
+  {q:"The MARTA Gold Line's northern terminus serves which community known for its diversity?",opts:["Sandy Springs","Doraville","Chamblee","Tucker"],ans:1},
+  {q:"How many rail stations does the MARTA system serve?",opts:["28","33","38","45"],ans:2},
+  {q:"Which MARTA station serves the Georgia Aquarium and World of Coca-Cola?",opts:["Peachtree Center","Civic Center","College Park","Dome/GWCC/Philips Arena/CNN Center"],ans:3},
+  {q:"MARTA rail covers approximately how many route miles?",opts:["32 miles","48 miles","61 miles","75 miles"],ans:1},
+  {q:"Which station is the southern terminus of both the Red and Gold lines?",opts:["East Point","College Park","Airport","Lakewood/Fort McPherson"],ans:2},
+];
 const DC_TRIVIA=[
   {q:"What year did the DC Metro first open?",opts:["1972","1974","1976","1980"],ans:2},
   {q:"Which station has the longest escalator in the Western Hemisphere?",opts:["Forest Glen","Medical Center","Bethesda","Wheaton"],ans:3},
@@ -4058,7 +4082,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[activeTab,setActiveTab]=useState<string>("all");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
-  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE","MAPS"]));
+  const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
 
   const modals=(
@@ -5864,7 +5888,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         <div style={{position:"relative",flex:1}}>
           <button onClick={()=>setShowGameDrop(o=>!o)}
             style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",background:T.surface,border:`1px solid ${showGameDrop?G.accent:T.border}`,borderRadius:20,padding:"5px 14px",cursor:"pointer",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),color:T.textSub,transition:"all .15s",gap:6,boxSizing:"border-box"}}>
-            <span style={{fontWeight:700,color:G.accent}}>{G.key==="states"?"🗺️":G.key==="pdx"?"🚊":G.key==="nfl"?"🏈":G.key==="balt"?"🚉":G.key==="la"?"🌴":G.key==="nyc"?"🗽":G.key==="chi"?"🌬️":"🚇"} {G.short}</span>
+            <span style={{fontWeight:700,color:G.accent}}>{G.emoji} {G.short}</span>
             <span style={{fontSize:"9px",color:T.textMuted,display:"inline-block",transition:"transform .2s",transform:showGameDrop?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
           </button>
           {showGameDrop&&(
@@ -5872,7 +5896,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi","bos","atl"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
                 <div key={label}>
                   <div style={{fontSize:fs(7),letterSpacing:2,color:T.textMuted,padding:"8px 12px 3px",fontWeight:700,borderTop:`1px solid ${T.border}`,marginTop:label.includes("TRANSIT")?0:0}}>{label}</div>
-                  {keys.map(k=>{const g=GAMES[k];if(!g)return null;const em=k==="states"?"🗺️":k==="pdx"?"🚊":k==="nfl"?"🏈":k==="balt"?"🚉":k==="la"?"🌴":k==="nyc"?"🗽":k==="chi"?"🌬️":"🚇";return(
+                  {keys.map(k=>{const g=GAMES[k];if(!g)return null;const em=g.emoji;return(
                     <div key={k} onClick={()=>{switchGame(k);setShowGameDrop(false);}}
                       style={{display:"flex",alignItems:"center",gap:9,padding:"8px 14px",cursor:"pointer",background:gameKey===k?`${g.accent}18`:"transparent",borderLeft:`3px solid ${gameKey===k?g.accent:"transparent"}`,transition:"background .12s"}}>
                       <span style={{fontSize:"15px"}}>{em}</span>
@@ -6103,7 +6127,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               {/* Close call warning */}
               {(rd.guesses.length+(rd.peekPenalty||0))===(DIFF.maxGuesses+(rd.extraGuesses||0))-1&&(
                 <div style={{background:T.cellBg.red,border:`1px solid ${T.cellBorder.red}`,borderRadius:7,padding:"7px 12px",marginBottom:8,fontSize:fs(10),color:T.cellText.red,fontWeight:700,textAlign:"center",animation:"popIn .25s ease"}}>
-                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
+                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="la"?"🚨 Last guess — last train to LA!":gameKey==="nyc"?"🚨 Last guess — stand clear of the closing doors!":gameKey==="chi"?"🚨 Last guess — doors closing!":gameKey==="bos"?"🚨 Last guess — last stop!":gameKey==="atl"?"🚨 Last guess — doors closing, please!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
                 </div>
               )}
               <div style={{position:"relative",marginBottom:12}}>
@@ -6223,7 +6247,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
-          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
+          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
 
           <div style={{textAlign:"center",marginTop:8}}>
             <a href="https://mc.buymeacoffee.com/links/SyEkenCIAfWPKEhbhyglsDjuxVxSSjqkeHbXYWMXWcARvFhFzRCgIASnBhHieeDGIBlkfaEMkvhKXYgPCXWGCPB/3480126?link=nixalerllc" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:7,background:T.surface,color:"#FFDD00",border:"1px solid rgba(255,221,0,.2)",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,letterSpacing:1,padding:"9px 16px",borderRadius:7,textDecoration:"none"}}>☕ Enjoying it? Buy me a coffee</a>
@@ -6676,11 +6700,11 @@ function HypeIntro({onDone}:{onDone:()=>void}){
       for(let i=0;i<cells.length;i++){
         const cell=cells[i],d=g.cells[i];
         cell.classList.add('hy-flip');
-        await sleep(170);
+        await sleep(85);
         cell.className='hy-cell hy-flip '+d.cls;
         cell.textContent=d.text;
         if(d.tip)cell.title=d.tip;
-        await sleep(170);
+        await sleep(85);
         cell.classList.remove('hy-flip');
       }
     }
