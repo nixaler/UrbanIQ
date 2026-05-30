@@ -4451,17 +4451,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
           {/* EXPLORE — first item */}
-          <div style={{border:"2px solid #0A0A0A",borderRadius:10,overflow:"hidden"}}>
+          <div style={{border:"2px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#0A0A0A",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:"20px"}}>🧭</span>
                 <div>
-                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#fff"}}>Explore</div>
-                  <div style={{fontSize:"9px",color:"rgba(255,255,255,0.45)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
+                  <div style={{fontSize:"9px",color:"#888580",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
                 </div>
               </div>
-              <span style={{fontSize:"11px",color:"rgba(255,255,255,0.6)",fontWeight:600}}>Open →</span>
+              <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
             </button>
           </div>
           {[
@@ -4589,20 +4589,20 @@ function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10
 function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
   const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
   return(
-    <div style={{background:"#0A0A0A",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+    <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid #EDEBE8"}}>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
         <span style={{fontSize:14}}>🔥</span>
-        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.3)",letterSpacing:"1.5px"}}>STREAK</div></div>
+        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>STREAK</div></div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:2,justifyContent:"center"}}>
         <span style={{fontSize:14}}>⚡</span>
         <div>
-          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(255,255,255,0.4)"}}>Lv{level}</span></div>
-          <div style={{width:72,height:3,background:"rgba(255,255,255,0.1)",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(0,0,0,0.35)"}}>Lv{level}</span></div>
+          <div style={{width:72,height:3,background:"#EDEBE8",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:1,justifyContent:"flex-end"}}>
-        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.3)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
+        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
         <span style={{fontSize:14}}>🛡️</span>
       </div>
     </div>
@@ -4630,15 +4630,23 @@ const DC_METRO_STATIONS:{n:string,l:string[],c:string}[]=[
   // Green Line south
   {n:"Waterfront",l:["Green"],c:"F04"},{n:"Navy Yard-Ballpark",l:["Green"],c:"F05"},{n:"Anacostia",l:["Green"],c:"F06"},{n:"Congress Heights",l:["Green"],c:"F07"},{n:"Southern Ave",l:["Green"],c:"F08"},{n:"Naylor Road",l:["Green"],c:"F09"},{n:"Suitland",l:["Green"],c:"F10"},{n:"Branch Ave",l:["Green"],c:"F11"},
 ];
-const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[],stations?:{n:string,l:string[],c:string}[]}}={
-  pdx:{name:"Portland MAX",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"]},
-  dc:{name:"DC Metro",emoji:"🌸",color:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#007DC5"},{name:"Orange",color:"#ED8B00"},{name:"Silver",color:"#A2AAAD"},{name:"Green",color:"#00B140"},{name:"Yellow",color:"#FFD100"}],hubs:["Metro Center","Gallery Pl-Chinatown","Union Station","Pentagon City","Dupont Circle"],stations:DC_METRO_STATIONS},
-  balt:{name:"Baltimore MTA",emoji:"🦀",color:"#003087",lines:[{name:"Metro SubwayLink",color:"#F7941D"},{name:"Light Rail",color:"#003087"}],hubs:["Penn Station","Convention Center","Lexington Market","Charles Center","Johns Hopkins Hospital"]},
-  la:{name:"LA Metro",emoji:"🌴",color:"#0072bc",lines:[{name:"A Line",color:"#60A0CF"},{name:"B Line",color:"#EF3340"},{name:"C Line",color:"#6CBE45"},{name:"E Line",color:"#1D9FD0"},{name:"K Line",color:"#EF6A00"}],hubs:["Union Station","7th St/Metro Center","Hollywood/Highland","Wilshire/Vermont","LAX/Aviation"]},
-  nyc:{name:"NYC Subway",emoji:"🗽",color:"#EE352E",lines:[{name:"1 Train",color:"#EE352E"},{name:"A Train",color:"#0039A6"},{name:"4 Train",color:"#00933C"},{name:"L Train",color:"#A7A9AC"},{name:"N Train",color:"#FCCC0A"},{name:"7 Train",color:"#B933AD"}],hubs:["Times Sq-42 St","Grand Central-42 St","14th St-Union Sq","Fulton St","Atlantic Av-Barclays Ctr"]},
-  chi:{name:"Chicago L",emoji:"💨",color:"#C60C30",lines:[{name:"Red Line",color:"#C60C30"},{name:"Blue Line",color:"#00A1DE"},{name:"Brown Line",color:"#62361B"},{name:"Green Line",color:"#009B3A"},{name:"Orange Line",color:"#F9461C"},{name:"Purple Line",color:"#522398"}],hubs:["Clark/Lake","Washington/Wabash","State/Lake","O'Hare","Midway"]},
-  bos:{name:"Boston T",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"]},
-  atl:{name:"Atlanta MARTA",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"]},
+function toExploreStns(arr:{name:string,lines:string[]}[]):{n:string,l:string[],c:string}[]{return arr.map(s=>({n:s.name,l:s.lines,c:""}));}
+const PDX_XS=toExploreStns(PDX_STATIONS);
+const BALT_XS=toExploreStns(BALT_STATIONS);
+const LA_XS=toExploreStns(LA_STATIONS);
+const NYC_XS=toExploreStns(NYC_STATIONS);
+const CHI_XS=toExploreStns(CHI_STATIONS);
+const BOS_XS=toExploreStns(BOS_STATIONS);
+const ATL_XS=toExploreStns(ATL_STATIONS);
+const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[],lc:{[k:string]:string},stations?:{n:string,l:string[],c:string}[]}}={
+  pdx:{name:"Portland MAX",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"],lc:{"Blue":"#1A6FBF","Red":"#D71F26","Green":"#028A48","Orange":"#D77033","Yellow":"#FFC72C","WES":"#6B7280"},stations:PDX_XS},
+  dc:{name:"DC Metro",emoji:"🌸",color:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#007DC5"},{name:"Orange",color:"#ED8B00"},{name:"Silver",color:"#A2AAAD"},{name:"Green",color:"#00B140"},{name:"Yellow",color:"#FFD100"}],hubs:["Metro Center","Gallery Pl-Chinatown","Union Station","Pentagon City","Dupont Circle"],lc:{"Red":"#BF0000","Blue":"#007DC5","Orange":"#ED8B00","Silver":"#A2AAAD","Green":"#00B140","Yellow":"#FFD100"},stations:DC_METRO_STATIONS},
+  balt:{name:"Baltimore MTA",emoji:"🦀",color:"#003087",lines:[{name:"Metro SubwayLink",color:"#F7941D"},{name:"Light Rail",color:"#003087"}],hubs:["Penn Station","Convention Center","Lexington Market","Charles Center","Johns Hopkins Hospital"],lc:{"Metro":"#F7941D","Light Rail":"#003087"},stations:BALT_XS},
+  la:{name:"LA Metro",emoji:"🌴",color:"#0072bc",lines:[{name:"A Line",color:"#60A0CF"},{name:"B Line",color:"#EF3340"},{name:"C Line",color:"#6CBE45"},{name:"D Line",color:"#6B449A"},{name:"E Line",color:"#1D9FD0"},{name:"K Line",color:"#EF6A00"}],hubs:["Union Station","7th St/Metro Center","Hollywood/Highland","Wilshire/Vermont","LAX/Aviation"],lc:{"A":"#60A0CF","B":"#EF3340","C":"#6CBE45","D":"#6B449A","E":"#1D9FD0","K":"#EF6A00"},stations:LA_XS},
+  nyc:{name:"NYC Subway",emoji:"🗽",color:"#EE352E",lines:[{name:"1/2/3",color:"#EE352E"},{name:"A/C/E",color:"#0039A6"},{name:"4/5/6",color:"#00933C"},{name:"N/Q/R/W",color:"#FCCC0A"},{name:"B/D/F/M",color:"#FF6319"},{name:"L",color:"#A7A9AC"},{name:"7",color:"#B933AD"},{name:"J/Z",color:"#996633"},{name:"G",color:"#6CBE45"}],hubs:["Times Sq-42 St","Grand Central-42 St","14th St-Union Sq","Fulton St","Atlantic Av-Barclays Ctr"],lc:{"1":"#EE352E","2":"#EE352E","3":"#EE352E","4":"#00933C","5":"#00933C","6":"#00933C","7":"#B933AD","A":"#0039A6","C":"#0039A6","E":"#0039A6","B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319","N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A","J":"#996633","Z":"#996633","G":"#6CBE45","L":"#A7A9AC","S":"#808183"},stations:NYC_XS},
+  chi:{name:"Chicago L",emoji:"💨",color:"#C60C30",lines:[{name:"Red Line",color:"#C60C30"},{name:"Blue Line",color:"#00A1DE"},{name:"Brown Line",color:"#62361B"},{name:"Green Line",color:"#009B3A"},{name:"Orange Line",color:"#F9461C"},{name:"Purple Line",color:"#522398"},{name:"Pink Line",color:"#E27EA6"},{name:"Yellow Line",color:"#F9E300"}],hubs:["Clark/Lake","Washington/Wabash","State/Lake","O'Hare","Midway"],lc:{"Red":"#C60C30","Blue":"#00A1DE","Brown":"#62361B","Green":"#009B3A","Orange":"#F9461C","Purple":"#522398","Pink":"#E27EA6","Yellow":"#F9E300"},stations:CHI_XS},
+  bos:{name:"Boston T",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
+  atl:{name:"Atlanta MARTA",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
 };
 const EXPLORE_PICKS:{[k:string]:{name:string,type:string,desc:string}[]}={
   pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
@@ -4821,7 +4829,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
                     <span style={{fontSize:"16px"}}>{cm.emoji}</span>
                     <div style={{flex:1}}>
                       <div style={{fontSize:"13px",fontWeight:isOpen?700:500,color:isOpen?G2.accent:"#0A0A0A"}}>{cm.name}</div>
-                      {isOpen&&cm.stations&&<div style={{fontSize:"9px",color:"rgba(0,0,0,0.35)",marginTop:1}}>All {cm.stations.length} stations</div>}
+                      {isOpen&&cm.stations&&<div style={{fontSize:"9px",color:"rgba(0,0,0,0.35)",marginTop:1}}>{cm.stations.length} stations · {cm.lines.length} lines</div>}
                     </div>
                     {isOpen&&<div style={{fontSize:"9px",fontWeight:700,color:G2.accent,letterSpacing:"1px"}}>ACTIVE</div>}
                   </div>
@@ -4830,27 +4838,55 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
                       {cm.stations&&(
                         <div style={{padding:"8px 12px",borderTop:"1px solid #EDEBE8"}}>
                           <div style={{position:"relative"}}>
-                            <input value={stationSearch} onChange={e=>setStationSearch(e.target.value)} placeholder="Search stations…"
+                            <input value={stationSearch} onChange={e=>setStationSearch(e.target.value)} placeholder="Search stations or lines…"
                               style={{width:"100%",padding:"8px 8px 8px 30px",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"12px",outline:"none",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",background:"#fff"}}/>
                             <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none"}}>🔍</span>
                           </div>
                         </div>
                       )}
-                      <div style={{maxHeight:240,overflowY:"auto"}}>
-                        {filtered.map((s,si)=>(
-                          <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
-                            style={{padding:"10px 12px 10px 44px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
-                            <div style={{display:"flex",gap:2,flexShrink:0}}>
-                              {(s.l.length?s.l:["?"]).slice(0,4).map(ln=>{
-                                const ld=cm.lines.find(l=>l.name===ln||l.name.startsWith(ln));
-                                return <div key={ln} style={{width:7,height:7,borderRadius:1,background:ld?.color||"#C8C5BF",flexShrink:0}}/>;
-                              })}
+                      <div style={{maxHeight:360,overflowY:"auto"}}>
+                        {stationSearch
+                          ?filtered.map((s)=>(
+                            <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
+                              style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                              <div style={{display:"flex",gap:2,flexShrink:0}}>
+                                {(s.l.length?s.l:["?"]).slice(0,5).map(ln=><div key={ln} style={{width:7,height:7,borderRadius:1,background:cm.lc[ln]||"#C8C5BF",flexShrink:0}}/>)}
+                              </div>
+                              <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                              {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px"}}>LIVE →</div>}
                             </div>
-                            <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
-                            {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px"}}>LIVE →</div>}
-                          </div>
-                        ))}
-                        {filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
+                          ))
+                          :(()=>{
+                            const seenL=new Set<string>();const ordL:string[]=[];
+                            stList.forEach(s=>s.l.forEach(ln=>{if(!seenL.has(ln)){seenL.add(ln);ordL.push(ln);}}));
+                            return ordL.map(ln=>{
+                              const lc=cm.lc[ln]||"#999";
+                              const lineSt=stList.filter(s=>s.l[0]===ln);
+                              if(lineSt.length===0)return null;
+                              return(
+                                <div key={ln}>
+                                  <div style={{padding:"5px 12px",background:lc+"18",display:"flex",alignItems:"center",gap:7,borderTop:"1px solid #EDEBE8",position:"sticky",top:0,zIndex:1}}>
+                                    <div style={{width:12,height:12,borderRadius:2,background:lc,flexShrink:0}}/>
+                                    <span style={{fontSize:"10px",fontWeight:800,color:lc,letterSpacing:"0.8px",textTransform:"uppercase",flex:1}}>{ln}</span>
+                                    <span style={{fontSize:"9px",color:"#888580"}}>{lineSt.length}</span>
+                                  </div>
+                                  {lineSt.map(s=>{
+                                    const extraLines=s.l.filter(ll=>ll!==ln);
+                                    return(
+                                      <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
+                                        style={{padding:"9px 12px 9px 32px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:7,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                                        <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                                        {extraLines.length>0&&<div style={{display:"flex",gap:2,flexShrink:0}}>{extraLines.slice(0,5).map(ll=><div key={ll} style={{width:6,height:6,borderRadius:1,background:cm.lc[ll]||"#C8C5BF"}}/>)}</div>}
+                                        {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            });
+                          })()
+                        }
+                        {stationSearch&&filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
                       </div>
                     </div>
                   )}
