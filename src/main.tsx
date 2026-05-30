@@ -4089,6 +4089,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
   const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
+  const[hudXP,setHudXP]=useState(()=>getXP());
+  const[hudShields,setHudShields]=useState(()=>getShieldCount());
+  const[hudStreak,setHudStreak]=useState(()=>getGlobalData().streak||topStreak);
+  const[shieldHealToast,setShieldHealToast]=useState(false);
+  useEffect(()=>{
+    const healed=tryShieldHeal();
+    if(healed){setShieldHealToast(true);setTimeout(()=>setShieldHealToast(false),4000);}
+  },[]);
+  useEffect(()=>{
+    setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||topStreak);
+  },[activeSection,topStreak]);
 
   const modals=(
     <>
@@ -4347,6 +4358,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
+      <PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>
+      {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
       <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
@@ -4373,9 +4386,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span className="lm-grad" style={{display:"block"}}>UrbanIQ</span>
           </div>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>DAILY TRIVIA</span>
+            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY DISCOVERY</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
             {topStreak>0&&(
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
@@ -4438,6 +4451,20 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           All Games <div className="lm-eyebrow-line"/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
+          {/* EXPLORE — first item */}
+          <div style={{border:"2px solid #0A0A0A",borderRadius:10,overflow:"hidden"}}>
+            <button onClick={()=>setActiveSection("explore")}
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#0A0A0A",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:"20px"}}>🧭</span>
+                <div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#fff"}}>Explore</div>
+                  <div style={{fontSize:"9px",color:"rgba(255,255,255,0.45)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                </div>
+              </div>
+              <span style={{fontSize:"11px",color:"rgba(255,255,255,0.6)",fontWeight:600}}>Open →</span>
+            </button>
+          </div>
           {[
             {tag:"TRANSIT",label:"🚊 Transit",color:"#4169E1"},
             {tag:"GEOGRAPHY",label:"🗺️ Geography",color:"#22C55E"},
@@ -4551,6 +4578,38 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   );
 }
 
+// ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
+function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
+function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+amount));}
+function getShieldCount():number{return Number(localStorage.getItem("tgg:shields")||0);}
+function addShield():void{localStorage.setItem("tgg:shields",String(getShieldCount()+1));}
+function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;localStorage.setItem("tgg:shields",String(n-1));return true;}
+function getGlobalData():{streak:number,lastWin:string}{try{return JSON.parse(localStorage.getItem("tgg:global")||'{"streak":0,"lastWin":""}');}catch{return{streak:0,lastWin:""};}}
+function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
+function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10);const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);const g=getGlobalData();if(!g.lastWin||g.lastWin===today||g.lastWin===yest)return false;if(!consumeShield())return false;localStorage.setItem("tgg:global",JSON.stringify({streak:g.streak,lastWin:yest}));return true;}
+function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
+  const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
+  return(
+    <div style={{background:"#0A0A0A",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
+        <span style={{fontSize:14}}>🔥</span>
+        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.3)",letterSpacing:"1.5px"}}>STREAK</div></div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:2,justifyContent:"center"}}>
+        <span style={{fontSize:14}}>⚡</span>
+        <div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(255,255,255,0.4)"}}>Lv{level}</span></div>
+          <div style={{width:72,height:3,background:"rgba(255,255,255,0.1)",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:1,justifyContent:"flex-end"}}>
+        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.3)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
+        <span style={{fontSize:14}}>🛡️</span>
+      </div>
+    </div>
+  );
+}
+
 // ── EXPLORE DATA ──────────────────────────────────────────────────────────────
 const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[]}}={
   pdx:{name:"Portland MAX",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"]},
@@ -4618,8 +4677,8 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     const next=new Set([...completedQuests,qid]);
     setCompletedQuests(next);
     localStorage.setItem("tgg:quests:done",JSON.stringify([...next]));
-    setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
-    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
+    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
+    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
@@ -4631,29 +4690,37 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
           <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {meta.emoji}</div>
           {hasShield&&<div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(65,105,225,0.06)",border:"1px solid rgba(65,105,225,0.2)",borderRadius:20,padding:"4px 12px",marginTop:8,fontSize:"11px",fontWeight:700,color:"#4169E1"}}>🛡️ Streak Shield Active Today</div>}
         </div>
-        <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4,marginBottom:20,scrollbarWidth:"none"}}>
-          {TRANSIT_KEYS.map(k=>{
-            const cm=EXPLORE_CITY_META[k];
-            const active=k===cityKey;
-            return(
-              <button key={k} onClick={()=>{setCityKey(k);setSelStation(null);}}
-                style={{flexShrink:0,padding:"8px 14px",borderRadius:20,border:`2px solid ${active?GAMES[k].accent:"#EDEBE8"}`,background:active?GAMES[k].accent:"#fff",color:active?"#fff":"#888580",fontSize:"11px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"all .18s",whiteSpace:"nowrap",WebkitTapHighlightColor:"transparent"}}>
-                {cm.emoji} {cm.name.split(" ").pop()}
-              </button>
-            );
-          })}
-        </div>
         <div style={{marginBottom:20}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT STATION</div>
-          <div style={{display:"flex",flexDirection:"column",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
-            {meta.hubs.map((s,i)=>(
-              <div key={s} onClick={()=>setSelStation(s===selStation?null:s)}
-                style={{padding:"12px 16px",background:selStation===s?(G.accent+"18"):"#fff",borderBottom:i<meta.hubs.length-1?"1px solid #EDEBE8":"none",cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"background .15s",WebkitTapHighlightColor:"transparent"}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:selStation===s?G.accent:"#C8C5BF",flexShrink:0,transition:"background .15s"}}/>
-                <div style={{fontSize:"13px",fontWeight:selStation===s?700:400,color:selStation===s?"#0A0A0A":"#888580",transition:"all .15s"}}>{s}</div>
-                {selStation===s&&<div style={{marginLeft:"auto",fontSize:"10px",color:G.accent,fontWeight:700,letterSpacing:1}}>LIVE →</div>}
-              </div>
-            ))}
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT CITY & STATION</div>
+          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
+            {TRANSIT_KEYS.map((k,ki)=>{
+              const cm=EXPLORE_CITY_META[k];
+              const isOpen=k===cityKey;
+              const G2=GAMES[k];
+              return(
+                <div key={k} style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none"}}>
+                  <div onClick={()=>{setCityKey(k);setSelStation(null);}}
+                    style={{padding:"13px 16px",background:isOpen?(G2.accent+"0f"):"#fff",cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"background .15s",WebkitTapHighlightColor:"transparent"}}>
+                    <div style={{width:18,height:18,borderRadius:"50%",background:isOpen?G2.accent:"#EDEBE8",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:isOpen?"#fff":"#888580",flexShrink:0,transition:"all .2s"}}>{isOpen?"▼":"▶"}</div>
+                    <span style={{fontSize:"16px"}}>{cm.emoji}</span>
+                    <div style={{flex:1}}><div style={{fontSize:"13px",fontWeight:isOpen?700:500,color:isOpen?G2.accent:"#0A0A0A",transition:"color .15s"}}>{cm.name}</div></div>
+                    {isOpen&&<div style={{fontSize:"9px",fontWeight:700,color:G2.accent,letterSpacing:"1px"}}>ACTIVE</div>}
+                  </div>
+                  {isOpen&&(
+                    <div style={{background:"#FAFAFA",animation:"lmFadeIn .15s ease both"}}>
+                      {cm.hubs.map((s,si)=>(
+                        <div key={s} onClick={()=>setSelStation(s===selStation?null:s)}
+                          style={{padding:"10px 16px 10px 48px",borderTop:"1px solid #EDEBE8",background:selStation===s?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"background .15s",WebkitTapHighlightColor:"transparent"}}>
+                          <div style={{width:6,height:6,borderRadius:"50%",background:selStation===s?G2.accent:"#C8C5BF",flexShrink:0}}/>
+                          <div style={{fontSize:"12px",fontWeight:selStation===s?700:400,color:selStation===s?"#0A0A0A":"#888580"}}>{s}</div>
+                          {selStation===s&&<div style={{marginLeft:"auto",fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px"}}>LIVE →</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -5671,6 +5738,7 @@ function GameHistoryCalendar({gameKey:gk,playHistory,T}:{gameKey:string,playHist
 function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void}){
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
+  const[gameHudXP,setGameHudXP]=useState(()=>getXP());
   const[tab,setTab]=useState("play");
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[tab]);
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
@@ -5943,7 +6011,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin)setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -6012,6 +6080,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     <div style={{minHeight:"100vh",background:T.bg,fontFamily:"'JetBrains Mono','Courier New',monospace",color:T.text,position:"relative",overflow:"hidden",transition:"background .4s,color .3s"}}>
       <link rel="manifest" href="/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+      <PersistentHUD streak={stats.streak} xp={gameHudXP} shields={getShieldCount()}/>
       <style>{`
         @keyframes tpPetal{0%{transform:translateY(-10px) translateX(0) rotate(0deg);opacity:0}10%{opacity:var(--op)}90%{opacity:var(--op)}100%{transform:translateY(110vh) translateX(var(--drift)) rotate(360deg);opacity:0}}
         @keyframes tpConf{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
