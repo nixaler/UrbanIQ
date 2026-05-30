@@ -4602,9 +4602,9 @@ function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+
 function getRP():number{return Number(localStorage.getItem("tgg:rp")||0);}
 function addRP(n:number):void{localStorage.setItem("tgg:rp",String(getRP()+n));}
 const REWARD_TIERS=[
-  {pts:100,label:"Transit Day Pass",sub:"1-day unlimited bus/rail",emoji:"🎟️",color:"#028A48"},
-  {pts:250,label:"$5 Gift Card",sub:"Amazon, Starbucks, or Uber",emoji:"🎁",color:"#007DC5"},
-  {pts:500,label:"$10 Cash",sub:"Venmo or PayPal",emoji:"💵",color:"#FFB800"},
+  {pts:1500,label:"Transit Day Pass",sub:"1-day unlimited bus/rail",emoji:"🎟️",color:"#028A48"},
+  {pts:4000,label:"$5 Gift Card",sub:"Amazon, Starbucks, or Uber",emoji:"🎁",color:"#007DC5"},
+  {pts:7500,label:"$10 Cash",sub:"Venmo or PayPal",emoji:"💵",color:"#FFB800"},
 ];
 function RewardsModal({onClose}:{onClose:()=>void}){
   const[rp,setRp]=useState(getRP());
@@ -4627,7 +4627,7 @@ function RewardsModal({onClose}:{onClose:()=>void}){
             <div style={{fontSize:"22px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{rp} pts</div>
             <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)",letterSpacing:1}}>YOUR BALANCE</div>
           </div>
-          <div style={{flex:1,textAlign:"right",fontSize:"10px",color:"rgba(0,0,0,.4)",lineHeight:1.7}}>1 try → +50<br/>2 tries → +35<br/>3 tries → +25<br/>4+ → +15</div>
+          <div style={{flex:1,textAlign:"right",fontSize:"10px",color:"rgba(0,0,0,.4)",lineHeight:1.7}}>1 try → +20<br/>2 tries → +15<br/>3 tries → +10<br/>4+ → +5</div>
         </div>
         {claimed?(
           <div style={{textAlign:"center",padding:"20px 0"}}>
@@ -6328,7 +6328,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);addRP(newGuesses.length===1?50:newGuesses.length===2?35:newGuesses.length===3?25:15);incGlobalStreak();setGameHudXP(getXP());}
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);addRP(newGuesses.length===1?20:newGuesses.length===2?15:newGuesses.length===3?10:5);incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -7755,7 +7755,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
         <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)",lineHeight:1.7}}>Guess correctly to earn points. Redeem for real rewards.</div>
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
-        {[{label:"1 try",pts:"+50 pts",pct:100,color:"#028A48"},{label:"2 tries",pts:"+35 pts",pct:70,color:"#007DC5"},{label:"3 tries",pts:"+25 pts",pct:50,color:"#FFB800"},{label:"4+ tries",pts:"+15 pts",pct:30,color:"rgba(0,0,0,0.25)"}].map(r=>(
+        {[{label:"1 try",pts:"+20 pts",pct:100,color:"#028A48"},{label:"2 tries",pts:"+15 pts",pct:75,color:"#007DC5"},{label:"3 tries",pts:"+10 pts",pct:50,color:"#FFB800"},{label:"4+ tries",pts:"+5 pts",pct:25,color:"rgba(0,0,0,0.25)"}].map(r=>(
           <div key={r.label} style={{background:"rgba(0,0,0,0.025)",border:"1px solid rgba(0,0,0,0.07)",borderRadius:10,padding:"10px 14px",display:"flex",gap:10,alignItems:"center"}}>
             <span style={{fontSize:13,fontWeight:700,color:"rgba(0,0,0,0.55)",minWidth:64}}>{r.label}</span>
             <div style={{flex:1,height:6,background:"rgba(0,0,0,0.07)",borderRadius:3,overflow:"hidden"}}><div style={{width:`${r.pct}%`,height:"100%",background:r.color,borderRadius:3}}/></div>
