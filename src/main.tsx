@@ -3724,9 +3724,12 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
 }
 
 // ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
-function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>void,defaultCity?:string}){
+function MapsInlineView({onSelectGame,defaultCity,scrollContainer}:{onSelectGame:(gk:string)=>void,defaultCity?:string,scrollContainer?:React.RefObject<HTMLDivElement>}){
   const[selSys,setSelSys]=useState<string>(defaultCity||"pdx");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
+  useEffect(()=>{
+    if(scrollContainer?.current)scrollContainer.current.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+    else window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+  },[selSys]);
   const SYSTEMS=[
     {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
       top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
@@ -3911,7 +3914,7 @@ function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(g
         <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
           <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined}/>
+        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined} scrollContainer={scrollRef}/>
       </div>
     </div>
   );
