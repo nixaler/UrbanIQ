@@ -3724,9 +3724,12 @@ function TransitMapSVG({systemKey,onPlay}:{systemKey:string,onPlay?:()=>void}){
 }
 
 // ── MAPS INLINE VIEW (tab) — CITY INTELLIGENCE DASHBOARD ─────────────────────
-function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>void,defaultCity?:string}){
+function MapsInlineView({onSelectGame,defaultCity,scrollContainer}:{onSelectGame:(gk:string)=>void,defaultCity?:string,scrollContainer?:React.RefObject<HTMLDivElement>}){
   const[selSys,setSelSys]=useState<string>(defaultCity||"pdx");
-  useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[selSys]);
+  useEffect(()=>{
+    if(scrollContainer?.current)scrollContainer.current.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+    else window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+  },[selSys]);
   const SYSTEMS=[
     {key:"pdx",name:"Portland MAX",city:"Portland, OR",emoji:"🚊",accent:"#028A48",lines:5,stations:97,riders:"95K",health:94,tagline:"The city moves. The signals know.",
       top:[{n:"Pioneer Sq",t:"2:25 PM"},{n:"Gateway/Airport",t:"2:12 PM"},{n:"Lloyd Center",t:"1:48 PM"}]},
@@ -3896,21 +3899,21 @@ function MapsInlineView({onSelectGame,defaultCity}:{onSelectGame:(gk:string)=>vo
 }
 
 // ── MAPS & GUIDES MODAL ───────────────────────────────────────────────────────
-function MapsGuideModal({onClose,onSelectGame}:{onClose:()=>void,onSelectGame:(gk:string)=>void}){
+function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onSelectGame:(gk:string)=>void,defaultCity?:string}){
   const scrollRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[]);
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
       <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
-        {/* Close handle */}
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
           <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
         </div>
         <div style={{display:"flex",justifyContent:"flex-end",padding:"4px 16px 0"}}>
           <button onClick={onClose} style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"5px 14px",fontSize:10,color:"rgba(255,255,255,0.4)",cursor:"pointer",letterSpacing:1,fontFamily:"'JetBrains Mono',monospace"}}>✕ CLOSE</button>
         </div>
-        <MapsInlineView onSelectGame={handleSelect} defaultCity={undefined}/>
+        <MapsInlineView onSelectGame={handleSelect} defaultCity={defaultCity} scrollContainer={scrollRef}/>
       </div>
     </div>
   );
@@ -4080,10 +4083,22 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[hotIdx,setHotIdx]=useState(0);
   const hotDragStart=useRef<number|null>(null);
   const[activeTab,setActiveTab]=useState<string>("all");
+  const[activeSection,setActiveSection]=useState<"home"|"explore">("home");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
   const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleLmSection=(tag:string)=>setLmCollapsed(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
+  const[hudXP,setHudXP]=useState(()=>getXP());
+  const[hudShields,setHudShields]=useState(()=>getShieldCount());
+  const[hudStreak,setHudStreak]=useState(()=>getGlobalData().streak||topStreak);
+  const[shieldHealToast,setShieldHealToast]=useState(false);
+  useEffect(()=>{
+    const healed=tryShieldHeal();
+    if(healed){setShieldHealToast(true);setTimeout(()=>setShieldHealToast(false),4000);}
+  },[]);
+  useEffect(()=>{
+    setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||topStreak);
+  },[activeSection,topStreak]);
 
   const modals=(
     <>
@@ -4296,7 +4311,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const si=hotIdx%swipeGames.length;
   const featG=swipeGames[si];
   return(
-    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box"}}>
+    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
       <link rel="manifest" href="/manifest.json"/>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
       <style>{`
@@ -4342,6 +4357,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
+      {activeSection==="home"&&<PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>}
+      {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
+      {activeSection==="home"&&<>
       {/* HERO */}
       <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
@@ -4367,9 +4385,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <span className="lm-grad" style={{display:"block"}}>UrbanIQ</span>
           </div>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
-            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>DAILY TRIVIA</span>
+            <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY DISCOVERY</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Transit · Geography · Sports · 5 Puzzles · 3 Rounds</div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
             {topStreak>0&&(
               <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
@@ -4432,6 +4450,20 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           All Games <div className="lm-eyebrow-line"/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
+          {/* EXPLORE — first item */}
+          <div style={{border:"2px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
+            <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:"20px"}}>🧭</span>
+                <div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
+                  <div style={{fontSize:"9px",color:"#888580",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                </div>
+              </div>
+              <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
+            </button>
+          </div>
           {[
             {tag:"TRANSIT",label:"🚊 Transit",color:"#4169E1"},
             {tag:"GEOGRAPHY",label:"🗺️ Geography",color:"#22C55E"},
@@ -4525,8 +4557,476 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#C8C5BF"}}>No Ads · No Tracking · Always Free</div>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"13px",letterSpacing:"2px",color:"#C8C5BF"}}>NIXALERLLC</div>
       </footer>
+      </>}
+      {activeSection==="explore"&&<ExploreView onSelectGame={onSelectGame}/>}
+
+      {/* BOTTOM TAB BAR */}
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(255,255,255,0.97)",borderTop:"1px solid #EDEBE8",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",display:"flex",zIndex:200,boxSizing:"border-box"}}>
+        {([{id:"home",icon:"🏠",label:"HOME"},{id:"explore",icon:"🧭",label:"EXPLORE"}] as {id:string,icon:string,label:string}[]).map(({id,icon,label})=>(
+          <button key={id} onClick={()=>{setActiveSection(id as "home"|"explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+            style={{flex:1,padding:"10px 0 14px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+            <span style={{fontSize:"20px"}}>{icon}</span>
+            <span style={{fontSize:"9px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",color:activeSection===id?"#0A0A0A":"#C8C5BF",transition:"color .18s"}}>{label}</span>
+            <div style={{width:24,height:2.5,borderRadius:2,background:"linear-gradient(90deg,#E8294A,#4169E1)",opacity:activeSection===id?1:0,transition:"opacity .18s"}}/>
+          </button>
+        ))}
+      </div>
 
       {modals}
+    </div>
+  );
+}
+
+// ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
+function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
+function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+amount));}
+function getShieldCount():number{return Number(localStorage.getItem("tgg:shields")||0);}
+function addShield():void{localStorage.setItem("tgg:shields",String(getShieldCount()+1));}
+function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;localStorage.setItem("tgg:shields",String(n-1));return true;}
+function getGlobalData():{streak:number,lastWin:string}{try{return JSON.parse(localStorage.getItem("tgg:global")||'{"streak":0,"lastWin":""}');}catch{return{streak:0,lastWin:""};}}
+function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
+function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10);const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);const g=getGlobalData();if(!g.lastWin||g.lastWin===today||g.lastWin===yest)return false;if(!consumeShield())return false;localStorage.setItem("tgg:global",JSON.stringify({streak:g.streak,lastWin:yest}));return true;}
+function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
+  const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
+  return(
+    <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid #EDEBE8"}}>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
+        <span style={{fontSize:14}}>🔥</span>
+        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>STREAK</div></div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:2,justifyContent:"center"}}>
+        <span style={{fontSize:14}}>⚡</span>
+        <div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(0,0,0,0.35)"}}>Lv{level}</span></div>
+          <div style={{width:72,height:3,background:"#EDEBE8",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:1,justifyContent:"flex-end"}}>
+        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
+        <span style={{fontSize:14}}>🛡️</span>
+      </div>
+    </div>
+  );
+}
+
+// ── EXPLORE DATA ──────────────────────────────────────────────────────────────
+const DC_METRO_STATIONS:{n:string,l:string[],c:string}[]=[
+  // Red Line
+  {n:"Shady Grove",l:["Red"],c:"A15"},{n:"Rockville",l:["Red"],c:"A14"},{n:"Twinbrook",l:["Red"],c:"A13"},{n:"White Flint",l:["Red"],c:"A12"},{n:"Grosvenor-Strathmore",l:["Red"],c:"A11"},{n:"Medical Center",l:["Red"],c:"A10"},{n:"Bethesda",l:["Red"],c:"A09"},{n:"Friendship Heights",l:["Red"],c:"A08"},{n:"Tenleytown-AU",l:["Red"],c:"A07"},{n:"Van Ness-UDC",l:["Red"],c:"A06"},{n:"Cleveland Park",l:["Red"],c:"A05"},{n:"Woodley Park-Zoo/Adams Morgan",l:["Red"],c:"A04"},{n:"Dupont Circle",l:["Red"],c:"A03"},{n:"Farragut North",l:["Red"],c:"A02"},
+  // Transfer hubs
+  {n:"Metro Center",l:["Red","Blue","Orange","Silver"],c:"A01"},{n:"Gallery Pl-Chinatown",l:["Red","Green","Yellow"],c:"B01"},{n:"Fort Totten",l:["Red","Green","Yellow"],c:"B06"},{n:"L'Enfant Plaza",l:["Blue","Orange","Silver","Green","Yellow"],c:"D03"},
+  // Red Line east
+  {n:"Judiciary Square",l:["Red"],c:"B02"},{n:"Union Station",l:["Red"],c:"B03"},{n:"NoMa-Gallaudet U",l:["Red"],c:"B35"},{n:"Rhode Island Ave-Brentwood",l:["Red"],c:"B04"},{n:"Brookland-CUA",l:["Red"],c:"B05"},{n:"Takoma",l:["Red"],c:"B07"},{n:"Silver Spring",l:["Red"],c:"B08"},{n:"Forest Glen",l:["Red"],c:"B09"},{n:"Wheaton",l:["Red"],c:"B10"},{n:"Glenmont",l:["Red"],c:"B11"},
+  // Orange Line Virginia
+  {n:"Vienna/Fairfax-GMU",l:["Orange"],c:"K08"},{n:"Dunn Loring-Merrifield",l:["Orange"],c:"K07"},{n:"West Falls Church-VT/UVA",l:["Orange"],c:"K06"},{n:"East Falls Church",l:["Orange","Silver"],c:"K05"},{n:"Ballston-MU",l:["Orange","Silver"],c:"K04"},{n:"Virginia Square-GMU",l:["Orange","Silver"],c:"K03"},{n:"Clarendon",l:["Orange","Silver"],c:"K02"},{n:"Court House",l:["Orange","Silver"],c:"K01"},{n:"Rosslyn",l:["Blue","Orange","Silver"],c:"C05"},
+  // Silver Line Dulles
+  {n:"McLean",l:["Silver"],c:"N01"},{n:"Tysons Corner",l:["Silver"],c:"N02"},{n:"Greensboro",l:["Silver"],c:"N03"},{n:"Spring Hill",l:["Silver"],c:"N04"},{n:"Wiehle-Reston East",l:["Silver"],c:"N06"},{n:"Reston Town Center",l:["Silver"],c:"N07"},{n:"Herndon",l:["Silver"],c:"N08"},{n:"Innovation Center",l:["Silver"],c:"N09"},{n:"Washington Dulles International Airport",l:["Silver"],c:"N10"},{n:"Loudoun Gateway",l:["Silver"],c:"N11"},{n:"Ashburn",l:["Silver"],c:"N12"},
+  // Shared Blue/Orange/Silver DC corridor
+  {n:"Foggy Bottom-GWU",l:["Blue","Orange","Silver"],c:"C04"},{n:"Farragut West",l:["Blue","Orange","Silver"],c:"C03"},{n:"McPherson Square",l:["Blue","Orange","Silver"],c:"C02"},{n:"Federal Triangle",l:["Blue","Orange","Silver"],c:"D01"},{n:"Smithsonian",l:["Blue","Orange","Silver"],c:"D02"},{n:"Federal Center SW",l:["Blue","Orange","Silver"],c:"D04"},{n:"Capitol South",l:["Blue","Orange","Silver"],c:"D05"},{n:"Eastern Market",l:["Blue","Orange","Silver"],c:"D06"},{n:"Potomac Ave",l:["Blue","Orange","Silver"],c:"D07"},{n:"Stadium-Armory",l:["Blue","Orange","Silver"],c:"D08"},{n:"Minnesota Ave",l:["Blue","Orange","Silver"],c:"D09"},{n:"Deanwood",l:["Blue","Orange","Silver"],c:"D10"},{n:"Cheverly",l:["Blue","Orange","Silver"],c:"D11"},{n:"Landover",l:["Blue","Orange","Silver"],c:"D12"},{n:"New Carrollton",l:["Blue","Orange","Silver"],c:"D13"},
+  // Blue Line Virginia south
+  {n:"Arlington Cemetery",l:["Blue"],c:"C06"},{n:"Pentagon",l:["Blue","Yellow"],c:"C07"},{n:"Pentagon City",l:["Blue","Yellow"],c:"C08"},{n:"Ronald Reagan Washington National Airport",l:["Blue","Yellow"],c:"C10"},{n:"Braddock Road",l:["Blue","Yellow"],c:"C12"},{n:"King Street-Old Town",l:["Blue","Yellow"],c:"C13"},{n:"Eisenhower Avenue",l:["Yellow"],c:"C14"},{n:"Huntington",l:["Yellow"],c:"C15"},{n:"Van Dorn Street",l:["Blue"],c:"J02"},{n:"Franconia-Springfield",l:["Blue"],c:"J03"},{n:"Largo Town Center",l:["Blue","Silver"],c:"G05"},
+  // Green/Yellow DC
+  {n:"Archives-Navy Memorial-Penn Quarter",l:["Green","Yellow"],c:"F02"},{n:"Mt Vernon Sq/7th St-Convention Center",l:["Green","Yellow"],c:"E01"},{n:"Shaw-Howard U",l:["Green","Yellow"],c:"E02"},{n:"U Street/AACWM/Cardozo",l:["Green","Yellow"],c:"E03"},{n:"Columbia Heights",l:["Green","Yellow"],c:"E04"},{n:"Georgia Ave-Petworth",l:["Green","Yellow"],c:"E05"},{n:"West Hyattsville",l:["Green"],c:"E06"},{n:"Prince George's Plaza",l:["Green"],c:"E07"},{n:"College Park-U of Md",l:["Green"],c:"E08"},{n:"Greenbelt",l:["Green"],c:"E09"},
+  // Green Line south
+  {n:"Waterfront",l:["Green"],c:"F04"},{n:"Navy Yard-Ballpark",l:["Green"],c:"F05"},{n:"Anacostia",l:["Green"],c:"F06"},{n:"Congress Heights",l:["Green"],c:"F07"},{n:"Southern Ave",l:["Green"],c:"F08"},{n:"Naylor Road",l:["Green"],c:"F09"},{n:"Suitland",l:["Green"],c:"F10"},{n:"Branch Ave",l:["Green"],c:"F11"},
+];
+function toExploreStns(arr:{name:string,lines:string[]}[]):{n:string,l:string[],c:string}[]{return arr.map(s=>({n:s.name,l:s.lines,c:""}));}
+const PDX_XS=toExploreStns(PDX_STATIONS);
+const BALT_XS=toExploreStns(BALT_STATIONS);
+const LA_XS=toExploreStns(LA_STATIONS);
+const NYC_XS=toExploreStns(NYC_STATIONS);
+const CHI_XS=toExploreStns(CHI_STATIONS);
+const BOS_XS=toExploreStns(BOS_STATIONS);
+const ATL_XS=toExploreStns(ATL_STATIONS);
+const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[],lc:{[k:string]:string},stations?:{n:string,l:string[],c:string}[]}}={
+  pdx:{name:"Portland MAX",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"],lc:{"Blue":"#1A6FBF","Red":"#D71F26","Green":"#028A48","Orange":"#D77033","Yellow":"#FFC72C","WES":"#6B7280"},stations:PDX_XS},
+  dc:{name:"DC Metro",emoji:"🌸",color:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#007DC5"},{name:"Orange",color:"#ED8B00"},{name:"Silver",color:"#A2AAAD"},{name:"Green",color:"#00B140"},{name:"Yellow",color:"#FFD100"}],hubs:["Metro Center","Gallery Pl-Chinatown","Union Station","Pentagon City","Dupont Circle"],lc:{"Red":"#BF0000","Blue":"#007DC5","Orange":"#ED8B00","Silver":"#A2AAAD","Green":"#00B140","Yellow":"#FFD100"},stations:DC_METRO_STATIONS},
+  balt:{name:"Baltimore MTA",emoji:"🦀",color:"#003087",lines:[{name:"Metro SubwayLink",color:"#F7941D"},{name:"Light Rail",color:"#003087"}],hubs:["Penn Station","Convention Center","Lexington Market","Charles Center","Johns Hopkins Hospital"],lc:{"Metro":"#F7941D","Light Rail":"#003087"},stations:BALT_XS},
+  la:{name:"LA Metro",emoji:"🌴",color:"#0072bc",lines:[{name:"A Line",color:"#60A0CF"},{name:"B Line",color:"#EF3340"},{name:"C Line",color:"#6CBE45"},{name:"D Line",color:"#6B449A"},{name:"E Line",color:"#1D9FD0"},{name:"K Line",color:"#EF6A00"}],hubs:["Union Station","7th St/Metro Center","Hollywood/Highland","Wilshire/Vermont","LAX/Aviation"],lc:{"A":"#60A0CF","B":"#EF3340","C":"#6CBE45","D":"#6B449A","E":"#1D9FD0","K":"#EF6A00"},stations:LA_XS},
+  nyc:{name:"NYC Subway",emoji:"🗽",color:"#EE352E",lines:[{name:"1/2/3",color:"#EE352E"},{name:"A/C/E",color:"#0039A6"},{name:"4/5/6",color:"#00933C"},{name:"N/Q/R/W",color:"#FCCC0A"},{name:"B/D/F/M",color:"#FF6319"},{name:"L",color:"#A7A9AC"},{name:"7",color:"#B933AD"},{name:"J/Z",color:"#996633"},{name:"G",color:"#6CBE45"}],hubs:["Times Sq-42 St","Grand Central-42 St","14th St-Union Sq","Fulton St","Atlantic Av-Barclays Ctr"],lc:{"1":"#EE352E","2":"#EE352E","3":"#EE352E","4":"#00933C","5":"#00933C","6":"#00933C","7":"#B933AD","A":"#0039A6","C":"#0039A6","E":"#0039A6","B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319","N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A","J":"#996633","Z":"#996633","G":"#6CBE45","L":"#A7A9AC","S":"#808183"},stations:NYC_XS},
+  chi:{name:"Chicago L",emoji:"💨",color:"#C60C30",lines:[{name:"Red Line",color:"#C60C30"},{name:"Blue Line",color:"#00A1DE"},{name:"Brown Line",color:"#62361B"},{name:"Green Line",color:"#009B3A"},{name:"Orange Line",color:"#F9461C"},{name:"Purple Line",color:"#522398"},{name:"Pink Line",color:"#E27EA6"},{name:"Yellow Line",color:"#F9E300"}],hubs:["Clark/Lake","Washington/Wabash","State/Lake","O'Hare","Midway"],lc:{"Red":"#C60C30","Blue":"#00A1DE","Brown":"#62361B","Green":"#009B3A","Orange":"#F9461C","Purple":"#522398","Pink":"#E27EA6","Yellow":"#F9E300"},stations:CHI_XS},
+  bos:{name:"Boston T",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
+  atl:{name:"Atlanta MARTA",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
+};
+const EXPLORE_PICKS:{[k:string]:{name:string,type:string,desc:string}[]}={
+  pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
+  dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops."},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
+  balt:[{name:"Lexington Market",type:"🛍️ Market",desc:"One of the world's oldest public markets since 1782."},{name:"LP Steamers",type:"🦀 Seafood",desc:"Famous blue crab shack in South Baltimore."},{name:"Union Craft Brewing",type:"🍺 Brewery",desc:"Baltimore's neighborhood brewery in Woodberry."}],
+  la:[{name:"Grand Central Market",type:"🛍️ Market",desc:"Downtown LA's historic market hall since 1917."},{name:"Philippe The Original",type:"🥩 Deli",desc:"Home of the French Dip sandwich since 1908."},{name:"Clifton's Republic",type:"🍴 Diner",desc:"Quirky retro cafeteria in the heart of DTLA."}],
+  nyc:[{name:"Katz's Delicatessen",type:"🥪 Deli",desc:"NYC's most famous deli since 1888 on Houston St."},{name:"The Strand Bookstore",type:"📚 Books",desc:"18 miles of books — a New York institution."},{name:"Russ & Daughters",type:"🐟 Deli",desc:"Iconic appetizing shop since 1914 on Houston St."}],
+  chi:[{name:"Lou Malnati's",type:"🍕 Deep Dish",desc:"Chicago's deep dish legend since 1971."},{name:"Intelligentsia Coffee",type:"☕ Coffee",desc:"Chicago's specialty coffee pioneer on Randolph St."},{name:"Chicago Riverwalk",type:"🌊 Outdoors",desc:"Scenic path along the river, steps from the Loop stations."}],
+  bos:[{name:"Mike's Pastry",type:"🧁 Bakery",desc:"North End's legendary cannoli shop since 1946."},{name:"Boston Public Market",type:"🛍️ Market",desc:"Year-round indoor market with local New England goods."},{name:"Cheers (Bull & Finch Pub)",type:"🍺 Bar",desc:"The bar that inspired the classic TV show, on Beacon Hill."}],
+  atl:[{name:"Ponce City Market",type:"🛍️ Market",desc:"Historic Sears building turned food hall near BeltLine."},{name:"Fox Theatre",type:"🎭 Theater",desc:"Gorgeous 1929 movie palace on Peachtree Street."},{name:"Gladys Knight's Chicken & Waffles",type:"🍗 Soul Food",desc:"Atlanta institution for late-night soul food."}],
+};
+const MICRO_QUESTS:{[k:string]:{id:string,title:string,desc:string,xp:number,shield:boolean}[]}={
+  pdx:[{id:"pdx_q1",title:"End-to-End Run",desc:"Ride the Blue Line from Hillsboro to Gresham — the full length.",xp:150,shield:true},{id:"pdx_q2",title:"Farmers Market",desc:"Grab something from the PSU Farmers Market near Pioneer Square.",xp:75,shield:false},{id:"pdx_q3",title:"Coffee Run",desc:"Get a coffee from a café within walking distance of any MAX stop.",xp:50,shield:false}],
+  dc:[{id:"dc_q1",title:"Red Line Run",desc:"Ride the Red Line from Shady Grove to Glenmont — end to end.",xp:150,shield:true},{id:"dc_q2",title:"Capitol Dome View",desc:"Spot the Capitol dome from the Capitol South station exit.",xp:75,shield:false},{id:"dc_q3",title:"Ethiopian Run",desc:"Try Ethiopian food on U Street near the Green/Yellow Line.",xp:50,shield:false}],
+  balt:[{id:"balt_q1",title:"Metro SubwayLink Run",desc:"Ride from Owings Mills to Johns Hopkins Hospital — end to end.",xp:150,shield:true},{id:"balt_q2",title:"Inner Harbor Walk",desc:"Walk to the Inner Harbor from the Convention Center stop.",xp:75,shield:false},{id:"balt_q3",title:"Crab Cake Quest",desc:"Find a Maryland blue crab cake near a MTA station.",xp:50,shield:false}],
+  la:[{id:"la_q1",title:"B Line Run",desc:"Ride the B Line from North Hollywood to Wilshire/Western — full length.",xp:150,shield:true},{id:"la_q2",title:"Hollywood History",desc:"Visit the Hollywood/Highland station area and its historic surroundings.",xp:75,shield:false},{id:"la_q3",title:"Taco Run",desc:"Find authentic street tacos within walking distance of a Metro stop.",xp:50,shield:false}],
+  nyc:[{id:"nyc_q1",title:"A Train Run",desc:"Ride the A Train — NYC's longest subway line, end to end.",xp:150,shield:true},{id:"nyc_q2",title:"Subway Musician",desc:"Tip a busker performing in Times Square or Grand Central.",xp:75,shield:false},{id:"nyc_q3",title:"Bagel Run",desc:"Grab a fresh bagel from a deli near your station.",xp:50,shield:false}],
+  chi:[{id:"chi_q1",title:"Ride the Loop",desc:"Take the elevated Loop line around downtown Chicago.",xp:150,shield:true},{id:"chi_q2",title:"Find the Bean",desc:"Visit Cloud Gate (the Bean) near the Loop stations.",xp:75,shield:false},{id:"chi_q3",title:"Deep Dish",desc:"Get a slice of Chicago-style deep dish near any CTA stop.",xp:50,shield:false}],
+  bos:[{id:"bos_q1",title:"Red Line Run",desc:"Ride the Red Line from Alewife to Braintree — the full length.",xp:150,shield:true},{id:"bos_q2",title:"Freedom Trail",desc:"Walk part of the Freedom Trail from Downtown Crossing station.",xp:75,shield:false},{id:"bos_q3",title:"Cannoli Run",desc:"Get a cannoli from the North End near Haymarket station.",xp:50,shield:false}],
+  atl:[{id:"atl_q1",title:"Red Line Run",desc:"Ride MARTA's Red Line from Airport to North Springs — end to end.",xp:150,shield:true},{id:"atl_q2",title:"BeltLine Walk",desc:"Find the Atlanta BeltLine near North Avenue or King Memorial station.",xp:75,shield:false},{id:"atl_q3",title:"Southern Comfort",desc:"Get chicken & waffles or biscuits near any MARTA stop.",xp:50,shield:false}],
+};
+const CITY_TRANSIT_INFO:{[k:string]:{health:number,stations:number,riders:string,officialMap:string,status:{line:string,color:string,ok:boolean}[]}}={
+  pdx:{health:94,stations:97,riders:"95K/day",officialMap:"https://trimet.org/ride/system-map.htm",
+    status:[{line:"Red",color:"#D4251E",ok:true},{line:"Blue",color:"#0067B1",ok:true},{line:"Green",color:"#008752",ok:true},{line:"Yellow",color:"#FFD100",ok:true},{line:"Orange",color:"#E07C31",ok:false}]},
+  dc:{health:88,stations:98,riders:"612K/day",officialMap:"https://www.wmata.com/rider-guide/maps/",
+    status:[{line:"Red",color:"#BF0000",ok:true},{line:"Blue",color:"#007DC5",ok:true},{line:"Orange",color:"#ED8B00",ok:true},{line:"Silver",color:"#A2AAAD",ok:false},{line:"Green",color:"#00B140",ok:true},{line:"Yellow",color:"#FFD100",ok:true}]},
+  balt:{health:79,stations:47,riders:"42K/day",officialMap:"https://www.mta.maryland.gov/transit-map",
+    status:[{line:"Metro SubwayLink",color:"#003087",ok:true},{line:"Light Rail",color:"#007DC5",ok:true}]},
+  la:{health:91,stations:109,riders:"305K/day",officialMap:"https://www.metro.net/riding/maps/",
+    status:[{line:"A Line",color:"#00AEEF",ok:true},{line:"B Line",color:"#E3051B",ok:true},{line:"C Line",color:"#59A65E",ok:true},{line:"D Line",color:"#6B449A",ok:false},{line:"E Line",color:"#E3A519",ok:true}]},
+  nyc:{health:97,stations:472,riders:"3.4M/day",officialMap:"https://new.mta.info/maps",
+    status:[{line:"1/2/3",color:"#EE352E",ok:true},{line:"4/5/6",color:"#00933C",ok:true},{line:"A/C/E",color:"#0039A6",ok:true},{line:"B/D/F/M",color:"#FF6319",ok:true},{line:"N/Q/R/W",color:"#FCCC0A",ok:false}]},
+  chi:{health:86,stations:145,riders:"218K/day",officialMap:"https://www.transitchicago.com/maps/",
+    status:[{line:"Red",color:"#C60C30",ok:true},{line:"Blue",color:"#00A1DE",ok:true},{line:"Brown",color:"#62361B",ok:false},{line:"Green",color:"#009B3A",ok:true},{line:"Orange",color:"#F9461C",ok:true},{line:"Purple",color:"#522398",ok:true}]},
+  bos:{health:82,stations:53,riders:"315K/day",officialMap:"https://www.mbta.com/maps",
+    status:[{line:"Red",color:"#DA291C",ok:true},{line:"Orange",color:"#ED8B00",ok:false},{line:"Blue",color:"#003DA5",ok:true},{line:"Green",color:"#00843D",ok:true},{line:"Silver",color:"#7C878E",ok:true}]},
+  atl:{health:85,stations:38,riders:"195K/day",officialMap:"https://www.itsmarta.com/system-map.aspx",
+    status:[{line:"Red",color:"#CE1141",ok:true},{line:"Gold",color:"#B5A21E",ok:true},{line:"Blue",color:"#0047AB",ok:true},{line:"Green",color:"#228B22",ok:false}]},
+};
+const SIM_DESTS:{[k:string]:string[]}={
+  pdx:["Hillsboro","Gresham/Cleveland Ave","Airport MAX","Clackamas TC","Milwaukie","City Center"],
+  dc:["Shady Grove","Glenmont","Franconia-Springfield","Largo Town Ctr","Ashburn","Greenbelt","Huntington","New Carrollton"],
+  balt:["Owings Mills","Johns Hopkins","Penn Station","Cromwell","Hunt Valley","BWI Airport"],
+  la:["Santa Monica","Azusa","Long Beach","Expo/Crenshaw","Culver City","Union Station","Norwalk"],
+  nyc:["Uptown","Downtown","Coney Island","Far Rockaway","Jamaica","Bronx","Brooklyn","Queens"],
+  chi:["O'Hare","Forest Park","Kimball","Howard","Linden","Harlem/Lake","Loop","95th/Dan Ryan"],
+  bos:["Alewife","Braintree/Ashmont","Wonderland","Heath Street","Lechmere","Forest Hills","Logan Airport"],
+  atl:["Airport","North Springs","Doraville","Indian Creek","Five Points","Bankhead"],
+};
+function getSimPulse(cityKey:string,station:string,tick:number):{line:string,lineColor:string,dest:string,mins:number,crowd:number}[]{
+  const meta=EXPLORE_CITY_META[cityKey];
+  if(!meta)return[];
+  const hash=(s:string)=>s.split("").reduce((a,c,i)=>((a<<5)-a+c.charCodeAt(0)*(i+1))>>>0,0);
+  const sh=hash(station);
+  const cityDests=SIM_DESTS[cityKey]||["Northbound","Southbound","Inbound","Outbound","Express","To Downtown"];
+  return meta.lines.slice(0,4).map((ln,i)=>{
+    const mins=((sh*31+i*137+tick*17)%11)+1;
+    const crowd=((sh*7+i*53+tick*3)%70)+20;
+    const dest=cityDests[(sh+i*3)%cityDests.length];
+    return{line:ln.name,lineColor:ln.color,dest,mins,crowd};
+  });
+}
+function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string,xp:number,shield:boolean},onVerified:()=>void,onClose:()=>void}){
+  const[step,setStep]=useState<1|2>(1);
+  const[gpsState,setGpsState]=useState<"checking"|"ok">("checking");
+  const[code,setCode]=useState("");
+  const[codeErr,setCodeErr]=useState(false);
+  const inputRef=useRef<HTMLInputElement>(null);
+  useEffect(()=>{
+    if(step===1){const t=setTimeout(()=>setGpsState("ok"),2600);return()=>clearTimeout(t);}
+    if(step===2)setTimeout(()=>inputRef.current?.focus(),200);
+  },[step]);
+  function submitCode(){
+    if(code.trim().length>=4){onVerified();}
+    else{setCodeErr(true);setTimeout(()=>setCodeErr(false),1400);}
+  }
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"flex-end",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:"24px 24px 0 0",padding:"28px 24px 44px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
+          <div>
+            <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>Verification · Step {step} of 2</div>
+            <div style={{fontSize:"18px",fontWeight:800,color:"#0A0A0A",lineHeight:1.2}}>{quest.title}</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"1px solid #EDEBE8",borderRadius:20,padding:"5px 12px",fontSize:"11px",fontWeight:600,cursor:"pointer",color:"#888580",flexShrink:0,marginLeft:12}}>✕</button>
+        </div>
+        {step===1&&(
+          <div style={{textAlign:"center",padding:"16px 0 8px"}}>
+            <div style={{fontSize:"44px",marginBottom:14}}>📍</div>
+            <div style={{fontSize:"16px",fontWeight:700,color:"#0A0A0A",marginBottom:6}}>{gpsState==="checking"?"Checking your location…":"Location verified ✓"}</div>
+            <div style={{fontSize:"12px",color:"#888580",marginBottom:20}}>Required: within 0.25 mi (400m) of venue</div>
+            {gpsState==="checking"&&(
+              <>
+                <div style={{background:"#EDEBE8",borderRadius:8,height:6,overflow:"hidden",maxWidth:260,margin:"0 auto 16px"}}>
+                  <div style={{height:"100%",background:"linear-gradient(90deg,#028A48,#4169E1,#E8294A)",borderRadius:8,animation:"lmBarFlow 2s linear infinite",backgroundSize:"200% auto"}}/>
+                </div>
+                <button onClick={()=>setStep(2)} style={{marginTop:4,background:"none",border:"none",color:"#C8C5BF",fontSize:"11px",cursor:"pointer",textDecoration:"underline",fontFamily:"'Outfit',sans-serif"}}>Not near the venue? Skip →</button>
+              </>
+            )}
+            {gpsState==="ok"&&(
+              <button onClick={()=>setStep(2)} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"14px 36px",fontSize:"12px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Continue →</button>
+            )}
+          </div>
+        )}
+        {step===2&&(
+          <div>
+            <div style={{fontSize:"14px",fontWeight:600,color:"#0A0A0A",marginBottom:4,textAlign:"center"}}>Enter the partner code</div>
+            <div style={{fontSize:"11px",color:"#888580",marginBottom:18,textAlign:"center"}}>Ask your barista / server, or scan the QR code at the venue.</div>
+            <input ref={inputRef} value={code} onChange={e=>setCode(e.target.value.toUpperCase().slice(0,8))} placeholder="e.g.  URBAN1" maxLength={8}
+              style={{width:"100%",padding:"16px",fontSize:"22px",fontWeight:700,letterSpacing:"6px",textAlign:"center",border:`2px solid ${codeErr?"#E8294A":"#EDEBE8"}`,borderRadius:10,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box",background:codeErr?"#FFF5F5":"#FAFAFA",transition:"border-color .2s"}}
+              onKeyDown={e=>{if(e.key==="Enter")submitCode();}}/>
+            {codeErr&&<div style={{color:"#E8294A",fontSize:"11px",textAlign:"center",marginTop:6,fontWeight:600}}>Code too short — try again</div>}
+            <div style={{marginTop:14,display:"flex",gap:10}}>
+              <button onClick={()=>setStep(1)} style={{flex:1,padding:"13px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>← Back</button>
+              <button onClick={submitCode} style={{flex:2,padding:"13px",background:code.length>=4?"#0A0A0A":"#EDEBE8",color:code.length>=4?"#fff":"#C8C5BF",border:"none",borderRadius:8,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:code.length>=4?"pointer":"default",fontFamily:"'Outfit',sans-serif",transition:"all .2s"}}>Verify &amp; Claim →</button>
+            </div>
+            <div style={{marginTop:14,padding:"10px 14px",background:"rgba(65,105,225,0.05)",border:"1px solid rgba(65,105,225,0.15)",borderRadius:8,textAlign:"center"}}>
+              <span style={{fontSize:"9px",fontWeight:700,color:"#4169E1",letterSpacing:"1.5px",textTransform:"uppercase"}}>DEMO MODE</span>
+              <span style={{fontSize:"9px",color:"#888580",marginLeft:8}}>Any 4+ char code works. Live validation requires a partner API key.</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
+  const TRANSIT_KEYS=["pdx","dc","balt","la","nyc","chi","bos","atl"];
+  const[cityKey,setCityKey]=useState<string>("");
+  const[selStation,setSelStation]=useState<string|null>(null);
+  const[stationSearch,setStationSearch]=useState("");
+  const[tick,setTick]=useState(0);
+  const today=new Date().toISOString().slice(0,10);
+  const[completedQuests,setCompletedQuests]=useState<Set<string>>(()=>new Set(JSON.parse(localStorage.getItem("tgg:quests:done")||"[]")));
+  const shieldKey=`tgg:explore:shield:${today}`;
+  const[hasShield,setHasShield]=useState(()=>!!localStorage.getItem(shieldKey));
+  const[shieldPop,setShieldPop]=useState(false);
+  const[xpPop,setXpPop]=useState<number|null>(null);
+  const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
+  const[showExploreMap,setShowExploreMap]=useState(false);
+  useEffect(()=>{const id=setInterval(()=>setTick(t=>t+1),30000);return()=>clearInterval(id);},[]);
+  const meta=EXPLORE_CITY_META[cityKey]||EXPLORE_CITY_META["dc"];
+  const hub=selStation||(meta?.hubs[0]||"");
+  const pulse=cityKey?getSimPulse(cityKey,hub,tick):[];
+  const picks=EXPLORE_PICKS[cityKey]||[];
+  const quests=MICRO_QUESTS[cityKey]||[];
+  const G=GAMES[cityKey]||GAMES["dc"];
+  function completeQuest(qid:string,xp:number,isShield:boolean){
+    if(completedQuests.has(qid))return;
+    const next=new Set([...completedQuests,qid]);
+    setCompletedQuests(next);
+    localStorage.setItem("tgg:quests:done",JSON.stringify([...next]));
+    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
+    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
+  }
+  return(
+    <div style={{background:"#FFFFFF",paddingBottom:16}}>
+      {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
+      {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
+      <div style={{padding:"20px 22px 0"}}>
+        <div style={{marginBottom:18}}>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:4}}>CITY GUIDE</div>
+          <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {cityKey?meta.emoji:"🧭"}</div>
+          {hasShield&&<div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(65,105,225,0.06)",border:"1px solid rgba(65,105,225,0.2)",borderRadius:20,padding:"4px 12px",marginTop:8,fontSize:"11px",fontWeight:700,color:"#4169E1"}}>🛡️ Streak Shield Active Today</div>}
+        </div>
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT CITY & STATION</div>
+          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
+            {TRANSIT_KEYS.map((k,ki)=>{
+              const cm=EXPLORE_CITY_META[k];
+              const isOpen=k===cityKey;
+              const G2=GAMES[k];
+              const stList=cm.stations||cm.hubs.map(h=>({n:h,l:[] as string[],c:""}));
+              const filtered=isOpen&&cm.stations?stList.filter(s=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())):stList;
+              return(
+                <div key={k} style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none"}}>
+                  <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+                    style={{padding:"13px 16px",background:isOpen?(G2.accent+"0f"):"#fff",cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"background .15s",WebkitTapHighlightColor:"transparent"}}>
+                    <div style={{width:18,height:18,borderRadius:"50%",background:isOpen?G2.accent:"#EDEBE8",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:isOpen?"#fff":"#888580",flexShrink:0}}>{isOpen?"▼":"▶"}</div>
+                    <span style={{fontSize:"16px"}}>{cm.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"13px",fontWeight:isOpen?700:500,color:isOpen?G2.accent:"#0A0A0A"}}>{cm.name}</div>
+                      {isOpen&&cm.stations&&<div style={{fontSize:"9px",color:"rgba(0,0,0,0.35)",marginTop:1}}>{cm.stations.length} stations · {cm.lines.length} lines</div>}
+                    </div>
+                    {isOpen&&<div style={{fontSize:"9px",fontWeight:700,color:G2.accent,letterSpacing:"1px"}}>ACTIVE</div>}
+                  </div>
+                  {isOpen&&(
+                    <div style={{background:"#FAFAFA",animation:"lmFadeIn .15s ease both"}}>
+                      {cm.stations&&(
+                        <div style={{padding:"8px 12px",borderTop:"1px solid #EDEBE8"}}>
+                          <div style={{position:"relative"}}>
+                            <input value={stationSearch} onChange={e=>setStationSearch(e.target.value)} placeholder="Search stations or lines…"
+                              style={{width:"100%",padding:"8px 8px 8px 30px",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"12px",outline:"none",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",background:"#fff"}}/>
+                            <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none"}}>🔍</span>
+                          </div>
+                        </div>
+                      )}
+                      <div style={{maxHeight:360,overflowY:"auto"}}>
+                        {stationSearch
+                          ?filtered.map((s)=>(
+                            <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
+                              style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                              <div style={{display:"flex",gap:2,flexShrink:0}}>
+                                {(s.l.length?s.l:["?"]).slice(0,5).map(ln=><div key={ln} style={{width:7,height:7,borderRadius:1,background:cm.lc[ln]||"#C8C5BF",flexShrink:0}}/>)}
+                              </div>
+                              <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                              {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px"}}>LIVE →</div>}
+                            </div>
+                          ))
+                          :(()=>{
+                            const seenL=new Set<string>();const ordL:string[]=[];
+                            stList.forEach(s=>s.l.forEach(ln=>{if(!seenL.has(ln)){seenL.add(ln);ordL.push(ln);}}));
+                            return ordL.map(ln=>{
+                              const lc=cm.lc[ln]||"#999";
+                              const lineSt=stList.filter(s=>s.l[0]===ln);
+                              if(lineSt.length===0)return null;
+                              return(
+                                <div key={ln}>
+                                  <div style={{padding:"5px 12px",background:lc+"18",display:"flex",alignItems:"center",gap:7,borderTop:"1px solid #EDEBE8",position:"sticky",top:0,zIndex:1}}>
+                                    <div style={{width:12,height:12,borderRadius:2,background:lc,flexShrink:0}}/>
+                                    <span style={{fontSize:"10px",fontWeight:800,color:lc,letterSpacing:"0.8px",textTransform:"uppercase",flex:1}}>{ln}</span>
+                                    <span style={{fontSize:"9px",color:"#888580"}}>{lineSt.length}</span>
+                                  </div>
+                                  {lineSt.map(s=>{
+                                    const extraLines=s.l.filter(ll=>ll!==ln);
+                                    return(
+                                      <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
+                                        style={{padding:"9px 12px 9px 32px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:7,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                                        <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                                        {extraLines.length>0&&<div style={{display:"flex",gap:2,flexShrink:0}}>{extraLines.slice(0,5).map(ll=><div key={ll} style={{width:6,height:6,borderRadius:1,background:cm.lc[ll]||"#C8C5BF"}}/>)}</div>}
+                                        {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            });
+                          })()
+                        }
+                        {stationSearch&&filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div style={{padding:"0 22px 20px"}}>
+        {(()=>{
+          const cti=CITY_TRANSIT_INFO[cityKey];
+          if(!cti)return null;
+          const okCount=cti.status.filter(s=>s.ok).length;
+          const allOk=okCount===cti.status.length;
+          return(
+            <div style={{border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",marginBottom:12,overflow:"hidden"}}>
+              <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
+                  <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const}}>
+                    {cti.status.map(s=>(
+                      <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
+                        <div style={{width:20,height:7,borderRadius:2,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.5}}/>
+                        {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{textAlign:"right",flexShrink:0}}>
+                  <div style={{fontSize:"13px",fontWeight:800,color:allOk?"#22C55E":"#FF8C42",lineHeight:1}}>{allOk?"✓ Normal":"⚠ Delays"}</div>
+                  <div style={{fontSize:"9px",color:"#888580",marginTop:2}}>{okCount}/{cti.status.length} lines clear</div>
+                </div>
+              </div>
+              <div style={{padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
+                <div style={{flex:1,display:"flex",gap:16}}>
+                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.stations}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>STATIONS</div></div>
+                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.riders}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>RIDERS</div></div>
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:4}}>
+                      <div style={{fontSize:"13px",fontWeight:800,color:cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A"}}>{cti.health}%</div>
+                    </div>
+                    <div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>HEALTH</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,flexShrink:0}}>
+                  <button onClick={()=>setShowExploreMap(true)}
+                    style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                    🗺️ MAP
+                  </button>
+                  <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
+                    style={{padding:"8px 12px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
+                    LIVE ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",gap:8}}>
+          <span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#E8294A",animation:"lmBlink 1.5s infinite"}}/>
+          NEXT ARRIVALS — {hub}
+          <span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>simulated</span>
+        </div>
+        <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
+          {pulse.map((p,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<pulse.length-1?"1px solid #EDEBE8":"none",background:"#fff"}}>
+              <div style={{width:28,height:18,borderRadius:3,background:p.lineColor,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:"8px",fontWeight:900,color:"#fff",letterSpacing:"0.5px"}}>{p.line.split(" ")[0].slice(0,3).toUpperCase()}</span>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",letterSpacing:"0.3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.dest}</div>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
+                  <div style={{width:36,height:2,borderRadius:1,background:"#EDEBE8",overflow:"hidden"}}>
+                    <div style={{width:`${p.crowd}%`,height:"100%",background:p.crowd>75?"#E8294A":p.crowd>50?"#FFB800":"#22C55E",borderRadius:1}}/>
+                  </div>
+                  <span style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>{p.crowd>75?"CROWDED":p.crowd>50?"BUSY":"CLEAR"}</span>
+                </div>
+              </div>
+              <div style={{textAlign:"right",flexShrink:0}}>
+                <div style={{fontSize:"20px",fontWeight:900,color:p.mins<=2?"#E8294A":p.mins<=5?"#FF8C42":"#0A0A0A",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{p.mins}</div>
+                <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:1}}>MIN</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {cityKey&&<div style={{padding:"0 22px 20px"}}>
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {picks.map((p,i)=>(
+            <div key={i} style={{border:"1px solid #EDEBE8",borderRadius:10,padding:"14px 16px",background:"#FAFAFA",display:"flex",alignItems:"flex-start",gap:12}}>
+              <div style={{fontSize:"22px",flexShrink:0,marginTop:2}}>{p.type.split(" ")[0]}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
+                <div style={{fontSize:"10px",color:"#888580",lineHeight:1.4}}>{p.desc}</div>
+                <div style={{fontSize:"10px",fontWeight:600,color:G.accent,marginTop:4}}>{p.type.split(" ").slice(1).join(" ")}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>}
+      {cityKey&&<div style={{padding:"0 22px 24px"}}>
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>MICRO-QUESTS</div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {quests.map((q,i)=>{
+            const done=completedQuests.has(q.id);
+            return(
+              <div key={i} style={{border:`2px solid ${done?"#22C55E":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:done?"rgba(34,197,94,0.04)":"#FAFAFA"}}>
+                <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+                  <div style={{fontSize:"20px",flexShrink:0}}>{done?"✅":q.shield?"🛡️":"⭐"}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:"13px",fontWeight:700,color:done?"#22C55E":"#0A0A0A",marginBottom:2}}>{q.title}</div>
+                    <div style={{fontSize:"11px",color:"#888580",lineHeight:1.4}}>{q.desc}</div>
+                    <div style={{display:"flex",gap:8,marginTop:6,alignItems:"center"}}>
+                      <span style={{fontSize:"10px",fontWeight:700,color:"#FFB800"}}>+{q.xp} XP</span>
+                      {q.shield&&!hasShield&&<span style={{fontSize:"10px",fontWeight:700,color:"#4169E1"}}>+ 🛡️ Streak Shield</span>}
+                      {q.shield&&hasShield&&<span style={{fontSize:"10px",color:"#C8C5BF"}}>Shield already claimed</span>}
+                    </div>
+                  </div>
+                </div>
+                {!done&&<button onClick={()=>setMarkDoneQuest(q)}
+                  style={{width:"100%",padding:"10px",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                  VERIFY &amp; CLAIM →
+                </button>}
+                {done&&<div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ COMPLETED</div>}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{marginTop:16,padding:"14px 16px",border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",display:"flex",alignItems:"center",gap:12,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>onSelectGame(cityKey)}>
+          <div style={{width:36,height:36,borderRadius:8,background:G.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>{G.emoji}</div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:"11px",fontWeight:700,color:"#0A0A0A"}}>Ready to test your knowledge?</div>
+            <div style={{fontSize:"10px",color:"#888580",marginTop:1}}>Play {meta.name} Trivia →</div>
+          </div>
+        </div>
+      </div>}
+      {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
+      {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
     </div>
   );
 }
@@ -5465,6 +5965,7 @@ function GameHistoryCalendar({gameKey:gk,playHistory,T}:{gameKey:string,playHist
 function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void}){
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
+  const[gameHudXP,setGameHudXP]=useState(()=>getXP());
   const[tab,setTab]=useState("play");
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[tab]);
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
@@ -5737,7 +6238,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin)setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -5806,6 +6307,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     <div style={{minHeight:"100vh",background:T.bg,fontFamily:"'JetBrains Mono','Courier New',monospace",color:T.text,position:"relative",overflow:"hidden",transition:"background .4s,color .3s"}}>
       <link rel="manifest" href="/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+      <PersistentHUD streak={stats.streak} xp={gameHudXP} shields={getShieldCount()}/>
       <style>{`
         @keyframes tpPetal{0%{transform:translateY(-10px) translateX(0) rotate(0deg);opacity:0}10%{opacity:var(--op)}90%{opacity:var(--op)}100%{transform:translateY(110vh) translateX(var(--drift)) rotate(360deg);opacity:0}}
         @keyframes tpConf{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
@@ -6887,7 +7389,7 @@ function Root(){
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
   const[selectedDiff,setSelectedDiff]=useState("medium");
-  const[showHype,setShowHype]=useState(()=>!localStorage.getItem("tgg:hype:seen"));
+  const[showHype,setShowHype]=useState(false);
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
