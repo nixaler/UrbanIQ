@@ -2,26 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>UrbanIQ — 28 Cards Per Sheet</title>
+  <title>UrbanIQ — Print Cards</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #c0c0c0;
+      background: #b8b8b8;
       font-family: 'Helvetica Neue', Arial, sans-serif;
       padding: 0.3in;
     }
 
-    .instructions {
-      font-size: 11px;
-      color: #444;
-      text-align: center;
-      margin-bottom: 14px;
-      line-height: 1.8;
+    .note {
+      font-size: 11px; color: #444; text-align: center;
+      margin-bottom: 14px; line-height: 1.8;
     }
-    .instructions strong { color: #111; }
+    .note strong { color: #111; }
 
-    /* 4 cols × 7 rows = 28 per sheet */
     .sheet {
       width: 8in;
       margin: 0 auto;
@@ -29,102 +25,157 @@
       grid-template-columns: repeat(4, 2in);
       grid-template-rows: repeat(7, 1.5in);
       background: white;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 48px rgba(0,0,0,0.35);
     }
 
+    /* ── CARD ── */
     .card {
       width: 2in;
       height: 1.5in;
-      background: #fff;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      outline: 0.5pt dashed #ccc;
+    }
+
+    /* Bold 6-color transit stripe at top */
+    .stripe {
+      display: flex;
+      width: 100%;
+      height: 7px;
+      flex-shrink: 0;
+    }
+    .stripe span { flex: 1; }
+
+    /* All content centered below stripe */
+    .inner {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 0.08in 0.1in;
-      outline: 0.5pt dashed #bbb;
+      padding: 4px 10px 5px;
       gap: 4px;
+      width: 100%;
     }
 
-    /* Transit dots */
-    .dots {
-      display: flex;
-      gap: 4px;
-    }
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-    }
+    /* Transit line dots */
+    .dots { display: flex; gap: 4px; }
+    .dot  { width: 7px; height: 7px; border-radius: 50%; }
 
-    /* Wordmark */
-    .wordmark {
-      font-size: 22px;
+    /* URBAN.IQ wordmark */
+    .wm {
+      font-size: 24px;
       font-weight: 900;
-      letter-spacing: -0.5px;
+      letter-spacing: -1px;
       line-height: 1;
       display: flex;
       align-items: baseline;
     }
-    .u  { color: #E8294A; }
-    .r  { color: #FF8C42; }
-    .b  { color: #F5C518; }
-    .a  { color: #22C55E; }
-    .n  { color: #007DC5; }
-    .dl { color: #555555; }
-    .i  { color: #9B59B6; }
-    .q  { color: #E8294A; }
+    .wu { color: #E8294A; }
+    .wr { color: #FF8C42; }
+    .wb { color: #F5C518; }
+    .wa { color: #22C55E; }
+    .wn { color: #007DC5; }
+    .wd { color: #999; font-size: 20px; }
+    .wi { color: #9B59B6; }
+    .wq { color: #E8294A; }
 
-    /* Subtitle */
-    .subtitle {
-      font-size: 5px;
+    /* Tagline */
+    .tagline {
+      font-size: 6px;
       font-weight: 700;
-      letter-spacing: 2px;
-      color: #aaa;
+      color: #555;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
     }
 
-    /* QR */
-    .qr-wrap {
-      border: 1px solid #eee;
-      border-radius: 4px;
+    /* Feature pills */
+    .pills {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pill {
+      font-size: 5.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    /* Divider */
+    .divider {
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    }
+
+    /* Bottom: QR + URL side by side */
+    .bottom {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qr-box {
+      border: 1.5px solid #eee;
+      border-radius: 5px;
       padding: 3px;
       background: white;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
     }
-    .qr-wrap img {
+    .qr-box img {
       display: block;
-      width: 0.6in;
-      height: 0.6in;
+      width: 0.52in;
+      height: 0.52in;
       image-rendering: pixelated;
     }
 
-    /* URL */
-    .url {
-      font-size: 7.5px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
+    .url-block {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 3px;
     }
-    .accent { color: #007DC5; }
-    .sep    { color: #ccc; margin: 0 3px; font-weight: 400; }
-    .quest  { color: #22C55E; }
+    .url-main {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      line-height: 1;
+    }
+    .url-main .ua { color: #007DC5; }
+    .url-main .um { color: #0A0A0A; }
+    .url-main .uq { color: #22C55E; }
+    .url-main .us { color: #ccc; margin: 0 2px; font-weight: 300; }
 
-    .scan {
-      font-size: 4.5px;
+    .url-sub {
+      font-size: 5px;
       font-weight: 700;
-      color: #ccc;
-      letter-spacing: 1.2px;
+      color: #bbb;
+      letter-spacing: 1px;
       text-transform: uppercase;
     }
 
+    .free-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 2px 6px;
+    }
+    .free-dot { width: 4px; height: 4px; border-radius: 50%; background: #22C55E; }
+    .free-txt { font-size: 5px; font-weight: 700; color: #16a34a; letter-spacing: 0.5px; text-transform: uppercase; }
+
     @media print {
-      body {
-        background: white;
-        padding: 0.25in;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .instructions { display: none; }
+      body { background: white; padding: 0.25in; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .note { display: none; }
       .sheet { box-shadow: none; }
       .card { outline: 0.25pt solid #ddd; }
     }
@@ -132,36 +183,55 @@
 </head>
 <body>
 
-<p class="instructions">
-  <strong>28 cards per sheet · 2" × 1.5"</strong><br>
-  Chrome → Cmd+P → Letter · Scale 100% · Margins: Minimum · ✅ Background graphics → Cardstock → Cut on dashed lines
+<p class="note">
+  <strong>28 cards per sheet · 2" × 1.5"</strong> — Chrome → Cmd+P → Letter · Scale 100% · Margins: Minimum · ✅ Background graphics → Cardstock → Cut
 </p>
 
 <div class="sheet" id="sheet"></div>
 
 <script>
-const QR = "iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAAB9UlEQVR4nO2ZS6rcMBRET0WGHqqhF9BLkXf21pQd2EvpBQTsYYNMZSC5X/IySAgYf9oeCNucQYGvS6V7Zf5+9d/+AYKTOqkdUaPq1TKJXhIA89tmLV1vQQXbtmFs0McQrHZsINm2h/V0vQdVy5tQ3b+/Z8oP0a6q69hU8+XZ/f2pP/bfrao/EBUzpCEU99mQrkNTtjPAJOkKamMGou1uVV3Hp6YSaGC8mPRoKHXfS+VTbFv9fqkG4sveRyjG018Dv5r+VtXvnpq9XS3gbpRIfpa4f9b9ghT2EOyO4Ho3u3y1+mi726r6fVMNMJVQKQgoPYQhZBF/NO7bJm9X/TGo+FQNO9HWh3Ot+zSsq+vIVImX9lCPtMV9umjPPYVwes5CFPYApaHTUe+Al/Offr8Y1QAhw3grBk/fhgyAQJjx9PulqNlu4qtnGW1SSTy1xXDW/aJUGqbSs5zj5SS148XlqLV19TulqtV77tXPyxz3y0awVfW7pz7nVjEj3V0Sj1qgnno3rH7n1GtuBdgPif46n2v763q6jk6VXo5K2AGUvocsmAQEtJau96NC3VyT63L27xekvs4M6RWyGW8GpoY03FbR9T7UPLcCdzGjFpB0OedWS1OfcyuJNEzV5JOfWlXX0anf5lZlVhUMZPxp/5tVf1In9X/UTwm1HccdeqnAAAAAAElFTkSuQmCC";
+const QR = "iVBORw0KGgoAAAANSUhEUgAAApQAAAKUAQAAAACStJWRAAADMklEQVR4nO3dS47DIAyAYXvUPbn/7eYG5ASeRSCYRzZpM4LqZ1ElAT6VleVAQE0+Xfafj5MimJiYmJiYmJiYmJiYT5tiZtbnSMFMJJiVWrOYKtKzMO5mFlcZOyYmJibmfGaOMz4A/aqqboNOu+plt4f/JyYmJibmd5qvcpliTIiuukmB7GgXLDcedltl7JiYmJiY85ivy5oScXwUClFEdm0DVVVWGTsmJiYm5jzmdTxKUUhETPYtP9v1ssNZVhk7JiYmJuY8potHo5THZN+O1EiOUFS9qrvotsrYMTExMTHnMXM86vMelRDdXJGfNToq4rDbQ/8TExMTE/O7zSMejVMjESkRx65++rLK2DExMTExpzRVNxE9ypZu02dGe7fyW1XPRd95+XdusuDYMTExMTGnMH10Ob5pPT+AFX+VYk8bgPzVo/8TExMTE/NbzTx/VGaDhjNJaT1DWXMn7fyR67bK2DExMTEx5zGr/YKa1Cj4rYLKLkFdDzu7GfsFYWJiYmLeK0048VU5PDW71jWNfSgiHmFiYmJi3iyj/VS7JKmJR1WPEtDYTxUTExMT83bpwkn/+m4clKIHqh6rjB0TExMTcx6zikcXt/6qeYcXyY8wMTExMT9Smvdw3W2sX99J94bPN2H+CBMTExPzZmnSm+5lXDxbhjo8Wb28IZYmq4wdExMTE3Me0wWW7rZ61iyjSxWxxohHmJiYmJg3Sz/9M8iZpK6tKljvjYmJiYn5gdLkR/7qokkzf9SvcVhl7JiYmJiYs5lNVuQjTkj7qZbUqGy02kWmp/8nJiYmJua3msf+dd2WdSG68ybMHVUu/pDY8qwCVhk7JiYmJuY8ZrWfai56/kjaSnWTEpnKIbElN6qypFXGjomJiYk5pVmOPkolmJn9+oMofO2e2nP+ESYmJibm++V1WVPOlii5kJ2HTvgm+fjyXLHK2DExMTExVzBV9VzFYP6Q2FSRn4lIvdDhC8aOiYmJifnfpsuPmpVydswaNUsZ5EyI5MyZRERk38iPMDExMTHvl/Ga7ebbVxl8p1T15fsjTExMTMy3ig6+H3qz7KuMHRMTExMTExMTExMT05c/pXjEaFHQNnAAAAAASUVORK5CYII=";
 
 const CARD = `
-  <div class="dots">
-    <div class="dot" style="background:#E8294A"></div>
-    <div class="dot" style="background:#FF8C42"></div>
-    <div class="dot" style="background:#F5C518"></div>
-    <div class="dot" style="background:#22C55E"></div>
-    <div class="dot" style="background:#007DC5"></div>
-    <div class="dot" style="background:#9B59B6"></div>
+  <div class="stripe">
+    <span style="background:#E8294A"></span>
+    <span style="background:#FF8C42"></span>
+    <span style="background:#F5C518"></span>
+    <span style="background:#22C55E"></span>
+    <span style="background:#007DC5"></span>
+    <span style="background:#9B59B6"></span>
   </div>
-  <div class="wordmark">
-    <span class="u">U</span><span class="r">R</span><span class="b">B</span><span class="a">A</span><span class="n">N</span><span class="dl">.</span><span class="i">I</span><span class="q">Q</span>
+  <div class="inner">
+    <div class="dots">
+      <div class="dot" style="background:#E8294A"></div>
+      <div class="dot" style="background:#FF8C42"></div>
+      <div class="dot" style="background:#F5C518"></div>
+      <div class="dot" style="background:#22C55E"></div>
+      <div class="dot" style="background:#007DC5"></div>
+      <div class="dot" style="background:#9B59B6"></div>
+    </div>
+    <div class="wm">
+      <span class="wu">U</span><span class="wr">R</span><span class="wb">B</span><span class="wa">A</span><span class="wn">N</span><span class="wd">.</span><span class="wi">I</span><span class="wq">Q</span>
+    </div>
+    <div class="tagline">Play the City · Know the Streets</div>
+    <div class="pills">
+      <span class="pill" style="color:#E8294A;border-color:#E8294A">🚇 Trivia</span>
+      <span class="pill" style="color:#007DC5;border-color:#007DC5">🗺 Maps</span>
+      <span class="pill" style="color:#22C55E;border-color:#22C55E">🧭 Guides</span>
+      <span class="pill" style="color:#9B59B6;border-color:#9B59B6">⚡ Quests</span>
+    </div>
+    <div class="divider"></div>
+    <div class="bottom">
+      <div class="qr-box">
+        <img src="data:image/png;base64,${QR}" alt="urbaniq.quest"/>
+      </div>
+      <div class="url-block">
+        <div class="url-main"><span class="um">Urban</span><span class="ua">.</span><span class="um">IQ</span><span class="us">·</span><span class="uq">Quest</span></div>
+        <div class="url-sub">8 cities · free to play</div>
+        <div class="free-badge"><div class="free-dot"></div><div class="free-txt">Live Now</div></div>
+      </div>
+    </div>
   </div>
-  <div class="subtitle">Daily Transit Puzzles</div>
-  <div class="qr-wrap">
-    <img src="data:image/png;base64,${QR}" alt="urbaniq.quest"/>
-  </div>
-  <div class="url">
-    Urban<span class="accent">.</span>IQ<span class="sep">·</span><span class="quest">Quest</span>
-  </div>
-  <div class="scan">Scan to play free</div>
 `;
 
 const sheet = document.getElementById('sheet');
