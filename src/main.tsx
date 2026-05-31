@@ -4847,7 +4847,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {activeSection==="explore"&&<ExploreView onSelectGame={onSelectGame}/>}
 
       {/* BOTTOM TAB BAR */}
-      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(7,7,15,0.92)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",zIndex:200,boxSizing:"border-box",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",borderTop:"1px solid #EDEBE8",display:"flex",zIndex:200,boxSizing:"border-box",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
         {(["home","explore"] as const).map(id=>{
           const isActive=activeSection===id;
           const label=id==="home"?"HOME":"EXPLORE";
@@ -4855,7 +4855,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <button key={id} onClick={()=>{setActiveSection(id);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
               style={{flex:1,padding:"14px 0 18px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent",position:"relative"}}>
               {isActive&&<div style={{position:"absolute",inset:"6px 16px",borderRadius:10,background:"linear-gradient(135deg,rgba(232,41,74,0.07) 0%,rgba(65,105,225,0.09) 100%)",border:"1px solid rgba(65,105,225,0.15)",boxShadow:"0 0 14px rgba(65,105,225,0.08)"}}/>}
-              <span style={{position:"relative",fontSize:"10px",fontWeight:800,letterSpacing:"3px",textTransform:"uppercase",...(isActive?{backgroundImage:"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"rgba(255,255,255,0.35)"})}}>{label}</span>
+              <span style={{position:"relative",fontSize:"10px",fontWeight:800,letterSpacing:"3px",textTransform:"uppercase",...(isActive?{backgroundImage:"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"#C8C5BF"})}}>{label}</span>
             </button>
           );
         })}
