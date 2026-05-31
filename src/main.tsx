@@ -4911,7 +4911,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
-      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{padding:"28px 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -5397,7 +5397,6 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[cityKey,setCityKey]=useState<string>("");
   const[selStation,setSelStation]=useState<string|null>(null);
   const[stationSearch,setStationSearch]=useState("");
-  const[openLines,setOpenLines]=useState<Set<string>>(new Set());
   const[tick,setTick]=useState(0);
   const today=new Date().toISOString().slice(0,10);
   const[completedQuests,setCompletedQuests]=useState<Set<string>>(()=>new Set(JSON.parse(localStorage.getItem("tgg:quests:done")||"[]")));
@@ -5461,10 +5460,10 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
               const isOpen=k===cityKey;
               const G2=GAMES[k];
               const stList=cm.stations||cm.hubs.map(h=>({n:h,l:[] as string[],c:""}));
-              const filtered=isOpen&&cm.stations?stList.filter(s=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())):stList;
+              const filtered=isOpen&&cm.stations?stList.filter(s=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some(ln=>ln.toLowerCase().includes(stationSearch.toLowerCase()))):stList;
               return(
                 <div key={k} style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none"}}>
-                  <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");setOpenLines(new Set());window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+                  <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
                     style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .15s",WebkitTapHighlightColor:"transparent",position:"relative",overflow:"hidden",minHeight:isOpen?undefined:60,...(isOpen?{padding:"13px 16px",background:G2.accent+"0f"}:{padding:"14px 16px",backgroundImage:`url(/photo-${k}.jpg)`,backgroundSize:"cover",backgroundPosition:"center"})}}>
                     {!isOpen&&<div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.5) 55%,rgba(0,0,0,0.18) 100%)",pointerEvents:"none"}}/>}
                     <div style={{position:"relative",width:18,height:18,borderRadius:"50%",background:isOpen?G2.accent:"rgba(255,255,255,0.25)",border:isOpen?"none":"1px solid rgba(255,255,255,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:"#fff",flexShrink:0}}>{isOpen?"▼":"▶"}</div>
@@ -5488,50 +5487,14 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
                         </div>
                       )}
                       <div style={{maxHeight:360,overflowY:"auto"}}>
-                        {stationSearch
-                          ?filtered.map((s)=>(
-                            <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
-                              style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
-                              <div style={{display:"flex",gap:2,flexShrink:0}}>
-                                {(s.l.length?s.l:["?"]).slice(0,5).map(ln=><div key={ln} style={{width:7,height:7,borderRadius:1,background:cm.lc[ln]||"#C8C5BF",flexShrink:0}}/>)}
-                              </div>
-                              <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
-                              {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px"}}>LIVE →</div>}
-                            </div>
-                          ))
-                          :(()=>{
-                            const seenL=new Set<string>();const ordL:string[]=[];
-                            stList.forEach(s=>s.l.forEach(ln=>{if(!seenL.has(ln)){seenL.add(ln);ordL.push(ln);}}));
-                            return ordL.map(ln=>{
-                              const lc=cm.lc[ln]||"#999";
-                              const lineSt=stList.filter(s=>s.l[0]===ln);
-                              if(lineSt.length===0)return null;
-                              const lineOpen=openLines.has(ln);
-                              return(
-                                <div key={ln}>
-                                  <div onClick={()=>setOpenLines(prev=>{const n=new Set(prev);n.has(ln)?n.delete(ln):n.add(ln);return n;})}
-                                    style={{padding:"10px 12px",background:lineOpen?(lc+"18"):"transparent",display:"flex",alignItems:"center",gap:8,borderTop:"1px solid #EDEBE8",cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>
-                                    <div style={{width:10,height:10,borderRadius:2,background:lc,flexShrink:0}}/>
-                                    <span style={{fontSize:"10px",fontWeight:700,color:lineOpen?lc:"#555",letterSpacing:"0.5px",textTransform:"uppercase",flex:1}}>{ln}</span>
-                                    <span style={{fontSize:"9px",color:"#AAA"}}>{lineSt.length}</span>
-                                    <span style={{fontSize:"8px",color:lineOpen?lc:"#BBB",fontWeight:700,marginLeft:2}}>{lineOpen?"▼":"▶"}</span>
-                                  </div>
-                                  {lineOpen&&lineSt.map(s=>{
-                                    const extraLines=s.l.filter(ll=>ll!==ln);
-                                    return(
-                                      <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
-                                        style={{padding:"9px 12px 9px 28px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:7,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
-                                        <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
-                                        {extraLines.length>0&&<div style={{display:"flex",gap:2,flexShrink:0}}>{extraLines.slice(0,4).map(ll=><div key={ll} style={{width:6,height:6,borderRadius:1,background:cm.lc[ll]||"#C8C5BF"}}/>)}</div>}
-                                        {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            });
-                          })()
-                        }
+                        {filtered.map((s)=>(
+                          <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
+                            style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                            <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                            {s.l.length>0&&<div style={{fontSize:"9px",color:"#AAA",flexShrink:0}}>{s.l.join(" · ")}</div>}
+                            {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
+                          </div>
+                        ))}
                         {stationSearch&&filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
                       </div>
                     </div>
