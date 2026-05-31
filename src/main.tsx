@@ -4576,7 +4576,12 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const si=hotIdx%swipeGames.length;
   const featG=swipeGames[si];
   return(
-    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
+    <div style={{minHeight:"100dvh",background:"#07070F",color:"#F0EEF0",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
+      <div aria-hidden style={{position:"fixed",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
+        <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(232,41,74,0.11) 0%,transparent 70%)",top:"-10%",left:"-15%",animation:"dkBlob1 24s ease-in-out infinite",filter:"blur(60px)"}}/>
+        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(65,105,225,0.13) 0%,transparent 70%)",top:"30%",right:"-10%",animation:"dkBlob2 30s ease-in-out infinite",filter:"blur(65px)"}}/>
+        <div style={{position:"absolute",width:450,height:450,borderRadius:"50%",background:"radial-gradient(circle,rgba(168,85,247,0.09) 0%,transparent 70%)",bottom:"10%",left:"15%",animation:"dkBlob3 36s ease-in-out infinite",filter:"blur(70px)"}}/>
+      </div>
       <link rel="manifest" href="/manifest.json"/>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
       <style>{`
@@ -4586,21 +4591,24 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         @keyframes lmBlink{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes lmFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
         @keyframes lmFlame{0%,100%{transform:scaleY(1) rotate(-2deg)}33%{transform:scaleY(1.15) rotate(2deg)}66%{transform:scaleY(0.9) rotate(-1deg)}}
-        .lm-grad{background:linear-gradient(90deg,#0A0A0A 0%,#E8294A 15%,#FF8C42 25%,#FFB800 35%,#4169E1 50%,#A855F7 65%,#E8294A 80%,#0A0A0A 90%,#E8294A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 3s linear infinite;display:inline-block;}
+        @keyframes dkBlob1{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(70px,-50px) scale(1.15)}50%{transform:translate(-30px,70px) scale(0.9)}75%{transform:translate(40px,30px) scale(1.08)}}
+        @keyframes dkBlob2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-60px,50px) scale(0.88)}50%{transform:translate(55px,-60px) scale(1.12)}75%{transform:translate(-20px,-35px) scale(0.95)}}
+        @keyframes dkBlob3{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(35px,55px) scale(1.1)}50%{transform:translate(-45px,-40px) scale(0.92)}75%{transform:translate(65px,-20px) scale(1.06)}}
+        .lm-grad{background:linear-gradient(90deg,#ffffff 0%,#E8294A 15%,#FF8C42 25%,#FFB800 35%,#4169E1 50%,#A855F7 65%,#E8294A 80%,#ffffff 90%,#E8294A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 3s linear infinite;display:inline-block;}
         .lm-grad-fast{background:linear-gradient(90deg,#E8294A 0%,#FF8C42 20%,#FFB800 40%,#FF8C42 60%,#E8294A 80%,#FF8C42 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 1.5s linear infinite;display:inline-block;}
-        .lm-grad-blue{background:linear-gradient(90deg,#0A0A0A 0%,#4169E1 20%,#A855F7 40%,#4169E1 60%,#0A0A0A 80%,#4169E1 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 2.5s linear infinite;display:inline-block;}
+        .lm-grad-blue{background:linear-gradient(90deg,#ffffff 0%,#4169E1 20%,#A855F7 40%,#4169E1 60%,#ffffff 80%,#4169E1 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 2.5s linear infinite;display:inline-block;}
         .lm-eyebrow-line{flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A);background-size:200% auto;animation:lmBorderFlow 2s linear infinite;}
         .lm-live-bar{background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A);background-size:300% auto;animation:lmBarFlow 2s linear infinite;height:100%;border-radius:2px;width:33%;}
-        .lm-nav-icon{width:36px;height:36px;border-radius:50%;border:1px solid #E8E6E2;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:white;transition:all 0.2s;flex-shrink:0;user-select:none;}
-        .lm-nav-icon:hover{background:#F5F5F5;}
-        .lm-nav-icon.red{background:#FFF0F0;border-color:#FFD5D5;}
-        .lm-game-row{display:flex;align-items:center;gap:14px;padding:18px 18px 18px 14px;background:white;cursor:pointer;transition:background 0.15s;border-left:5px solid transparent;box-sizing:border-box;}
-        .lm-game-row:hover{background:#FAFAFA;}
+        .lm-nav-icon{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.75);transition:all 0.2s;flex-shrink:0;user-select:none;}
+        .lm-nav-icon:hover{background:rgba(255,255,255,0.12);}
+        .lm-nav-icon.red{background:rgba(232,41,74,0.12);border-color:rgba(232,41,74,0.25);}
+        .lm-game-row{display:flex;align-items:center;gap:14px;padding:18px 18px 18px 14px;background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);cursor:pointer;transition:background 0.15s;border-left:5px solid transparent;box-sizing:border-box;}
+        .lm-game-row:hover{background:rgba(255,255,255,0.07);}
         .lm-live-dot{width:7px;height:7px;border-radius:50%;background:#E8294A;flex-shrink:0;animation:lmBlink 1.5s infinite;}
         .lm-stats-border::after{content:\'\';display:block;height:3px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A,#FF8C42);background-size:200% auto;animation:lmBorderFlow 2s linear infinite;}
-        .lm-feat-btn{display:inline-flex;align-items:center;gap:6px;background:white;color:#0A0A0A;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:transform .15s;border:none;font-family:\'Outfit\',sans-serif;}
+        .lm-feat-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);color:#F0EEF0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:transform .15s;border:1px solid rgba(255,255,255,0.10);font-family:\'Outfit\',sans-serif;}
         .lm-feat-btn:hover{transform:scale(1.04);}
-        .lm-cta-main{flex:1;background:#0A0A0A;color:white;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:15px 18px;border-radius:4px;text-align:center;cursor:pointer;border:none;font-family:\'Outfit\',sans-serif;transition:opacity .2s;}
+        .lm-cta-main{flex:1;background:linear-gradient(135deg,rgba(232,41,74,0.9),rgba(65,105,225,0.9));color:white;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:15px 18px;border-radius:4px;text-align:center;cursor:pointer;border:none;font-family:\'Outfit\',sans-serif;transition:opacity .2s;}
         .lm-cta-main:hover{opacity:0.85;}
         .gs-card{border-radius:12px !important;}
       `}</style>
@@ -4608,8 +4616,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:8,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.18)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
 
       {/* NAV */}
-      <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8",boxSizing:"border-box"}}>
-        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
+      <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(7,7,15,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid rgba(255,255,255,0.07)",boxSizing:"border-box"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#F0EEF0",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <div className="lm-nav-icon" onClick={()=>setShowMaps(true)} title="Maps">🗺️</div>
           <div className="lm-nav-icon" onClick={()=>setShowBeta(true)} title="Feedback">💬</div>
@@ -4626,24 +4634,24 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
-      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"transparent"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
             {[40,70,100,130,160,190,220,250,280,310,340,370].map((size,ri)=>(
-              <div key={ri} style={{position:"absolute",borderRadius:"50%",border:`1.5px solid rgba(0,0,0,${ri<8?0.07:ri===8?0.04:ri===9?0.03:0.02})`,width:size,height:size,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
+              <div key={ri} style={{position:"absolute",borderRadius:"50%",border:`1.5px solid rgba(255,255,255,${ri<8?0.06:ri===8?0.04:ri===9?0.03:0.015})`,width:size,height:size,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
             ))}
           </div>
         </div>
         {/* City SVG */}
-        <svg style={{position:"absolute",bottom:0,left:0,right:0,width:"100%",opacity:0.07,pointerEvents:"none"}} viewBox="0 0 390 120" fill="black" xmlns="http://www.w3.org/2000/svg">
+        <svg style={{position:"absolute",bottom:0,left:0,right:0,width:"100%",opacity:0.15,pointerEvents:"none"}} viewBox="0 0 390 120" fill="rgba(255,255,255,0.15)" xmlns="http://www.w3.org/2000/svg">
           <rect x="10" y="60" width="20" height="60"/><rect x="35" y="40" width="15" height="80"/><rect x="55" y="50" width="25" height="70"/><rect x="85" y="20" width="18" height="100"/><rect x="108" y="35" width="22" height="85"/><rect x="135" y="10" width="30" height="110"/><rect x="170" y="30" width="20" height="90"/><rect x="195" y="45" width="16" height="75"/><rect x="216" y="15" width="28" height="105"/><rect x="249" y="38" width="19" height="82"/><rect x="273" y="55" width="24" height="65"/><rect x="302" y="25" width="22" height="95"/><rect x="329" y="42" width="18" height="78"/><rect x="352" y="60" width="28" height="60"/>
         </svg>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#07070F 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
         <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
-          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-            <span style={{width:22,height:1,background:"#C8C5BF",display:"inline-block",flexShrink:0}}/>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            <span style={{width:22,height:1,background:"rgba(255,255,255,0.25)",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
           </div>
           <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,12vw,64px)",fontWeight:900,letterSpacing:"-1px",lineHeight:1,marginBottom:2}}>
@@ -4652,10 +4660,10 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
             <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY DISCOVERY</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
             {topStreak>0&&(
-              <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
+              <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
                 <span className="lm-grad-fast">{topStreak}</span>
               </div>
@@ -4665,30 +4673,30 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </div>
 
       {/* STATS TICKER */}
-      <div className="lm-stats-border" style={{display:"flex",background:"white",borderTop:"1px solid #EDEBE8"}}>
+      <div className="lm-stats-border" style={{display:"flex",background:"rgba(255,255,255,0.04)",borderTop:"1px solid rgba(255,255,255,0.07)"}}>
         {([
           {n:topStreak,cls:"lm-grad-fast",label:"Streak"},
           {n:lmStats.played,cls:"lm-grad-blue",label:"Played"},
           {n:`${winPct}%`,cls:"lm-grad-blue",label:"Win %"},
           {n:lmStats.avgGuesses||"—",cls:"lm-grad-blue",label:"Avg"},
         ] as {n:any,cls:string,label:string}[]).map((s,i)=>(
-          <div key={i} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<3?"1px solid #EDEBE8":"none"}}>
+          <div key={i} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<3?"1px solid rgba(255,255,255,0.07)":"none"}}>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:1,lineHeight:1,marginBottom:2}}>
               <span className={s.cls}>{s.n}</span>
             </div>
-            <div style={{fontSize:"8px",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"#C8C5BF"}}>{s.label}</div>
+            <div style={{fontSize:"8px",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.35)"}}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* HOT TODAY */}
       <div style={{padding:"32px 22px 0",animation:"lmFadeIn .3s ease both"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           🔥 Hot Today <div className="lm-eyebrow-line"/>
         </div>
         <div style={{display:"flex",justifyContent:"flex-end",gap:4,marginBottom:8}}>
           {swipeGames.map((_,i)=>(
-            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?12:4,height:4,borderRadius:2,background:i===si?featG.color:"rgba(0,0,0,0.12)",transition:"all .2s",cursor:"pointer"}}/>
+            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?12:4,height:4,borderRadius:2,background:i===si?featG.color:"rgba(255,255,255,0.15)",transition:"all .2s",cursor:"pointer"}}/>
           ))}
         </div>
         <div style={{borderRadius:12,overflow:"hidden",marginBottom:16,cursor:"pointer",position:"relative",minHeight:190}}
@@ -4711,22 +4719,22 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
       {/* ALL GAMES — Category Accordions */}
       <div style={{padding:"32px 22px 0",animation:"lmFadeIn .35s ease both"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           All Games <div className="lm-eyebrow-line"/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
           {/* EXPLORE — first item */}
-          <div style={{border:"2px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
+          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:"20px"}}>🧭</span>
                 <div>
-                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
-                  <div style={{fontSize:"9px",color:"#888580",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>Explore</div>
+                  <div style={{fontSize:"9px",color:"rgba(255,255,255,0.45)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
                 </div>
               </div>
-              <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
+              <span style={{fontSize:"11px",color:"#F0EEF0",fontWeight:600}}>Open →</span>
             </button>
           </div>
           {[
@@ -4739,18 +4747,18 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             if(cards.length===0)return null;
             const isOpen=!lmCollapsed.has(tag);
             return(
-              <div key={tag} style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+              <div key={tag} style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
                 <button onClick={()=>toggleLmSection(tag)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"#FAFAFA":"#fff",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>{label}</span>
-                  <span style={{fontSize:"10px",color:"#C8C5BF",transition:"transform .25s",display:"inline-block",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"rgba(255,255,255,0.04)":"transparent",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
+                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>{label}</span>
+                  <span style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",transition:"transform .25s",display:"inline-block",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
                 </button>
                 {isOpen&&(
                   <div style={{animation:"lmFadeIn .2s ease both"}}>
                     {cards.map((g,i)=>(
                       <div key={g.key} className="lm-game-row"
                         onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
-                        style={{borderBottom:i<cards.length-1?"2px solid #E8E5E0":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
+                        style={{borderBottom:i<cards.length-1?"1px solid rgba(255,255,255,0.06)":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
                         {g.photo&&(
                           <div style={{width:80,minHeight:70,flexShrink:0,position:"relative",overflow:"hidden"}}>
                             <img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.85) saturate(1.1)"}}/>
@@ -4759,11 +4767,11 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                         <div style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
                           <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
                           <div style={{flex:1}}>
-                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
-                            <div style={{fontSize:"11px",color:"#A0A0A0",marginTop:2}}>{g.sub}</div>
+                            <div style={{fontSize:"14px",fontWeight:700,color:"#F0EEF0"}}>{g.name}</div>
+                            <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:2}}>{g.sub}</div>
                           </div>
                           {g.key===hotGameKey&&<div className="lm-live-dot"/>}
-                          <div style={{fontSize:"12px",color:"#C8C5BF",flexShrink:0}}>→</div>
+                          <div style={{fontSize:"12px",color:"rgba(255,255,255,0.35)",flexShrink:0}}>→</div>
                         </div>
                       </div>
                     ))}
@@ -4773,24 +4781,24 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             );
           })}
           {/* MAPS single button */}
-          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
             <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
-              onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
-              onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
-              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
+              onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
+              onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>🗺️ Maps &amp; Guides</span>
               <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
             </button>
           </div>
           {/* REWARDS single button */}
-          <div style={{border:"2px solid #E0DDD8",borderRadius:10,overflow:"hidden"}}>
+          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
             <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"#fff",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
-              onMouseEnter={e=>(e.currentTarget.style.background="#FAFAFA")}
-              onMouseLeave={e=>(e.currentTarget.style.background="#fff")}>
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
+              onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
+              onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
-                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"#FFF8E1",border:"1px solid #FFE082",borderRadius:4,padding:"2px 6px"}}>{getRP()} pts</span>
+                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>🏆 Rewards</span>
+                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getRP()} pts</span>
               </div>
               <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
             </button>
@@ -4810,36 +4818,36 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         return(
           <div style={{animation:"lmFadeIn .4s ease both"}}>
             <div style={{padding:"0 22px",marginBottom:0}}>
-              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#0A0A0A",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
                 Yesterday's Answer <div className="lm-eyebrow-line"/>
               </div>
             </div>
-            <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid #EDEBE8",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"white"}}
+            <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"rgba(255,255,255,0.04)"}}
               onClick={()=>{SoundEngine.play("select");onSelectGame(hotGameKey);}}>
               <div style={{fontSize:"24px",flexShrink:0}}>{G2.emoji}</div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:"9px",fontWeight:600,letterSpacing:"2.5px",textTransform:"uppercase",color:"#C8C5BF",marginBottom:3}}>{G2.name}{yest.zone?` · ${yest.zone}`:yest.region?` · ${yest.region}`:""}</div>
+                <div style={{fontSize:"9px",fontWeight:600,letterSpacing:"2.5px",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:3}}>{G2.name}{yest.zone?` · ${yest.zone}`:yest.region?` · ${yest.region}`:""}</div>
                 <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:0.5,lineHeight:1,marginBottom:2}}>
                   <span className="lm-grad">{yest.name.toUpperCase()}</span>
                 </div>
-                <div style={{fontSize:"11px",color:"#888580"}}>Could you get it in 1 guess?</div>
+                <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)"}}>Could you get it in 1 guess?</div>
               </div>
-              <div style={{fontSize:"11px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#0A0A0A",border:"1px solid #0A0A0A",padding:"9px 13px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>Play →</div>
+              <div style={{fontSize:"11px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#F0EEF0",border:"1px solid rgba(255,255,255,0.2)",padding:"9px 13px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>Play →</div>
             </div>
           </div>
         );
       })()}
 
       {/* FOOTER */}
-      <footer style={{padding:"20px 22px",borderTop:"1px solid #EDEBE8",display:"flex",justifyContent:"space-between",alignItems:"center",background:"white",marginTop:"auto"}}>
-        <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#C8C5BF"}}>No Ads · No Tracking · Always Free</div>
-        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"13px",letterSpacing:"2px",color:"#C8C5BF"}}>NIXALERLLC</div>
+      <footer style={{padding:"20px 22px",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"transparent",marginTop:"auto"}}>
+        <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"rgba(255,255,255,0.25)"}}>No Ads · No Tracking · Always Free</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"13px",letterSpacing:"2px",color:"rgba(255,255,255,0.25)"}}>NIXALERLLC</div>
       </footer>
       </>}
       {activeSection==="explore"&&<ExploreView onSelectGame={onSelectGame}/>}
 
       {/* BOTTOM TAB BAR */}
-      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",borderTop:"1px solid #EDEBE8",display:"flex",zIndex:200,boxSizing:"border-box",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(7,7,15,0.92)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",zIndex:200,boxSizing:"border-box",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
         {(["home","explore"] as const).map(id=>{
           const isActive=activeSection===id;
           const label=id==="home"?"HOME":"EXPLORE";
@@ -4847,7 +4855,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <button key={id} onClick={()=>{setActiveSection(id);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
               style={{flex:1,padding:"14px 0 18px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent",position:"relative"}}>
               {isActive&&<div style={{position:"absolute",inset:"6px 16px",borderRadius:10,background:"linear-gradient(135deg,rgba(232,41,74,0.07) 0%,rgba(65,105,225,0.09) 100%)",border:"1px solid rgba(65,105,225,0.15)",boxShadow:"0 0 14px rgba(65,105,225,0.08)"}}/>}
-              <span style={{position:"relative",fontSize:"10px",fontWeight:800,letterSpacing:"3px",textTransform:"uppercase",...(isActive?{backgroundImage:"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"#C8C5BF"})}}>{label}</span>
+              <span style={{position:"relative",fontSize:"10px",fontWeight:800,letterSpacing:"3px",textTransform:"uppercase",...(isActive?{backgroundImage:"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"rgba(255,255,255,0.35)"})}}>{label}</span>
             </button>
           );
         })}
@@ -4941,20 +4949,20 @@ function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10
 function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
   const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
   return(
-    <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid #EDEBE8"}}>
+    <div style={{background:"rgba(255,255,255,0.06)",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
         <span style={{fontSize:14}}>🔥</span>
-        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>STREAK</div></div>
+        <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.35)",letterSpacing:"1.5px"}}>STREAK</div></div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:2,justifyContent:"center"}}>
         <span style={{fontSize:14}}>⚡</span>
         <div>
-          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(0,0,0,0.35)"}}>Lv{level}</span></div>
-          <div style={{width:72,height:3,background:"#EDEBE8",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
+          <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={{fontSize:"13px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{xp}</span><span style={{fontSize:"9px",color:"rgba(255,255,255,0.4)"}}>Lv{level}</span></div>
+          <div style={{width:72,height:3,background:"rgba(255,255,255,0.1)",borderRadius:2,marginTop:2,overflow:"hidden"}}><div style={{width:`${Math.min(100,(xpInLevel/500)*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF8C42)",borderRadius:2}}/></div>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:1,justifyContent:"flex-end"}}>
-        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
+        <div style={{textAlign:"right"}}><div style={{fontSize:"13px",fontWeight:800,color:"#4169E1",lineHeight:1}}>{shields}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.35)",letterSpacing:"1.5px"}}>SHIELDS</div></div>
         <span style={{fontSize:14}}>🛡️</span>
       </div>
     </div>
