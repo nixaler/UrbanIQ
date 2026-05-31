@@ -4609,7 +4609,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
       {/* NAV */}
       <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8",boxSizing:"border-box"}}>
-        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1}}>Urban<span className="lm-grad">IQ</span></div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <div className="lm-nav-icon" onClick={()=>setShowMaps(true)} title="Maps">🗺️</div>
           <div className="lm-nav-icon" onClick={()=>setShowBeta(true)} title="Feedback">💬</div>
