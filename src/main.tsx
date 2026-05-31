@@ -1890,13 +1890,10 @@ const BALT_RAW:any[]=[
   ["Nursery Road",["Light Rail"],"BWI Corridor",1,1997,"Nursery Road area in northern Anne Arundel County","A quiet suburban stop serving the light industrial and residential areas near the nursery farms of northern Anne Arundel County."],
   ["North Linthicum",["Light Rail"],"BWI Corridor",1,1997,"North Linthicum — between Nursery Road and Linthicum","A quiet Light Rail stop serving the North Linthicum community in Anne Arundel County on the approach to BWI Airport."],
   ["Linthicum",["Light Rail"],"BWI Corridor",2,1997,"Linthicum Heights — community near the BWI Airport corridor","Linthicum Heights developed rapidly after BWI Airport's expansion — this stop serves its suburban residential and commercial areas."],
-  ["BWI Marshall Airport",["Light Rail"],"BWI Corridor",4,1997,"Baltimore/Washington International Thurgood Marshall Airport","BWI is one of the most transit-accessible US airports — the Light Rail connects it directly to downtown Baltimore in about 35 minutes."],
+  ["BWI Airport",["Light Rail"],"BWI Corridor",4,1997,"Baltimore/Washington International Thurgood Marshall Airport","BWI is one of the most transit-accessible US airports — the Light Rail connects it directly to downtown Baltimore in about 35 minutes."],
   ["Ferndale",["Light Rail"],"BWI Corridor",2,1997,"Ferndale in Anne Arundel County between BWI and Glen Burnie","A quiet suburban stop serving Ferndale — a community in Anne Arundel County between BWI Airport and Glen Burnie."],
-  ["Glen Burnie",["Light Rail"],"BWI Corridor",3,1997,"Glen Burnie — one of Anne Arundel County's largest communities","Glen Burnie is a major unincorporated community and commercial hub in Anne Arundel County, anchoring the southern Light Rail corridor."],
-  ["Baltimore Street",["Light Rail"],"Downtown",3,1992,"Downtown Light Rail stop at Baltimore Street and Howard Street","Baltimore Street runs east-west through the heart of downtown — one of the city's oldest commercial corridors."],
-  ["Pratt Street",["Light Rail"],"Downtown",3,1992,"Inner Harbor-adjacent Light Rail stop — steps from Baltimore's waterfront","Pratt Street fronts the Inner Harbor — the redevelopment that launched Baltimore's tourist economy in the 1980s."],
   ["BWI Business District",["Light Rail"],"BWI Corridor",2,2012,"Light Rail stop serving the BWI Airport business park corridor","The BWI Business District stop opened in 2012 to serve the growing office and hotel complex near BWI Airport."],
-  ["Cromwell/Glen Burnie",["Light Rail"],"BWI Corridor",2,1997,"Southern terminus of the Baltimore Light Rail","The southern end of the Light Rail system, serving the Cromwell area in Anne Arundel County south of Glen Burnie."],
+  ["Cromwell/Glen Burnie",["Light Rail"],"BWI Corridor",3,1997,"Southern terminus of the Baltimore Light Rail — Glen Burnie, Anne Arundel County","Glen Burnie is a major unincorporated community and commercial hub in Anne Arundel County, anchoring the southern Light Rail corridor."],
 ];
 const BALT_IMG:Record<string,string>={
   "Camden Yards":"Baltimore_Light_Rail_at_Camden_Yards.jpg",
@@ -2584,8 +2581,79 @@ const NYC_RAW:any[]=[
   ["Beach 98 St",["A"],"Queens",2,1956,"Rockaway Beach station on the A — central Rockaways","Rockaway Beach is one of NYC's most popular summer beaches — surfers catch waves here year-round."],
   ["Beach 116 St",["A"],"Queens",2,1956,"Rockaway Park stop on the A — near Bayswater Park","Rockaway Park is a tranquil neighborhood at the western end of the Rockaway Peninsula."],
   ["Broad Channel",["A"],"Queens",2,1956,"Broad Channel stop on the A — the only inhabited island with subway service in NYC","Broad Channel is a tiny island community in Jamaica Bay — the only NYC neighborhood where residents catch the subway from an island."],
-  // Additional important stops
   ["174-175 Sts",["A"],"Manhattan",2,1932,"Washington Heights A train stop — near Fort Tryon Park","Fort Tryon Park is home to The Cloisters — a branch of the Metropolitan Museum of Art dedicated to medieval European art."],
+  // ── Line 1 missing local stops ─────────────────────────────────────────────
+  ["Rector St",["1"],"Manhattan",3,1918,"Financial District stop near Battery Park","Rector Street connects the Financial District to the Battery, one of Manhattan's oldest public green spaces."],
+  ["238 St",["1"],"Manhattan",2,1908,"Upper Manhattan stop near Broadway","The 238th Street area of Marble Hill is technically part of Manhattan, connected to the Bronx by landfill."],
+  ["231 St",["1"],"Manhattan",2,1908,"Kingsbridge area local stop on the 1","Kingsbridge Road was a colonial-era crossing point over Spuyten Duyvil Creek — one of Manhattan's oldest transit corridors."],
+  ["Marble Hill-225 St",["1"],"Manhattan",2,1908,"Marble Hill neighborhood — upper tip of Manhattan","Marble Hill was separated from Manhattan by a canal in 1895 — it's the only part of Manhattan physically connected to the Bronx."],
+  ["215 St",["A"],"Manhattan",1,1932,"Northern Manhattan A train stop — Inwood neighborhood","The A at 215th St is close to the point where Henry Hudson first anchored in 1609."],
+  // ── Line 2/3 missing Brooklyn stops ────────────────────────────────────────
+  ["Sutter Av",["J","Z"],"Brooklyn",2,1918,"East New York J/Z stop near Linden Blvd","East New York is one of Brooklyn's most historically significant African-American communities."],
+  ["Grand Army Plaza",["2","3"],"Brooklyn",3,1878,"Entrance to Prospect Park — major Brooklyn landmark","The massive Soldiers' and Sailors' Arch at Grand Army Plaza was completed in 1892 to honor Civil War veterans."],
+  ["Junius St",["3"],"Brooklyn",1,1920,"Quiet residential stop on the 3 in East New York","Junius Street serves the eastern edges of Brownsville and is one of the quieter stops on the Canarsie corridor."],
+  // ── Line 4 missing stops (Bronx/Brooklyn) ──────────────────────────────────
+  ["174 St",["4"],"Bronx",1,1878,"Morrisania stop on the 4 train","Morrisania is a culturally rich South Bronx neighborhood — the birthplace of hip-hop culture in the 1970s."],
+  ["Bedford Park Blvd-Lehman College",["4"],"Bronx",3,1918,"Norwood/Bedford Park stop on the 4 — Lehman College access","Lehman College was founded as part of City College before becoming independent in 1968."],
+  ["Utica Av",["4"],"Brooklyn",2,1920,"Crown Heights stop on the 4 express in Brooklyn","The 4 train turns from the Lexington Ave line at Utica Avenue to serve eastern Brooklyn's Crown Heights neighborhood."],
+  ["New Utrecht Av",["N"],"Brooklyn",2,1916,"Brooklyn stop on the N train — Bay Ridge corridor","New Utrecht Avenue cuts through the heart of Borough Park and Bensonhurst, two of Brooklyn's most densely populated neighborhoods."],
+  // ── Line 5 missing stops ────────────────────────────────────────────────────
+  ["Whitlock Av",["6"],"Bronx",1,1920,"Soundview local stop on the 6 train","Soundview Avenue is a quiet residential stop serving the Soundview neighborhood of the southeastern Bronx."],
+  ["Morrison Av-Soundview",["6"],"Bronx",2,1920,"Soundview neighborhood local stop on the 6","The Soundview section of the Bronx has strong roots in Puerto Rican and Dominican-American culture."],
+  ["St Lawrence Av",["6"],"Bronx",1,1920,"Eastern Bronx stop on the 6 — Zerega area","St. Lawrence Avenue is a quiet residential corridor in the eastern Bronx near the Zerega neighborhood."],
+  // ── Line 7 missing Queens local stops ──────────────────────────────────────
+  ["Willets Point-Mets",["7"],"Queens",3,1928,"Citi Field and USTA Tennis Center stop on the 7","Citi Field, home of the Mets since 2009, and the USTA Billie Jean King National Tennis Center both sit steps from this stop."],
+  ["74 St-Broadway",["7"],"Queens",3,1917,"Jackson Heights/Elmhurst express stop on the 7","The Broadway/Roosevelt Ave intersection in Jackson Heights is one of the busiest street corners in Queens."],
+  ["69 St",["7"],"Queens",2,1917,"Woodside local stop on the 7 — Filipino community hub","Woodside's Little Manila is one of the largest Filipino communities in the northeastern United States."],
+  ["61 St-Woodside",["7"],"Queens",3,1917,"Woodside stop on the 7 — LIRR connection","Woodside is an important transit junction connecting the 7 train to the Long Island Rail Road."],
+  ["52 St",["7"],"Queens",2,1917,"Woodside/Sunnyside stop on the 7 local","Sunnyside is one of Queens' oldest planned neighborhoods, developed in the 1920s with progressive garden-city principles."],
+  ["40 St-Lowery St",["7"],"Queens",2,1917,"Sunnyside/Woodside stop on the 7","The Lowery Street area of Sunnyside has seen major reinvestment as part of the Long Island City development boom."],
+  ["Queensboro Plaza",["7","N","W"],"Queens",4,1917,"Major Queens transfer — 7, N, and W trains connect here","Queensboro Plaza is one of the largest elevated transfer stations in the outer boroughs — five lines converge nearby."],
+  ["21 St-Queensbridge",["F","N","W"],"Queens",3,1939,"Queensbridge stop on the F — largest public housing complex in the US","Queensbridge Houses, visible from this station, is the largest public housing project in the United States with over 7,000 residents."],
+  // ── Line G (Brooklyn/Queens crosstown) ────────────────────────────────────
+  ["4 Av-9 St",["F","G"],"Brooklyn",2,1933,"Park Slope/Gowanus stop on the F and G","Fourth Avenue is Park Slope's main commercial street, lined with restaurants, bars, and independent businesses."],
+  ["7 Av",["F"],"Brooklyn",3,1933,"Park Slope stop on the F — heart of the slope","Seventh Avenue is Park Slope's most beloved main street — weekend brunch lines stretch out the door at every café."],
+  ["Fort Hamilton Pkwy",["F"],"Brooklyn",2,1954,"Bay Ridge stop on the F — near Fort Hamilton Army base","Fort Hamilton, founded in 1825, is the only active military installation in NYC — at the foot of the Verrazzano Bridge."],
+  // ── Additional Bronx/outer borough stops ───────────────────────────────────
+  ["Morris Park",["6"],"Bronx",2,1942,"Morris Park neighborhood stop on the 6","Morris Park is a quiet middle-class Bronx neighborhood with a strong Italian-American heritage."],
+  ["East 105 St",["6"],"Bronx",1,1942,"Pelham terminal area stop on the 6","East 105th Street is one of the quieter stops near the Pelham Bay Park terminus of the 6 train."],
+  ["E 149 St",["2","5"],"Bronx",3,1904,"Melrose stop on the 2 and 5 trains in the South Bronx","Third Avenue and 149th Street — the 'Hub' — is one of the Bronx's busiest retail intersections."],
+  // ── SIR (Staten Island Railway) missing stations ────────────────────────────
+  // ── Additional scattered line gaps ─────────────────────────────────────────
+  ["Lorimer St",["L"],"Brooklyn",3,1928,"Williamsburg L train stop near the Bedford Ave nightlife hub","Lorimer Street is just two stops from the L's Manhattan connection and sits at the heart of Williamsburg's bar scene."],
+  ["Kosciuszko St",["J"],"Brooklyn",2,1888,"Bushwick stop on the J — near Maria Hernandez Park","Maria Hernandez Park in Bushwick has been a community anchor and gathering space since the neighborhood's hardest years in the 1970s."],
+  ["Chauncey St",["J","Z"],"Brooklyn",2,1888,"Bushwick/East New York stop on the J/Z","Chauncey Street is a key residential stop serving the Bushwick-East New York border."],
+  ["Norwood Av",["J"],"Brooklyn",2,1888,"East New York stop on the J","Norwood Avenue is a quiet local stop serving the western edge of East New York."],
+  ["Cleveland St",["J"],"Brooklyn",1,1918,"East New York stop near Cyprus Hills Cemetery","Cleveland Street is one of the quieter stops in East New York, serving a residential corridor."],
+  ["Van Siclen Av",["J","Z"],"Brooklyn",2,1918,"East New York stop on the J and Z trains","Van Siclen Avenue is a central stop in East New York's community, near local schools and community organizations."],
+  ["Gates Av",["J","M"],"Brooklyn",2,1888,"Bushwick stop on the J and M trains","Gates Avenue is a main commercial strip running through the heart of Bushwick."],
+  ["Halsey St",["J"],"Brooklyn",2,1888,"Bushwick stop near Stuy Heights border on the J","Halsey Street marks the northern edge of Stuyvesant Heights, one of Brooklyn's most architecturally preserved brownstone neighborhoods."],
+  ["Wilson Av",["J"],"Brooklyn",2,1888,"Bushwick local stop on the J train","Wilson Avenue is a key residential stop in Bushwick, named for the Wilson Avenue of the late 19th century."],
+  ["Dekalb Av",["J","M","Z"],"Brooklyn",3,1888,"Ridgewood/Bushwick stop on the J, M, and Z","DeKalb Avenue runs through the heart of Ridgewood, connecting Bushwick to Queens' most European-influenced neighborhood."],
+  ["45 St",["N","R"],"Brooklyn",2,1916,"Sunset Park stop on the N and R trains","45th Street is in the heart of Sunset Park's Chinese community — the second-largest Chinatown in New York City."],
+  ["59 St",["N","R"],"Brooklyn",2,1916,"Bay Ridge stop on the N and R — 'Gateway to Bay Ridge'","59th Street is the commercial gateway to Bay Ridge, one of Brooklyn's most family-oriented neighborhoods."],
+  ["18 Av",["F","N"],"Brooklyn",2,1916,"Bensonhurst/Borough Park stop on the F and N","18th Avenue through Borough Park and Bensonhurst is one of NYC's most vibrant Orthodox Jewish commercial corridors."],
+  ["20 Av",["N"],"Brooklyn",2,1916,"Bensonhurst stop on the N — Gravesend area","20th Avenue is a quiet residential stop in Bensonhurst, one of Brooklyn's most Italian-American neighborhoods."],
+  ["Bay Pkwy",["F","N"],"Brooklyn",2,1954,"Bensonhurst/Bath Beach stop on the F and N","Bay Parkway is the commercial spine of Bath Beach and Bensonhurst — the gateway to the Verrazano Bridge."],
+  ["36 St",["D","N","R"],"Brooklyn",3,1916,"Sunset Park transfer — D, N, and R trains meet","36th Street is one of Sunset Park's main transfer hubs, connecting multiple lines serving Brooklyn's diverse neighborhoods."],
+  ["9 Av",["D"],"Brooklyn",2,1916,"Prospect Park stop on the D train — Greenwood area","Ninth Avenue near Green-Wood Cemetery — the 19th century cemetery is a National Historic Landmark and city park."],
+  ["Prospect Av",["D"],"Brooklyn",2,1916,"Windsor Terrace stop on the D train","Prospect Avenue borders Windsor Terrace, one of Brooklyn's quietest and most family-friendly neighborhoods."],
+  ["77 St",["R"],"Brooklyn",2,1916,"Bay Ridge stop on the R — residential neighborhood","77th Street is a quiet residential stop in Bay Ridge, serving the neighborhood's historic brownstone blocks."],
+  ["Atlantic Av",["D","N","R"],"Brooklyn",3,1920,"Atlantic Terminal hub — D, N, and R trains","Atlantic Avenue is one of Brooklyn's great crosstown arteries — the hub for buses, subways, and LIRR at Atlantic Terminal."],
+  // ── Additional Manhattan gaps ──────────────────────────────────────────────
+  ["49 St",["N","R","W"],"Manhattan",3,1918,"Midtown stop one block from Times Square on the N/R/W","49th Street connects to the Times Square entertainment district via a short underground passage."],
+  // ── Final gap-fill: confirmed missing stations ──────────────────────────────
+  ["Inwood-207 St",["1","A"],"Manhattan",2,1906,"Northernmost Manhattan stop on the 1 — Inwood neighborhood","Inwood Hill Park, the last natural forest in Manhattan, begins steps from this station — Henry Hudson anchored here in 1609."],
+  ["Cathedral Pkwy",["1","A","B","C"],"Manhattan",3,1904,"110th Street stop — gateway to Morningside Heights and Harlem","Cathedral Parkway marks the transition between the Upper West Side and Harlem — steps from the Cathedral of St. John the Divine."],
+  ["Park Place",["2","3"],"Manhattan",2,1918,"Lower Manhattan 2/3 stop near the World Trade Center site","Park Place is one of Manhattan's oldest streets — the block where the World Trade Center complex begins."],
+  ["Clinton-Washington Avs",["G"],"Brooklyn",2,1933,"Clinton Hill G train stop — Pratt Institute area","Pratt Institute, one of America's most prestigious design schools, sits just blocks from this station."],
+  ["15 St-Prospect Park",["F","G"],"Brooklyn",2,1954,"Windsor Terrace/Park Slope stop on the F and G","15th Street and Prospect Park West is the gateway to the 585-acre Prospect Park — Brooklyn's backyard."],
+  ["163 St-Amsterdam Av",["A","C","D"],"Manhattan",2,1932,"Washington Heights stop on the A, C, and D trains","163rd Street is in the heart of Washington Heights — home to one of the largest Dominican-American communities in the world."],
+  ["155 St",["A","C","B","D"],"Manhattan",2,1905,"Harlem/Sugar Hill stop on the A, B, C, and D lines","155th Street and Edgecombe Avenue is in Sugar Hill — the neighborhood where Duke Ellington, Thurgood Marshall, and W.E.B. Du Bois lived."],
+  ["Cypress Hills",["J"],"Brooklyn",2,1888,"East New York/Cypress Hills stop on the J train","Cypress Hills Cemetery, spanning Brooklyn and Queens, is the resting place of Mae West, Joey Ramone, and many Civil War veterans."],
+  ["55 St",["D"],"Brooklyn",2,1916,"Bensonhurst stop on the D train — Bay Ridge area","55th Street is a quiet residential stop in the heart of Bensonhurst, one of Brooklyn's most densely settled Italian-American neighborhoods."],
+  ["New Utrecht Av",["N"],"Brooklyn",2,1916,"Borough Park stop on the N train — Bensonhurst/Borough Park","New Utrecht Avenue is the main commercial street of Borough Park, one of the largest Orthodox Jewish communities in the US."],
+  ["62 St",["D","N"],"Brooklyn",2,1916,"Bensonhurst/Dyker Heights stop on the D and N","62nd Street marks the boundary of Dyker Heights, famous for its extravagant Christmas light displays that attract tourists from around the world."],
 ];
 const NYC_IMG:Record<string,string>={
   "Times Sq-42 St / Port Auth Bus Terminal":"Times_Square_station_42nd_Street.jpg",
@@ -2700,7 +2768,7 @@ const CHI_RAW:any[]=[
   ["Forest Park",["Blue"],"West",2,1979,"Western terminus of the Blue Line — near historic Forest Park suburb","Forest Park is home to one of the largest cemetery complexes in the US — historic and peaceful."],
   ["Harlem/Lake",["Green"],"West",2,1895,"Western terminus of the Green Line — at Harlem Avenue","Oak Park (Frank Lloyd Wright's hometown) is just steps away from this terminus."],
   ["Cottage Grove",["Green"],"South",2,1892,"Eastern southern terminus of the Green Line — Woodlawn and South Shore","The Woodlawn neighborhood's revival along 63rd Street is one of Chicago's most discussed urban developments."],
-  ["Skokie",["Yellow"],"North Shore",1,1925,"Terminus of the Yellow Line (Skokie Swift) — only 5 miles long","The Skokie Swift is one of the shortest L lines — but critically important for Skokie commuters."],
+  ["Dempster-Skokie",["Yellow"],"North Shore",1,1925,"Terminus of the Yellow Line (Skokie Swift) — northern end of the 4-mile shuttle","The Skokie Swift is one of the shortest L lines — but critically important for Skokie commuters."],
   ["Grand/State",["Red"],"North",3,1943,"Near the Magnificent Mile and Navy Pier — tourist and commuter hub","The stretch of Michigan Avenue near here is one of the most expensive retail corridors in the US."],
   ["Jackson",["Blue","Red"],"Loop",4,1897,"Loop hub beneath the Chicago Cultural Center and Grant Park","The underground Blue Line station at Jackson was built in 1951 — one of the first subway sections in Chicago."],
   ["Damen",["Blue"],"Northwest",3,1997,"Wicker Park / Ukrainian Village stop — the heart of Chicago's indie scene","Wicker Park's Six Corners has been Chicago's alternative culture capital since the 1990s."],
@@ -2736,7 +2804,7 @@ const CHI_RAW:any[]=[
   // Loop elevated - missing stations
   ["Adams/Wabash",["Brown","Green","Orange","Pink","Purple"],"Loop",4,1897,"Loop elevated station above Wabash Ave — on the famously noisy Wabash El","The Wabash El, nicknamed 'the Noisy El,' has rattled through the Loop since 1897 — its clatter is quintessential Chicago."],
   ["Harold Washington Library-State/Van Buren",["Brown","Green","Orange","Pink","Purple"],"Loop",4,1897,"Loop station named for Chicago's first Black mayor — above State Street","Harold Washington, elected in 1983, was a transformative mayor who expanded transit investment across the entire city."],
-  ["LaSalle",["Brown","Green","Orange","Pink","Purple"],"Loop",4,1897,"Heart of the financial Loop — above LaSalle Street's historic banking canyon","LaSalle Street is the Wall Street of Chicago — the Board of Trade and major banks line its canyon of buildings."],
+  ["LaSalle/Van Buren",["Brown","Green","Orange","Pink","Purple"],"Loop",4,1897,"Heart of the financial Loop — above LaSalle Street's historic banking canyon","LaSalle Street is the Wall Street of Chicago — the Board of Trade and major banks line its canyon of buildings."],
   ["Quincy",["Brown","Green","Orange","Pink","Purple"],"Loop",3,1897,"Quiet Loop elevated station above Quincy and Wells intersection","Quincy is one of the calmer Loop stations — the original wooden platforms creak with over a century of use."],
   ["Washington/Wells",["Brown","Green","Orange","Pink","Purple"],"Loop",4,1897,"Loop elevated corner at Washington and Wells — the western turn of the Union Loop","The Loop's four-sided elevated track is one of the most recognizable urban transit structures in the world."],
   // Red Line - missing south and near-north stops
@@ -2820,7 +2888,6 @@ const CHI_RAW:any[]=[
   ["Grand",["Red"],"Near North",3,1943,"Red Line subway stop at Grand Avenue — River North gateway","The Red Line's Grand station serves River North and the Near North Side — steps from the Magnificent Mile shopping corridor."],
   ["Chicago",["Red"],"Near North",4,1900,"Red Line stop at Chicago Avenue — Near North Side crossroads","Chicago Avenue is the gateway to the Gold Coast and Old Town — the Red Line's busiest non-downtown North Side stop."],
   // Purple Line — missing Evanston stops
-  ["Oakton",["Yellow"],"North Shore",1,1925,"The only intermediate stop on the Yellow Line (Skokie Swift)","The Yellow Line's Oakton stop serves the heart of Skokie — one of the most diverse suburbs in the Chicago area."],
   // Brown Line — missing stops
   ["Kedzie",["Brown"],"Northwest",2,1907,"Brown Line stop in Albany Park — Kedzie Avenue corridor","Kedzie Avenue in Albany Park is a major commercial street — the neighborhood's diverse Middle Eastern and Southeast Asian communities thrive here."],
   ["Kimball",["Brown"],"Northwest",2,1907,"Northern terminus of the Brown Line — Albany Park neighborhood","The Brown Line terminus gives access to Albany Park's incredible diversity of restaurants and neighborhoods."],
@@ -3056,20 +3123,7 @@ const BOS_RAW:any[]=[
   ["Box District",["Silver"],"Chelsea",2,2018,"Silver Line stop in the Box District of Chelsea","The Box District is Chelsea's arts and creative district — warehouse buildings converted to studios and galleries."],
   ["Bellingham Sq",["Silver"],"Chelsea",2,2018,"Silver Line stop in Bellingham Square — the heart of Chelsea","Bellingham Square is Chelsea's civic center — City Hall and the main commercial district are steps from this stop."],
   // Orange Line — there are no missing stops (all 20 are present)
-  // Blue Line — all 12 stops are present
-  // Additional Red Line — Braintree branch
-  ["Quincy Center",["Red"],"South Shore",3,1971,"Downtown Quincy station — birthplace of Presidents Adams and Adams","John Adams and John Quincy Adams were both born in Quincy — the Adams National Historical Park is nearby."],
-  // Green Line GLX — missing verification  
-  ["Washington St",["Green"],"Somerville",2,2022,"Green Line Extension station in Somerville — new 2022 station","Washington Street station in Somerville was part of the 2022 Green Line Extension — bringing rapid transit to this underserved neighborhood."],
-  // Green Line D Branch — ensure Chestnut Hill complete coverage
-  ["Newton Centre",["Green"],"Newton",2,1959,"Newton's downtown stop on the D branch — the civic heart of an affluent suburb","Newton Centre has one of Greater Boston's most charming downtown commercial areas — boutiques and local restaurants thrive here."],
-  // Additional E branch coverage
-  ["Longwood Medical Area",["Green"],"Brookline",3,1959,"E branch stop serving Children's Hospital, Brigham and Women's, and Beth Israel","This stop is the transit lifeline for the cluster of world-class hospitals on the Longwood Medical Area campus."],
-  // Orange Line additions — additional coverage
-  ["Community College",["Orange"],"Charlestown",2,1901,"Bunker Hill Community College area — Charlestown neighborhood station","Charlestown is Boston's oldest neighborhood — settled in 1629, predating Boston itself."],
-  ["Sullivan Square",["Orange"],"Charlestown",3,1901,"Charlestown industrial district — Orange Line connection to Bunker Hill","The Bunker Hill Monument, site of the American Revolution's first major battle, is a short walk from Sullivan Square."],
-  // Additional GLX coverage
-  ["Union Square",["Green"],"Somerville",3,2022,"Green Line Extension station in Union Square, Somerville — a food and arts destination","Union Square is Somerville's creative hub — acclaimed restaurants and the annual Fluff Festival call it home."],
+  ["Washington St (GLX)",["Green"],"Somerville",2,2022,"Green Line Extension station in Somerville — new 2022 station","Washington Street station in Somerville was part of the 2022 Green Line Extension — bringing rapid transit to this underserved neighborhood."],
 ];
 const BOS_STATIONS=BOS_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:""}));
 
