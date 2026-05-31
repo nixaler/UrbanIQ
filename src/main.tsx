@@ -4911,7 +4911,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
-      <div style={{padding:"28px 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
+      <div style={{padding:"20px 0 0",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
@@ -4937,20 +4937,13 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
             <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY DISCOVERY</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
-          <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
-            {topStreak>0&&(
-              <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
-                <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
-                <span className="lm-grad-fast">{topStreak}</span>
-              </div>
-            )}
-          </div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:0,marginTop:4}}>Play the City. Know the Streets.</div>
+          {topStreak>0&&<div style={{marginTop:10,display:"flex",justifyContent:"center"}}><div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"10px 14px",borderRadius:4,display:"inline-flex",alignItems:"center",gap:5}}><span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span><span className="lm-grad-fast">{topStreak}</span></div></div>}
         </div>
       </div>
 
       {/* HOT TODAY */}
-      <div style={{padding:"32px 22px 0",animation:"lmFadeIn .3s ease both"}}>
+      <div style={{padding:"16px 22px 0",animation:"lmFadeIn .3s ease both"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           🔥 Hot Today <div className="lm-eyebrow-line"/>
         </div>
