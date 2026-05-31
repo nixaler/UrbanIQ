@@ -4862,12 +4862,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const si=hotIdx%swipeGames.length;
   const featG=swipeGames[si];
   return(
-    <div style={{minHeight:"100dvh",background:"#07070F",color:"#F0EEF0",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
-      <div aria-hidden style={{position:"fixed",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
-        <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(232,41,74,0.11) 0%,transparent 70%)",top:"-10%",left:"-15%",animation:"dkBlob1 24s ease-in-out infinite",filter:"blur(60px)"}}/>
-        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(65,105,225,0.13) 0%,transparent 70%)",top:"30%",right:"-10%",animation:"dkBlob2 30s ease-in-out infinite",filter:"blur(65px)"}}/>
-        <div style={{position:"absolute",width:450,height:450,borderRadius:"50%",background:"radial-gradient(circle,rgba(168,85,247,0.09) 0%,transparent 70%)",bottom:"10%",left:"15%",animation:"dkBlob3 36s ease-in-out infinite",filter:"blur(70px)"}}/>
-      </div>
+    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
       <link rel="manifest" href="/manifest.json"/>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
       <style>{`
@@ -4877,24 +4872,21 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         @keyframes lmBlink{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes lmFadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
         @keyframes lmFlame{0%,100%{transform:scaleY(1) rotate(-2deg)}33%{transform:scaleY(1.15) rotate(2deg)}66%{transform:scaleY(0.9) rotate(-1deg)}}
-        @keyframes dkBlob1{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(70px,-50px) scale(1.15)}50%{transform:translate(-30px,70px) scale(0.9)}75%{transform:translate(40px,30px) scale(1.08)}}
-        @keyframes dkBlob2{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(-60px,50px) scale(0.88)}50%{transform:translate(55px,-60px) scale(1.12)}75%{transform:translate(-20px,-35px) scale(0.95)}}
-        @keyframes dkBlob3{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(35px,55px) scale(1.1)}50%{transform:translate(-45px,-40px) scale(0.92)}75%{transform:translate(65px,-20px) scale(1.06)}}
-        .lm-grad{background:linear-gradient(90deg,#ffffff 0%,#E8294A 15%,#FF8C42 25%,#FFB800 35%,#4169E1 50%,#A855F7 65%,#E8294A 80%,#ffffff 90%,#E8294A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 3s linear infinite;display:inline-block;}
+        .lm-grad{background:linear-gradient(90deg,#0A0A0A 0%,#E8294A 15%,#FF8C42 25%,#FFB800 35%,#4169E1 50%,#A855F7 65%,#E8294A 80%,#0A0A0A 90%,#E8294A 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 3s linear infinite;display:inline-block;}
         .lm-grad-fast{background:linear-gradient(90deg,#E8294A 0%,#FF8C42 20%,#FFB800 40%,#FF8C42 60%,#E8294A 80%,#FF8C42 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 1.5s linear infinite;display:inline-block;}
-        .lm-grad-blue{background:linear-gradient(90deg,#ffffff 0%,#4169E1 20%,#A855F7 40%,#4169E1 60%,#ffffff 80%,#4169E1 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 2.5s linear infinite;display:inline-block;}
+        .lm-grad-blue{background:linear-gradient(90deg,#0A0A0A 0%,#4169E1 20%,#A855F7 40%,#4169E1 60%,#0A0A0A 80%,#4169E1 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:lmFlow 2.5s linear infinite;display:inline-block;}
         .lm-eyebrow-line{flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A);background-size:200% auto;animation:lmBorderFlow 2s linear infinite;}
         .lm-live-bar{background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A);background-size:300% auto;animation:lmBarFlow 2s linear infinite;height:100%;border-radius:2px;width:33%;}
-        .lm-nav-icon{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.75);transition:all 0.2s;flex-shrink:0;user-select:none;}
-        .lm-nav-icon:hover{background:rgba(255,255,255,0.12);}
-        .lm-nav-icon.red{background:rgba(232,41,74,0.12);border-color:rgba(232,41,74,0.25);}
-        .lm-game-row{display:flex;align-items:center;gap:14px;padding:18px 18px 18px 14px;background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);cursor:pointer;transition:background 0.15s;border-left:5px solid transparent;box-sizing:border-box;}
-        .lm-game-row:hover{background:rgba(255,255,255,0.07);}
+        .lm-nav-icon{width:36px;height:36px;border-radius:50%;border:1px solid #E8E6E2;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;background:white;transition:all 0.2s;flex-shrink:0;user-select:none;}
+        .lm-nav-icon:hover{background:#F5F5F5;}
+        .lm-nav-icon.red{background:#FFF0F0;border-color:#FFD5D5;}
+        .lm-game-row{display:flex;align-items:center;gap:14px;padding:18px 18px 18px 14px;background:white;cursor:pointer;transition:background 0.15s;border-left:5px solid transparent;box-sizing:border-box;}
+        .lm-game-row:hover{background:#FAFAFA;}
         .lm-live-dot{width:7px;height:7px;border-radius:50%;background:#E8294A;flex-shrink:0;animation:lmBlink 1.5s infinite;}
         .lm-stats-border::after{content:\'\';display:block;height:3px;background:linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#22C55E,#E8294A,#FF8C42);background-size:200% auto;animation:lmBorderFlow 2s linear infinite;}
-        .lm-feat-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);color:#F0EEF0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:transform .15s;border:1px solid rgba(255,255,255,0.10);font-family:\'Outfit\',sans-serif;}
+        .lm-feat-btn{display:inline-flex;align-items:center;gap:6px;background:white;color:#0A0A0A;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:11px 18px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:transform .15s;border:none;font-family:\'Outfit\',sans-serif;}
         .lm-feat-btn:hover{transform:scale(1.04);}
-        .lm-cta-main{flex:1;background:linear-gradient(135deg,rgba(232,41,74,0.9),rgba(65,105,225,0.9));color:white;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:15px 18px;border-radius:4px;text-align:center;cursor:pointer;border:none;font-family:\'Outfit\',sans-serif;transition:opacity .2s;}
+        .lm-cta-main{flex:1;background:#0A0A0A;color:white;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:15px 18px;border-radius:4px;text-align:center;cursor:pointer;border:none;font-family:\'Outfit\',sans-serif;transition:opacity .2s;}
         .lm-cta-main:hover{opacity:0.85;}
         .gs-card{border-radius:12px !important;}
       `}</style>
@@ -4902,8 +4894,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:8,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.18)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
 
       {/* NAV */}
-      <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(7,7,15,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid rgba(255,255,255,0.07)",boxSizing:"border-box"}}>
-        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#F0EEF0",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
+      <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8",boxSizing:"border-box"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <div className="lm-nav-icon" onClick={()=>setShowMaps(true)} title="Maps">🗺️</div>
           <div className="lm-nav-icon" onClick={()=>setShowBeta(true)} title="Feedback">💬</div>
@@ -4920,12 +4912,12 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
-      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"transparent"}}>
+      <div style={{minHeight:"0",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 0 24px",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
         {/* Concentric rings */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
           <div style={{position:"relative",width:280,height:280}}>
             {[40,70,100,130,160,190,220,250,280,310,340,370].map((size,ri)=>(
-              <div key={ri} style={{position:"absolute",borderRadius:"50%",border:`1.5px solid rgba(255,255,255,${ri<8?0.06:ri===8?0.04:ri===9?0.03:0.015})`,width:size,height:size,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
+              <div key={ri} style={{position:"absolute",borderRadius:"50%",border:`1.5px solid rgba(0,0,0,${ri<8?0.07:ri===8?0.04:ri===9?0.03:0.02})`,width:size,height:size,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
             ))}
           </div>
         </div>
@@ -4933,7 +4925,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <svg style={{position:"absolute",bottom:0,left:0,right:0,width:"100%",opacity:0.15,pointerEvents:"none"}} viewBox="0 0 390 120" fill="rgba(255,255,255,0.15)" xmlns="http://www.w3.org/2000/svg">
           <rect x="10" y="60" width="20" height="60"/><rect x="35" y="40" width="15" height="80"/><rect x="55" y="50" width="25" height="70"/><rect x="85" y="20" width="18" height="100"/><rect x="108" y="35" width="22" height="85"/><rect x="135" y="10" width="30" height="110"/><rect x="170" y="30" width="20" height="90"/><rect x="195" y="45" width="16" height="75"/><rect x="216" y="15" width="28" height="105"/><rect x="249" y="38" width="19" height="82"/><rect x="273" y="55" width="24" height="65"/><rect x="302" y="25" width="22" height="95"/><rect x="329" y="42" width="18" height="78"/><rect x="352" y="60" width="28" height="60"/>
         </svg>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#07070F 20%,transparent)",pointerEvents:"none"}}/>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
         {/* Hero text */}
         <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
           <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
@@ -4949,7 +4941,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,marginTop:6}}>Play the City. Know the Streets.</div>
           <div style={{display:"flex",gap:10,alignItems:"center",justifyContent:"center"}}>
             {topStreak>0&&(
-              <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
+              <div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"13px 14px",borderRadius:4,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",flexShrink:0}}>
                 <span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
                 <span className="lm-grad-fast">{topStreak}</span>
               </div>
@@ -4959,14 +4951,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </div>
 
       {/* STATS TICKER */}
-      <div className="lm-stats-border" style={{display:"flex",background:"rgba(255,255,255,0.04)",borderTop:"1px solid rgba(255,255,255,0.07)"}}>
+      <div className="lm-stats-border" style={{display:"flex",background:"#FAFAFA",borderTop:"1px solid #EDEBE8"}}>
         {([
           {n:topStreak,cls:"lm-grad-fast",label:"Streak"},
           {n:lmStats.played,cls:"lm-grad-blue",label:"Played"},
           {n:`${winPct}%`,cls:"lm-grad-blue",label:"Win %"},
           {n:lmStats.avgGuesses||"—",cls:"lm-grad-blue",label:"Avg"},
         ] as {n:any,cls:string,label:string}[]).map((s,i)=>(
-          <div key={i} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<3?"1px solid rgba(255,255,255,0.07)":"none"}}>
+          <div key={i} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<3?"1px solid #EDEBE8":"none"}}>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:1,lineHeight:1,marginBottom:2}}>
               <span className={s.cls}>{s.n}</span>
             </div>
@@ -5010,17 +5002,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
           {/* EXPLORE — first item */}
-          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
+          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
               style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{fontSize:"20px"}}>🧭</span>
                 <div>
-                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>Explore</div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
                   <div style={{fontSize:"9px",color:"rgba(255,255,255,0.45)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
                 </div>
               </div>
-              <span style={{fontSize:"11px",color:"#F0EEF0",fontWeight:600}}>Open →</span>
+              <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
             </button>
           </div>
           {[
@@ -5033,10 +5025,10 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             if(cards.length===0)return null;
             const isOpen=!lmCollapsed.has(tag);
             return(
-              <div key={tag} style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
+              <div key={tag} style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
                 <button onClick={()=>toggleLmSection(tag)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"rgba(255,255,255,0.04)":"transparent",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>{label}</span>
+                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"#F5F5F5":"transparent",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
+                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>{label}</span>
                   <span style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",transition:"transform .25s",display:"inline-block",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
                 </button>
                 {isOpen&&(
@@ -5044,7 +5036,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                     {cards.map((g,i)=>(
                       <div key={g.key} className="lm-game-row"
                         onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
-                        style={{borderBottom:i<cards.length-1?"1px solid rgba(255,255,255,0.06)":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
+                        style={{borderBottom:i<cards.length-1?"1px solid #EDEBE8":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
                         {g.photo&&(
                           <div style={{width:80,minHeight:70,flexShrink:0,position:"relative",overflow:"hidden"}}>
                             <img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.85) saturate(1.1)"}}/>
@@ -5053,7 +5045,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                         <div style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
                           <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
                           <div style={{flex:1}}>
-                            <div style={{fontSize:"14px",fontWeight:700,color:"#F0EEF0"}}>{g.name}</div>
+                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
                             <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:2}}>{g.sub}</div>
                           </div>
                           {g.key===hotGameKey&&<div className="lm-live-dot"/>}
@@ -5067,24 +5059,24 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             );
           })}
           {/* MAPS single button */}
-          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
+          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
               style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
               onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
               onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
-              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>🗺️ Maps &amp; Guides</span>
+              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
               <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
             </button>
           </div>
           {/* REWARDS single button */}
-          <div style={{border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,overflow:"hidden",background:"rgba(255,255,255,0.04)"}}>
+          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
               style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
               onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
               onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#F0EEF0"}}>🏆 Rewards</span>
-                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getRP()} pts</span>
+                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
+                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getXP()} XP</span>
               </div>
               <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
             </button>
@@ -5108,7 +5100,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                 Yesterday's Answer <div className="lm-eyebrow-line"/>
               </div>
             </div>
-            <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid rgba(255,255,255,0.07)",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"rgba(255,255,255,0.04)"}}
+            <div style={{margin:"0 22px 36px",padding:"18px",border:"1px solid #EDEBE8",borderRadius:6,display:"flex",alignItems:"center",gap:14,cursor:"pointer",background:"#FAFAFA"}}
               onClick={()=>{SoundEngine.play("select");onSelectGame(hotGameKey);}}>
               <div style={{fontSize:"24px",flexShrink:0}}>{G2.emoji}</div>
               <div style={{flex:1,minWidth:0}}>
@@ -5118,14 +5110,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                 </div>
                 <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)"}}>Could you get it in 1 guess?</div>
               </div>
-              <div style={{fontSize:"11px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#F0EEF0",border:"1px solid rgba(255,255,255,0.2)",padding:"9px 13px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>Play →</div>
+              <div style={{fontSize:"11px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"#0A0A0A",border:"1px solid #E8E6E2",padding:"9px 13px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>Play →</div>
             </div>
           </div>
         );
       })()}
 
       {/* FOOTER */}
-      <footer style={{padding:"20px 22px",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"transparent",marginTop:"auto"}}>
+      <footer style={{padding:"20px 22px",borderTop:"1px solid #EDEBE8",display:"flex",justifyContent:"space-between",alignItems:"center",background:"transparent",marginTop:"auto"}}>
         <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"rgba(255,255,255,0.25)"}}>No Ads · No Tracking · Always Free</div>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"13px",letterSpacing:"2px",color:"rgba(255,255,255,0.25)"}}>NIXALERLLC</div>
       </footer>
@@ -5155,73 +5147,72 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 // ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
 function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
 function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+amount));}
-function getRP():number{return Number(localStorage.getItem("tgg:rp")||0);}
-function addRP(n:number):void{localStorage.setItem("tgg:rp",String(getRP()+n));}
-const REWARD_TIERS=[
-  {pts:1500,label:"Transit Day Pass",sub:"1-day unlimited bus/rail",emoji:"🎟️",color:"#028A48"},
-  {pts:4000,label:"$5 Gift Card",sub:"Amazon, Starbucks, or Uber",emoji:"🎁",color:"#007DC5"},
-  {pts:7500,label:"$10 Cash",sub:"Venmo or PayPal",emoji:"💵",color:"#FFB800"},
+function getRP():number{return getXP();}
+function addRP(_n:number):void{}
+const XP_UNLOCKS=[
+  {xp:500, label:"Hard Mode",        sub:"Fewer hints, harder guesses",   icon:"🔥", color:"#E8294A"},
+  {xp:1000,label:"Pro Mode",         sub:"Expert-level challenge",         icon:"⚡", color:"#4169E1"},
+  {xp:1500,label:"Streak Shield",    sub:"1 shield added to your balance", icon:"🛡️", color:"#028A48"},
+  {xp:2500,label:"Silver Border",    sub:"Silver card border unlocked",    icon:"🥈", color:"#888580"},
+  {xp:5000,label:"3 Shields + Gold", sub:"3 shields + gold card border",   icon:"🏅", color:"#FFB800"},
+  {xp:10000,label:"City Expert",     sub:"Permanent expert badge",         icon:"👑", color:"#A855F7"},
 ];
+function getStreakMultiplier(streak:number):number{return streak>=30?2:streak>=7?1.5:1;}
 function RewardsModal({onClose}:{onClose:()=>void}){
-  const[rp,setRp]=useState(getRP());
-  const[claimTier,setClaimTier]=useState<number|null>(null);
-  const[email,setEmail]=useState("");
-  const[claimed,setClaimed]=useState<string|null>(null);
-  function handleClaim(){if(!email.trim())return;setClaimed(REWARD_TIERS[claimTier!].label);setClaimTier(null);}
+  const xp=getXP();
+  const streak=getGlobalData().streak||0;
+  const mult=getStreakMultiplier(streak);
+  const level=Math.floor(xp/500)+1;
+  const nextUnlock=XP_UNLOCKS.find(u=>u.xp>xp);
+  const claimed=XP_UNLOCKS.filter(u=>u.xp<=xp);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"rgba(0,0,0,0.3)",lineHeight:1}}>×</button>
-        <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontSize:36,marginBottom:8}}>🏆</div>
-          <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:4}}>Rewards</div>
-          <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)"}}>Earn points every correct guess. Redeem for real rewards.</div>
+        {/* Header */}
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",color:"#888580",marginBottom:4}}>YOUR PROGRESS</div>
+          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"26px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5}}>Level {level}</div>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginTop:8}}>
+            <div style={{flex:1,height:6,background:"#F0EFED",borderRadius:3,overflow:"hidden"}}>
+              <div style={{width:`${(xp%500)/500*100}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3,transition:"width .5s ease"}}/>
+            </div>
+            <span style={{fontSize:"11px",fontWeight:700,color:"#FFB800"}}>{xp} XP</span>
+          </div>
         </div>
-        <div style={{background:"#FFFBF0",border:"1px solid #FFE082",borderRadius:10,padding:"12px 16px",marginBottom:20,display:"flex",alignItems:"center",gap:10}}>
-          <span style={{fontSize:26}}>⚡</span>
-          <div>
-            <div style={{fontSize:"22px",fontWeight:800,color:"#FFB800",lineHeight:1}}>{rp} pts</div>
-            <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)",letterSpacing:1}}>YOUR BALANCE</div>
+        {/* Earn rates */}
+        <div style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:10,padding:"12px 16px",marginBottom:16}}>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>HOW TO EARN</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px",fontSize:"11px",color:"#555"}}>
+            <span>Perfect guess (1 try)</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+150 XP</span>
+            <span>Win in 2 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+100 XP</span>
+            <span>Win in 3 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+75 XP</span>
+            <span>Explore quest</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+25 XP</span>
           </div>
-          <div style={{flex:1,textAlign:"right",fontSize:"10px",color:"rgba(0,0,0,.4)",lineHeight:1.7}}>1 try → +20<br/>2 tries → +15<br/>3 tries → +10<br/>4+ → +5</div>
+          {mult>1&&<div style={{marginTop:10,padding:"6px 10px",background:"rgba(232,41,74,0.06)",border:"1px solid rgba(232,41,74,0.15)",borderRadius:6,fontSize:"11px",fontWeight:700,color:"#E8294A"}}>🔥 {streak}-day streak: {mult}× XP multiplier active</div>}
         </div>
-        {claimed?(
-          <div style={{textAlign:"center",padding:"20px 0"}}>
-            <div style={{fontSize:40,marginBottom:12}}>✅</div>
-            <div style={{fontSize:"16px",fontWeight:700,color:"#0a0a0a",marginBottom:6}}>Redemption Request Sent!</div>
-            <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)",lineHeight:1.8}}>We'll email you within 48 hours about your <strong>{claimed}</strong>.</div>
-          </div>
-        ):claimTier!==null?(
-          <div>
-            <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:4}}>Claim {REWARD_TIERS[claimTier].emoji} {REWARD_TIERS[claimTier].label}</div>
-            <div style={{fontSize:"11px",color:"rgba(0,0,0,.45)",marginBottom:12}}>{REWARD_TIERS[claimTier].sub}</div>
-            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" style={{width:"100%",border:"1.5px solid rgba(0,0,0,0.12)",borderRadius:8,padding:"10px 12px",fontSize:"13px",fontFamily:"'Inter',sans-serif",boxSizing:"border-box",marginBottom:10,outline:"none"}}/>
-            <button onClick={handleClaim} style={{width:"100%",background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontSize:"13px",fontWeight:700,cursor:"pointer",marginBottom:8}}>SUBMIT REQUEST</button>
-            <button onClick={()=>setClaimTier(null)} style={{width:"100%",background:"transparent",color:"rgba(0,0,0,.4)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:10,padding:"11px",fontSize:"12px",cursor:"pointer"}}>CANCEL</button>
-          </div>
-        ):(
-          <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {REWARD_TIERS.map((t,i)=>{
-              const pct=Math.min(1,rp/t.pts);const canClaim=rp>=t.pts;
-              return(
-                <div key={t.pts} style={{border:`1.5px solid ${canClaim?t.color+"55":"rgba(0,0,0,0.08)"}`,borderRadius:12,padding:"14px 16px",background:canClaim?`${t.color}08`:"#fff"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                    <span style={{fontSize:22}}>{t.emoji}</span>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:"13px",fontWeight:700,color:"#0a0a0a"}}>{t.label}</div>
-                      <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)"}}>{t.sub}</div>
-                    </div>
-                    <span style={{fontSize:"11px",fontWeight:700,color:t.color,background:`${t.color}18`,border:`1px solid ${t.color}40`,borderRadius:5,padding:"3px 8px",flexShrink:0}}>{t.pts} pts</span>
+        {/* Unlock ladder */}
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>UNLOCKS</div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {XP_UNLOCKS.map(u=>{
+            const done=xp>=u.xp;
+            const active=!done&&nextUnlock?.xp===u.xp;
+            const pct=Math.min(100,Math.round(xp/u.xp*100));
+            return(
+              <div key={u.xp} style={{border:`1.5px solid ${done?u.color+"55":active?"#EDEBE8":"#F0EFED"}`,borderRadius:10,padding:"12px 14px",background:done?`${u.color}07`:"#fff",opacity:done||active?1:0.55}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:20}}>{u.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:"13px",fontWeight:700,color:done?u.color:"#0A0A0A"}}>{u.label}</div>
+                    <div style={{fontSize:"10px",color:"#888580"}}>{u.sub}</div>
                   </div>
-                  <div style={{height:5,background:"rgba(0,0,0,0.07)",borderRadius:3,overflow:"hidden",marginBottom:canClaim?10:0}}>
-                    <div style={{width:`${pct*100}%`,height:"100%",background:t.color,borderRadius:3,transition:"width .4s ease"}}/>
-                  </div>
-                  {canClaim&&<button onClick={()=>setClaimTier(i)} style={{width:"100%",background:t.color,color:"#fff",border:"none",borderRadius:8,padding:"10px",fontSize:"12px",fontWeight:700,cursor:"pointer",marginTop:8,letterSpacing:1}}>REDEEM →</button>}
+                  <span style={{fontSize:"10px",fontWeight:700,color:done?"#22C55E":u.color,background:done?"rgba(34,197,94,0.1)":`${u.color}12`,padding:"3px 8px",borderRadius:4,flexShrink:0}}>{done?"UNLOCKED":`${u.xp} XP`}</span>
                 </div>
-              );
-            })}
-          </div>
-        )}
+                {!done&&<div style={{marginTop:8,height:3,background:"#EDEBE8",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:u.color,borderRadius:2,transition:"width .4s"}}/></div>}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -5235,7 +5226,7 @@ function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10
 function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
   const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
   return(
-    <div style={{background:"rgba(255,255,255,0.06)",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+    <div style={{background:"#FFFFFF",display:"flex",alignItems:"center",padding:"8px 20px",borderBottom:"1px solid #EDEBE8"}}>
       <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
         <span style={{fontSize:14}}>🔥</span>
         <div><div style={{fontSize:"13px",fontWeight:800,color:"#FF8C42",lineHeight:1}}>{streak}</div><div style={{fontSize:"7px",color:"rgba(255,255,255,0.35)",letterSpacing:"1.5px"}}>STREAK</div></div>
@@ -6890,7 +6881,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const xpGain=newGuesses.length===1?150:newGuesses.length===2?100:75;addXP(xpGain);addRP(newGuesses.length===1?20:newGuesses.length===2?15:newGuesses.length===3?10:5);incGlobalStreak();setGameHudXP(getXP());}
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const baseXP=newGuesses.length===1?150:newGuesses.length===2?100:75;const mult=getStreakMultiplier(getGlobalData().streak||0);addXP(Math.round(baseXP*mult));incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
