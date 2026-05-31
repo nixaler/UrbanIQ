@@ -4911,20 +4911,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
-      <div style={{padding:"20px 0 0",position:"relative",overflow:"hidden",background:"#FFFFFF"}}>
-        {/* Concentric rings */}
-        <div style={{position:"absolute",top:0,left:0,right:0,height:"65%",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",pointerEvents:"none"}}>
-          <div style={{position:"relative",width:280,height:280}}>
-            {[40,70,100,130,160,190,220,250,280,310,340,370].map((size,ri)=>(
-              <div key={ri} style={{position:"absolute",borderRadius:"50%",border:`1.5px solid rgba(0,0,0,${ri<8?0.07:ri===8?0.04:ri===9?0.03:0.02})`,width:size,height:size,top:"50%",left:"50%",transform:"translate(-50%,-50%)"}}/>
-            ))}
-          </div>
-        </div>
-        {/* City SVG */}
-        <svg style={{position:"absolute",bottom:0,left:0,right:0,width:"100%",opacity:0.15,pointerEvents:"none"}} viewBox="0 0 390 120" fill="rgba(255,255,255,0.15)" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="60" width="20" height="60"/><rect x="35" y="40" width="15" height="80"/><rect x="55" y="50" width="25" height="70"/><rect x="85" y="20" width="18" height="100"/><rect x="108" y="35" width="22" height="85"/><rect x="135" y="10" width="30" height="110"/><rect x="170" y="30" width="20" height="90"/><rect x="195" y="45" width="16" height="75"/><rect x="216" y="15" width="28" height="105"/><rect x="249" y="38" width="19" height="82"/><rect x="273" y="55" width="24" height="65"/><rect x="302" y="25" width="22" height="95"/><rect x="329" y="42" width="18" height="78"/><rect x="352" y="60" width="28" height="60"/>
-        </svg>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#FFFFFF 20%,transparent)",pointerEvents:"none"}}/>
+      <div style={{padding:"20px 0 0",background:"#FFFFFF"}}>
         {/* Hero text */}
         <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
           <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
@@ -5464,9 +5451,10 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
                     <div style={{flex:1,position:"relative"}}>
                       <div style={{fontSize:"13px",fontWeight:isOpen?700:600,color:isOpen?G2.accent:"#fff",textShadow:isOpen?"none":"0 1px 4px rgba(0,0,0,0.5)"}}>{cm.name}</div>
                       {isOpen&&cm.stations&&<div style={{fontSize:"9px",color:"rgba(0,0,0,0.35)",marginTop:1}}>{cm.stations.length} stations · {cm.lines.length} lines</div>}
-                      {!isOpen&&<div style={{fontSize:"9px",color:"rgba(255,255,255,0.6)",marginTop:1,letterSpacing:"0.5px"}}>{cm.lines.length} lines</div>}
+                      {!isOpen&&<div style={{fontSize:"9px",color:"rgba(255,255,255,0.6)",marginTop:1,letterSpacing:"0.5px"}}>{cm.stations?.length||cm.hubs.length} stations · {cm.lines.length} lines</div>}
                     </div>
                     {isOpen&&<div style={{fontSize:"9px",fontWeight:700,color:G2.accent,letterSpacing:"1px",position:"relative"}}>ACTIVE</div>}
+                    {!isOpen&&<div onClick={e=>{e.stopPropagation();SoundEngine.play("select");onSelectGame(k);}} style={{position:"relative",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.85)",letterSpacing:"1px",border:"1px solid rgba(255,255,255,0.4)",padding:"5px 9px",borderRadius:4,flexShrink:0,zIndex:1,WebkitTapHighlightColor:"transparent"}}>PLAY →</div>}
                   </div>
                   {isOpen&&(
                     <div style={{background:"#FAFAFA",animation:"lmFadeIn .15s ease both"}}>
