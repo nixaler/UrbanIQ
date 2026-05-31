@@ -4908,7 +4908,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
-      {activeSection==="home"&&<PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>}
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
@@ -4948,23 +4947,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             )}
           </div>
         </div>
-      </div>
-
-      {/* STATS TICKER */}
-      <div className="lm-stats-border" style={{display:"flex",background:"#FAFAFA",borderTop:"1px solid #EDEBE8"}}>
-        {([
-          {n:topStreak,cls:"lm-grad-fast",label:"Streak"},
-          {n:lmStats.played,cls:"lm-grad-blue",label:"Played"},
-          {n:`${winPct}%`,cls:"lm-grad-blue",label:"Win %"},
-          {n:lmStats.avgGuesses||"—",cls:"lm-grad-blue",label:"Avg"},
-        ] as {n:any,cls:string,label:string}[]).map((s,i)=>(
-          <div key={i} style={{flex:1,padding:"16px 0",textAlign:"center",borderRight:i<3?"1px solid #EDEBE8":"none"}}>
-            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:1,lineHeight:1,marginBottom:2}}>
-              <span className={s.cls}>{s.n}</span>
-            </div>
-            <div style={{fontSize:"8px",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.35)"}}>{s.label}</div>
-          </div>
-        ))}
       </div>
 
       {/* HOT TODAY */}
@@ -5275,15 +5257,15 @@ const NYC_XS=toExploreStns(NYC_STATIONS);
 const CHI_XS=toExploreStns(CHI_STATIONS);
 const BOS_XS=toExploreStns(BOS_STATIONS);
 const ATL_XS=toExploreStns(ATL_STATIONS);
-const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[],lc:{[k:string]:string},stations?:{n:string,l:string[],c:string}[]}}={
-  pdx:{name:"Portland MAX",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"],lc:{"Blue":"#1A6FBF","Red":"#D71F26","Green":"#028A48","Orange":"#D77033","Yellow":"#FFC72C","WES":"#6B7280"},stations:PDX_XS},
-  dc:{name:"DC Metro",emoji:"🌸",color:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#007DC5"},{name:"Orange",color:"#ED8B00"},{name:"Silver",color:"#A2AAAD"},{name:"Green",color:"#00B140"},{name:"Yellow",color:"#FFD100"}],hubs:["Metro Center","Gallery Pl-Chinatown","Union Station","Pentagon City","Dupont Circle"],lc:{"Red":"#BF0000","Blue":"#007DC5","Orange":"#ED8B00","Silver":"#A2AAAD","Green":"#00B140","Yellow":"#FFD100"},stations:DC_METRO_STATIONS},
-  balt:{name:"Baltimore MTA",emoji:"🦀",color:"#003087",lines:[{name:"Metro SubwayLink",color:"#F7941D"},{name:"Light Rail",color:"#003087"}],hubs:["Penn Station","Convention Center","Lexington Market","Charles Center","Johns Hopkins Hospital"],lc:{"Metro":"#F7941D","Light Rail":"#003087"},stations:BALT_XS},
-  la:{name:"LA Metro",emoji:"🌴",color:"#0072bc",lines:[{name:"A Line",color:"#60A0CF"},{name:"B Line",color:"#EF3340"},{name:"C Line",color:"#6CBE45"},{name:"D Line",color:"#6B449A"},{name:"E Line",color:"#1D9FD0"},{name:"K Line",color:"#EF6A00"}],hubs:["Union Station","7th St/Metro Center","Hollywood/Highland","Wilshire/Vermont","LAX/Aviation"],lc:{"A":"#60A0CF","B":"#EF3340","C":"#6CBE45","D":"#6B449A","E":"#1D9FD0","K":"#EF6A00"},stations:LA_XS},
-  nyc:{name:"NYC Subway",emoji:"🗽",color:"#EE352E",lines:[{name:"1/2/3",color:"#EE352E"},{name:"A/C/E",color:"#0039A6"},{name:"4/5/6",color:"#00933C"},{name:"N/Q/R/W",color:"#FCCC0A"},{name:"B/D/F/M",color:"#FF6319"},{name:"L",color:"#A7A9AC"},{name:"7",color:"#B933AD"},{name:"J/Z",color:"#996633"},{name:"G",color:"#6CBE45"}],hubs:["Times Sq-42 St","Grand Central-42 St","14th St-Union Sq","Fulton St","Atlantic Av-Barclays Ctr"],lc:{"1":"#EE352E","2":"#EE352E","3":"#EE352E","4":"#00933C","5":"#00933C","6":"#00933C","7":"#B933AD","A":"#0039A6","C":"#0039A6","E":"#0039A6","B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319","N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A","J":"#996633","Z":"#996633","G":"#6CBE45","L":"#A7A9AC","S":"#808183"},stations:NYC_XS},
-  chi:{name:"Chicago L",emoji:"💨",color:"#C60C30",lines:[{name:"Red Line",color:"#C60C30"},{name:"Blue Line",color:"#00A1DE"},{name:"Brown Line",color:"#62361B"},{name:"Green Line",color:"#009B3A"},{name:"Orange Line",color:"#F9461C"},{name:"Purple Line",color:"#522398"},{name:"Pink Line",color:"#E27EA6"},{name:"Yellow Line",color:"#F9E300"}],hubs:["Clark/Lake","Washington/Wabash","State/Lake","O'Hare","Midway"],lc:{"Red":"#C60C30","Blue":"#00A1DE","Brown":"#62361B","Green":"#009B3A","Orange":"#F9461C","Purple":"#522398","Pink":"#E27EA6","Yellow":"#F9E300"},stations:CHI_XS},
-  bos:{name:"Boston T",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
-  atl:{name:"Atlanta MARTA",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
+const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines:{name:string,color:string}[],hubs:string[],hubCodes?:{[k:string]:string},lc:{[k:string]:string},stations?:{n:string,l:string[],c:string}[]}}={
+  pdx:{name:"Portland",emoji:"🌹",color:"#028A48",lines:[{name:"Red Line",color:"#D71F26"},{name:"Blue Line",color:"#1A6FBF"},{name:"Green Line",color:"#028A48"},{name:"Orange Line",color:"#D77033"},{name:"Yellow Line",color:"#FFC72C"}],hubs:["Gateway/NE 99th Ave TC","Rose Quarter TC","Pioneer Square North","Union Station/NW 5th","Lloyd District/NE 11th"],lc:{"Blue":"#1A6FBF","Red":"#D71F26","Green":"#028A48","Orange":"#D77033","Yellow":"#FFC72C","WES":"#6B7280"},stations:PDX_XS},
+  dc:{name:"Washington DC",emoji:"🌸",color:"#BF0000",lines:[{name:"Red",color:"#BF0000"},{name:"Blue",color:"#007DC5"},{name:"Orange",color:"#ED8B00"},{name:"Silver",color:"#A2AAAD"},{name:"Green",color:"#00B140"},{name:"Yellow",color:"#FFD100"}],hubs:["Metro Center","Gallery Pl-Chinatown","Union Station","Pentagon City","Dupont Circle"],hubCodes:{"Metro Center":"C01","Gallery Pl-Chinatown":"B01","Union Station":"B03","Pentagon City":"C07","Dupont Circle":"A03"},lc:{"Red":"#BF0000","Blue":"#007DC5","Orange":"#ED8B00","Silver":"#A2AAAD","Green":"#00B140","Yellow":"#FFD100"},stations:DC_METRO_STATIONS},
+  balt:{name:"Baltimore",emoji:"🦀",color:"#003087",lines:[{name:"Metro SubwayLink",color:"#F7941D"},{name:"Light Rail",color:"#003087"}],hubs:["Penn Station","Convention Center","Lexington Market","Charles Center","Johns Hopkins Hospital"],lc:{"Metro":"#F7941D","Light Rail":"#003087"},stations:BALT_XS},
+  la:{name:"Los Angeles",emoji:"🌴",color:"#0072bc",lines:[{name:"A Line",color:"#60A0CF"},{name:"B Line",color:"#EF3340"},{name:"C Line",color:"#6CBE45"},{name:"D Line",color:"#6B449A"},{name:"E Line",color:"#1D9FD0"},{name:"K Line",color:"#EF6A00"}],hubs:["Union Station","7th St/Metro Center","Hollywood/Highland","Wilshire/Vermont","LAX/Aviation"],lc:{"A":"#60A0CF","B":"#EF3340","C":"#6CBE45","D":"#6B449A","E":"#1D9FD0","K":"#EF6A00"},stations:LA_XS},
+  nyc:{name:"New York City",emoji:"🗽",color:"#EE352E",lines:[{name:"1/2/3",color:"#EE352E"},{name:"A/C/E",color:"#0039A6"},{name:"4/5/6",color:"#00933C"},{name:"N/Q/R/W",color:"#FCCC0A"},{name:"B/D/F/M",color:"#FF6319"},{name:"L",color:"#A7A9AC"},{name:"7",color:"#B933AD"},{name:"J/Z",color:"#996633"},{name:"G",color:"#6CBE45"}],hubs:["Times Sq-42 St","Grand Central-42 St","14th St-Union Sq","Fulton St","Atlantic Av-Barclays Ctr"],lc:{"1":"#EE352E","2":"#EE352E","3":"#EE352E","4":"#00933C","5":"#00933C","6":"#00933C","7":"#B933AD","A":"#0039A6","C":"#0039A6","E":"#0039A6","B":"#FF6319","D":"#FF6319","F":"#FF6319","M":"#FF6319","N":"#FCCC0A","Q":"#FCCC0A","R":"#FCCC0A","W":"#FCCC0A","J":"#996633","Z":"#996633","G":"#6CBE45","L":"#A7A9AC","S":"#808183"},stations:NYC_XS},
+  chi:{name:"Chicago",emoji:"💨",color:"#C60C30",lines:[{name:"Red Line",color:"#C60C30"},{name:"Blue Line",color:"#00A1DE"},{name:"Brown Line",color:"#62361B"},{name:"Green Line",color:"#009B3A"},{name:"Orange Line",color:"#F9461C"},{name:"Purple Line",color:"#522398"},{name:"Pink Line",color:"#E27EA6"},{name:"Yellow Line",color:"#F9E300"}],hubs:["Clark/Lake","Washington/Wabash","State/Lake","O'Hare","Midway"],lc:{"Red":"#C60C30","Blue":"#00A1DE","Brown":"#62361B","Green":"#009B3A","Orange":"#F9461C","Purple":"#522398","Pink":"#E27EA6","Yellow":"#F9E300"},stations:CHI_XS},
+  bos:{name:"Boston",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
+  atl:{name:"Atlanta",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
 };
 const EXPLORE_PICKS:{[k:string]:{name:string,type:string,desc:string}[]}={
   pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
@@ -5425,10 +5407,31 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[xpPop,setXpPop]=useState<number|null>(null);
   const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
   const[showExploreMap,setShowExploreMap]=useState(false);
+  const[liveArrivals,setLiveArrivals]=useState<{line:string,lineColor:string,dest:string,mins:number,crowd:number}[]|null>(null);
+  const[isSimulated,setIsSimulated]=useState(true);
   useEffect(()=>{const id=setInterval(()=>setTick(t=>t+1),30000);return()=>clearInterval(id);},[]);
   const meta=EXPLORE_CITY_META[cityKey]||EXPLORE_CITY_META["dc"];
   const hub=selStation||(meta?.hubs[0]||"");
   const pulse=cityKey?getSimPulse(cityKey,hub,tick):[];
+  useEffect(()=>{
+    if(cityKey!=="dc"||!hub)return;
+    const code=meta?.hubCodes?.[hub];
+    if(!code)return;
+    fetch(`/api/wmata/arrivals?stationCode=${code}`)
+      .then(r=>r.json())
+      .then(data=>{
+        setIsSimulated(!!data.simulated);
+        if(!data.simulated&&data.Trains){
+          const arr=data.Trains.filter((t:any)=>t.Min&&t.Min!=="ARR"&&t.Min!=="BRD"&&t.Min!=="---").slice(0,4).map((t:any)=>({
+            line:t.Line,lineColor:meta.lc[t.Line]||"#888",dest:t.DestinationName,mins:parseInt(t.Min)||1,crowd:50
+          }));
+          if(arr.length>0)setLiveArrivals(arr);
+        }
+      })
+      .catch(()=>{setIsSimulated(true);setLiveArrivals(null);});
+  },[cityKey,hub,tick]);
+  useEffect(()=>{setLiveArrivals(null);setIsSimulated(true);},[cityKey]);
+  const displayArrivals=liveArrivals||pulse;
   const picks=EXPLORE_PICKS[cityKey]||[];
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
@@ -5592,11 +5595,11 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",gap:8}}>
           <span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#E8294A",animation:"lmBlink 1.5s infinite"}}/>
           NEXT ARRIVALS — {hub}
-          <span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>simulated</span>
+          {isSimulated&&<span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>simulated</span>}
         </div>
         <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-          {pulse.map((p,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<pulse.length-1?"1px solid #EDEBE8":"none",background:"#fff"}}>
+          {displayArrivals.map((p,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<displayArrivals.length-1?"1px solid #EDEBE8":"none",background:"#fff"}}>
               <div style={{width:28,height:18,borderRadius:3,background:p.lineColor,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <span style={{fontSize:"8px",fontWeight:900,color:"#fff",letterSpacing:"0.5px"}}>{p.line.split(" ")[0].slice(0,3).toUpperCase()}</span>
               </div>
