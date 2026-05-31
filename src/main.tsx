@@ -5245,7 +5245,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
           </div>
         </div>
       </div>
-      <div style={{padding:"0 22px 20px"}}>
+      {cityKey&&<div style={{padding:"0 22px 20px"}}>
         {(()=>{
           const cti=CITY_TRANSIT_INFO[cityKey];
           if(!cti)return null;
@@ -5322,7 +5322,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
             </div>
           ))}
         </div>
-      </div>
+      </div>}
       {cityKey&&<div style={{padding:"0 22px 20px"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
