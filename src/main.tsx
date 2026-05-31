@@ -1489,6 +1489,7 @@ function daysSinceDate(dateStr:string){const[y,m,d]=dateStr.split("-").map(Numbe
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function getDayNum(){const n=new Date();return Math.floor((n.getTime()-new Date(n.getFullYear(),0,0).getTime())/86400000);}
+function getDailyTwist():{key:string,label:string,emoji:string,color:string}|null{const d=new Date().getDay();if(d===0)return{key:"bonusxp",label:"2× XP SUNDAY",emoji:"⚡",color:"#FFB800"};if(d===1)return{key:"nohints",label:"NO HINTS MONDAY",emoji:"🚫",color:"#E8294A"};if(d===3)return{key:"blitz",label:"BLITZ WEDNESDAY",emoji:"⚡",color:"#4169E1"};return null;}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="bos"?6:gameKey==="atl"?7:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
@@ -2654,6 +2655,27 @@ const NYC_RAW:any[]=[
   ["55 St",["D"],"Brooklyn",2,1916,"Bensonhurst stop on the D train — Bay Ridge area","55th Street is a quiet residential stop in the heart of Bensonhurst, one of Brooklyn's most densely settled Italian-American neighborhoods."],
   ["New Utrecht Av",["N"],"Brooklyn",2,1916,"Borough Park stop on the N train — Bensonhurst/Borough Park","New Utrecht Avenue is the main commercial street of Borough Park, one of the largest Orthodox Jewish communities in the US."],
   ["62 St",["D","N"],"Brooklyn",2,1916,"Bensonhurst/Dyker Heights stop on the D and N","62nd Street marks the boundary of Dyker Heights, famous for its extravagant Christmas light displays that attract tourists from around the world."],
+  // ── Confirmed-missing stations added via full-line audit ────────────────────
+  ["Nereid Av",["2","5"],"Bronx",1,1920,"Northern Bronx terminus area on the 2 and 5 trains","Nereid Avenue is one of the northernmost subway stops in the Bronx, serving the Wakefield neighborhood near the Westchester county border."],
+  ["White Plains Rd",["2","5"],"Bronx",1,1920,"Bronx stop near Gun Hill Road on the 2 and 5","White Plains Road is the main commercial corridor of the northeast Bronx, lined with local shops and restaurants."],
+  ["148 St",["3"],"Manhattan",2,1904,"Harlem terminus of the 3 train — Lenox Avenue at 148th Street","The 3 train ends at 148th Street in Harlem, steps from the historic 369th Regiment Armory, once home to the legendary Harlem Hellfighters."],
+  ["138 St-Grand Concourse",["4","5","6"],"Bronx",3,1878,"Major Bronx hub — 4, 5, and 6 trains meet at Grand Concourse","138th Street and Grand Concourse was a focal point of the Bronx's early development — the Grand Concourse itself was modeled after the Champs-Élysées."],
+  ["176 St",["4"],"Bronx",2,1902,"Morris Heights stop on the 4 train","176th Street in Morris Heights is a working-class Bronx neighborhood with roots in the early 20th-century subway expansion."],
+  ["Mt Eden Av",["4"],"Bronx",2,1902,"Mount Eden stop on the 4 train in the South Bronx","Mount Eden Avenue is a residential stop in the central Bronx — the neighborhood's name comes from a 17th-century estate called 'Eden Farm.'"],
+  ["Eastchester-Dyre Av",["5"],"Bronx",1,1941,"Northern terminus of the 5 Dyre Ave branch","Eastchester-Dyre Avenue is the northernmost stop on the Dyre Avenue line, once operated by the New York, Westchester and Boston Railway before the MTA took it over in 1941."],
+  ["Baychester Av",["5"],"Bronx",1,1941,"Dyre Ave branch stop serving the Baychester neighborhood","Baychester Avenue is a quiet residential stop on the Dyre Avenue line, one of the most lightly used branches in the NYC subway system."],
+  ["172 St",["5"],"Bronx",1,1920,"Dyre Ave branch local stop in the Bronx","172nd Street on the Dyre Ave branch serves a residential section of the northeastern Bronx near Co-op City."],
+  ["180 St",["5"],"Bronx",1,1920,"Dyre Ave branch stop — distinct from East 180 St on the White Plains Rd branch","180th Street on the Dyre Avenue line is a quiet elevated stop, different from the 'East 180 St' station on the main 2/5 White Plains Road branch."],
+  ["Parkchester",["6"],"Bronx",3,1942,"Gateway to Parkchester — a massive planned residential complex","Parkchester was built by MetLife in 1942 as a self-contained city within the Bronx, housing 40,000 residents in 171 buildings."],
+  ["Annadale",["SIR"],"Staten Island",1,1860,"Southern Staten Island stop on the Staten Island Railway","Annadale is a quiet suburban neighborhood on Staten Island's South Shore — the SIR passes through open residential areas here."],
+  ["Huguenot",["SIR"],"Staten Island",1,1860,"South Shore stop named for French Protestant settlers","Huguenot is named for the French Protestant refugees who settled Staten Island in the 17th century — one of the island's oldest communities."],
+  ["Prince's Bay",["SIR"],"Staten Island",1,1860,"South Shore stop near historic oyster beds","Prince's Bay was once the center of a thriving oyster industry that supplied much of New York City's famous oyster bars in the 19th century."],
+  ["175 St",["A"],"Manhattan",2,1932,"Washington Heights A train stop near the GWB Bus Terminal","175th Street in Washington Heights is directly above the George Washington Bridge Bus Station — one of the key transit hubs connecting Manhattan to New Jersey."],
+  ["104 St",["A"],"Queens",1,1956,"Lefferts Blvd branch stop between 88 St and 111 St","104th Street is a local stop on the A train's Lefferts Boulevard branch, serving the Ozone Park and Richmond Hill communities in Queens."],
+  ["81 St-Museum of Natural History",["B","C"],"Manhattan",4,1932,"Upper West Side stop — steps from the American Museum of Natural History","The American Museum of Natural History, one of the world's largest natural history museums, holds over 33 million specimens including the famous blue whale in the Hall of Ocean Life."],
+  ["Broadway-Lafayette",["B","D","F","M"],"Manhattan",4,1908,"NoHo/SoHo hub on the B, D, F, and M trains","Broadway-Lafayette Street sits at the boundary of NoHo and SoHo — the station connects to the Bleecker St stop on the 6 train via an underground passageway."],
+  ["Bay 50 St",["D","N"],"Brooklyn",1,1916,"Coney Island-adjacent stop on the D and N in Gravesend","Bay 50th Street is one of the final stops before Coney Island, serving the Gravesend neighborhood on Brooklyn's southern shore."],
+  ["5 Av",["7"],"Manhattan",4,1928,"Midtown 7 train stop between Grand Central and Times Square","5th Avenue on the 7 train sits directly below Bryant Park — a short walk from the iconic New York Public Library on 42nd Street."],
 ];
 const NYC_IMG:Record<string,string>={
   "Times Sq-42 St / Port Auth Bus Terminal":"Times_Square_station_42nd_Street.jpg",
@@ -4680,6 +4702,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   ];
   const dateStr=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
   const dark=settings?.dark===true;
+  const streakAtRisk=(()=>{const g=getGlobalData();const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);return g.streak>=3&&g.lastWin===yest;})();
   const hotCard=gameCards.find(g=>g.key===hotGameKey)||gameCards[0];
   const nonHotCards=gameCards.filter(g=>g.key!==hotGameKey);
   const transitCards=nonHotCards.filter(g=>g.tag==="TRANSIT");
@@ -4803,6 +4826,12 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <div style={{display:"inline-flex",alignItems:"center",gap:7,background:"rgba(255,120,0,0.1)",border:"1px solid rgba(255,120,0,0.25)",borderRadius:2,padding:"6px 16px",marginTop:12,animation:"spFadeIn .2s ease both"}}>
               <span style={{fontSize:"15px",display:"inline-block",animation:"spFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
               <span style={{fontSize:"12px",fontWeight:700,color:topStreak>=14?"#ff6020":topStreak>=7?"#e07030":"#c09040",letterSpacing:2}}>{topStreak} DAY STREAK</span>
+            </div>
+          )}
+          {streakAtRisk&&(
+            <div style={{display:"inline-flex",alignItems:"center",gap:7,background:"rgba(232,41,74,0.08)",border:"1px solid rgba(232,41,74,0.3)",borderRadius:2,padding:"5px 14px",marginTop:8,animation:"spFadeIn .3s ease both"}}>
+              <span style={{fontSize:"13px",display:"inline-block",animation:"spFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
+              <span style={{fontSize:"11px",fontWeight:700,color:"#E8294A",letterSpacing:1.5}}>STREAK AT RISK — PLAY TODAY</span>
             </div>
           )}
         </div>
@@ -5189,6 +5218,8 @@ function RewardsModal({onClose}:{onClose:()=>void}){
   const level=Math.floor(xp/500)+1;
   const nextUnlock=XP_UNLOCKS.find(u=>u.xp>xp);
   const claimed=XP_UNLOCKS.filter(u=>u.xp<=xp);
+  const [career,setCareer]=useState<any>(null);
+  useEffect(()=>{(async()=>{const keys=["pdx","dc","balt","la","nyc","chi","bos","atl"];const labels:{[k:string]:string}={pdx:"Portland",dc:"DC Metro",balt:"Baltimore",la:"LA Metro",nyc:"NYC Subway",chi:"Chicago L",bos:"Boston T",atl:"Atlanta"};const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));const perGame=keys.map((k,i)=>({key:k,label:labels[k],played:stats[i]?.played||0,wins:stats[i]?.wins||0,streak:stats[i]?.streak||0})).filter(g=>g.played>0);const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const ts=Math.max(...stats.map((s:any)=>s?.streak||0));setCareer({played:tp,wins:tw,winPct:tp>0?Math.round(tw/tp*100):0,topStreak:ts,perGame});})();},[]);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
@@ -5236,6 +5267,37 @@ function RewardsModal({onClose}:{onClose:()=>void}){
               </div>
             );
           })}
+        </div>
+        {/* Career Stats */}
+        <div style={{marginTop:16}}>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>CAREER STATS</div>
+          {career?(
+            <>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6,marginBottom:10}}>
+                {[{l:"GAMES PLAYED",v:career.played},{l:"WINS",v:career.wins},{l:"WIN %",v:`${career.winPct}%`},{l:"TOP STREAK",v:career.topStreak||"—"}].map(s=>(
+                  <div key={s.l} style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:8,padding:"8px 6px",textAlign:"center"}}>
+                    <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A"}}>{s.v}</div>
+                    <div style={{fontSize:"7px",letterSpacing:1,color:"#888580",marginTop:2}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+              {career.perGame.length>0&&(
+                <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                  {career.perGame.map((g:any)=>(
+                    <div key={g.key} style={{display:"flex",alignItems:"center",gap:8,fontSize:"11px"}}>
+                      <span style={{width:72,color:"#555",flexShrink:0}}>{g.label}</span>
+                      <div style={{flex:1,height:6,background:"#EDEBE8",borderRadius:3,overflow:"hidden"}}>
+                        <div style={{width:`${g.played>0?Math.round(g.wins/g.played*100):0}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3}}/>
+                      </div>
+                      <span style={{fontSize:"10px",fontWeight:700,color:"#0A0A0A",width:28,textAlign:"right"}}>{g.played>0?Math.round(g.wins/g.played*100):0}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ):(
+            <div style={{textAlign:"center",padding:"12px 0",fontSize:"11px",color:"#888580"}}>Loading…</div>
+          )}
         </div>
       </div>
     </div>
@@ -6683,7 +6745,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
   function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};}
   const G=GAMES[gameKey];
-  const DIFF=G.diffConfig[diff];
+  const DIFF=(()=>{const d=G.diffConfig[diff];const tw=getDailyTwist();return tw?.key==="nohints"?{...d,hints:0}:d;})();
   const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:STATES;
   const target=useMemo(()=>getTarget(items,gameKey,round),[gameKey,round]);
   const yesterday=useMemo(()=>getYesterday(items,gameKey),[gameKey]);
@@ -6890,7 +6952,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const baseXP=newGuesses.length===1?150:newGuesses.length===2?100:75;const mult=getStreakMultiplier(getGlobalData().streak||0);addXP(Math.round(baseXP*mult));incGlobalStreak();setGameHudXP(getXP());}
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const baseXP=newGuesses.length===1?150:newGuesses.length===2?100:75;const mult=getStreakMultiplier(getGlobalData().streak||0);const twistMult=getDailyTwist()?.key==="bonusxp"?2:1;addXP(Math.round(baseXP*mult*twistMult));incGlobalStreak();setGameHudXP(getXP());}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -7080,7 +7142,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           <span style={{color:T.text}}>{gameKey==="pdx"?"MAX":gameKey==="dc"?"METRO":gameKey==="nfl"?"TEAMS":gameKey==="balt"?"MTA":gameKey==="la"?"METRO":gameKey==="nyc"?"SUBWAY":gameKey==="chi"?"L":gameKey==="bos"?"T":gameKey==="atl"?"MARTA":"STATE"}</span>
           {gameKey!=="states"&&<span style={{color:G.accent,fontSize:fs(26)}}> {G.short}</span>}
         </div>
-        <div style={{fontSize:fs(7),letterSpacing:3,color:T.textMuted,marginBottom:10}}>PUZZLE · DAY #{dayNum}</div>
+        <div style={{fontSize:fs(7),letterSpacing:3,color:T.textMuted,marginBottom:6}}>PUZZLE · DAY #{dayNum}</div>
+        {(()=>{const tw=getDailyTwist();return tw?(<div style={{display:"inline-flex",alignItems:"center",gap:5,background:`${tw.color}18`,border:`1px solid ${tw.color}45`,borderRadius:3,padding:"3px 10px",marginBottom:8,fontSize:fs(8),fontWeight:700,color:tw.color,letterSpacing:1}}>{tw.emoji} {tw.label}</div>):null;})()}
         {G.lineColors&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{Object.entries(G.lineColors as any).map(([n,c]:any)=>(<div key={n} style={{background:c.bg,color:c.text,fontSize:fs(7),padding:"3px 7px",borderRadius:3,fontWeight:700}}>{n.toUpperCase()}</div>))}</div>)}
         {gameKey==="states"&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{["Northeast","Mid-Atlantic","Southeast","Midwest","Southwest","Mountain West","Pacific"].map((r,i)=>{const cols=["#1a3a8f","#2a5ab0","#B22234","#2a7a2a","#c86010","#8a4a8a","#1a8a8a"];return(<div key={r} style={{background:cols[i],color:"#fff",fontSize:fs(7),padding:"3px 7px",borderRadius:3,fontWeight:700}}>{r.replace(" West","W.").replace("-Atlantic","")}</div>);})}</div>)}
         {gameKey==="nfl"&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{[["AFC","#c8102e"],["NFC","#013369"]].map(([conf,color])=>(<div key={conf} style={{background:color,color:"#fff",fontSize:fs(7),padding:"3px 10px",borderRadius:3,fontWeight:700}}>{conf}</div>))}</div>)}
@@ -7272,7 +7335,10 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               <div style={{marginBottom:8}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                   <span style={{fontSize:fs(8),letterSpacing:2,color:T.textMuted}}>GUESSES</span>
-                  <span style={{fontSize:fs(9),fontWeight:700,color:(rd.guesses.length+(rd.peekPenalty||0))>=(DIFF.maxGuesses+(rd.extraGuesses||0))-1?T.cellText.red:T.textMuted}}>{rd.guesses.length+(rd.peekPenalty||0)} / {DIFF.maxGuesses+(rd.extraGuesses||0)}</span>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    {DIFF.hints>0&&<span style={{fontSize:fs(8),fontWeight:700,color:rd.hintsUsed>=DIFF.hints?"rgba(200,168,0,.35)":"rgba(200,168,0,.85)",background:"rgba(200,168,0,.07)",border:"1px solid rgba(200,168,0,.2)",borderRadius:3,padding:"1px 5px",transition:"color .3s"}}>💡 {DIFF.hints-rd.hintsUsed}/{DIFF.hints}</span>}
+                    <span style={{fontSize:fs(9),fontWeight:700,color:(rd.guesses.length+(rd.peekPenalty||0))>=(DIFF.maxGuesses+(rd.extraGuesses||0))-1?T.cellText.red:T.textMuted}}>{rd.guesses.length+(rd.peekPenalty||0)} / {DIFF.maxGuesses+(rd.extraGuesses||0)}</span>
+                  </div>
                 </div>
                 <div style={{height:4,background:T.surface,borderRadius:4,overflow:"hidden",border:`1px solid ${T.border}`}}>
                   <div style={{height:"100%",width:`${((rd.guesses.length+(rd.peekPenalty||0))/(DIFF.maxGuesses+(rd.extraGuesses||0)))*100}%`,background:(rd.guesses.length+(rd.peekPenalty||0))>=(DIFF.maxGuesses+(rd.extraGuesses||0))-1?T.cellBorder.red:(rd.guesses.length+(rd.peekPenalty||0))>=Math.ceil((DIFF.maxGuesses+(rd.extraGuesses||0))/2)?T.cellBorder.yellow:T.accent,borderRadius:4,transition:"width .4s ease, background .4s"}}/>
