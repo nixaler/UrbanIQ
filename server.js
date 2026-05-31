@@ -1,8 +1,13 @@
 const express = require("express");
 const path = require("path");
+const compression = require("compression");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Compress all responses (gzip) — reduces JS bundle from ~750KB to ~210KB on the wire
+app.use(compression({ level: 6 }));
+
 app.use(express.json());
 
 // Cache hashed assets (JS/CSS) for 1 year; HTML and SW never cached
