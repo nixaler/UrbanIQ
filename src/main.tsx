@@ -8316,15 +8316,15 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
           </div>
         ))}
       </div>
-      <div style={{background:"#FFFBF0",border:"1px solid #FFE082",borderRadius:10,padding:"12px 14px",marginBottom:20,display:"flex",flexDirection:"column",gap:8}}>
-        {REWARD_TIERS.map(t=>(
-          <div key={t.pts} style={{display:"flex",alignItems:"center",gap:10}}>
-            <span style={{fontSize:18}}>{t.emoji}</span>
+      <div style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:10,padding:"12px 14px",marginBottom:20,display:"flex",flexDirection:"column",gap:8}}>
+        {XP_UNLOCKS.slice(0,3).map(u=>(
+          <div key={u.xp} style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:18}}>{u.icon}</span>
             <div style={{flex:1}}>
-              <div style={{fontSize:"12px",fontWeight:700,color:"#0a0a0a"}}>{t.label}</div>
-              <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)"}}>{t.sub}</div>
+              <div style={{fontSize:"12px",fontWeight:700,color:"#0a0a0a"}}>{u.label}</div>
+              <div style={{fontSize:"10px",color:"rgba(0,0,0,.4)"}}>{u.sub}</div>
             </div>
-            <span style={{fontSize:"11px",fontWeight:700,color:t.color,background:`${t.color}18`,border:`1px solid ${t.color}40`,borderRadius:5,padding:"3px 8px",flexShrink:0}}>{t.pts} pts</span>
+            <span style={{fontSize:"11px",fontWeight:700,color:u.color,background:`${u.color}18`,border:`1px solid ${u.color}40`,borderRadius:5,padding:"3px 8px",flexShrink:0}}>{u.xp} XP</span>
           </div>
         ))}
       </div>
