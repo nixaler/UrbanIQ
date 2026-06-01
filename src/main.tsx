@@ -8194,7 +8194,7 @@ function Root(){
   const[phase,setPhase]=useState<Phase>("start");
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
   const[selectedGame,setSelectedGame]=useState(()=>localStorage.getItem("tgg:cityPref")||"pdx");
-  const[selectedDiff,setSelectedDiff]=useState("medium");
+  const[selectedDiff,setSelectedDiff]=useState(()=>localStorage.getItem("tgg:diff")||"");
   const[showHype,setShowHype]=useState(false);
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
@@ -8283,23 +8283,25 @@ function Root(){
     }else if(gk==="cards"){
       setInitMode("cards");
       setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");
-      setSelectedDiff("medium");
+      setSelectedDiff(localStorage.getItem("tgg:diff")||"medium");
       setPhase("play");
     }else if(gk.includes(":")){
       const[mode,key]=gk.split(":");
       setSelectedGame(key);
       setInitMode(mode);
-      setSelectedDiff("medium");
+      setSelectedDiff(localStorage.getItem("tgg:diff")||"medium");
       setPhase("play");
     }else{
       setInitMode(undefined);
       setSelectedGame(gk);
       localStorage.setItem("tgg:cityPref",gk);
-      setShowDiffPicker(true);
+      const saved=localStorage.getItem("tgg:diff");
+      if(saved){setSelectedDiff(saved);setPhase("play");}
+      else{setShowDiffPicker(true);}
     }
   }
   function handleSelectDiff(d:string){
-    SoundEngine.play("select");setSelectedDiff(d);setShowDiffPicker(false);
+    SoundEngine.play("select");setSelectedDiff(d);localStorage.setItem("tgg:diff",d);setShowDiffPicker(false);
     const hasFlag=!!localStorage.getItem("onboarding_complete");
     const hasHistory=Object.values(allStats).some((s:any)=>s.played>0);
     if(hasFlag||hasHistory){
