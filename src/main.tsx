@@ -5246,96 +5246,194 @@ const XP_UNLOCKS=[
   {xp:5000,label:"3 Shields + Gold", sub:"3 shields + gold card border",   icon:"🏅", color:"#FFB800"},
   {xp:10000,label:"City Expert",     sub:"Permanent expert badge",         icon:"👑", color:"#A855F7"},
 ];
+const REWARD_TIERS=[
+  {id:"transit",xp:500, label:"Transit Day Pass",emoji:"🎟️",color:"#028A48",sub:"One-day unlimited pass for your city's system",cityPass:{pdx:"TriMet",dc:"SmarTrip",balt:"CharmCard",la:"TAP Card",nyc:"OMNY",chi:"Ventra",bos:"CharlieCard",atl:"Breeze Card"}},
+  {id:"gift5",  xp:1500,label:"$5 Gift Card",    emoji:"🎁",color:"#4169E1",sub:"Amazon, Starbucks, or Uber Eats"},
+  {id:"cash10", xp:3000,label:"$10 Cash",         emoji:"💵",color:"#FFB800",sub:"Sent via Venmo or PayPal within 48 hours"},
+];
+function getRedeemed():string[]{try{return JSON.parse(localStorage.getItem("tgg:redeemed")||"[]");}catch{return[];}}
+function addRedemption(id:string):void{localStorage.setItem("tgg:redeemed",JSON.stringify([...getRedeemed(),id]));}
 function getStreakMultiplier(streak:number):number{return streak>=30?2:streak>=7?1.5:1;}
+function ClaimModal({tier,onClose}:{tier:typeof REWARD_TIERS[0],onClose:()=>void}){
+  const[email,setEmail]=useState("");
+  const[city,setCity]=useState("dc");
+  const[done,setDone]=useState(false);
+  const cities=Object.keys(tier.cityPass||{});
+  function submit(){
+    const e=email.trim();
+    if(!e||!/\S+@\S+\.\S+/.test(e))return;
+    const claims=JSON.parse(localStorage.getItem("tgg:pending-claims")||"[]");
+    claims.push({id:tier.id,label:tier.label,email:e,city:cities.length?city:undefined,ts:new Date().toISOString()});
+    localStorage.setItem("tgg:pending-claims",JSON.stringify(claims));
+    addRedemption(tier.id);
+    setDone(true);
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:100001,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:"28px 24px",width:"100%",maxWidth:340,boxShadow:"0 24px 80px rgba(0,0,0,0.35)"}} onClick={e=>e.stopPropagation()}>
+        {done?(
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:48,marginBottom:12}}>{tier.emoji}</div>
+            <div style={{fontSize:"18px",fontWeight:800,color:"#0A0A0A",marginBottom:6}}>Claim Submitted!</div>
+            <div style={{fontSize:"12px",color:"#888580",lineHeight:1.6,marginBottom:20}}>Check your email within 48 hours for your {tier.label.toLowerCase()}.</div>
+            <button onClick={onClose} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"12px 24px",fontFamily:"'Outfit',sans-serif",fontSize:"13px",fontWeight:700,cursor:"pointer",width:"100%"}}>DONE</button>
+          </div>
+        ):(
+          <>
+            <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",color:"#888580",marginBottom:4}}>CLAIM REWARD</div>
+            <div style={{fontSize:"20px",fontWeight:900,color:"#0A0A0A",marginBottom:4}}>{tier.emoji} {tier.label}</div>
+            <div style={{fontSize:"11px",color:"#888580",marginBottom:20}}>{tier.sub}</div>
+            {cities.length>0&&(
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:"10px",fontWeight:700,color:"#555",marginBottom:5}}>SELECT YOUR CITY</div>
+                <select value={city} onChange={e=>setCity(e.target.value)} style={{width:"100%",padding:"10px 12px",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"13px",color:"#0A0A0A",background:"#fff",fontFamily:"'Outfit',sans-serif",outline:"none"}}>
+                  {cities.map(k=><option key={k} value={k}>{(tier.cityPass as any)[k]}</option>)}
+                </select>
+              </div>
+            )}
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:"10px",fontWeight:700,color:"#555",marginBottom:5}}>YOUR EMAIL</div>
+              <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="you@example.com"
+                style={{width:"100%",padding:"10px 12px",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"13px",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",outline:"none",boxSizing:"border-box"}}/>
+            </div>
+            <button onClick={submit} disabled={!email.trim()} style={{width:"100%",background:tier.color,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontFamily:"'Outfit',sans-serif",fontSize:"13px",fontWeight:700,cursor:"pointer",opacity:email.trim()?.6:undefined,marginBottom:8}}>SUBMIT CLAIM →</button>
+            <div style={{fontSize:"10px",color:"#C8C5BF",textAlign:"center"}}>We'll email your code within 48 hours.</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 function RewardsModal({onClose}:{onClose:()=>void}){
   const xp=getXP();
   const streak=getGlobalData().streak||0;
   const mult=getStreakMultiplier(streak);
   const level=Math.floor(xp/500)+1;
   const nextUnlock=XP_UNLOCKS.find(u=>u.xp>xp);
-  const claimed=XP_UNLOCKS.filter(u=>u.xp<=xp);
+  const [tab,setTab]=useState<"progress"|"redeem">("progress");
+  const [claimTier,setClaimTier]=useState<typeof REWARD_TIERS[0]|null>(null);
+  const [redeemed,setRedeemed]=useState(()=>getRedeemed());
   const [career,setCareer]=useState<any>(null);
   useEffect(()=>{(async()=>{const keys=["pdx","dc","balt","la","nyc","chi","bos","atl"];const labels:{[k:string]:string}={pdx:"Portland",dc:"DC Metro",balt:"Baltimore",la:"LA Metro",nyc:"NYC Subway",chi:"Chicago L",bos:"Boston T",atl:"Atlanta"};const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));const perGame=keys.map((k,i)=>({key:k,label:labels[k],played:stats[i]?.played||0,wins:stats[i]?.wins||0,streak:stats[i]?.streak||0})).filter(g=>g.played>0);const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const ts=Math.max(...stats.map((s:any)=>s?.streak||0));setCareer({played:tp,wins:tw,winPct:tp>0?Math.round(tw/tp*100):0,topStreak:ts,perGame});})();},[]);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
-      <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:"#fff",borderRadius:18,padding:"24px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"rgba(0,0,0,0.3)",lineHeight:1}}>×</button>
-        {/* Header */}
-        <div style={{marginBottom:20}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",color:"#888580",marginBottom:4}}>YOUR PROGRESS</div>
-          <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"26px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5}}>Level {level}</div>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginTop:8}}>
-            <div style={{flex:1,height:6,background:"#F0EFED",borderRadius:3,overflow:"hidden"}}>
-              <div style={{width:`${(xp%500)/500*100}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3,transition:"width .5s ease"}}/>
+        {/* Tab bar */}
+        <div style={{display:"flex",gap:4,marginBottom:20,background:"#F8F7F5",borderRadius:10,padding:4}}>
+          {(["progress","redeem"] as const).map(t=>(
+            <button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:"8px",background:tab===t?"#fff":"transparent",border:"none",borderRadius:7,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",color:tab===t?"#0A0A0A":"#888580",cursor:"pointer",transition:"all .15s",boxShadow:tab===t?"0 1px 4px rgba(0,0,0,0.08)":"none"}}>
+              {t==="progress"?"📈 Progress":"🎁 Redeem"}
+            </button>
+          ))}
+        </div>
+        {tab==="progress"&&(
+          <>
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",color:"#888580",marginBottom:4}}>YOUR PROGRESS</div>
+              <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"26px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5}}>Level {level}</div>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginTop:8}}>
+                <div style={{flex:1,height:6,background:"#F0EFED",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{width:`${(xp%500)/500*100}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3,transition:"width .5s ease"}}/>
+                </div>
+                <span style={{fontSize:"11px",fontWeight:700,color:"#FFB800"}}>{xp} XP</span>
+              </div>
             </div>
-            <span style={{fontSize:"11px",fontWeight:700,color:"#FFB800"}}>{xp} XP</span>
-          </div>
-        </div>
-        {/* Earn rates */}
-        <div style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:10,padding:"12px 16px",marginBottom:16}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>HOW TO EARN</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px",fontSize:"11px",color:"#555"}}>
-            <span>Perfect guess (1 try)</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+150 XP</span>
-            <span>Win in 2 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+100 XP</span>
-            <span>Win in 3 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+75 XP</span>
-            <span>Explore quest</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+25 XP</span>
-          </div>
-          {mult>1&&<div style={{marginTop:10,padding:"6px 10px",background:"rgba(232,41,74,0.06)",border:"1px solid rgba(232,41,74,0.15)",borderRadius:6,fontSize:"11px",fontWeight:700,color:"#E8294A"}}>🔥 {streak}-day streak: {mult}× XP multiplier active</div>}
-        </div>
-        {/* Unlock ladder */}
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>UNLOCKS</div>
-        <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {XP_UNLOCKS.map(u=>{
-            const done=xp>=u.xp;
-            const active=!done&&nextUnlock?.xp===u.xp;
-            const pct=Math.min(100,Math.round(xp/u.xp*100));
-            return(
-              <div key={u.xp} style={{border:`1.5px solid ${done?u.color+"55":active?"#EDEBE8":"#F0EFED"}`,borderRadius:10,padding:"12px 14px",background:done?`${u.color}07`:"#fff",opacity:done||active?1:0.55}}>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <span style={{fontSize:20}}>{u.icon}</span>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:"13px",fontWeight:700,color:done?u.color:"#0A0A0A"}}>{u.label}</div>
-                    <div style={{fontSize:"10px",color:"#888580"}}>{u.sub}</div>
-                  </div>
-                  <span style={{fontSize:"10px",fontWeight:700,color:done?"#22C55E":u.color,background:done?"rgba(34,197,94,0.1)":`${u.color}12`,padding:"3px 8px",borderRadius:4,flexShrink:0}}>{done?"UNLOCKED":`${u.xp} XP`}</span>
-                </div>
-                {!done&&<div style={{marginTop:8,height:3,background:"#EDEBE8",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:u.color,borderRadius:2,transition:"width .4s"}}/></div>}
+            <div style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:10,padding:"12px 16px",marginBottom:16}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>HOW TO EARN</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px",fontSize:"11px",color:"#555"}}>
+                <span>Perfect guess (1 try)</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+150 XP</span>
+                <span>Win in 2 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+100 XP</span>
+                <span>Win in 3 tries</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+75 XP</span>
+                <span>Explore quest</span><span style={{fontWeight:700,color:"#0A0A0A"}}>+25–150 XP</span>
               </div>
-            );
-          })}
-        </div>
-        {/* Career Stats */}
-        <div style={{marginTop:16}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>CAREER STATS</div>
-          {career?(
-            <>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6,marginBottom:10}}>
-                {[{l:"GAMES PLAYED",v:career.played},{l:"WINS",v:career.wins},{l:"WIN %",v:`${career.winPct}%`},{l:"TOP STREAK",v:career.topStreak||"—"}].map(s=>(
-                  <div key={s.l} style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:8,padding:"8px 6px",textAlign:"center"}}>
-                    <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A"}}>{s.v}</div>
-                    <div style={{fontSize:"7px",letterSpacing:1,color:"#888580",marginTop:2}}>{s.l}</div>
-                  </div>
-                ))}
-              </div>
-              {career.perGame.length>0&&(
-                <div style={{display:"flex",flexDirection:"column",gap:5}}>
-                  {career.perGame.map((g:any)=>(
-                    <div key={g.key} style={{display:"flex",alignItems:"center",gap:8,fontSize:"11px"}}>
-                      <span style={{width:72,color:"#555",flexShrink:0}}>{g.label}</span>
-                      <div style={{flex:1,height:6,background:"#EDEBE8",borderRadius:3,overflow:"hidden"}}>
-                        <div style={{width:`${g.played>0?Math.round(g.wins/g.played*100):0}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3}}/>
-                      </div>
-                      <span style={{fontSize:"10px",fontWeight:700,color:"#0A0A0A",width:28,textAlign:"right"}}>{g.played>0?Math.round(g.wins/g.played*100):0}%</span>
+              {mult>1&&<div style={{marginTop:10,padding:"6px 10px",background:"rgba(232,41,74,0.06)",border:"1px solid rgba(232,41,74,0.15)",borderRadius:6,fontSize:"11px",fontWeight:700,color:"#E8294A"}}>🔥 {streak}-day streak: {mult}× XP multiplier active</div>}
+            </div>
+            <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>UNLOCKS</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {XP_UNLOCKS.map(u=>{
+                const done=xp>=u.xp;const active=!done&&nextUnlock?.xp===u.xp;const pct=Math.min(100,Math.round(xp/u.xp*100));
+                return(
+                  <div key={u.xp} style={{border:`1.5px solid ${done?u.color+"55":active?"#EDEBE8":"#F0EFED"}`,borderRadius:10,padding:"12px 14px",background:done?`${u.color}07`:"#fff",opacity:done||active?1:0.55}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{fontSize:20}}>{u.icon}</span>
+                      <div style={{flex:1}}><div style={{fontSize:"13px",fontWeight:700,color:done?u.color:"#0A0A0A"}}>{u.label}</div><div style={{fontSize:"10px",color:"#888580"}}>{u.sub}</div></div>
+                      <span style={{fontSize:"10px",fontWeight:700,color:done?"#22C55E":u.color,background:done?"rgba(34,197,94,0.1)":`${u.color}12`,padding:"3px 8px",borderRadius:4,flexShrink:0}}>{done?"UNLOCKED":`${u.xp} XP`}</span>
                     </div>
-                  ))}
-                </div>
+                    {!done&&<div style={{marginTop:8,height:3,background:"#EDEBE8",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:u.color,borderRadius:2,transition:"width .4s"}}/></div>}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{marginTop:16}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",marginBottom:8}}>CAREER STATS</div>
+              {career?(
+                <>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6,marginBottom:10}}>
+                    {[{l:"GAMES PLAYED",v:career.played},{l:"WINS",v:career.wins},{l:"WIN %",v:`${career.winPct}%`},{l:"TOP STREAK",v:career.topStreak||"—"}].map(s=>(
+                      <div key={s.l} style={{background:"#F8F7F5",border:"1px solid #EDEBE8",borderRadius:8,padding:"8px 6px",textAlign:"center"}}>
+                        <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A"}}>{s.v}</div>
+                        <div style={{fontSize:"7px",letterSpacing:1,color:"#888580",marginTop:2}}>{s.l}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {career.perGame.length>0&&(
+                    <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                      {career.perGame.map((g:any)=>(
+                        <div key={g.key} style={{display:"flex",alignItems:"center",gap:8,fontSize:"11px"}}>
+                          <span style={{width:72,color:"#555",flexShrink:0}}>{g.label}</span>
+                          <div style={{flex:1,height:6,background:"#EDEBE8",borderRadius:3,overflow:"hidden"}}><div style={{width:`${g.played>0?Math.round(g.wins/g.played*100):0}%`,height:"100%",background:"linear-gradient(90deg,#E8294A,#4169E1)",borderRadius:3}}/></div>
+                          <span style={{fontSize:"10px",fontWeight:700,color:"#0A0A0A",width:28,textAlign:"right"}}>{g.played>0?Math.round(g.wins/g.played*100):0}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ):(
+                <div style={{textAlign:"center",padding:"12px 0",fontSize:"11px",color:"#888580"}}>Loading…</div>
               )}
-            </>
-          ):(
-            <div style={{textAlign:"center",padding:"12px 0",fontSize:"11px",color:"#888580"}}>Loading…</div>
-          )}
-        </div>
+            </div>
+          </>
+        )}
+        {tab==="redeem"&&(
+          <>
+            <div style={{textAlign:"center",marginBottom:20}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",color:"#888580",marginBottom:4}}>YOUR BALANCE</div>
+              <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"36px",fontWeight:900,color:"#FFB800",letterSpacing:-1}}>{xp} <span style={{fontSize:"16px",color:"#888580",fontWeight:600}}>XP</span></div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {REWARD_TIERS.map(t=>{
+                const unlocked=xp>=t.xp;
+                const claimed=redeemed.includes(t.id);
+                const pct=Math.min(100,Math.round(xp/t.xp*100));
+                return(
+                  <div key={t.id} style={{border:`1.5px solid ${unlocked?t.color+"55":"#EDEBE8"}`,borderRadius:12,padding:"16px",background:unlocked?`${t.color}06`:"#FAFAFA",opacity:claimed?.7:1}}>
+                    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:unlocked?0:10}}>
+                      <span style={{fontSize:28}}>{t.emoji}</span>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:"14px",fontWeight:800,color:"#0A0A0A"}}>{t.label}</div>
+                        <div style={{fontSize:"10px",color:"#888580",marginTop:1}}>{t.sub}</div>
+                      </div>
+                      <div style={{flexShrink:0}}>
+                        {claimed?(
+                          <span style={{fontSize:"10px",fontWeight:700,color:"#22C55E",background:"rgba(34,197,94,0.1)",padding:"4px 10px",borderRadius:6}}>✓ Claimed</span>
+                        ):unlocked?(
+                          <button onClick={()=>setClaimTier(t)} style={{background:t.color,color:"#fff",border:"none",borderRadius:7,padding:"8px 14px",fontFamily:"'Outfit',sans-serif",fontSize:"11px",fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>REDEEM →</button>
+                        ):(
+                          <span style={{fontSize:"10px",fontWeight:700,color:"#C8C5BF",background:"#F0EFED",padding:"4px 10px",borderRadius:6,whiteSpace:"nowrap"}}>{t.xp} XP</span>
+                        )}
+                      </div>
+                    </div>
+                    {!unlocked&&!claimed&&<div style={{height:4,background:"#EDEBE8",borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:t.color,borderRadius:2,transition:"width .4s"}}/></div>}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{marginTop:14,fontSize:"10px",color:"#C8C5BF",textAlign:"center",lineHeight:1.6}}>Earn XP by winning daily puzzles and completing Explore quests. Rewards fulfilled within 48 hours.</div>
+          </>
+        )}
       </div>
+      {claimTier&&<ClaimModal tier={claimTier} onClose={()=>{setClaimTier(null);setRedeemed(getRedeemed());}}/>}
     </div>
   );
 }
@@ -5408,9 +5506,10 @@ const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines
   bos:{name:"Boston",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
   atl:{name:"Atlanta",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
 };
-const EXPLORE_PICKS:{[k:string]:{name:string,type:string,desc:string}[]}={
+type ExplorePickItem={name:string,type:string,desc:string,partner?:boolean,offer?:string,offerCode?:string,questId?:string};
+const EXPLORE_PICKS:{[k:string]:ExplorePickItem[]}={
   pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
-  dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops."},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
+  dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops.",partner:true,offer:"15% off any food item",offerCode:"BUSBOYS15",questId:"dc_q3"},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
   balt:[{name:"Lexington Market",type:"🛍️ Market",desc:"One of the world's oldest public markets since 1782."},{name:"LP Steamers",type:"🦀 Seafood",desc:"Famous blue crab shack in South Baltimore."},{name:"Union Craft Brewing",type:"🍺 Brewery",desc:"Baltimore's neighborhood brewery in Woodberry."}],
   la:[{name:"Grand Central Market",type:"🛍️ Market",desc:"Downtown LA's historic market hall since 1917."},{name:"Philippe The Original",type:"🥩 Deli",desc:"Home of the French Dip sandwich since 1908."},{name:"Clifton's Republic",type:"🍴 Diner",desc:"Quirky retro cafeteria in the heart of DTLA."}],
   nyc:[{name:"Katz's Delicatessen",type:"🥪 Deli",desc:"NYC's most famous deli since 1888 on Houston St."},{name:"The Strand Bookstore",type:"📚 Books",desc:"18 miles of books — a New York institution."},{name:"Russ & Daughters",type:"🐟 Deli",desc:"Iconic appetizing shop since 1914 on Houston St."}],
@@ -5566,6 +5665,51 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:MicroQuest,onVerified:(
     </div>
   );
 }
+function OfferModal({pick,onClose}:{pick:ExplorePickItem,onClose:()=>void}){
+  const today=new Date().toISOString().slice(0,10);
+  const dateLabel=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  const[copied,setCopied]=useState(false);
+  function copyCode(){
+    if(!pick.offerCode)return;
+    navigator.clipboard.writeText(pick.offerCode).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}).catch(()=>{});
+  }
+  function markUsed(){
+    if(!pick.offerCode)return;
+    const key=`tgg:offers:used:${today}`;
+    const used=JSON.parse(localStorage.getItem(key)||"[]");
+    if(!used.includes(pick.offerCode)){used.push(pick.offerCode);localStorage.setItem(key,JSON.stringify(used));}
+    onClose();
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:9000,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 20px"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:"#fff",borderRadius:16,padding:"28px 24px",width:"100%",maxWidth:360,boxShadow:"0 20px 60px rgba(0,0,0,0.25)",animation:"lmFadeIn .2s ease both"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:"32px",marginBottom:8}}>{pick.type.split(" ")[0]}</div>
+          <div style={{fontSize:"17px",fontWeight:800,color:"#0A0A0A",marginBottom:2}}>{pick.name}</div>
+          <div style={{fontSize:"10px",color:"#888580"}}>{pick.type.split(" ").slice(1).join(" ")}</div>
+        </div>
+        <div style={{background:"rgba(2,138,72,0.06)",border:"1px solid rgba(2,138,72,0.2)",borderRadius:10,padding:"14px",textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:"13px",fontWeight:800,color:"#028A48",letterSpacing:"0.5px",textTransform:"uppercase"}}>{pick.offer}</div>
+        </div>
+        <div onClick={copyCode} style={{background:"#F8F7F5",border:"2px solid #EDEBE8",borderRadius:10,padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",marginBottom:12,WebkitTapHighlightColor:"transparent",transition:"border-color .15s",...(copied?{borderColor:"#028A48"}:{})}}>
+          <span style={{fontSize:"20px",fontWeight:800,color:"#0A0A0A",letterSpacing:"2px"}}>{pick.offerCode}</span>
+          <span style={{fontSize:"18px"}}>{copied?"✅":"📋"}</span>
+        </div>
+        {copied&&<div style={{fontSize:"11px",color:"#028A48",textAlign:"center",fontWeight:600,marginBottom:8}}>Copied to clipboard!</div>}
+        <div style={{fontSize:"11px",color:"#888580",textAlign:"center",marginBottom:4}}>Show this screen to your server before ordering.</div>
+        <div style={{fontSize:"10px",color:"#C8C5BF",textAlign:"center",marginBottom:20}}>Valid today · {dateLabel}</div>
+        <button onClick={markUsed}
+          style={{width:"100%",padding:"12px",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,fontSize:"12px",fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+          MARK AS USED
+        </button>
+        <button onClick={onClose}
+          style={{width:"100%",marginTop:10,padding:"10px",background:"transparent",color:"#888580",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"11px",fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
 function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const TRANSIT_KEYS=["pdx","dc","balt","la","nyc","chi","bos","atl"];
   const[cityKey,setCityKey]=useState<string>("");
@@ -5579,6 +5723,8 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[xpPop,setXpPop]=useState<number|null>(null);
   const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
   const[showExploreMap,setShowExploreMap]=useState(false);
+  const[showOffer,setShowOffer]=useState<ExplorePickItem|null>(null);
+  const[claimedToday,setClaimedToday]=useState<Set<string>>(()=>new Set(JSON.parse(localStorage.getItem(`tgg:offers:used:${new Date().toISOString().slice(0,10)}`)||"[]")));
   const meta=EXPLORE_CITY_META[cityKey]||EXPLORE_CITY_META["dc"];
   const hub=selStation||(meta?.hubs[0]||"");
   const picks=EXPLORE_PICKS[cityKey]||[];
@@ -5711,16 +5857,41 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
       {cityKey&&<div style={{padding:"0 22px 20px"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {picks.map((p,i)=>(
-            <div key={i} style={{border:"1px solid #EDEBE8",borderRadius:10,padding:"14px 16px",background:"#FAFAFA",display:"flex",alignItems:"flex-start",gap:12}}>
-              <div style={{fontSize:"22px",flexShrink:0,marginTop:2}}>{p.type.split(" ")[0]}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
-                <div style={{fontSize:"10px",color:"#888580",lineHeight:1.4}}>{p.desc}</div>
-                <div style={{fontSize:"10px",fontWeight:600,color:G.accent,marginTop:4}}>{p.type.split(" ").slice(1).join(" ")}</div>
+          {picks.map((p,i)=>{
+            const questDone=!p.questId||completedQuests.has(p.questId);
+            const usedToday=!!(p.offerCode&&claimedToday.has(p.offerCode));
+            return(
+            <div key={i} style={{border:`1px solid ${p.partner?"#4169E1":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:"#FAFAFA",position:"relative"}}>
+              {p.partner&&<div style={{position:"absolute",top:10,right:12,fontSize:"9px",fontWeight:700,color:"#4169E1",border:"1px solid #4169E1",borderRadius:20,padding:"2px 8px",letterSpacing:"0.5px"}}>⭐ PARTNER</div>}
+              <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+                <div style={{fontSize:"22px",flexShrink:0,marginTop:2}}>{p.type.split(" ")[0]}</div>
+                <div style={{flex:1,paddingRight:p.partner?60:0}}>
+                  <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
+                  <div style={{fontSize:"10px",color:"#888580",lineHeight:1.4}}>{p.desc}</div>
+                  <div style={{fontSize:"10px",fontWeight:600,color:G.accent,marginTop:4}}>{p.type.split(" ").slice(1).join(" ")}</div>
+                  {p.offer&&<div style={{display:"inline-block",marginTop:6,fontSize:"10px",fontWeight:700,color:"#028A48",background:"rgba(2,138,72,0.08)",border:"1px solid rgba(2,138,72,0.2)",borderRadius:4,padding:"2px 8px"}}>{p.offer.toUpperCase()}</div>}
+                </div>
               </div>
+              {p.partner&&p.offer&&(
+                <div style={{marginTop:10}}>
+                  {usedToday?(
+                    <div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ Used Today</div>
+                  ):questDone?(
+                    <button onClick={()=>setShowOffer(p)}
+                      style={{width:"100%",padding:"9px",background:"#4169E1",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                      🎟️ CLAIM OFFER
+                    </button>
+                  ):(
+                    <button disabled
+                      style={{width:"100%",padding:"9px",background:"#F0EDE8",color:"#AAA",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"not-allowed",fontFamily:"'Outfit',sans-serif"}}>
+                      🔒 Complete quest to unlock
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>}
       {cityKey&&<div style={{padding:"0 22px 24px"}}>
@@ -5760,6 +5931,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         </div>
       </div>}
       {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
+      {showOffer&&<OfferModal pick={showOffer} onClose={()=>{const t2=new Date().toISOString().slice(0,10);setClaimedToday(new Set(JSON.parse(localStorage.getItem(`tgg:offers:used:${t2}`)||"[]")));setShowOffer(null);}}/>}
       {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
     </div>
   );
