@@ -6307,6 +6307,20 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
     setJustSubmitted(p=>({...p,[`${gameKey}:${dayNum}:${roundIdx}`]:true}));
     setSubmitRound(null);
   }
+  function handleSubmitAll(){
+    const name=submitName.trim();if(!name)return;
+    let updated=[...entries];
+    completedRounds.forEach(r=>{
+      const entry={id:Date.now()+r.idx,playerName:name,gameKey,difficulty:diff,guessCount:r.guesses.length,won:r.won,dayNum,ts:new Date().toISOString()};
+      updated=[entry,...updated];
+    });
+    updated=updated.slice(0,100);
+    localStorage.setItem('tgg:lb',JSON.stringify(updated));
+    setEntries(updated);
+    const newSubmitted={...justSubmitted};
+    completedRounds.forEach(r=>{newSubmitted[`${gameKey}:${dayNum}:${r.idx}`]=true;});
+    setJustSubmitted(newSubmitted);
+  }
   const filtered=entries.filter(e=>e.gameKey===lbGameKey).slice(0,20);
   const totalPlays=entries.length;
   const totalWins=entries.filter(e=>e.won).length;
@@ -6324,26 +6338,19 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
       </div>
       {completedRounds.length>0&&(
         <div style={{background:T.card,border:`1.5px solid ${T.accent}`,borderRadius:12,padding:"16px",marginBottom:14}}>
-          <div style={{fontSize:fs(9),letterSpacing:2,color:T.accent,marginBottom:8}}>🏆 POST YOUR SCORE</div>
-          {completedRounds.map(r=>(
-            <div key={r.idx} style={{marginBottom:8}}>
-              <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                <div style={{flex:1,background:r.won?T.cellBg.green:T.cellBg.red,border:`1px solid ${r.won?T.cellBorder.green:T.cellBorder.red}`,borderRadius:6,padding:"6px 10px",fontSize:fs(10),color:r.won?T.cellText.green:T.cellText.red,fontWeight:700}}>
-                  Round {r.idx+1}: {r.won?`✓ Won in ${r.guesses.length} guess${r.guesses.length!==1?"es":""}`:"✗ Did not finish"}
-                </div>
-                <button onClick={()=>setSubmitRound(submitRound===r.idx?null:r.idx)} style={{background:T.accent,color:"#fff",border:"none",borderRadius:6,padding:"6px 12px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,cursor:"pointer",letterSpacing:1}}>
-                  {submitRound===r.idx?"CANCEL":"POST →"}
-                </button>
+          <div style={{fontSize:fs(9),letterSpacing:2,color:T.accent,marginBottom:10}}>🏆 POST YOUR SCORES</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
+            {completedRounds.map(r=>(
+              <div key={r.idx} style={{background:r.won?T.cellBg.green:T.cellBg.red,border:`1px solid ${r.won?T.cellBorder.green:T.cellBorder.red}`,borderRadius:6,padding:"7px 10px",fontSize:fs(10),color:r.won?T.cellText.green:T.cellText.red,fontWeight:700}}>
+                Round {r.idx+1}: {r.won?`✓ Won in ${r.guesses.length} guess${r.guesses.length!==1?"es":""}`:"✗ Did not finish"}
               </div>
-              {submitRound===r.idx&&(
-                <div style={{marginTop:8,display:"flex",gap:6}}>
-                  <input value={submitName} onChange={e=>setSubmitName(e.target.value)} placeholder="Your name (max 30 chars)" maxLength={30}
-                    style={{flex:1,background:T.bg,border:`1px solid ${T.border}`,borderRadius:6,padding:"8px 10px",color:T.text,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),outline:"none"}}/>
-                  <button onClick={()=>handleSubmit(r.idx)} disabled={!submitName.trim()} style={{background:T.accent,color:"#fff",border:"none",borderRadius:6,padding:"8px 14px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,cursor:"pointer",opacity:!submitName.trim()?.6:1}}>GO</button>
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
+          <div style={{display:"flex",gap:6}}>
+            <input value={submitName} onChange={e=>setSubmitName(e.target.value)} placeholder="Your name (max 30 chars)" maxLength={30}
+              style={{flex:1,background:T.bg,border:`1px solid ${T.border}`,borderRadius:6,padding:"9px 10px",color:T.text,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),outline:"none"}}/>
+            <button onClick={handleSubmitAll} disabled={!submitName.trim()} style={{background:T.accent,color:"#fff",border:"none",borderRadius:6,padding:"9px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,cursor:"pointer",letterSpacing:1,opacity:!submitName.trim()?.6:1,whiteSpace:"nowrap"}}>POST ALL →</button>
+          </div>
         </div>
       )}
       <div style={{display:"flex",gap:6,marginBottom:12}}>
