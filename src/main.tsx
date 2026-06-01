@@ -5247,9 +5247,9 @@ const XP_UNLOCKS=[
   {xp:10000,label:"City Expert",     sub:"Permanent expert badge",         icon:"👑", color:"#A855F7"},
 ];
 const REWARD_TIERS=[
-  {id:"transit",xp:500, label:"Transit Day Pass",emoji:"🎟️",color:"#028A48",sub:"One-day unlimited pass for your city's system",cityPass:{pdx:"TriMet",dc:"SmarTrip",balt:"CharmCard",la:"TAP Card",nyc:"OMNY",chi:"Ventra",bos:"CharlieCard",atl:"Breeze Card"}},
-  {id:"gift5",  xp:1500,label:"$5 Gift Card",    emoji:"🎁",color:"#4169E1",sub:"Amazon, Starbucks, or Uber Eats"},
-  {id:"cash10", xp:3000,label:"$10 Cash",         emoji:"💵",color:"#FFB800",sub:"Sent via Venmo or PayPal within 48 hours"},
+  {id:"transit",xp:1200, label:"Transit Day Pass",emoji:"🎟️",color:"#028A48",sub:"One-day unlimited pass for your city's system",cityPass:{pdx:"TriMet",dc:"SmarTrip",balt:"CharmCard",la:"TAP Card",nyc:"OMNY",chi:"Ventra",bos:"CharlieCard",atl:"Breeze Card"}},
+  {id:"gift5",  xp:2500, label:"$5 Gift Card",    emoji:"🎁",color:"#4169E1",sub:"Amazon, Starbucks, or Uber Eats"},
+  {id:"cash10", xp:4200, label:"$10 Cash",         emoji:"💵",color:"#FFB800",sub:"Sent via Venmo or PayPal within 48 hours"},
 ];
 function getRedeemed():string[]{try{return JSON.parse(localStorage.getItem("tgg:redeemed")||"[]");}catch{return[];}}
 function addRedemption(id:string):void{localStorage.setItem("tgg:redeemed",JSON.stringify([...getRedeemed(),id]));}
