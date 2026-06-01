@@ -2676,6 +2676,16 @@ const NYC_RAW:any[]=[
   ["Broadway-Lafayette",["B","D","F","M"],"Manhattan",4,1908,"NoHo/SoHo hub on the B, D, F, and M trains","Broadway-Lafayette Street sits at the boundary of NoHo and SoHo — the station connects to the Bleecker St stop on the 6 train via an underground passageway."],
   ["Bay 50 St",["D","N"],"Brooklyn",1,1916,"Coney Island-adjacent stop on the D and N in Gravesend","Bay 50th Street is one of the final stops before Coney Island, serving the Gravesend neighborhood on Brooklyn's southern shore."],
   ["5 Av",["7"],"Manhattan",4,1928,"Midtown 7 train stop between Grand Central and Times Square","5th Avenue on the 7 train sits directly below Bryant Park — a short walk from the iconic New York Public Library on 42nd Street."],
+  ["Av I",["F"],"Brooklyn",2,1954,"Brooklyn Culver Line stop — residential Flatbush near Midwood","Avenue I is a quiet residential station on the F train's McDonald Avenue corridor — tucked between Flatbush and Midwood."],
+  ["Av J",["B","Q"],"Brooklyn",2,1920,"Brighton Line stop in Flatbush — the heart of Midwood","Avenue J is a busy commercial strip in Midwood anchoring Brooklyn's Orthodox Jewish community — its kosher restaurants and shops line both sides."],
+  ["Av M",["B","Q"],"Brooklyn",2,1920,"Brighton Line stop — Flatbush and Midwood border","Avenue M marks the transition from Flatbush into Midwood along the B and Q corridor — a residential and commercial stretch of central Brooklyn."],
+  ["Av N",["F"],"Brooklyn",2,1954,"Culver Line stop near the Flatbush-Bensonhurst border","Avenue N is a mid-route F train stop along McDonald Avenue serving the southern reaches of Flatbush before it becomes Bensonhurst."],
+  ["Av P",["F"],"Brooklyn",2,1954,"Culver Line stop in Bensonhurst","Avenue P is a residential F train stop in Bensonhurst along McDonald Avenue — a neighborhood known for its Italian-American heritage."],
+  ["Av U",["B","Q","F","N"],"Brooklyn",2,1920,"Multi-line stop spanning three Brooklyn branches","Avenue U has three physically separate stations — on the Brighton, Culver, and Sea Beach lines — each serving south Brooklyn neighborhoods near Gravesend."],
+  ["Av X",["F"],"Brooklyn",2,1954,"Southern Culver Line stop near Gravesend","Avenue X is one of the F train's final stops before Coney Island, serving the quiet Gravesend neighborhood near Brooklyn's southern shore."],
+  ["Queens Plaza",["E","M","R"],"Queens",3,1933,"Long Island City underground hub — E/M/R transfer","Queens Plaza is a major underground complex in Long Island City connecting three lines — a key junction for Midtown-bound commuters from central Queens."],
+  ["York St",["F"],"Brooklyn",2,1933,"DUMBO's only subway station — below the Manhattan Bridge","York Street is the sole subway stop serving DUMBO, one of NYC's most sought-after neighborhoods — the Manhattan Bridge looms directly overhead."],
+  ["Sutphin Blvd",["F"],"Queens",2,1988,"Jamaica F train stop — distinct from the AirTrain hub nearby","Sutphin Boulevard on the F is a standalone Jamaica stop, a few blocks from the busier Sutphin Blvd-Archer Av AirTrain hub serving JFK Airport."],
 ];
 const NYC_IMG:Record<string,string>={
   "Times Sq-42 St / Port Auth Bus Terminal":"Times_Square_station_42nd_Street.jpg",
@@ -4735,6 +4745,11 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   useEffect(()=>{
     setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||topStreak);
   },[activeSection,topStreak]);
+  useEffect(()=>{
+    const onStorage=()=>{setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||topStreak);};
+    window.addEventListener("storage",onStorage);
+    return()=>window.removeEventListener("storage",onStorage);
+  },[topStreak]);
 
   const modals=(
     <>
@@ -5019,6 +5034,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
+      <PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
@@ -5326,9 +5342,10 @@ function RewardsModal({onClose}:{onClose:()=>void}){
 function getShieldCount():number{return Number(localStorage.getItem("tgg:shields")||0);}
 function addShield():void{localStorage.setItem("tgg:shields",String(getShieldCount()+1));}
 function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;localStorage.setItem("tgg:shields",String(n-1));return true;}
-function getGlobalData():{streak:number,lastWin:string}{try{return JSON.parse(localStorage.getItem("tgg:global")||'{"streak":0,"lastWin":""}');}catch{return{streak:0,lastWin:""};}}
-function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
-function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10);const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);const g=getGlobalData();if(!g.lastWin||g.lastWin===today||g.lastWin===yest)return false;if(!consumeShield())return false;localStorage.setItem("tgg:global",JSON.stringify({streak:g.streak,lastWin:yest}));return true;}
+function getGlobalData():{streak:number,lastWin:string,proStatus:boolean}{try{const d=JSON.parse(localStorage.getItem("tgg:global")||'{}');return{streak:d.streak||0,lastWin:d.lastWin||"",proStatus:!!d.proStatus};}catch{return{streak:0,lastWin:"",proStatus:false};}}
+function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({...g,streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
+function getUserWallet():{xp:number,shields:number,streak:number,proStatus:boolean,hintsRemaining:number}{const g=getGlobalData();return{xp:getXP(),shields:getShieldCount(),streak:g.streak,proStatus:g.proStatus,hintsRemaining:Number(localStorage.getItem("tgg:hints")||0)};}
+function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10);const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);const g=getGlobalData();if(!g.lastWin||g.lastWin===today||g.lastWin===yest)return false;if(!consumeShield())return false;localStorage.setItem("tgg:global",JSON.stringify({...g,lastWin:yest}));return true;}
 function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
   const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
   return(
@@ -5602,6 +5619,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
+      <PersistentHUD streak={getGlobalData().streak||0} xp={getXP()} shields={getShieldCount()}/>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
       <div style={{padding:"20px 22px 0"}}>
