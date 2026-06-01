@@ -260,6 +260,54 @@ app.get("/api/wmata/incidents", async (req, res) => {
   }
 });
 
+// ── REWARD CLAIMS ────────────────────────────────────────────────────────────
+// Stores claims server-side and enforces: one claim per email+tier, one claim
+// per device+tier, and a minimum account age of 12 days for $10 cash.
+app.post("/api/claims", async (req, res) => {
+  const { id, label, email, city, xp, firstPlay, deviceId, ts } = req.body || {};
+  if (!id || !email || !deviceId || !/\S+@\S+\.\S+/.test(email)) {
+    return res.status(400).json({ error: "Invalid claim data." });
+  }
+
+  // Minimum account age check for $10 tier
+  if (id === "cash10" && firstPlay) {
+    const ageDays = (Date.now() - new Date(firstPlay).getTime()) / 86400000;
+    if (ageDays < 12) {
+      return res.status(403).json({ error: "Keep playing! $10 cash requires 14 days of play." });
+    }
+  }
+
+  // Duplicate email+tier check
+  const emailKey = `claim:email:${id}:${email.toLowerCase().trim()}`;
+  const existingEmail = await store.get(emailKey);
+  if (existingEmail) {
+    return res.status(409).json({ error: "This email has already claimed this reward." });
+  }
+
+  // Duplicate device+tier check
+  const deviceKey = `claim:device:${id}:${deviceId}`;
+  const existingDevice = await store.get(deviceKey);
+  if (existingDevice) {
+    return res.status(409).json({ error: "This reward has already been claimed on this device." });
+  }
+
+  const claim = { id, label, email, city, xp, firstPlay, deviceId, ts: ts || new Date().toISOString() };
+  const claimId = genId();
+  await store.set(`claim:${claimId}`, claim);
+  await store.set(emailKey, claimId);
+  await store.set(deviceKey, claimId);
+  console.log(`[claim] ${id} → ${email} device=${deviceId} xp=${xp}`);
+  return res.json({ ok: true, claimId });
+});
+
+// ── ADMIN: list all pending claims (no auth for MVP — Railway env only) ───────
+app.get("/api/claims", async (req, res) => {
+  const keys = await store.list("claim:");
+  const claimKeys = keys.filter(k => k.match(/^claim:[a-z0-9]+$/));
+  const claims = await Promise.all(claimKeys.map(k => store.get(k)));
+  return res.json(claims.filter(Boolean));
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });

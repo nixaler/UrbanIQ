@@ -5235,7 +5235,19 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
 // ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
 function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
-function addXP(amount:number):void{localStorage.setItem("tgg:xp",String(getXP()+amount));}
+function getDeviceId():string{let d=localStorage.getItem("tgg:did");if(!d){d=crypto.randomUUID();localStorage.setItem("tgg:did",d);}return d;}
+function getFirstPlay():string{return localStorage.getItem("tgg:first-play")||"";}
+function markFirstPlay():void{if(!localStorage.getItem("tgg:first-play"))localStorage.setItem("tgg:first-play",new Date().toISOString());}
+function addXP(amount:number):void{
+  markFirstPlay();
+  const today=new Date().toISOString().slice(0,10);
+  const capKey=`tgg:xp:cap:${today}`;
+  const earned=Number(localStorage.getItem(capKey)||0);
+  const allowed=Math.min(amount,Math.max(0,400-earned));
+  if(allowed<=0)return;
+  localStorage.setItem(capKey,String(earned+allowed));
+  localStorage.setItem("tgg:xp",String(getXP()+allowed));
+}
 function getRP():number{return getXP();}
 function addRP(_n:number):void{}
 const XP_UNLOCKS=[
@@ -5258,15 +5270,27 @@ function ClaimModal({tier,onClose}:{tier:typeof REWARD_TIERS[0],onClose:()=>void
   const[email,setEmail]=useState("");
   const[city,setCity]=useState("dc");
   const[done,setDone]=useState(false);
+  const[submitting,setSubmitting]=useState(false);
+  const[err,setErr]=useState("");
   const cities=Object.keys(tier.cityPass||{});
-  function submit(){
+  async function submit(){
     const e=email.trim();
-    if(!e||!/\S+@\S+\.\S+/.test(e))return;
-    const claims=JSON.parse(localStorage.getItem("tgg:pending-claims")||"[]");
-    claims.push({id:tier.id,label:tier.label,email:e,city:cities.length?city:undefined,ts:new Date().toISOString()});
-    localStorage.setItem("tgg:pending-claims",JSON.stringify(claims));
+    if(!e||!/\S+@\S+\.\S+/.test(e)){setErr("Please enter a valid email.");return;}
+    setErr("");setSubmitting(true);
+    const payload={id:tier.id,label:tier.label,email:e,city:cities.length?city:undefined,
+      xp:getXP(),firstPlay:getFirstPlay(),deviceId:getDeviceId(),ts:new Date().toISOString()};
+    try{
+      const r=await fetch("/api/claims",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      const j=await r.json();
+      if(!r.ok){setErr(j.error||"Submission failed. Try again.");setSubmitting(false);return;}
+    }catch{
+      // network failure — store locally so admin can still see it
+      const claims=JSON.parse(localStorage.getItem("tgg:pending-claims")||"[]");
+      claims.push(payload);
+      localStorage.setItem("tgg:pending-claims",JSON.stringify(claims));
+    }
     addRedemption(tier.id);
-    setDone(true);
+    setDone(true);setSubmitting(false);
   }
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:100001,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={onClose}>
@@ -5296,7 +5320,8 @@ function ClaimModal({tier,onClose}:{tier:typeof REWARD_TIERS[0],onClose:()=>void
               <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="you@example.com"
                 style={{width:"100%",padding:"10px 12px",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"13px",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",outline:"none",boxSizing:"border-box"}}/>
             </div>
-            <button onClick={submit} disabled={!email.trim()} style={{width:"100%",background:tier.color,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontFamily:"'Outfit',sans-serif",fontSize:"13px",fontWeight:700,cursor:"pointer",opacity:email.trim()?.6:undefined,marginBottom:8}}>SUBMIT CLAIM →</button>
+            {err&&<div style={{fontSize:"11px",color:"#E53E3E",marginBottom:8,textAlign:"center"}}>{err}</div>}
+            <button onClick={submit} disabled={!email.trim()||submitting} style={{width:"100%",background:tier.color,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontFamily:"'Outfit',sans-serif",fontSize:"13px",fontWeight:700,cursor:submitting?"wait":"pointer",opacity:(!email.trim()||submitting)?0.6:1,marginBottom:8}}>{submitting?"Submitting…":"SUBMIT CLAIM →"}</button>
             <div style={{fontSize:"10px",color:"#C8C5BF",textAlign:"center"}}>We'll email your code within 48 hours.</div>
           </>
         )}
