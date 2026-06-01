@@ -4691,21 +4691,25 @@ function AccountModal({onClose}:{onClose:()=>void}){
   async function sendCode(){
     if(!/\S+@\S+\.\S+/.test(email)){setErrMsg("Enter a valid email address.");return;}
     setLoading(true);setErrMsg("");
+    const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),10000);
     try{
-      const r=await fetch("/api/auth/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+      const r=await fetch("/api/auth/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email}),signal:ctrl.signal});
+      clearTimeout(tid);
       const d=await r.json();
       if(!r.ok){setErrMsg(d.error||"Failed to send code.");setLoading(false);return;}
       if(d._devCode)setCode(d._devCode);
       setPhase("sent");
-    }catch{setErrMsg("Network error — try again.");}
+    }catch(e:any){setErrMsg(e?.name==="AbortError"?"Request timed out — try again.":"Network error — try again.");clearTimeout(tid);}
     setLoading(false);
   }
 
   async function verifyCode(){
     if(code.length<6){setErrMsg("Enter the 6-digit code.");return;}
     setLoading(true);setErrMsg("");
+    const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),10000);
     try{
-      const r=await fetch("/api/auth/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,code})});
+      const r=await fetch("/api/auth/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,code}),signal:ctrl.signal});
+      clearTimeout(tid);
       const d=await r.json();
       if(!r.ok){setErrMsg(d.error||"Invalid or expired code.");setLoading(false);return;}
       setAuthToken(d.token);
@@ -4715,7 +4719,7 @@ function AccountModal({onClose}:{onClose:()=>void}){
       setProfile(prof);
       await syncToServer();
       setPhase("done");
-    }catch{setErrMsg("Network error — try again.");}
+    }catch(e:any){setErrMsg(e?.name==="AbortError"?"Request timed out — try again.":"Network error — try again.");clearTimeout(tid);}
     setLoading(false);
   }
 
@@ -4965,7 +4969,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     getWikiImage(term).then(url=>{if(url)setHeroImgUrl(url);else setHeroImgFailed(true);});
   },[hotGameKey]);
 
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     if(showBeta||showInstall||showSupport||showDailyChallenge||showMaps||showRewards||showAccount){
       window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
     }
@@ -5449,7 +5453,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
             </button>
           </div>
-          {(()=>{const otd=getOnThisDay();if(!otd)return null;return(<div style={{margin:"0 0 4px",background:"#F7F6F3",borderRadius:10,padding:"14px 16px",border:"1px solid #EDEBE8"}}><div style={{fontSize:10,letterSpacing:2,color:"#888",fontWeight:700,marginBottom:6}}>ON THIS DAY · {otd.year}</div><div style={{fontSize:13,color:"#333",lineHeight:1.5}}>{otd.fact}</div><div style={{fontSize:10,color:"#aaa",marginTop:4,letterSpacing:1}}>{otd.city}</div></div>);})()}
           {/* EXPLORE — first item */}
           <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
@@ -5564,6 +5567,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           </div>
         );
       })()}
+
+      {/* ON THIS DAY */}
+      {(()=>{const otd=getOnThisDay();if(!otd)return null;return(<div style={{margin:"0 22px 20px",background:"#F7F6F3",borderRadius:10,padding:"14px 16px",border:"1px solid #EDEBE8"}}><div style={{fontSize:10,letterSpacing:2,color:"#888",fontWeight:700,marginBottom:6}}>ON THIS DAY · {otd.year}</div><div style={{fontSize:13,color:"#333",lineHeight:1.5}}>{otd.fact}</div><div style={{fontSize:10,color:"#aaa",marginTop:4,letterSpacing:1}}>{otd.city}</div></div>);})()}
 
       {/* FOOTER */}
       <footer style={{padding:"20px 22px",borderTop:"1px solid #EDEBE8",display:"flex",justifyContent:"space-between",alignItems:"center",background:"transparent",marginTop:"auto"}}>
