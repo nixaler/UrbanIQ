@@ -4663,8 +4663,8 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   useEffect(()=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[]);
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}}>
-      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)"}}>
+      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:16,width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
           <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
@@ -4743,8 +4743,8 @@ function AccountModal({onClose}:{onClose:()=>void}){
   const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"28px 24px 44px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>SYNC PROGRESS</div>
@@ -4838,9 +4838,9 @@ function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:strin
   }
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       {shareToast&&<div style={{position:"fixed",top:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)"}}>Copied to clipboard!</div>}
-      <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"28px 24px 40px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#FFB800,#FF8C42,#E8294A)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>DAILY CHALLENGE</div>
@@ -6012,8 +6012,8 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:MicroQuest,onVerified:(
     else{setCodeErrMsg("Code not recognized — check the venue card");setCodeErr(true);setTimeout(()=>setCodeErr(false),1800);}
   }
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"flex-end",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:"24px 24px 0 0",padding:"28px 24px 44px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box"}}>
+    <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:16,padding:"28px 24px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",maxHeight:"90vh",overflowY:"auto"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
           <div>
             <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>Verification · Step {step} of 2</div>
@@ -7343,8 +7343,8 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
       );
     }
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-        <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,maxHeight:"80vh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,maxHeight:"80vh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
               <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2}}>LINE CHALLENGES</div>
@@ -7419,8 +7419,8 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
   const color=lineColors[selLine]||T.accent;
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-      <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"20px 20px 36px",boxSizing:"border-box"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"20px 20px 36px",boxSizing:"border-box"}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
           <div style={{width:12,height:12,borderRadius:"50%",background:color}}/>
           <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:mut}}>{selLine.toUpperCase()} LINE · STATION {sIdx+1} OF {sessionItems.length}</div>
@@ -7659,8 +7659,8 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>FAKE STATION · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>Which station doesn't exist?</div>
@@ -7710,8 +7710,8 @@ function StationAgeMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>STATION AGE · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:19,fontWeight:900,letterSpacing:1,marginBottom:4}}>{station.name}</div>
@@ -7758,8 +7758,8 @@ function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>CITY SHOWDOWN · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>{q.q}</div>
@@ -7785,8 +7785,8 @@ function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
   const [state,setState]=useState(()=>getBingoState());
   const won=checkBingoWin(state);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"24px 16px 40px",width:"100%",maxWidth:520}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"24px 16px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>TRANSIT BINGO</div>
           {won&&<div style={{fontSize:13,color:"#028A48",fontWeight:700,marginTop:4}}>🎉 BINGO! You completed a line!</div>}
@@ -7810,8 +7810,8 @@ function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
 function GhostStationsModal({T,onClose}:{T:any,onClose:()=>void}){
   const xp=getXP();const unlocked=getGhostUnlocked();
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520,color:"#fff"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:16,padding:"28px 20px 40px",width:"100%",maxWidth:520,color:"#fff"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:24,marginBottom:4}}>👻</div>
           <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>GHOST STATIONS</div>
