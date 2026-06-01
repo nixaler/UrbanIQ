@@ -4858,6 +4858,12 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     getWikiImage(term).then(url=>{if(url)setHeroImgUrl(url);else setHeroImgFailed(true);});
   },[hotGameKey]);
 
+  useEffect(()=>{
+    if(showBeta||showInstall||showSupport||showDailyChallenge||showMaps||showRewards||showAccount){
+      window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+    }
+  },[showBeta,showInstall,showSupport,showDailyChallenge,showMaps,showRewards,showAccount]);
+
   function showNotifMsg(msg:string){
     if(notifMsgTimer.current)clearTimeout(notifMsgTimer.current);
     setNotifMsg(msg);
@@ -7629,6 +7635,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
   useEffect(()=>{if(initMode==="blitz")setShowBlitz(true);else if(initMode==="trivia")setShowTrivia(true);else if(initMode==="cards")setTab("cards");},[]);
+  useEffect(()=>{
+    if(showSupportModal||showMapsModal||showDiffChange||showFeedback||showBlitz||showLineChallenge||showPhotoMode){
+      window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
+    }
+  },[showSupportModal,showMapsModal,showDiffChange,showFeedback,showBlitz,showLineChallenge,showPhotoMode]);
   const inputRef=useRef<HTMLInputElement>(null);
   const today=useMemo(getToday,[]);
   const dayNum=useMemo(getDayNum,[]);
