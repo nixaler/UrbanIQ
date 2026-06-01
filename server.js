@@ -2,9 +2,11 @@ const express = require("express");
 const path = require("path");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
+const Stripe = require("stripe");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // Compress all responses (gzip) — reduces JS bundle from ~750KB to ~210KB on the wire
 app.use(compression({ level: 6 }));
@@ -333,6 +335,65 @@ app.get("/api/claims", async (req, res) => {
   const claimKeys = keys.filter(k => k.match(/^claim:[a-z0-9]+$/));
   const claims = await Promise.all(claimKeys.map(k => store.get(k)));
   return res.json(claims.filter(Boolean));
+});
+
+// ── STRIPE ────────────────────────────────────────────────────────────────────
+function stripeRequired(req, res, next) {
+  if (!stripe) return res.status(503).json({ error: "Payments not configured." });
+  next();
+}
+
+// List active products with their prices — frontend picks the "Supporter" product
+app.get("/api/stripe/products", stripeRequired, async (req, res) => {
+  try {
+    const products = await stripe.products.list({ active: true, limit: 20 });
+    const withPrices = await Promise.all(products.data.map(async (prod) => {
+      const prices = await stripe.prices.list({ product: prod.id, active: true, limit: 10 });
+      return { ...prod, prices: prices.data };
+    }));
+    return res.json({ data: withPrices });
+  } catch (e) {
+    console.error("[stripe/products]", e.message);
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+// Create a Checkout Session → returns hosted Stripe URL
+app.post("/api/stripe/checkout", stripeRequired, async (req, res) => {
+  const { email, priceId, origin } = req.body || {};
+  if (!email || !priceId || !origin) return res.status(400).json({ error: "Missing fields." });
+  try {
+    const session = await stripe.checkout.sessions.create({
+      customer_email: email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: "subscription",
+      success_url: `${origin}/?supporter=1`,
+      cancel_url: `${origin}/`,
+      allow_promotion_codes: true,
+    });
+    return res.json({ url: session.url });
+  } catch (e) {
+    console.error("[stripe/checkout]", e.message);
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+// Create a Customer Portal session so subscriber can manage/cancel
+app.post("/api/stripe/portal", stripeRequired, async (req, res) => {
+  const { email, origin } = req.body || {};
+  if (!email || !origin) return res.status(400).json({ error: "Missing fields." });
+  try {
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    if (!customers.data.length) return res.status(404).json({ error: "Subscription not found." });
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customers.data[0].id,
+      return_url: origin,
+    });
+    return res.json({ url: session.url });
+  } catch (e) {
+    console.error("[stripe/portal]", e.message);
+    return res.status(500).json({ error: e.message });
+  }
 });
 
 app.get("*", (req, res) => {
