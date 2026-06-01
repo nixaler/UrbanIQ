@@ -3,10 +3,30 @@ const path = require("path");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const Stripe = require("stripe");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+
+// Supabase — requires SUPABASE_URL + SUPABASE_SERVICE_KEY in Railway env vars
+// Run this SQL once in your Supabase dashboard:
+//   CREATE TABLE IF NOT EXISTS leaderboard (
+//     id BIGSERIAL PRIMARY KEY,
+//     player_name TEXT NOT NULL,
+//     game_key TEXT NOT NULL,
+//     difficulty TEXT NOT NULL,
+//     wins INTEGER NOT NULL DEFAULT 0,
+//     rounds INTEGER NOT NULL DEFAULT 0,
+//     total_guesses INTEGER NOT NULL DEFAULT 0,
+//     day_num INTEGER NOT NULL,
+//     device_id TEXT,
+//     ts TIMESTAMPTZ DEFAULT NOW()
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_lb_game ON leaderboard(game_key, wins DESC, total_guesses ASC, ts ASC);
+const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+  : null;
 
 // Compress all responses (gzip) — reduces JS bundle from ~750KB to ~210KB on the wire
 app.use(compression({ level: 6 }));
@@ -394,6 +414,42 @@ app.post("/api/stripe/portal", stripeRequired, async (req, res) => {
     console.error("[stripe/portal]", e.message);
     return res.status(500).json({ error: e.message });
   }
+});
+
+// ── LIVE LEADERBOARD ─────────────────────────────────────────────────────────
+const scoresLimiter = rateLimit({ windowMs: 60000, max: 20, standardHeaders: true, legacyHeaders: false });
+
+// POST /api/scores — submit a game session result
+app.post("/api/scores", scoresLimiter, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Leaderboard not configured." });
+  const { playerName, gameKey, difficulty, wins, rounds, totalGuesses, dayNum, deviceId } = req.body || {};
+  if (!playerName || !gameKey || wins == null) return res.status(400).json({ error: "Missing fields." });
+  const safe = String(playerName).trim().slice(0, 30);
+  if (!safe) return res.status(400).json({ error: "Invalid name." });
+  const { error } = await supabase.from("leaderboard").insert({
+    player_name: safe, game_key: gameKey, difficulty: difficulty || "medium",
+    wins: Number(wins) || 0, rounds: Number(rounds) || 3,
+    total_guesses: Number(totalGuesses) || 0, day_num: Number(dayNum) || 0,
+    device_id: deviceId || null,
+  });
+  if (error) { console.error("[scores/post]", error.message); return res.status(500).json({ error: error.message }); }
+  return res.json({ ok: true });
+});
+
+// GET /api/scores?gameKey=dc&limit=15 — fetch top scores for a game
+app.get("/api/scores", async (req, res) => {
+  if (!supabase) return res.json([]);
+  const gameKey = req.query.gameKey || "dc";
+  const limit = Math.min(Number(req.query.limit) || 15, 50);
+  const { data, error } = await supabase.from("leaderboard")
+    .select("player_name,game_key,difficulty,wins,rounds,total_guesses,day_num,ts")
+    .eq("game_key", gameKey)
+    .order("wins", { ascending: false })
+    .order("total_guesses", { ascending: true })
+    .order("ts", { ascending: true })
+    .limit(limit);
+  if (error) { console.error("[scores/get]", error.message); return res.json([]); }
+  return res.json(data || []);
 });
 
 app.get("*", (req, res) => {

@@ -6476,8 +6476,14 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
   const[submitRound,setSubmitRound]=useState(null);
   const[entries,setEntries]=useState(()=>{try{return JSON.parse(localStorage.getItem('tgg:lb')||'[]');}catch{return [];}});
   const[justSubmitted,setJustSubmitted]=useState({});
+  const[liveLb,setLiveLb]=useState<any[]>([]);
+  const[liveLbLoading,setLiveLbLoading]=useState(false);
   const G=GAMES[gameKey];
   const completedRounds=(roundData[gameKey]||[]).map((r,i)=>({...r,idx:i})).filter(r=>(r.won||r.lost)&&!justSubmitted[`${gameKey}:${dayNum}:${r.idx}`]);
+  useEffect(()=>{
+    setLiveLbLoading(true);
+    fetch(`/api/scores?gameKey=${lbGameKey}&limit=15`).then(r=>r.json()).then(d=>{if(Array.isArray(d))setLiveLb(d);}).catch(()=>{}).finally(()=>setLiveLbLoading(false));
+  },[lbGameKey]);
   function handleSubmit(roundIdx){
     const name=submitName.trim();if(!name)return;
     const rd=roundData[gameKey][roundIdx];
@@ -6488,7 +6494,7 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
     setJustSubmitted(p=>({...p,[`${gameKey}:${dayNum}:${roundIdx}`]:true}));
     setSubmitRound(null);
   }
-  function handleSubmitAll(){
+  async function handleSubmitAll(){
     const name=submitName.trim();if(!name)return;
     let updated=[...entries];
     completedRounds.forEach(r=>{
@@ -6501,12 +6507,17 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
     const newSubmitted={...justSubmitted};
     completedRounds.forEach(r=>{newSubmitted[`${gameKey}:${dayNum}:${r.idx}`]=true;});
     setJustSubmitted(newSubmitted);
+    // Post session summary to live leaderboard
+    const wins=completedRounds.filter(r=>r.won).length;
+    const totalGuesses=completedRounds.filter(r=>r.won).reduce((s,r)=>s+r.guesses.length,0);
+    fetch("/api/scores",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({playerName:name,gameKey,difficulty:diff,wins,rounds:completedRounds.length,totalGuesses,dayNum,deviceId:getDeviceId()})
+    }).then(()=>fetch(`/api/scores?gameKey=${lbGameKey}&limit=15`)).then(r=>r.json()).then(d=>{if(Array.isArray(d))setLiveLb(d);}).catch(()=>{});
   }
-  const filtered=entries.filter(e=>e.gameKey===lbGameKey).slice(0,20);
   const totalPlays=entries.length;
   const totalWins=entries.filter(e=>e.won).length;
   const avgG=totalPlays>0?(entries.filter(e=>e.won).reduce((s,e)=>s+e.guessCount,0)/Math.max(1,totalWins)).toFixed(1):"—";
-  const topPlayer=entries.length?entries[0].playerName:"—";
+  const topPlayer=liveLb.length?liveLb[0].player_name:(entries.length?entries[0].playerName:"—");
   return(
     <div style={{maxWidth:600,margin:"0 auto",padding:"16px 12px 60px",position:"relative",zIndex:2}}>
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:14}}>
@@ -6542,28 +6553,30 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
         ))}
       </div>
       <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:12,overflow:"hidden"}}>
-        <div style={{display:"grid",gridTemplateColumns:"32px 1fr 80px 60px 50px",gap:4,padding:"8px 12px",borderBottom:`1px solid ${T.border}`,fontSize:fs(7),color:T.textMuted,letterSpacing:2}}>
-          <div>#</div><div>PLAYER</div><div>GAME</div><div>DIFF</div><div>GUESSES</div>
+        <div style={{display:"grid",gridTemplateColumns:"32px 1fr 60px 50px 60px",gap:4,padding:"8px 12px",borderBottom:`1px solid ${T.border}`,fontSize:fs(7),color:T.textMuted,letterSpacing:2}}>
+          <div>#</div><div>PLAYER</div><div>DIFF</div><div>WINS</div><div>GUESSES</div>
         </div>
-        {filtered.length===0&&(
+        {liveLbLoading&&<div style={{padding:"20px",textAlign:"center",color:T.textMuted,fontSize:fs(10)}}>Loading…</div>}
+        {!liveLbLoading&&liveLb.length===0&&(
           <div style={{padding:"24px",textAlign:"center",color:T.textMuted,fontSize:fs(10)}}>
             <div style={{fontSize:"32px",marginBottom:8}}>🏆</div>
-            <div>No scores yet. Complete a round and post it!</div>
+            <div>No scores yet — be the first!</div>
           </div>
         )}
-        {filtered.map((entry,i)=>{
-          const G2=GAMES[entry.gameKey]||GAMES.pdx;
+        {!liveLbLoading&&liveLb.map((entry,i)=>{
+          const G2=GAMES[entry.game_key]||GAMES.pdx;
+          const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":String(i+1);
           return(
-            <div key={entry.id} style={{display:"grid",gridTemplateColumns:"32px 1fr 80px 60px 50px",gap:4,padding:"9px 12px",borderBottom:`1px solid ${T.border}`,alignItems:"center",background:i===0?`${G2.accent}08`:"transparent"}}>
-              <div style={{fontSize:fs(10),fontWeight:700,color:i<3?T.accentB:T.textMuted}}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
-              <div style={{fontSize:fs(11),fontWeight:700,color:T.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{entry.playerName}</div>
-              <div style={{fontSize:fs(8),color:T.textMuted}}>{G2.emoji} {G2.short}</div>
-              <div style={{fontSize:fs(8),color:T.textMuted}}>{(GAMES[entry.gameKey]?.diffConfig||{})[entry.difficulty]?.emoji||""} {entry.difficulty}</div>
+            <div key={i} style={{display:"grid",gridTemplateColumns:"32px 1fr 60px 50px 60px",gap:4,padding:"9px 12px",borderBottom:`1px solid ${T.border}`,alignItems:"center",background:i===0?`${G2.accent}08`:"transparent"}}>
+              <div style={{fontSize:fs(i<3?11:10),fontWeight:700,color:i<3?T.accentB:T.textMuted}}>{medal}</div>
+              <div style={{fontSize:fs(11),fontWeight:700,color:T.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{entry.player_name}</div>
+              <div style={{fontSize:fs(8),color:T.textMuted}}>{(GAMES[entry.game_key]?.diffConfig||{})[entry.difficulty]?.emoji||""} {entry.difficulty}</div>
               <div style={{textAlign:"center"}}>
-                <span style={{background:entry.won?T.cellBg.green:T.cellBg.red,color:entry.won?T.cellText.green:T.cellText.red,border:`1px solid ${entry.won?T.cellBorder.green:T.cellBorder.red}`,borderRadius:4,padding:"2px 6px",fontSize:fs(9),fontWeight:700}}>
-                  {entry.won?entry.guessCount:"✗"}
+                <span style={{background:entry.wins>0?T.cellBg.green:T.cellBg.red,color:entry.wins>0?T.cellText.green:T.cellText.red,border:`1px solid ${entry.wins>0?T.cellBorder.green:T.cellBorder.red}`,borderRadius:4,padding:"2px 6px",fontSize:fs(9),fontWeight:700}}>
+                  {entry.wins}/{entry.rounds}
                 </span>
               </div>
+              <div style={{textAlign:"center",fontSize:fs(9),color:T.textMuted,fontWeight:600}}>{entry.total_guesses}</div>
             </div>
           );
         })}
