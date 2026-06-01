@@ -5619,7 +5619,6 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
-      <PersistentHUD streak={getGlobalData().streak||0} xp={getXP()} shields={getShieldCount()}/>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
       <div style={{padding:"20px 22px 0"}}>
@@ -6785,6 +6784,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[sugg,setSugg]=useState<any[]>([]);
   const[voiceListening,setVoiceListening]=useState(false);
   const[pendingCard,setPendingCard]=useState(null);
+  const[cardQueue,setCardQueue]=useState<any[]>([]);
   const[deckCards,setDeckCards]=useState<any[]>(()=>{try{return JSON.parse(localStorage.getItem("tgg-card-deck")||"[]");}catch{return [];}});
   const[showCardPanel,setShowCardPanel]=useState(false);
   const[cardToast,setCardToast]=useState<string|null>(null);
@@ -6845,6 +6845,20 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const countdown=nextMins?`${String(Math.floor(nextMins/60)).padStart(2,"0")}:${String(nextMins%60).padStart(2,"0")}:00`:"--:--";
   const allGameRounds=roundData[gameKey];
   const unfinishedRounds=allGameRounds.filter((r:any)=>!r.alreadyPlayed).length;
+  useEffect(()=>{
+    const rd2=allGameRounds[round];
+    if(!rd2?.won&&!rd2?.lost)return;
+    if(round>=2||allGameRounds[round+1]?.alreadyPlayed)return;
+    const t=setTimeout(()=>setRound(r=>r+1),1800);
+    return()=>clearTimeout(t);
+  },[allGameRounds[round]?.won,allGameRounds[round]?.lost,round,gameKey]);
+  useEffect(()=>{
+    if(unfinishedRounds===0&&cardQueue.length>0&&!pendingCard){
+      const[next,...rest]=cardQueue;
+      setPendingCard(next);
+      setCardQueue(rest);
+    }
+  },[unfinishedRounds,cardQueue.length,pendingCard]);
 
   useEffect(()=>{
     (async()=>{
@@ -7012,7 +7026,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       const totalCardsCollected=JSON.parse(localStorage.getItem("tgg-card-col")||"[]").length;
       const cardDiff=totalCardsCollected===0?"hard":diff;
       const earnedCard=generateCard(target.name,gameKey,cardDiff,{zone:target.zone||target.region,year:target.year});
-      setTimeout(()=>setPendingCard(earnedCard),2000);
+      setCardQueue(q=>[...q,earnedCard]);
     } else if(isLoss){
       setTimeout(()=>SoundEngine.play("lose"),300);
     } else {
@@ -7477,8 +7491,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               <div style={{fontSize:fs(9),color:T.textMuted,marginBottom:12,letterSpacing:2}}>NEXT IN {countdown}</div>
               <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
                 <button onClick={()=>doShare(buildShare(rd.guesses,true,dayNum,gameKey,diff,target.name))} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer",transition:"all .2s"}}>📤 SHARE</button>
-                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&(<button onClick={()=>setRound(round+1)} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'Cinzel',serif",fontSize:fs(11),fontWeight:700,letterSpacing:2,padding:"10px 16px",borderRadius:7,cursor:"pointer",animation:"bounce .6s ease"}}>ROUND {round+2} →</button>)}
-                <button onClick={()=>setTab("leaderboard")} style={{background:"transparent",color:T.accentB,border:`1px solid ${T.accent}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer"}}>🏆 POST SCORE</button>
+                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&<div style={{fontSize:fs(9),color:T.textMuted,letterSpacing:1,display:"flex",alignItems:"center",gap:4}}>Next round starting…</div>}
               </div>
               </div>
             </div>
@@ -7501,7 +7514,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               <div style={{fontSize:fs(9),color:T.textMuted,marginBottom:12,letterSpacing:2}}>NEXT IN {countdown}</div>
               <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
                 <button onClick={()=>doShare(buildShare(rd.guesses,false,dayNum,gameKey,diff,target.name))} style={{background:"transparent",color:T.cellText.red,border:`1px solid ${T.cellBorder.red}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(10),fontWeight:700,padding:"10px 16px",borderRadius:7,cursor:"pointer"}}>📤 SHARE</button>
-                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&(<button onClick={()=>setRound(round+1)} style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'Cinzel',serif",fontSize:fs(11),fontWeight:700,letterSpacing:2,padding:"10px 16px",borderRadius:7,cursor:"pointer"}}>ROUND {round+2} →</button>)}
+                {round<2&&!roundData[gameKey][round+1]?.alreadyPlayed&&<div style={{fontSize:fs(9),color:T.textMuted,letterSpacing:1,display:"flex",alignItems:"center",gap:4}}>Next round starting…</div>}
               </div>
               </div>
             </div>
@@ -7528,10 +7541,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 {allGameRounds.filter((r:any)=>r.won).length}/{allGameRounds.length} won today
                 {stats.streak>1&&<span style={{marginLeft:8}}>🔥 {stats.streak} day streak</span>}
               </div>
-              <button onClick={()=>doShare(buildAllRoundsShare(allGameRounds,gameKey,diff,dayNum,stats.streak||0))}
-                style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(12),fontWeight:700,letterSpacing:2,padding:"13px 28px",borderRadius:8,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
-                📤 SHARE TODAY'S RESULTS
-              </button>
+              <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+                <button onClick={()=>doShare(buildAllRoundsShare(allGameRounds,gameKey,diff,dayNum,stats.streak||0))}
+                  style={{background:T.accent,color:"#fff",border:"none",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(12),fontWeight:700,letterSpacing:2,padding:"13px 28px",borderRadius:8,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:8}}>
+                  📤 SHARE TODAY'S RESULTS
+                </button>
+                <button onClick={()=>setTab("leaderboard")} style={{background:"transparent",color:T.accentB,border:`1px solid ${T.accent}`,fontFamily:"'JetBrains Mono',monospace",fontSize:fs(11),fontWeight:700,padding:"13px 20px",borderRadius:8,cursor:"pointer"}}>🏆 POST SCORE</button>
+              </div>
             </div>
           )}
 
