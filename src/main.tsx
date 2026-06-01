@@ -5760,6 +5760,10 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const picks=EXPLORE_PICKS[cityKey]||[];
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
+  const[showStationPicker,setShowStationPicker]=useState(false);
+  function goBack(){setCityKey("");setSelStation(null);setStationSearch("");setShowStationPicker(false);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}
+  const stList=meta?.stations||(meta?.hubs||[]).map((h:string)=>({n:h,l:[] as string[],c:""}));
+  const filtered=(stList||[]).filter((s:any)=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some((ln:string)=>ln.toLowerCase().includes(stationSearch.toLowerCase())));
   function completeQuest(qid:string,xp:number,isShield:boolean){
     if(completedQuests.has(qid))return;
     const next=new Set([...completedQuests,qid]);
@@ -5773,193 +5777,208 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
-      <div style={{padding:"20px 22px 0"}}>
-        <div style={{marginBottom:18}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:4}}>CITY GUIDE</div>
-          <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {cityKey?meta.emoji:"🧭"}</div>
-          {hasShield&&<div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(65,105,225,0.06)",border:"1px solid rgba(65,105,225,0.2)",borderRadius:20,padding:"4px 12px",marginTop:8,fontSize:"11px",fontWeight:700,color:"#4169E1"}}>🛡️ Streak Shield Active Today</div>}
-        </div>
-        <div style={{marginBottom:20}}>
-          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT CITY & STATION</div>
+      {!cityKey?(
+        <div style={{padding:"20px 22px 0"}}>
+          <div style={{marginBottom:18}}>
+            <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:4}}>CITY GUIDE</div>
+            <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore 🧭</div>
+          </div>
+          <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT A CITY</div>
           <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
             {TRANSIT_KEYS.map((k,ki)=>{
-              const cm=EXPLORE_CITY_META[k];
-              const isOpen=k===cityKey;
-              const G2=GAMES[k];
-              const stList=cm.stations||cm.hubs.map(h=>({n:h,l:[] as string[],c:""}));
-              const filtered=isOpen&&cm.stations?stList.filter(s=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some(ln=>ln.toLowerCase().includes(stationSearch.toLowerCase()))):stList;
+              const cm2=EXPLORE_CITY_META[k];
               return(
-                <div key={k} style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none"}}>
-                  <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
-                    style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .15s",WebkitTapHighlightColor:"transparent",position:"relative",overflow:"hidden",minHeight:isOpen?undefined:60,...(isOpen?{padding:"13px 16px",background:G2.accent+"0f"}:{padding:"14px 16px",backgroundImage:`url(/photo-${k}.jpg)`,backgroundSize:"cover",backgroundPosition:"center"})}}>
-                    {!isOpen&&<div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.5) 55%,rgba(0,0,0,0.18) 100%)",pointerEvents:"none"}}/>}
-                    {isOpen&&<div style={{position:"relative",width:18,height:18,borderRadius:"50%",background:G2.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:"#fff",flexShrink:0}}>▼</div>}
-
-                    <div style={{flex:1,position:"relative"}}>
-                      <div style={{fontSize:"13px",fontWeight:isOpen?700:600,color:isOpen?G2.accent:"#fff",textShadow:isOpen?"none":"0 1px 4px rgba(0,0,0,0.5)"}}>{cm.name}</div>
-                      {isOpen&&cm.stations&&<div style={{fontSize:"9px",color:"rgba(0,0,0,0.35)",marginTop:1}}>{cm.stations.length} stations · {cm.lines.length} lines</div>}
-                      {!isOpen&&<div style={{fontSize:"9px",color:"rgba(255,255,255,0.6)",marginTop:1,letterSpacing:"0.5px"}}>{cm.stations?.length||cm.hubs.length} stations · {cm.lines.length} lines</div>}
-                    </div>
-                    {isOpen&&<div style={{fontSize:"9px",fontWeight:700,color:G2.accent,letterSpacing:"1px",position:"relative"}}>ACTIVE</div>}
-                    {!isOpen&&<div onClick={e=>{e.stopPropagation();SoundEngine.play("select");onSelectGame(k);}} style={{position:"relative",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.85)",letterSpacing:"1px",border:"1px solid rgba(255,255,255,0.4)",padding:"5px 9px",borderRadius:4,flexShrink:0,zIndex:1,WebkitTapHighlightColor:"transparent"}}>PLAY →</div>}
+                <div key={k} onClick={()=>{setCityKey(k);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+                  style={{borderBottom:ki<TRANSIT_KEYS.length-1?"1px solid #EDEBE8":"none",cursor:"pointer",display:"flex",alignItems:"center",gap:10,padding:"14px 16px",backgroundImage:`url(/photo-${k}.jpg)`,backgroundSize:"cover",backgroundPosition:"center",position:"relative",minHeight:60,WebkitTapHighlightColor:"transparent"}}>
+                  <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.5) 55%,rgba(0,0,0,0.18) 100%)",pointerEvents:"none"}}/>
+                  <div style={{flex:1,position:"relative"}}>
+                    <div style={{fontSize:"13px",fontWeight:600,color:"#fff",textShadow:"0 1px 4px rgba(0,0,0,0.5)"}}>{cm2.name}</div>
+                    <div style={{fontSize:"9px",color:"rgba(255,255,255,0.6)",marginTop:1,letterSpacing:"0.5px"}}>{cm2.stations?.length||cm2.hubs.length} stations · {cm2.lines.length} lines</div>
                   </div>
-                  {isOpen&&(
-                    <div style={{background:"#FAFAFA",animation:"lmFadeIn .15s ease both"}}>
-                      {cm.stations&&(
-                        <div style={{padding:"8px 12px",borderTop:"1px solid #EDEBE8"}}>
-                          <div style={{position:"relative"}}>
-                            <input value={stationSearch} onChange={e=>setStationSearch(e.target.value)} placeholder="Search stations or lines…"
-                              style={{width:"100%",padding:"8px 8px 8px 30px",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"12px",outline:"none",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",background:"#fff"}}/>
-                            <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none"}}>🔍</span>
-                          </div>
-                        </div>
-                      )}
-                      <div style={{maxHeight:360,overflowY:"auto"}}>
-                        {filtered.map((s)=>(
-                          <div key={s.n} onClick={()=>setSelStation(s.n===selStation?null:s.n)}
-                            style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G2.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
-                            <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
-                            {s.l.length>0&&<div style={{fontSize:"9px",color:"#AAA",flexShrink:0}}>{s.l.join(" · ")}</div>}
-                            {selStation===s.n&&<div style={{fontSize:"9px",color:G2.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
-                          </div>
-                        ))}
-                        {stationSearch&&filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
-                      </div>
-                    </div>
-                  )}
+                  <div onClick={e=>{e.stopPropagation();SoundEngine.play("select");onSelectGame(k);}}
+                    style={{position:"relative",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.85)",letterSpacing:"1px",border:"1px solid rgba(255,255,255,0.4)",padding:"5px 9px",borderRadius:4,flexShrink:0,zIndex:1,WebkitTapHighlightColor:"transparent"}}>
+                    PLAY →
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
-      {cityKey&&<div style={{padding:"0 22px 20px"}}>
-        {(()=>{
-          const cti=CITY_TRANSIT_INFO[cityKey];
-          if(!cti)return null;
-          const okCount=cti.status.filter(s=>s.ok).length;
-          const allOk=okCount===cti.status.length;
-          return(
-            <div style={{border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",marginBottom:12,overflow:"hidden"}}>
-              <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
-                  <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const}}>
-                    {cti.status.map(s=>(
-                      <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
-                        <div style={{width:20,height:7,borderRadius:2,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.5}}/>
-                        {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
+      ):(
+        <div>
+          <div style={{padding:"20px 22px 0"}}>
+            <button onClick={goBack} style={{background:"none",border:"none",padding:"0 0 12px",cursor:"pointer",fontSize:"11px",fontWeight:700,color:"#888580",letterSpacing:"1px",fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",gap:4,WebkitTapHighlightColor:"transparent"}}>← ALL CITIES</button>
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:"24px",fontWeight:900,color:"#0A0A0A",letterSpacing:-0.5,fontFamily:"'Outfit',sans-serif"}}>Explore {meta.emoji}</div>
+              {hasShield&&<div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(65,105,225,0.06)",border:"1px solid rgba(65,105,225,0.2)",borderRadius:20,padding:"4px 12px",marginTop:8,fontSize:"11px",fontWeight:700,color:"#4169E1"}}>🛡️ Streak Shield Active Today</div>}
+            </div>
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>SELECT STATION</div>
+              <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden"}}>
+                <div onClick={()=>setShowStationPicker(p=>!p)} style={{padding:"12px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:showStationPicker?"#F7F6F4":"#fff",WebkitTapHighlightColor:"transparent"}}>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:"13px",fontWeight:selStation?700:400,color:selStation?"#0A0A0A":"#888580"}}>{selStation||"Select a station…"}</div>
+                    {selStation&&<div style={{fontSize:"9px",color:G.accent,marginTop:1,fontWeight:700,letterSpacing:"0.5px"}}>{meta.name}</div>}
+                  </div>
+                  <div style={{fontSize:"10px",color:"#888580",transition:"transform .2s",transform:showStationPicker?"rotate(180deg)":"none"}}>▼</div>
+                </div>
+                {showStationPicker&&(
+                  <div style={{borderTop:"1px solid #EDEBE8",background:"#FAFAFA",animation:"lmFadeIn .15s ease both"}}>
+                    {meta.stations&&(
+                      <div style={{padding:"8px 12px"}}>
+                        <div style={{position:"relative"}}>
+                          <input value={stationSearch} onChange={e=>setStationSearch(e.target.value)} placeholder="Search stations or lines…" autoFocus
+                            style={{width:"100%",padding:"8px 8px 8px 30px",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"12px",outline:"none",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",background:"#fff"}}/>
+                          <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none"}}>🔍</span>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{fontSize:"13px",fontWeight:800,color:allOk?"#22C55E":"#FF8C42",lineHeight:1}}>{allOk?"✓ Normal":"⚠ Delays"}</div>
-                  <div style={{fontSize:"9px",color:"#888580",marginTop:2}}>{okCount}/{cti.status.length} lines clear</div>
-                </div>
-              </div>
-              <div style={{padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
-                <div style={{flex:1,display:"flex",gap:16}}>
-                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.stations}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>STATIONS</div></div>
-                  <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.riders}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>RIDERS</div></div>
-                  <div>
-                    <div style={{display:"flex",alignItems:"center",gap:4}}>
-                      <div style={{fontSize:"13px",fontWeight:800,color:cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A"}}>{cti.health}%</div>
+                    )}
+                    <div style={{maxHeight:260,overflowY:"auto"}}>
+                      {filtered.map((s:any)=>(
+                        <div key={s.n} onClick={()=>{setSelStation(s.n===selStation?null:s.n);setShowStationPicker(false);}}
+                          style={{padding:"10px 12px",borderTop:"1px solid #EDEBE8",background:selStation===s.n?(G.accent+"18"):"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"background .12s",WebkitTapHighlightColor:"transparent"}}>
+                          <div style={{flex:1,fontSize:"12px",fontWeight:selStation===s.n?700:400,color:selStation===s.n?"#0A0A0A":"#555"}}>{s.n}</div>
+                          {s.l.length>0&&<div style={{fontSize:"9px",color:"#AAA",flexShrink:0}}>{s.l.join(" · ")}</div>}
+                          {selStation===s.n&&<div style={{fontSize:"9px",color:G.accent,fontWeight:700,letterSpacing:"1px",flexShrink:0}}>LIVE →</div>}
+                        </div>
+                      ))}
+                      {stationSearch&&filtered.length===0&&<div style={{padding:"16px",textAlign:"center",fontSize:"11px",color:"#C8C5BF"}}>No stations match "{stationSearch}"</div>}
                     </div>
-                    <div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>HEALTH</div>
                   </div>
-                </div>
-                <div style={{display:"flex",gap:8,flexShrink:0}}>
-                  <button onClick={()=>setShowExploreMap(true)}
-                    style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
-                    🗺️ MAP
-                  </button>
-                  <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
-                    style={{padding:"8px 12px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
-                    LIVE ↗
-                  </a>
-                </div>
+                )}
               </div>
             </div>
-          );
-        })()}
-      </div>}
-      {cityKey&&<div style={{padding:"0 22px 20px"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
-        <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {picks.map((p,i)=>{
-            const questDone=!p.questId||completedQuests.has(p.questId);
-            const usedToday=!!(p.offerId&&claimedToday.has(p.offerId));
-            return(
-            <div key={i} style={{border:`1px solid ${p.partner?"#4169E1":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:"#FAFAFA",position:"relative"}}>
-              {p.partner&&<div style={{position:"absolute",top:10,right:12,fontSize:"9px",fontWeight:700,color:"#4169E1",border:"1px solid #4169E1",borderRadius:20,padding:"2px 8px",letterSpacing:"0.5px"}}>⭐ PARTNER</div>}
-              <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
-                <div style={{fontSize:"22px",flexShrink:0,marginTop:2}}>{p.type.split(" ")[0]}</div>
-                <div style={{flex:1,paddingRight:p.partner?60:0}}>
-                  <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
-                  <div style={{fontSize:"10px",color:"#888580",lineHeight:1.4}}>{p.desc}</div>
-                  <div style={{fontSize:"10px",fontWeight:600,color:G.accent,marginTop:4}}>{p.type.split(" ").slice(1).join(" ")}</div>
-                  {p.offer&&<div style={{display:"inline-block",marginTop:6,fontSize:"10px",fontWeight:700,color:"#028A48",background:"rgba(2,138,72,0.08)",border:"1px solid rgba(2,138,72,0.2)",borderRadius:4,padding:"2px 8px"}}>{p.offer.toUpperCase()}</div>}
+          </div>
+          <div style={{padding:"0 22px 20px"}}>
+            {(()=>{
+              const cti=CITY_TRANSIT_INFO[cityKey];
+              if(!cti)return null;
+              const okCount=cti.status.filter(s=>s.ok).length;
+              const allOk=okCount===cti.status.length;
+              return(
+                <div style={{border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",marginBottom:12,overflow:"hidden"}}>
+                  <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
+                      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const}}>
+                        {cti.status.map(s=>(
+                          <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
+                            <div style={{width:20,height:7,borderRadius:2,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.5}}/>
+                            {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right",flexShrink:0}}>
+                      <div style={{fontSize:"13px",fontWeight:800,color:allOk?"#22C55E":"#FF8C42",lineHeight:1}}>{allOk?"✓ Normal":"⚠ Delays"}</div>
+                      <div style={{fontSize:"9px",color:"#888580",marginTop:2}}>{okCount}/{cti.status.length} lines clear</div>
+                    </div>
+                  </div>
+                  <div style={{padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
+                    <div style={{flex:1,display:"flex",gap:16}}>
+                      <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.stations}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>STATIONS</div></div>
+                      <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.riders}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>RIDERS</div></div>
+                      <div>
+                        <div style={{display:"flex",alignItems:"center",gap:4}}>
+                          <div style={{fontSize:"13px",fontWeight:800,color:cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A"}}>{cti.health}%</div>
+                        </div>
+                        <div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>HEALTH</div>
+                      </div>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexShrink:0}}>
+                      <button onClick={()=>setShowExploreMap(true)}
+                        style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                        🗺️ MAP
+                      </button>
+                      <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
+                        style={{padding:"8px 12px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
+                        LIVE ↗
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              {p.partner&&p.offer&&(
-                <div style={{marginTop:10}}>
-                  {usedToday?(
-                    <div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ Used Today</div>
-                  ):questDone?(
-                    <button onClick={()=>setShowOffer(p)}
-                      style={{width:"100%",padding:"9px",background:"#4169E1",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
-                      🎟️ CLAIM OFFER
-                    </button>
-                  ):(
-                    <button disabled
-                      style={{width:"100%",padding:"9px",background:"#F0EDE8",color:"#AAA",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"not-allowed",fontFamily:"'Outfit',sans-serif"}}>
-                      🔒 Complete quest to unlock
-                    </button>
+              );
+            })()}
+          </div>
+          <div style={{padding:"0 22px 20px"}}>
+            <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {picks.map((p,i)=>{
+                const questDone=!p.questId||completedQuests.has(p.questId);
+                const usedToday=!!(p.offerId&&claimedToday.has(p.offerId));
+                return(
+                <div key={i} style={{border:`1px solid ${p.partner?"#4169E1":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:"#FAFAFA",position:"relative"}}>
+                  {p.partner&&<div style={{position:"absolute",top:10,right:12,fontSize:"9px",fontWeight:700,color:"#4169E1",border:"1px solid #4169E1",borderRadius:20,padding:"2px 8px",letterSpacing:"0.5px"}}>⭐ PARTNER</div>}
+                  <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+                    <div style={{fontSize:"22px",flexShrink:0,marginTop:2}}>{p.type.split(" ")[0]}</div>
+                    <div style={{flex:1,paddingRight:p.partner?60:0}}>
+                      <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
+                      <div style={{fontSize:"10px",color:"#888580",lineHeight:1.4}}>{p.desc}</div>
+                      <div style={{fontSize:"10px",fontWeight:600,color:G.accent,marginTop:4}}>{p.type.split(" ").slice(1).join(" ")}</div>
+                      {p.offer&&<div style={{display:"inline-block",marginTop:6,fontSize:"10px",fontWeight:700,color:"#028A48",background:"rgba(2,138,72,0.08)",border:"1px solid rgba(2,138,72,0.2)",borderRadius:4,padding:"2px 8px"}}>{p.offer.toUpperCase()}</div>}
+                    </div>
+                  </div>
+                  {p.partner&&p.offer&&(
+                    <div style={{marginTop:10}}>
+                      {usedToday?(
+                        <div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ Used Today</div>
+                      ):questDone?(
+                        <button onClick={()=>setShowOffer(p)}
+                          style={{width:"100%",padding:"9px",background:"#4169E1",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                          🎟️ CLAIM OFFER
+                        </button>
+                      ):(
+                        <button disabled
+                          style={{width:"100%",padding:"9px",background:"#F0EDE8",color:"#AAA",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"not-allowed",fontFamily:"'Outfit',sans-serif"}}>
+                          🔒 Complete quest to unlock
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+                );
+              })}
             </div>
-            );
-          })}
-        </div>
-      </div>}
-      {cityKey&&<div style={{padding:"0 22px 24px"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>MICRO-QUESTS</div>
-        <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {quests.map((q,i)=>{
-            const done=completedQuests.has(q.id);
-            return(
-              <div key={i} style={{border:`2px solid ${done?"#22C55E":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:done?"rgba(34,197,94,0.04)":"#FAFAFA"}}>
-                <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
-                  <div style={{fontSize:"20px",flexShrink:0}}>{done?"✅":q.shield?"🛡️":"⭐"}</div>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:"13px",fontWeight:700,color:done?"#22C55E":"#0A0A0A",marginBottom:2}}>{q.title}</div>
-                    <div style={{fontSize:"11px",color:"#888580",lineHeight:1.4}}>{q.desc}</div>
-                    <div style={{display:"flex",gap:8,marginTop:6,alignItems:"center"}}>
-                      <span style={{fontSize:"10px",fontWeight:700,color:"#FFB800"}}>+{q.xp} XP</span>
-                      {q.shield&&!hasShield&&<span style={{fontSize:"10px",fontWeight:700,color:"#4169E1"}}>+ 🛡️ Streak Shield</span>}
-                      {q.shield&&hasShield&&<span style={{fontSize:"10px",color:"#C8C5BF"}}>Shield already claimed</span>}
+          </div>
+          <div style={{padding:"0 22px 24px"}}>
+            <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>MICRO-QUESTS</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {quests.map((q,i)=>{
+                const done=completedQuests.has(q.id);
+                return(
+                  <div key={i} style={{border:`2px solid ${done?"#22C55E":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:done?"rgba(34,197,94,0.04)":"#FAFAFA"}}>
+                    <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+                      <div style={{fontSize:"20px",flexShrink:0}}>{done?"✅":q.shield?"🛡️":"⭐"}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:"13px",fontWeight:700,color:done?"#22C55E":"#0A0A0A",marginBottom:2}}>{q.title}</div>
+                        <div style={{fontSize:"11px",color:"#888580",lineHeight:1.4}}>{q.desc}</div>
+                        <div style={{display:"flex",gap:8,marginTop:6,alignItems:"center"}}>
+                          <span style={{fontSize:"10px",fontWeight:700,color:"#FFB800"}}>+{q.xp} XP</span>
+                          {q.shield&&!hasShield&&<span style={{fontSize:"10px",fontWeight:700,color:"#4169E1"}}>+ 🛡️ Streak Shield</span>}
+                          {q.shield&&hasShield&&<span style={{fontSize:"10px",color:"#C8C5BF"}}>Shield already claimed</span>}
+                        </div>
+                      </div>
                     </div>
+                    {!done&&<button onClick={()=>setMarkDoneQuest(q)}
+                      style={{width:"100%",padding:"10px",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                      VERIFY &amp; CLAIM →
+                    </button>}
+                    {done&&<div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ COMPLETED</div>}
                   </div>
-                </div>
-                {!done&&<button onClick={()=>setMarkDoneQuest(q)}
-                  style={{width:"100%",padding:"10px",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:6,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
-                  VERIFY &amp; CLAIM →
-                </button>}
-                {done&&<div style={{fontSize:"11px",fontWeight:600,color:"#22C55E",textAlign:"center",letterSpacing:1}}>✓ COMPLETED</div>}
+                );
+              })}
+            </div>
+            <div style={{marginTop:16,padding:"14px 16px",border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",display:"flex",alignItems:"center",gap:12,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>onSelectGame(cityKey)}>
+              <div style={{width:36,height:36,borderRadius:8,background:G.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>{G.emoji}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:"11px",fontWeight:700,color:"#0A0A0A"}}>Ready to test your knowledge?</div>
+                <div style={{fontSize:"10px",color:"#888580",marginTop:1}}>Play {meta.name} Trivia →</div>
               </div>
-            );
-          })}
-        </div>
-        <div style={{marginTop:16,padding:"14px 16px",border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",display:"flex",alignItems:"center",gap:12,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>onSelectGame(cityKey)}>
-          <div style={{width:36,height:36,borderRadius:8,background:G.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>{G.emoji}</div>
-          <div style={{flex:1}}>
-            <div style={{fontSize:"11px",fontWeight:700,color:"#0A0A0A"}}>Ready to test your knowledge?</div>
-            <div style={{fontSize:"10px",color:"#888580",marginTop:1}}>Play {meta.name} Trivia →</div>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
       {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
       {showOffer&&<OfferModal pick={showOffer} onClose={()=>{const t2=new Date().toISOString().slice(0,10);setClaimedToday(new Set(JSON.parse(localStorage.getItem(`tgg:offers:used:${t2}`)||"[]")));setShowOffer(null);}}/>}
       {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
