@@ -4610,6 +4610,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showBeta,setShowBeta]=useState(false);
   const [showInstall,setShowInstall]=useState(false);
   const [showSupport,setShowSupport]=useState(!!initialShowSupport);
+  const [showNavMenu,setShowNavMenu]=useState(false);
   const [showMaps,setShowMaps]=useState(false);
   const [showRewards,setShowRewards]=useState(false);
   const [betaCode]=useState(()=>getBetaCode());
@@ -4987,15 +4988,34 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {/* NAV */}
       <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8",boxSizing:"border-box"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
-        <div style={{display:"flex",alignItems:"center",gap:6}}>
-          <div className="lm-nav-icon" onClick={()=>setShowMaps(true)} title="Maps">🗺️</div>
-          <div className="lm-nav-icon" onClick={()=>setShowBeta(true)} title="Feedback">💬</div>
-          {!installed&&<div className="lm-nav-icon" onClick={()=>setShowInstall(true)} title="Install">📲</div>}
-          {pushSupported&&<div className={`lm-nav-icon${notifEnabled?" red":""}`} onClick={toggleNotif} title={notifEnabled?"Reminders on":"Reminders off"} style={{opacity:notifLoading?0.5:1}}>{notifEnabled?"🔔":"🔕"}</div>}
-          {isSupporter
-            ?<div className="lm-nav-icon red" onClick={()=>setShowSupport(true)} title="Supporter">❤️</div>
-            :<div className="lm-nav-icon" onClick={()=>setShowSupport(true)} title="Support">❤️</div>
-          }
+        <div style={{position:"relative"}}>
+          <button onClick={()=>setShowNavMenu(m=>!m)} style={{background:"none",border:"1px solid #EDEBE8",borderRadius:8,padding:"7px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontSize:"12px",fontWeight:700,letterSpacing:1,color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent",transition:"background .15s"}} onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")} onMouseLeave={e=>(e.currentTarget.style.background="none")}>
+            <span style={{display:"flex",flexDirection:"column",gap:3.5,width:16}}>
+              <span style={{height:1.5,background:"#0A0A0A",borderRadius:1,display:"block",transition:"all .2s",transform:showNavMenu?"rotate(45deg) translate(4px,4px)":"none"}}/>
+              <span style={{height:1.5,background:"#0A0A0A",borderRadius:1,display:"block",transition:"all .2s",opacity:showNavMenu?0:1}}/>
+              <span style={{height:1.5,background:"#0A0A0A",borderRadius:1,display:"block",transition:"all .2s",transform:showNavMenu?"rotate(-45deg) translate(4px,-4px)":"none"}}/>
+            </span>
+            MENU
+          </button>
+          {showNavMenu&&(
+            <>
+              <div style={{position:"fixed",inset:0,zIndex:98}} onClick={()=>setShowNavMenu(false)}/>
+              <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
+                {[
+                  {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
+                  {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},
+                  ...(!installed?[{emoji:"📲",label:"Install App",action:()=>{setShowNavMenu(false);setShowInstall(true);}}]:[]),
+                  ...(pushSupported?[{emoji:notifEnabled?"🔔":"🔕",label:notifEnabled?"Reminders On":"Reminders Off",action:()=>{setShowNavMenu(false);toggleNotif();}}]:[]),
+                  {emoji:"❤️",label:isSupporter?"Supporter ✓":"Support UrbanIQ",action:()=>{setShowNavMenu(false);setShowSupport(true);}},
+                ].map((item,i,arr)=>(
+                  <button key={item.label} onClick={item.action} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"13px 16px",background:"none",border:"none",borderBottom:i<arr.length-1?"1px solid #EDEBE8":"none",cursor:"pointer",fontSize:"13px",fontWeight:600,color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",textAlign:"left",WebkitTapHighlightColor:"transparent",transition:"background .12s"}} onMouseEnter={e=>(e.currentTarget.style.background="#F8F7F5")} onMouseLeave={e=>(e.currentTarget.style.background="none")}>
+                    <span style={{fontSize:"16px",width:22,textAlign:"center"}}>{item.emoji}</span>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </nav>
 
