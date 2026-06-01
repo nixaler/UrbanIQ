@@ -7748,13 +7748,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 );})}
               </div>
               <div style={{fontSize:fs(9),letterSpacing:2,color:T.textMuted,marginBottom:6}}>BLITZ BEST SCORES</div>
-              <div style={{display:"flex",gap:6,marginBottom:12}}>
-                {Object.values(GAMES).map((g:any)=>(<div key={g.key} style={{flex:1,background:T.surface,border:`1px solid ${T.border}`,borderRadius:7,padding:"6px 4px",textAlign:"center"}}>
-                  <div style={{fontSize:fs(11),marginBottom:1}}>{g.emoji}</div>
-                  <div style={{fontSize:fs(14),fontWeight:800,color:T.accentB}}>{blitzBests[g.key]||0}</div>
-                  <div style={{fontSize:fs(7),color:T.textMuted}}>stations</div>
-                </div>))}
-              </div>
+              <select style={{width:"100%",padding:"9px 12px",background:T.surface,color:T.text,border:`1px solid ${T.border}`,borderRadius:7,fontSize:fs(12),fontFamily:"'JetBrains Mono',monospace",marginBottom:12,outline:"none",cursor:"pointer"}}>
+                {Object.values(GAMES).map((g:any)=>(
+                  <option key={g.key} value={g.key}>{g.emoji} {g.name} — {blitzBests[g.key]||0} stations</option>
+                ))}
+              </select>
               <div style={{fontSize:fs(9),letterSpacing:2,color:T.textMuted,marginBottom:4}}>LAST 14 DAYS — {G.name.toUpperCase()}</div>
               <GameHistoryCalendar gameKey={gameKey} playHistory={playHistory} T={T}/>
               <div style={{fontSize:fs(8),letterSpacing:2,color:T.textMuted,marginTop:12,marginBottom:7}}>ACHIEVEMENTS <span style={{color:T.accentB}}>{unlocked.length}/{ACHIEVEMENTS.length}</span></div>
