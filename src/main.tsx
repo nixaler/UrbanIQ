@@ -5570,7 +5570,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
                   <div onClick={()=>{setCityKey(k===cityKey?"":k);setSelStation(null);setStationSearch("");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
                     style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10,transition:"all .15s",WebkitTapHighlightColor:"transparent",position:"relative",overflow:"hidden",minHeight:isOpen?undefined:60,...(isOpen?{padding:"13px 16px",background:G2.accent+"0f"}:{padding:"14px 16px",backgroundImage:`url(/photo-${k}.jpg)`,backgroundSize:"cover",backgroundPosition:"center"})}}>
                     {!isOpen&&<div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.5) 55%,rgba(0,0,0,0.18) 100%)",pointerEvents:"none"}}/>}
-                    <div style={{position:"relative",width:18,height:18,borderRadius:"50%",background:isOpen?G2.accent:"rgba(255,255,255,0.25)",border:isOpen?"none":"1px solid rgba(255,255,255,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:"#fff",flexShrink:0}}>{isOpen?"▼":"▶"}</div>
+                    {isOpen&&<div style={{position:"relative",width:18,height:18,borderRadius:"50%",background:G2.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",fontWeight:700,color:"#fff",flexShrink:0}}>▼</div>}
                     <span style={{fontSize:"16px",position:"relative"}}>{cm.emoji}</span>
                     <div style={{flex:1,position:"relative"}}>
                       <div style={{fontSize:"13px",fontWeight:isOpen?700:600,color:isOpen?G2.accent:"#fff",textShadow:isOpen?"none":"0 1px 4px rgba(0,0,0,0.5)"}}>{cm.name}</div>
