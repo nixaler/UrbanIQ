@@ -1494,6 +1494,7 @@ function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x4
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="bos"?6:gameKey==="atl"?7:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
 function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
+function getDailyChallengeGames():string[]{const T=["pdx","dc","balt","la","nyc","chi","bos","atl"];const day=getDayNum();const used=new Set<number>();const out:number[]=[];const base=_h(_h(day*31337)^_h(88799));for(let a=0;out.length<3&&a<T.length*4;a++){const idx=_h(base^_h(a+1))%T.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out.map(i=>T[i]);}
 function getDailyTrivia(questions:any[]){const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
@@ -4562,6 +4563,95 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   );
 }
 
+function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:string)=>void}){
+  const cities=useMemo(getDailyChallengeGames,[]);
+  const today=useMemo(getToday,[]);
+  const dayNum=useMemo(getDayNum,[]);
+  const[cityData,setCityData]=useState<Record<string,any>>({});
+  const[shareToast,setShareToast]=useState(false);
+  const[bonusAwarded,setBonusAwarded]=useState(()=>!!localStorage.getItem(`tgg:challenge-bonus:${getToday()}`));
+
+  useEffect(()=>{
+    (async()=>{
+      const results:Record<string,any>={};
+      for(const gk of cities){
+        const rd=await getTodayData(gk,today+"r0");
+        results[gk]={done:!!(rd?.won||rd?.lost),won:!!rd?.won,guesses:rd?.guesses?.length||0};
+      }
+      setCityData(results);
+    })();
+  },[]);
+
+  const allDone=cities.length>0&&cities.every(gk=>cityData[gk]?.done);
+
+  useEffect(()=>{
+    if(allDone&&!bonusAwarded){
+      localStorage.setItem(`tgg:challenge-bonus:${today}`,"1");
+      addXP(150);
+      setBonusAwarded(true);
+    }
+  },[allDone]);
+
+  function share(){
+    const lines=[`UrbanIQ Daily Challenge #${dayNum}`,``];
+    for(const gk of cities){
+      const G=GAMES[gk];const d=cityData[gk];
+      if(!d?.done)lines.push(`${G.emoji} ${G.short}: ⬜ Not played`);
+      else if(d.won)lines.push(`${G.emoji} ${G.short}: 🏆 ${d.guesses} guess${d.guesses!==1?"es":""}`);
+      else lines.push(`${G.emoji} ${G.short}: 💀 Missed`);
+    }
+    lines.push(``,`urbaniq.quest`);
+    navigator.clipboard.writeText(lines.join("\n")).catch(()=>{});
+    setShareToast(true);setTimeout(()=>setShareToast(false),2500);
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      {shareToast&&<div style={{position:"fixed",top:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)"}}>Copied to clipboard!</div>}
+      <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"28px 24px 40px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:20}}>
+          <div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#FFB800,#FF8C42,#E8294A)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>DAILY CHALLENGE</div>
+            <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"2px",color:"rgba(0,0,0,0.35)",marginTop:3}}>DAY #{dayNum} · 3 CITIES · 1 ROUND EACH</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:"20px",cursor:"pointer",color:"rgba(0,0,0,0.3)",padding:4,marginTop:-2}}>✕</button>
+        </div>
+
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
+          {cities.map(gk=>{
+            const G=GAMES[gk];const d=cityData[gk];const done=d?.done;const won=d?.won;
+            return(
+              <div key={gk} style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",border:`2px solid ${done?(won?"#22C55E":"#E8294A"):"#EDEBE8"}`,borderRadius:12,background:done?(won?"#f0fdf4":"#fff5f5"):"#FAFAFA",transition:"all .2s"}}>
+                <div style={{fontSize:"26px",flexShrink:0}}>{G.emoji}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:700,fontSize:"14px",color:"#0A0A0A"}}>{G.name}</div>
+                  <div style={{fontSize:"10px",color:"rgba(0,0,0,0.4)",marginTop:1,letterSpacing:1}}>{(G.sub as string).split("·")[0].trim()}</div>
+                </div>
+                {done?(
+                  <div style={{fontSize:"20px"}}>{won?"🏆":"💀"}</div>
+                ):(
+                  <button onClick={()=>{onClose();onPlay(gk);}} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"9px 16px",fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>PLAY →</button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {allDone?(
+          <div style={{textAlign:"center",padding:"18px",background:"linear-gradient(135deg,#FFFDF0,#FFF5CC)",border:"2px solid #FFB800",borderRadius:12}}>
+            <div style={{fontSize:"26px",marginBottom:6}}>🎉</div>
+            <div style={{fontWeight:800,fontSize:"13px",letterSpacing:"1.5px",color:"#0A0A0A"}}>CHALLENGE COMPLETE!</div>
+            {bonusAwarded&&<div style={{fontSize:"11px",color:"#FFB800",marginTop:4,fontWeight:600,letterSpacing:1}}>+150 XP BONUS EARNED</div>}
+            <button onClick={share} style={{marginTop:14,background:"#0A0A0A",color:"#FFB800",border:"none",borderRadius:8,padding:"11px 24px",fontSize:"11px",fontWeight:700,letterSpacing:"2px",cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>📋 SHARE RESULTS</button>
+          </div>
+        ):(
+          <div style={{textAlign:"center",fontSize:"10px",color:"rgba(0,0,0,0.3)",letterSpacing:"1.5px",padding:"6px 0"}}>COMPLETE ALL 3 CITIES FOR +150 XP BONUS</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DkCard({g,featured,delay,darkHov,setDarkHov,onSelectGame}:{g:any,featured?:boolean,delay?:number,darkHov:string|null,setDarkHov:(k:string|null)=>void,onSelectGame:(k:string)=>void}){
   const hov=darkHov===g.key;
   if(featured){return(
@@ -4620,6 +4710,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showBeta,setShowBeta]=useState(false);
   const [showInstall,setShowInstall]=useState(false);
   const [showSupport,setShowSupport]=useState(!!initialShowSupport);
+  const [showDailyChallenge,setShowDailyChallenge]=useState(false);
   const [showNavMenu,setShowNavMenu]=useState(false);
   const [showMaps,setShowMaps]=useState(false);
   const [showRewards,setShowRewards]=useState(false);
@@ -4758,6 +4849,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showSupport&&<SupporterModal isSupporter={isSupporter} supporterEmail={supporterEmail} onClose={()=>setShowSupport(false)}/>}
       {showMaps&&<MapsGuideModal onClose={()=>setShowMaps(false)} onSelectGame={onSelectGame}/>}
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
+      {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
     </>
   );
 
@@ -5101,6 +5193,23 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           All Games <div className="lm-eyebrow-line"/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
+          {/* DAILY CHALLENGE */}
+          <div style={{border:"2px solid #FFB800",borderRadius:10,overflow:"hidden",background:"#FFFCF0"}}>
+            <button onClick={()=>setShowDailyChallenge(true)}
+              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:"20px"}}>🏆</span>
+                <div>
+                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A",display:"flex",alignItems:"center",gap:6}}>
+                    Daily Challenge
+                    <span style={{fontSize:"9px",fontWeight:700,color:"#FFB800",background:"rgba(255,184,0,0.15)",border:"1px solid rgba(255,184,0,0.4)",borderRadius:3,padding:"1px 5px",letterSpacing:1}}>DAY #{dayNum}</span>
+                  </div>
+                  <div style={{fontSize:"9px",color:"rgba(0,0,0,0.45)",letterSpacing:"1px",marginTop:1}}>3 Cities · Same for everyone · +150 XP</div>
+                </div>
+              </div>
+              <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
+            </button>
+          </div>
           {/* EXPLORE — first item */}
           <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
