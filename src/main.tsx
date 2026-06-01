@@ -5180,7 +5180,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             </div>
           )}
         </div>
-
+        {(()=>{const g=getGlobalData();if(!g.lastWin)return null;const diff=(Date.now()-new Date(g.lastWin).getTime())/(1000*60*60);if(diff<24||diff>72)return null;return(<div style={{background:"rgba(232,41,74,0.08)",border:"1px solid rgba(232,41,74,0.2)",borderRadius:8,padding:"10px 16px",margin:"0 16px 12px",display:"flex",alignItems:"center",gap:10}}>  <div style={{fontSize:18}}>⚠️</div><div><div style={{fontSize:11,fontWeight:700,letterSpacing:1,color:"#E8294A"}}>STREAK AT RISK</div><div style={{fontSize:11,color:"#888"}}>Play today to keep your {g.streak}-day streak alive</div></div></div>);})()}
+        {(()=>{const tm=getTimeMultiplier();if(!tm)return null;return(<div style={{margin:"0 16px 12px",background:`rgba(255,184,0,0.08)`,border:"1px solid rgba(255,184,0,0.3)",borderRadius:8,padding:"10px 16px",display:"flex",alignItems:"center",gap:10}}><div style={{fontSize:18}}>{tm.emoji}</div><div><div style={{fontSize:11,fontWeight:700,letterSpacing:1,color:"#FFB800"}}>{tm.label} ACTIVE</div><div style={{fontSize:11,color:"#888"}}>All XP this session is multiplied!</div></div></div>);})()}
 
         {/* Cards */}
         <div className="sp-dark-grid" style={{position:"relative",zIndex:10,padding:"0 48px 40px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
@@ -5448,6 +5449,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
             </button>
           </div>
+          {(()=>{const otd=getOnThisDay();if(!otd)return null;return(<div style={{margin:"0 0 4px",background:"#F7F6F3",borderRadius:10,padding:"14px 16px",border:"1px solid #EDEBE8"}}><div style={{fontSize:10,letterSpacing:2,color:"#888",fontWeight:700,marginBottom:6}}>ON THIS DAY · {otd.year}</div><div style={{fontSize:13,color:"#333",lineHeight:1.5}}>{otd.fact}</div><div style={{fontSize:10,color:"#aaa",marginTop:4,letterSpacing:1}}>{otd.city}</div></div>);})()}
           {/* EXPLORE — first item */}
           <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
             <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
@@ -7624,9 +7626,279 @@ function PhotoMode({T,fs,gameKey,items,onClose}:{T:any,fs:any,gameKey:string,ite
   );
 }
 
+// ── NEW GAME MODES ────────────────────────────────────────────────────────────
+function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onClose:()=>void}){
+  const stations=useMemo(()=>(gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:[]),[gameKey]);
+  const [round,setRound]=useState(0);const [score,setScore]=useState(0);const [phase,setPhase]=useState<"play"|"reveal"|"done">("play");const [chosen,setChosen]=useState<string|null>(null);const [options,setOptions]=useState<{name:string,fake:boolean}[]>([]);const [fakeIdx,setFakeIdx]=useState(0);
+  const ROUNDS=5;
+  function buildRound(){
+    const pool=[...stations].sort(()=>Math.random()-0.5).slice(0,3);
+    const realNames=pool.map(s=>s.name);
+    const fake=generateFakeName(realNames);
+    const opts=[...realNames.map(n=>({name:n,fake:false})),{name:fake,fake:true}].sort(()=>Math.random()-0.5);
+    setOptions(opts);setFakeIdx(opts.findIndex(o=>o.fake));setChosen(null);setPhase("play");
+  }
+  useEffect(()=>{if(stations.length>3)buildRound();},[round,stations]);
+  function pick(name:string,fake:boolean){setChosen(name);setPhase("reveal");if(fake)setScore(s=>s+1);}
+  function next(){if(round+1>=ROUNDS){setPhase("done");markBingo("blitz_win");}else{setRound(r=>r+1);}}
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>🕵️</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>FAKE STATION</div>
+        <div style={{fontSize:48,fontWeight:900,color:T.accent,marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Perfect spotter!":score>=3?"Good eye!":"Keep practicing!"}</div>
+        <button onClick={onClose} style={{background:T.accent,color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>FAKE STATION · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>Which station doesn't exist?</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {options.map(opt=>{
+            const revealed=phase==="reveal";
+            const isChosen=chosen===opt.name;
+            const bg=revealed?(opt.fake?"#0A0A0A":isChosen&&!opt.fake?"#E8294A22":"#f5f5f5"):"#f5f5f5";
+            const border=revealed?(opt.fake?"2px solid #0A0A0A":isChosen&&!opt.fake?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee";
+            return(
+              <button key={opt.name} disabled={phase==="reveal"} onClick={()=>pick(opt.name,opt.fake)} style={{background:bg,border,borderRadius:10,padding:"14px 18px",fontSize:14,fontWeight:700,cursor:phase==="play"?"pointer":"default",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",transition:"all .15s"}}>
+                {opt.name}
+                {revealed&&opt.fake&&<span style={{fontSize:11,background:"#0A0A0A",color:"#FFB800",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>FAKE</span>}
+                {revealed&&isChosen&&!opt.fake&&<span style={{fontSize:11,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>NOPE</span>}
+              </button>
+            );
+          })}
+        </div>
+        {phase==="reveal"&&<button onClick={next} style={{marginTop:16,width:"100%",background:T.accent,color:"#fff",border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function StationAgeMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
+  const pool=useMemo(()=>{
+    const all=[...DC_STATIONS,...NYC_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.year&&s.year>1800);
+    return all.sort(()=>Math.random()-0.5).slice(0,20);
+  },[]);
+  const [round,setRound]=useState(0);const [score,setScore]=useState(0);const [chosen,setChosen]=useState<number|null>(null);const [phase,setPhase]=useState<"play"|"reveal"|"done">("play");const [opts,setOpts]=useState<number[]>([]);
+  const ROUNDS=5;
+  const station=pool[round];
+  useEffect(()=>{
+    if(!station)return;
+    const y=station.year;const decoys=new Set<number>();decoys.add(y);while(decoys.size<4){const d=y+Math.round((Math.random()-0.5)*24);if(d>1850&&d<2030)decoys.add(d);}
+    setOpts([...decoys].sort((a,b)=>a-b));setChosen(null);setPhase("play");
+  },[round,station]);
+  if(!station||phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>🕰️</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>STATION AGE</div>
+        <div style={{fontSize:48,fontWeight:900,color:T.accent,marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Transit historian!":score>=3?"Good sense of history!":"Transit history is tricky!"}</div>
+        <button onClick={onClose} style={{background:T.accent,color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>STATION AGE · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:19,fontWeight:900,letterSpacing:1,marginBottom:4}}>{station.name}</div>
+          <div style={{fontSize:13,color:"#666"}}>{station.zone} · {station.lines?.join(", ")}</div>
+          <div style={{fontSize:14,fontWeight:700,marginTop:8}}>What year did this station open?</div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          {opts.map(y=>{
+            const revealed=phase==="reveal";const isCorrect=y===station.year;const isChosen=y===chosen;
+            return(
+              <button key={y} disabled={revealed} onClick={()=>{setChosen(y);setPhase("reveal");if(y===station.year)setScore(s=>s+1);}} style={{background:revealed?(isCorrect?"#0A0A0A":isChosen?"#E8294A22":"#f5f5f5"):"#f5f5f5",border:revealed?(isCorrect?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"16px",fontSize:18,fontWeight:900,cursor:revealed?"default":"pointer",color:revealed&&isCorrect?"#fff":"#0A0A0A",transition:"all .15s"}}>
+                {y}{revealed&&isCorrect&&<span style={{display:"block",fontSize:10,letterSpacing:1,marginTop:2,color:"#FFB800"}}>CORRECT</span>}
+              </button>
+            );
+          })}
+        </div>
+        {phase==="reveal"&&<button onClick={()=>{if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}} style={{marginTop:16,width:"100%",background:T.accent,color:"#fff",border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
+  const keys=Object.keys(CITY_STATS);
+  const [round,setRound]=useState(0);const [score,setScore]=useState(0);const [chosen,setChosen]=useState<string|null>(null);const [phase,setPhase]=useState<"play"|"reveal"|"done">("play");const [pair,setPair]=useState<[string,string]>(["dc","nyc"]);const [qIdx,setQIdx]=useState(0);
+  const ROUNDS=5;
+  useEffect(()=>{
+    const shuffled=[...keys].sort(()=>Math.random()-0.5);
+    setPair([shuffled[0],shuffled[1]]);
+    setQIdx(Math.floor(Math.random()*SHOWDOWN_QUESTIONS.length));
+    setChosen(null);setPhase("play");
+  },[round]);
+  const q=SHOWDOWN_QUESTIONS[qIdx];
+  const a=CITY_STATS[pair[0]],b=CITY_STATS[pair[1]];
+  const correctKey=q.dir==="asc"?(a[q.field]<b[q.field]?pair[0]:pair[1]):(a[q.field]>b[q.field]?pair[0]:pair[1]);
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>🏆</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>CITY SHOWDOWN</div>
+        <div style={{fontSize:48,fontWeight:900,color:T.accent,marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Transit expert!":score>=3?"Strong city knowledge!":"Cities are complex!"}</div>
+        <button onClick={onClose} style={{background:T.accent,color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>CITY SHOWDOWN · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>{q.q}</div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {pair.map(k=>{
+            const city=CITY_STATS[k];const revealed=phase==="reveal";const isCorrect=k===correctKey;const isChosen=k===chosen;
+            return(
+              <button key={k} disabled={revealed} onClick={()=>{setChosen(k);setPhase("reveal");if(k===correctKey)setScore(s=>s+1);}} style={{background:revealed?(isCorrect?"#0A0A0A":isChosen?"#E8294A11":"#f8f8f8"):"#f8f8f8",border:revealed?(isCorrect?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:12,padding:"20px 16px",cursor:revealed?"default":"pointer",textAlign:"center",transition:"all .15s"}}>
+                <div style={{fontSize:28}}>{city.emoji}</div>
+                <div style={{fontSize:13,fontWeight:800,letterSpacing:1,marginTop:4,color:revealed&&isCorrect?"#fff":"#0A0A0A"}}>{city.name}</div>
+                {revealed&&<div style={{fontSize:11,marginTop:6,color:revealed&&isCorrect?"#FFB800":"#888",fontWeight:700}}>{q.label(city[q.field] as number)}</div>}
+              </button>
+            );
+          })}
+        </div>
+        {phase==="reveal"&&<button onClick={()=>{if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}} style={{marginTop:16,width:"100%",background:T.accent,color:"#fff",border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
+  const [state,setState]=useState(()=>getBingoState());
+  const won=checkBingoWin(state);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:"20px 20px 0 0",padding:"24px 16px 40px",width:"100%",maxWidth:520}}>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>TRANSIT BINGO</div>
+          {won&&<div style={{fontSize:13,color:"#028A48",fontWeight:700,marginTop:4}}>🎉 BINGO! You completed a line!</div>}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:4,maxWidth:400,margin:"0 auto"}}>
+          {BINGO_SQUARES.map((sq,_i)=>{
+            const done=state.includes(sq.id);
+            return(
+              <div key={sq.id} style={{aspectRatio:"1",background:done?(sq.id==="free"?"#FFB800":T.accent):"#f5f5f5",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",cursor:"default",border:`2px solid ${done?(sq.id==="free"?"#FFB800":T.accent):"#eee"}`}}>
+                <div style={{fontSize:8,fontWeight:700,color:done?"#fff":"#aaa",textAlign:"center",lineHeight:1.3,whiteSpace:"pre-line",padding:2}}>{sq.label}</div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{textAlign:"center",marginTop:16,fontSize:11,color:"#888"}}>Complete rows, columns, or diagonals to win!</div>
+        <button onClick={onClose} style={{marginTop:12,width:"100%",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>CLOSE</button>
+      </div>
+    </div>
+  );
+}
+function GhostStationsModal({T,onClose}:{T:any,onClose:()=>void}){
+  const xp=getXP();const unlocked=getGhostUnlocked();
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:"20px 20px 0 0",padding:"28px 20px 40px",width:"100%",maxWidth:520,color:"#fff"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:24,marginBottom:4}}>👻</div>
+          <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>GHOST STATIONS</div>
+          <div style={{fontSize:11,color:"#666",marginTop:4}}>Abandoned lines. Forgotten platforms. Hidden history.</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {GHOST_STATIONS.map(g=>{
+            const isUnlocked=unlocked.includes(g.id)||xp>=g.unlockXP;
+            return(
+              <div key={g.id} style={{background:isUnlocked?"#1a1a1a":"#111",borderRadius:12,padding:"16px",border:`1px solid ${isUnlocked?"#333":"#1a1a1a"}`}} onClick={()=>{if(isUnlocked)unlockGhost(g.id);}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                  <div>
+                    <div style={{fontSize:14,fontWeight:700,color:isUnlocked?"#fff":"#444"}}>{isUnlocked?g.name:"??? Station"}</div>
+                    <div style={{fontSize:11,color:isUnlocked?"#888":"#333",marginTop:2}}>{isUnlocked?`${g.city} · ${g.line} Line · Closed ${g.year}`:"Unlock to reveal"}</div>
+                  </div>
+                  {!isUnlocked&&<div style={{fontSize:10,color:"#555",textAlign:"right",marginLeft:12}}><div>🔒</div><div style={{fontSize:9,marginTop:2}}>{g.unlockXP} XP</div></div>}
+                </div>
+                {isUnlocked&&<div style={{fontSize:12,color:"#aaa",marginTop:8,lineHeight:1.5}}>{g.desc}</div>}
+                {!isUnlocked&&<div style={{marginTop:8,height:4,background:"#1a1a1a",borderRadius:2}}><div style={{height:"100%",background:"#333",borderRadius:2,width:`${Math.min(100,(xp/g.unlockXP)*100)}%`,transition:"width .5s"}}/></div>}
+              </div>
+            );
+          })}
+        </div>
+        <button onClick={onClose} style={{marginTop:20,width:"100%",background:"#fff",color:"#0A0A0A",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>CLOSE</button>
+      </div>
+    </div>
+  );
+}
+function MilestonePostcardModal({xp,T,onClose}:{xp:number,T:any,onClose:()=>void}){
+  const milestone=MILESTONE_XP.filter(m=>xp>=m).pop()||1000;
+  const label=milestone>=10000?"TRANSIT LEGEND":milestone>=5000?"CITY EXPERT":"TRANSIT FAN";
+  const emoji=milestone>=10000?"🏆":milestone>=5000?"⭐":"🎟️";
+  const wallet=getUserWallet();
+  const [copied,setCopied]=useState(false);
+  function share(){const text=`I just hit ${milestone.toLocaleString()} XP on UrbanIQ! ${emoji} ${label}\n🔥 ${wallet.streak} streak · 🛡️ ${wallet.shields} shields\nurbaniq.quest`;navigator.clipboard?.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}
+  useEffect(()=>{markMilestoneShown(milestone);},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:9500,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:20,padding:32,textAlign:"center",maxWidth:340,width:"100%",border:"2px solid #FFB800",boxShadow:"0 0 40px #FFB80033"}}>
+        <div style={{fontSize:52,marginBottom:8}}>{emoji}</div>
+        <div style={{fontSize:11,color:"#FFB800",letterSpacing:3,fontWeight:700,marginBottom:4}}>MILESTONE UNLOCKED</div>
+        <div style={{fontSize:24,fontWeight:900,color:"#fff",letterSpacing:2,marginBottom:4}}>{label}</div>
+        <div style={{fontSize:36,fontWeight:900,color:"#FFB800",marginBottom:16}}>{milestone.toLocaleString()} XP</div>
+        <div style={{display:"flex",gap:16,justifyContent:"center",marginBottom:20}}>
+          <div style={{textAlign:"center"}}><div style={{fontSize:18,fontWeight:900,color:"#fff"}}>{wallet.streak}</div><div style={{fontSize:10,color:"#666",letterSpacing:1}}>STREAK</div></div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:18,fontWeight:900,color:"#fff"}}>{wallet.shields}</div><div style={{fontSize:10,color:"#666",letterSpacing:1}}>SHIELDS</div></div>
+        </div>
+        <button onClick={share} style={{width:"100%",background:"#FFB800",color:"#0A0A0A",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1,marginBottom:10}}>{copied?"COPIED! ✓":"SHARE MILESTONE →"}</button>
+        <button onClick={onClose} style={{width:"100%",background:"transparent",color:"#555",border:"1px solid #333",borderRadius:10,padding:"11px",fontWeight:700,fontSize:12,cursor:"pointer",letterSpacing:1}}>KEEP PLAYING</button>
+      </div>
+    </div>
+  );
+}
+function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,desc:string,onClose:()=>void}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:300,width:"100%"}}>
+        <div style={{fontSize:48,marginBottom:12}}>{emoji}</div>
+        <div style={{fontSize:16,fontWeight:900,letterSpacing:2,marginBottom:8}}>{title}</div>
+        <div style={{fontSize:13,color:"#666",lineHeight:1.6,marginBottom:20}}>{desc}</div>
+        <div style={{fontSize:11,color:"#aaa",letterSpacing:2,marginBottom:16}}>COMING SOON</div>
+        <button onClick={onClose} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:12,cursor:"pointer",letterSpacing:1}}>GOT IT</button>
+      </div>
+    </div>
+  );
+}
+
 // ── BONUS GAMES SECTION (extracted from GameApp JSX to fix hooks-in-IIFE violation) ──
-function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void}){
+function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowComingSoon}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void}){
   const[bonusOpen,setBonusOpen]=useState(false);
+  type CardItem={emoji:string,title:string,body:string,color?:string,stub?:boolean,stubDesc?:string,onClick?:()=>void};
+  const cards:CardItem[]=[
+    {emoji:"⚡",title:"Blitz Mode",body:gameKey==="nfl"?"Name all AFC East teams. Every NFC team. All Midwest region teams. 60 seconds.":gameKey==="states"?"Name every Midwest state. Every state starting with 'N'. Pure memory test.":"Name all stations starting with 'P'. Every Red Line station. No dropdown.",onClick:()=>setShowBlitz(true)},
+    {emoji:G.emoji,title:`${gameKey==="states"?"State":gameKey==="nfl"?"Team":"Station"} of the Week`,body:`Deep dive on one ${G.itemLabel} — history, facts, and 3 quiz questions. Changes every Monday.`,onClick:()=>setShowItemOfWeek(true)},
+    {emoji:"🧠",title:gameKey==="nfl"?"Daily NFL Trivia":gameKey==="states"?"Daily Civics Quiz":"Daily Transit Trivia",body:"5 questions. New set every day. How deep does your knowledge go?",onClick:()=>setShowTrivia(true)},
+    {emoji:"🚊",title:"Line Challenges",body:"Work through every station on a specific transit line. Progress saved. Complete a full line for +200 XP bonus.",onClick:()=>setShowLineChallenge(true)},
+    {emoji:"📸",title:"Photo Mode",body:"A photo of a station appears. Can you name it? 5 rounds, 3 guesses each. Tests your visual transit knowledge.",onClick:()=>setShowPhotoMode(true)},
+    {emoji:"🕵️",title:"Fake Station",body:"Spot the station that doesn't exist",color:"#7B2FBE",onClick:()=>setShowFakeStation(true)},
+    {emoji:"🕰️",title:"Station Age",body:"Guess when each station opened",color:"#028A48",onClick:()=>setShowStationAge(true)},
+    {emoji:"🏆",title:"City Showdown",body:"Which city wins? Compare systems",color:"#E8294A",onClick:()=>setShowCityShowdown(true)},
+    {emoji:"🎯",title:"Transit Bingo",body:"Complete achievements on your bingo card",color:"#4169E1",onClick:()=>setShowBingo(true)},
+    {emoji:"👻",title:"Ghost Stations",body:"Unlock abandoned stations with XP",color:"#0A0A0A",onClick:()=>setShowGhosts(true)},
+    {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",stub:true,stubDesc:"Live ridership data from transit APIs. Coming soon."},
+    {emoji:"👥",title:"Buddy Streaks",body:"Match streaks with a friend",color:"#028A48",stub:true,stubDesc:"Friend challenges powered by real accounts. Coming soon."},
+    {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",stub:true,stubDesc:"Multi-stop routing puzzle. Coming soon."},
+    {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",stub:true,stubDesc:"Street-level photo challenges. Coming soon."},
+    {emoji:"📝",title:"Transit Wordl",body:"Word search: find the station names",color:"#7B2FBE",stub:true,stubDesc:"Transit word search. Coming soon."},
+    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",stub:true,stubDesc:"Ambient city transit audio. Coming soon."},
+    {emoji:"🏗️",title:"Route Architect",body:"Design your own transit line",color:"#028A48",stub:true,stubDesc:"Route design sandbox. Coming soon."},
+    {emoji:"📱",title:"Offline Mode",body:"Download a city for offline play",color:"#4169E1",stub:true,stubDesc:"Service worker cache. Coming soon."},
+    {emoji:"🎃",title:"Seasonal Events",body:"Special themed challenges",color:"#E8294A",stub:true,stubDesc:"Holiday & seasonal game modes. Coming soon."},
+    {emoji:"🗺️",title:"Partner Map",body:"Interactive map of partner spots",color:"#028A48",stub:true,stubDesc:"Map layer in the Explore portal. Coming soon."},
+  ];
   return(
     <div style={{marginTop:20,marginBottom:12}}>
       <button onClick={()=>setBonusOpen(o=>!o)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",padding:0,marginBottom:bonusOpen?10:0}}>
@@ -7639,19 +7911,14 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
         </div>
       </button>
       {bonusOpen&&<div style={{display:"flex",flexDirection:"column",gap:8}}>
-        {[
-          {emoji:"⚡",title:"Blitz Mode",body:gameKey==="nfl"?"Name all AFC East teams. Every NFC team. All Midwest region teams. 60 seconds.":gameKey==="states"?"Name every Midwest state. Every state starting with 'N'. Pure memory test.":"Name all stations starting with 'P'. Every Red Line station. No dropdown.",onClick:()=>setShowBlitz(true)},
-          {emoji:G.emoji,title:`${gameKey==="states"?"State":gameKey==="nfl"?"Team":"Station"} of the Week`,body:`Deep dive on one ${G.itemLabel} — history, facts, and 3 quiz questions. Changes every Monday.`,onClick:()=>setShowItemOfWeek(true)},
-          {emoji:"🧠",title:gameKey==="nfl"?"Daily NFL Trivia":gameKey==="states"?"Daily Civics Quiz":"Daily Transit Trivia",body:"5 questions. New set every day. How deep does your knowledge go?",onClick:()=>setShowTrivia(true)},
-          {emoji:"🚊",title:"Line Challenges",body:"Work through every station on a specific transit line. Progress saved. Complete a full line for +200 XP bonus.",onClick:()=>setShowLineChallenge(true)},
-          {emoji:"📸",title:"Photo Mode",body:"A photo of a station appears. Can you name it? 5 rounds, 3 guesses each. Tests your visual transit knowledge.",onClick:()=>setShowPhotoMode(true)},
-        ].map((item,i)=>(
-          <div key={i} onClick={item.onClick} style={{background:T.surface,border:`1.5px solid ${T.border}`,borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"border-color .2s"}}
-            onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.borderColor=T.accent}
-            onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.borderColor=T.border}>
+        {cards.map((item,i)=>(
+          <div key={i} onClick={item.stub?()=>setShowComingSoon({title:item.title,emoji:item.emoji,desc:item.stubDesc||""}):item.onClick} style={{background:T.surface,border:`1.5px solid ${item.stub?"transparent":T.border}`,borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"border-color .2s",opacity:item.stub?0.7:1,position:"relative",overflow:"hidden"}}
+            onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.borderColor=item.stub?"rgba(0,0,0,0.1)":(T.accent)}
+            onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.borderColor=item.stub?"transparent":T.border}>
+            {item.stub&&<div style={{position:"absolute",inset:0,background:"repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(0,0,0,0.03) 8px,rgba(0,0,0,0.03) 16px)",pointerEvents:"none"}}/>}
             <div style={{fontSize:"28px",flexShrink:0}}>{item.emoji}</div>
-            <div style={{flex:1}}><div style={{fontSize:fs(14),fontWeight:800,color:T.text,marginBottom:2}}>{item.title}</div><div style={{fontSize:fs(10),color:T.textMuted,lineHeight:1.5}}>{item.body}</div></div>
-            <div style={{fontSize:fs(12),color:T.accent,fontWeight:700}}>▶</div>
+            <div style={{flex:1}}><div style={{fontSize:fs(14),fontWeight:800,color:item.color||T.text,marginBottom:2}}>{item.title}</div><div style={{fontSize:fs(10),color:T.textMuted,lineHeight:1.5}}>{item.body}</div></div>
+            <div style={{fontSize:fs(12),color:item.stub?"#aaa":T.accent,fontWeight:700}}>{item.stub?"🔒":"▶"}</div>
           </div>
         ))}
       </div>}
@@ -7738,6 +8005,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showTrivia,setShowTrivia]=useState(false);
   const[showLineChallenge,setShowLineChallenge]=useState(false);
   const[showPhotoMode,setShowPhotoMode]=useState(false);
+  const[showFakeStation,setShowFakeStation]=useState(false);
+  const[showStationAge,setShowStationAge]=useState(false);
+  const[showCityShowdown,setShowCityShowdown]=useState(false);
+  const[showBingo,setShowBingo]=useState(false);
+  const[showGhosts,setShowGhosts]=useState(false);
+  const[showComingSoon,setShowComingSoon]=useState<{title:string,emoji:string,desc:string}|null>(null);
+  const[showMilestonePostcard,setShowMilestonePostcard]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
   const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
@@ -7974,7 +8248,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     setInput("");setSugg([]);
     if(!isWin&&!isLoss)setTimeout(()=>inputRef.current?.focus(),30);
     await saveTodayData(gameKey,today+`r${round}`,{guesses:newGuesses.map((g:any)=>g.item.name),won:isWin,lost:isLoss,hardLocks:newLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
-    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const baseXP=newGuesses.length===1?150:newGuesses.length===2?100:75;const mult=getStreakMultiplier(getGlobalData().streak||0);const twistMult=getDailyTwist()?.key==="bonusxp"?2:1;addXP(Math.round(baseXP*mult*twistMult));incGlobalStreak();setGameHudXP(getXP());}
+    if(isWin){setDailyPoints((prev:any)=>({...prev,[gameKey]:Math.min(3,prev[gameKey]+1)}));const baseXP=newGuesses.length===1?150:newGuesses.length===2?100:75;const mult=getStreakMultiplier(getGlobalData().streak||0);const twistMult=getDailyTwist()?.key==="bonusxp"?2:1;const timeMult=getTimeMultiplier()?.mult||1;const finalXP=Math.round(baseXP*mult*twistMult*timeMult);addXP(finalXP);incGlobalStreak();setGameHudXP(getXP());markCityGuess(gameKey,true);if(timeMult>1){const tm=getTimeMultiplier();if(tm?.label.includes("NIGHT"))markBingo("night_owl");else if(tm?.label.includes("RUSH"))markBingo("rush_hour");else markBingo("weekend_win");}if(getDailyTwist()?.key==="blitz")markBingo("blitz_win");markBingo(`win_${gameKey}`);const gs=getGlobalData();if(gs.streak>=3)markBingo("streak_3");if(gs.streak>=7)markBingo("streak_7");const txp=getXP();if(txp>=1000)markBingo("xp_1000");const newXP=getXP();const shown=getMilestonesShown();if(MILESTONE_XP.some(m=>newXP>=m&&!shown.includes(m)))setShowMilestonePostcard(true);}
     if(isWin||isLoss){
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
@@ -8487,13 +8761,20 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode}/>
+          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowComingSoon={setShowComingSoon}/>
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
           {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
           {showLineChallenge&&<LineChallengeMode T={T} fs={fs} gameKey={gameKey} items={items} lineColors={lineColors} onClose={()=>setShowLineChallenge(false)}/>}
           {showPhotoMode&&<PhotoMode T={T} fs={fs} gameKey={gameKey} items={items} onClose={()=>setShowPhotoMode(false)}/>}
+          {showFakeStation&&<FakeStationMode gameKey={gameKey} T={T} fs={fs} onClose={()=>setShowFakeStation(false)}/>}
+          {showStationAge&&<StationAgeMode T={T} fs={fs} onClose={()=>setShowStationAge(false)}/>}
+          {showCityShowdown&&<CityShowdownMode T={T} fs={fs} onClose={()=>setShowCityShowdown(false)}/>}
+          {showBingo&&<TransitBingoModal T={T} onClose={()=>setShowBingo(false)}/>}
+          {showGhosts&&<GhostStationsModal T={T} onClose={()=>setShowGhosts(false)}/>}
+          {showComingSoon&&<ComingSoonModal {...showComingSoon} onClose={()=>setShowComingSoon(null)}/>}
+          {showMilestonePostcard&&<MilestonePostcardModal xp={getXP()} T={T} onClose={()=>setShowMilestonePostcard(false)}/>}
 
           <div style={{textAlign:"center",marginTop:8}}>
             <a href="https://mc.buymeacoffee.com/links/SyEkenCIAfWPKEhbhyglsDjuxVxSSjqkeHbXYWMXWcARvFhFzRCgIASnBhHieeDGIBlkfaEMkvhKXYgPCXWGCPB/3480126?link=nixalerllc" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:7,background:T.surface,color:"#FFDD00",border:"1px solid rgba(255,221,0,.2)",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,letterSpacing:1,padding:"9px 16px",borderRadius:7,textDecoration:"none"}}>☕ Enjoying it? Buy me a coffee</a>
