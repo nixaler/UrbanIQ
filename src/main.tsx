@@ -5571,7 +5571,6 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[cityKey,setCityKey]=useState<string>("");
   const[selStation,setSelStation]=useState<string|null>(null);
   const[stationSearch,setStationSearch]=useState("");
-  const[tick,setTick]=useState(0);
   const today=new Date().toISOString().slice(0,10);
   const[completedQuests,setCompletedQuests]=useState<Set<string>>(()=>new Set(JSON.parse(localStorage.getItem("tgg:quests:done")||"[]")));
   const shieldKey=`tgg:explore:shield:${today}`;
@@ -5580,31 +5579,8 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[xpPop,setXpPop]=useState<number|null>(null);
   const[markDoneQuest,setMarkDoneQuest]=useState<{id:string,title:string,xp:number,shield:boolean}|null>(null);
   const[showExploreMap,setShowExploreMap]=useState(false);
-  const[liveArrivals,setLiveArrivals]=useState<{line:string,lineColor:string,dest:string,mins:number,crowd:number}[]|null>(null);
-  const[isSimulated,setIsSimulated]=useState(true);
-  useEffect(()=>{const id=setInterval(()=>setTick(t=>t+1),30000);return()=>clearInterval(id);},[]);
   const meta=EXPLORE_CITY_META[cityKey]||EXPLORE_CITY_META["dc"];
   const hub=selStation||(meta?.hubs[0]||"");
-  const pulse=cityKey?getSimPulse(cityKey,hub,tick):[];
-  useEffect(()=>{
-    if(cityKey!=="dc"||!hub)return;
-    const code=meta?.hubCodes?.[hub];
-    if(!code)return;
-    fetch(`/api/wmata/arrivals?stationCode=${code}`)
-      .then(r=>r.json())
-      .then(data=>{
-        setIsSimulated(!!data.simulated);
-        if(!data.simulated&&data.Trains){
-          const arr=data.Trains.filter((t:any)=>t.Min&&t.Min!=="ARR"&&t.Min!=="BRD"&&t.Min!=="---").slice(0,4).map((t:any)=>({
-            line:t.Line,lineColor:meta.lc[t.Line]||"#888",dest:t.DestinationName,mins:parseInt(t.Min)||1,crowd:50
-          }));
-          if(arr.length>0)setLiveArrivals(arr);
-        }
-      })
-      .catch(()=>{setIsSimulated(true);setLiveArrivals(null);});
-  },[cityKey,hub,tick]);
-  useEffect(()=>{setLiveArrivals(null);setIsSimulated(true);},[cityKey]);
-  const displayArrivals=liveArrivals||pulse;
   const picks=EXPLORE_PICKS[cityKey]||[];
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
@@ -5731,33 +5707,6 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
             </div>
           );
         })()}
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8,display:"flex",alignItems:"center",gap:8}}>
-          <span style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"#E8294A",animation:"lmBlink 1.5s infinite"}}/>
-          NEXT ARRIVALS — {hub}
-          {isSimulated&&<span style={{color:"#C8C5BF",fontWeight:400,letterSpacing:1,fontSize:"8px"}}>simulated</span>}
-        </div>
-        <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-          {displayArrivals.map((p,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<displayArrivals.length-1?"1px solid #EDEBE8":"none",background:"#fff"}}>
-              <div style={{width:28,height:18,borderRadius:3,background:p.lineColor,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{fontSize:"8px",fontWeight:900,color:"#fff",letterSpacing:"0.5px"}}>{p.line.split(" ")[0].slice(0,3).toUpperCase()}</span>
-              </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:"13px",fontWeight:700,color:"#0A0A0A",letterSpacing:"0.3px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.dest}</div>
-                <div style={{display:"flex",alignItems:"center",gap:6,marginTop:3}}>
-                  <div style={{width:36,height:2,borderRadius:1,background:"#EDEBE8",overflow:"hidden"}}>
-                    <div style={{width:`${p.crowd}%`,height:"100%",background:p.crowd>75?"#E8294A":p.crowd>50?"#FFB800":"#22C55E",borderRadius:1}}/>
-                  </div>
-                  <span style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>{p.crowd>75?"CROWDED":p.crowd>50?"BUSY":"CLEAR"}</span>
-                </div>
-              </div>
-              <div style={{textAlign:"right",flexShrink:0}}>
-                <div style={{fontSize:"20px",fontWeight:900,color:p.mins<=2?"#E8294A":p.mins<=5?"#FF8C42":"#0A0A0A",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{p.mins}</div>
-                <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:1}}>MIN</div>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>}
       {cityKey&&<div style={{padding:"0 22px 20px"}}>
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"#888580",marginBottom:8}}>CURATED PICKS — {meta.name.toUpperCase()}</div>
