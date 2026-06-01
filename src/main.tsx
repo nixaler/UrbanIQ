@@ -5061,17 +5061,22 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           🔥 Hot Today <div className="lm-eyebrow-line"/>
         </div>
-        <div style={{display:"flex",justifyContent:"flex-end",gap:4,marginBottom:8}}>
-          {swipeGames.map((_,i)=>(
-            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?12:4,height:4,borderRadius:2,background:i===si?featG.color:"rgba(255,255,255,0.15)",transition:"all .2s",cursor:"pointer"}}/>
-          ))}
-        </div>
-        <div style={{borderRadius:12,overflow:"hidden",marginBottom:16,cursor:"pointer",position:"relative",minHeight:190}}
+        <div style={{borderRadius:12,overflow:"hidden",marginBottom:8,cursor:"pointer",position:"relative",minHeight:190}}
           onPointerDown={e=>{hotDragStart.current=e.clientX;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);}}
           onPointerUp={e=>{if(hotDragStart.current===null)return;const dx=e.clientX-hotDragStart.current;hotDragStart.current=null;if(Math.abs(dx)<10){SoundEngine.play("select");onSelectGame(featG.key);}else if(dx<-40)setHotIdx(i=>(i+1)%swipeGames.length);else if(dx>40)setHotIdx(i=>(i-1+swipeGames.length)%swipeGames.length);}}
           onMouseEnter={()=>setFeatHov(true)} onMouseLeave={()=>setFeatHov(false)}>
           {featG.photo&&<img src={featG.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.75)",userSelect:"none"}}/>}
           <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.15) 100%)"}}/>
+          {/* Left chevron */}
+          <div onClick={e=>{e.stopPropagation();setHotIdx(i=>(i-1+swipeGames.length)%swipeGames.length);}}
+            style={{position:"absolute",left:0,top:0,bottom:0,width:44,display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>
+            <div style={{fontSize:"18px",color:"rgba(255,255,255,0.55)",fontWeight:700,lineHeight:1}}>‹</div>
+          </div>
+          {/* Right chevron */}
+          <div onClick={e=>{e.stopPropagation();setHotIdx(i=>(i+1)%swipeGames.length);}}
+            style={{position:"absolute",right:0,top:0,bottom:0,width:44,display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>
+            <div style={{fontSize:"18px",color:"rgba(255,255,255,0.55)",fontWeight:700,lineHeight:1}}>›</div>
+          </div>
           <div style={{padding:"26px 22px",position:"relative",zIndex:1,userSelect:"none",touchAction:"pan-y"}}>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"86px",color:"rgba(255,255,255,0.04)",position:"absolute",right:-6,bottom:-18,lineHeight:1,pointerEvents:"none",letterSpacing:2}}>{featG.name.split(" ")[0].slice(0,5).toUpperCase()}</div>
             <div style={{fontSize:"9px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.4)",marginBottom:8}}>{featG.tag} · {featG.sub.split("·")[0].trim()}</div>
@@ -5081,6 +5086,12 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
             <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",letterSpacing:1,marginBottom:20,textTransform:"uppercase"}}>3 rounds · New today · Day #{dayNum}</div>
             <button className="lm-feat-btn" onClick={(e)=>{e.stopPropagation();SoundEngine.play("select");onSelectGame(featG.key);}}>Play Now →</button>
           </div>
+        </div>
+        {/* Dots below card */}
+        <div style={{display:"flex",justifyContent:"center",gap:5,marginBottom:16}}>
+          {swipeGames.map((_,i)=>(
+            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?20:6,height:6,borderRadius:3,background:i===si?featG.color:"rgba(255,255,255,0.2)",transition:"all .2s",cursor:"pointer"}}/>
+          ))}
         </div>
       </div>
 
