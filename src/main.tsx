@@ -1490,6 +1490,113 @@ function daysSinceDate(dateStr:string){const[y,m,d]=dateStr.split("-").map(Numbe
 function getToday(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function getDayNum(){const n=new Date();return Math.floor((n.getTime()-new Date(n.getFullYear(),0,0).getTime())/86400000);}
 function getDailyTwist():{key:string,label:string,emoji:string,color:string}|null{const d=new Date().getDay();if(d===0)return{key:"bonusxp",label:"2× XP SUNDAY",emoji:"⚡",color:"#FFB800"};if(d===1)return{key:"nohints",label:"NO HINTS MONDAY",emoji:"🚫",color:"#E8294A"};if(d===3)return{key:"blitz",label:"BLITZ WEDNESDAY",emoji:"⚡",color:"#4169E1"};return null;}
+function getTimeMultiplier():{mult:number,label:string,emoji:string}|null{
+  const h=new Date().getHours(),d=new Date().getDay();
+  if(h>=7&&h<9)return{mult:2,label:"RUSH HOUR 2×",emoji:"🚇"};
+  if(h>=23||h<1)return{mult:3,label:"NIGHT OWL 3×",emoji:"🦉"};
+  if(d===0||d===6)return{mult:1.5,label:"WEEKEND 1.5×",emoji:"🎉"};
+  return null;
+}
+const TRANSIT_HISTORY:{[k:string]:{year:number,fact:string,city:string}}={
+  "01-01":{year:1863,fact:"London Underground opened — the world's first metro.",city:"London"},
+  "03-27":{year:1976,fact:"DC Metro opened its first 5 stations, Farragut North to Rhode Island Ave.",city:"Washington DC"},
+  "09-01":{year:1897,fact:"Boston opened the first subway in the Americas at Park Street station.",city:"Boston"},
+  "10-27":{year:1904,fact:"New York City Subway opened with 28 stations on the IRT line.",city:"New York"},
+  "10-17":{year:1900,fact:"Paris Métro opened, becoming the model for European urban rail.",city:"Paris"},
+  "06-10":{year:1892,fact:"Chicago's elevated 'L' began service, the oldest surviving elevated rail in the US.",city:"Chicago"},
+  "07-04":{year:1979,fact:"Atlanta MARTA rail opened, making it the newest legacy transit system in the US.",city:"Atlanta"},
+  "09-15":{year:1990,fact:"Los Angeles Metro Rail opened the Blue Line, starting LA's transit revival.",city:"Los Angeles"},
+  "01-07":{year:1986,fact:"Portland MAX opened — the first modern light rail in the US.",city:"Portland"},
+  "11-22":{year:1983,fact:"Baltimore Metro SubwayLink opened, Maryland's first rapid transit line.",city:"Baltimore"},
+  "12-09":{year:1999,fact:"NYC Subway crossed 1 billion annual rides for the first time in decades.",city:"New York"},
+  "03-07":{year:2000,fact:"DC Metro celebrated its 1 billionth passenger at Metro Center station.",city:"Washington DC"},
+  "08-01":{year:1904,fact:"NYC's Interborough Rapid Transit signed its first operating contract.",city:"New York"},
+  "05-24":{year:1869,fact:"First US transcontinental railroad completed at Promontory Summit, Utah.",city:"Promontory, UT"},
+  "06-01":{year:1960,fact:"The PATH train between NJ and NYC began full operations under the Hudson.",city:"New York/NJ"},
+};
+function getOnThisDay():{year:number,fact:string,city:string}|null{
+  const d=new Date();
+  const key=`${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  return TRANSIT_HISTORY[key]||null;
+}
+const GHOST_STATIONS=[
+  {id:"city_hall",name:"City Hall Loop",city:"NYC",year:1945,line:"6",desc:"The original 1904 IRT City Hall station — closed due to platform curvature. The 6 train still loops through it; you can glimpse it by staying on past Brooklyn Bridge.",emoji:"👻",unlockXP:500},
+  {id:"worth_st",name:"Worth Street",city:"NYC",year:1962,line:"6",desc:"A local stop bypassed when longer platforms were needed in lower Manhattan. The platform shell still exists behind the tunnel walls.",emoji:"👻",unlockXP:500},
+  {id:"old_court_house",name:"Old Court House Square",city:"Atlanta",year:1979,line:"East-West",desc:"A station designed but never built during MARTA's original construction — the tunnel segment was excavated but platforms were never installed.",emoji:"👻",unlockXP:750},
+  {id:"church_st",name:"Church Street",city:"Boston",year:1908,line:"Green",desc:"An early Boylston-area stop removed when the modern portal was redesigned. Traces of the original platform are visible in old MBTA photos.",emoji:"👻",unlockXP:750},
+  {id:"garrison",name:"Garrison",city:"Baltimore",year:1983,line:"Metro SubwayLink",desc:"A planned station where underground construction began but stopped — the space was later converted to a maintenance access tunnel.",emoji:"👻",unlockXP:1000},
+  {id:"lower_pac",name:"Lower Pacific Heights",city:"SF",year:2001,line:"BART",desc:"Cut from BART's original plan during the 1960s cost negotiations — the neighborhood spent decades lobbying unsuccessfully for its restoration.",emoji:"👻",unlockXP:1500},
+];
+function getGhostUnlocked():string[]{try{return JSON.parse(localStorage.getItem("tgg:ghosts")||"[]");}catch{return[];}}
+function unlockGhost(id:string):void{const u=getGhostUnlocked();if(!u.includes(id))localStorage.setItem("tgg:ghosts",JSON.stringify([...u,id]));}
+const CITY_STATS:{[k:string]:{name:string,emoji:string,founded:number,stations:number,lines:number,miles:number,dailyRiders:number}}={
+  pdx:{name:"Portland MAX",emoji:"🌹",founded:1986,stations:97,lines:5,miles:60,dailyRiders:100000},
+  dc:{name:"DC Metro",emoji:"🌸",founded:1976,stations:98,lines:6,miles:117,dailyRiders:600000},
+  balt:{name:"Baltimore Metro",emoji:"🦀",founded:1983,stations:14,lines:1,miles:15,dailyRiders:35000},
+  la:{name:"LA Metro Rail",emoji:"🌴",founded:1990,stations:101,lines:7,miles:105,dailyRiders:330000},
+  nyc:{name:"NYC Subway",emoji:"🗽",founded:1904,stations:472,lines:36,miles:245,dailyRiders:3500000},
+  chi:{name:"Chicago L",emoji:"🌭",founded:1892,stations:145,lines:8,miles:102,dailyRiders:600000},
+  bos:{name:"Boston T",emoji:"🦞",founded:1897,stations:121,lines:5,miles:65,dailyRiders:300000},
+  atl:{name:"Atlanta MARTA",emoji:"🍑",founded:1979,stations:38,lines:2,miles:48,dailyRiders:165000},
+};
+const SHOWDOWN_QUESTIONS:[{q:string,field:"founded"|"stations"|"miles"|"lines"|"dailyRiders",dir:string,label:(v:number)=>string}]=[
+  {q:"Which opened first?",field:"founded" as const,dir:"asc",label:(v:number)=>`Founded ${v}`},
+  {q:"Which has more stations?",field:"stations" as const,dir:"desc",label:(v:number)=>`${v} stations`},
+  {q:"Which has more track miles?",field:"miles" as const,dir:"desc",label:(v:number)=>`${v} mi`},
+  {q:"Which has more lines?",field:"lines" as const,dir:"desc",label:(v:number)=>`${v} lines`},
+  {q:"Which has more daily riders?",field:"dailyRiders" as const,dir:"desc",label:(v:number)=>`${v.toLocaleString()}/day`},
+] as any;
+const TRANSIT_LORE:{[city:string]:{[station:string]:string}}={
+  dc:{"Dupont Circle":"During the Cold War, the deep Dupont Circle tunnels were rumored to connect to secret government bunkers beneath the city.","Metro Center":"On opening day in 1976, so many riders showed up for free trips that Metro had to close the gates at Metro Center by noon.","Woodley Park-Zoo":"Its 65-meter escalators are so long that locals finish entire podcast episodes before reaching street level.","Judiciary Square":"Workers found Civil War–era hospital debris during the 1970s excavation — the site treated thousands of Union soldiers.","Wheaton":"Wheaton has the longest escalator in the Western Hemisphere at 230 feet — 2.5 minutes to ride without walking."},
+  nyc:{"Times Sq-42 St":"On New Year's Eve, Times Square station alone processes over 100,000 people. Workers call the overnight shift 'the surge.'","Grand Central-42 St":"The concourse ceiling was so coated in tobacco smoke that restoration crews originally thought the sky mural was green marble.","Atlantic Av-Barclays Ctr":"Below the station lies the Atlantic Avenue Tunnel — the oldest subway tunnel in the world, built in 1844 and rediscovered in 1980.","Fulton St":"The station sits on landfill from the original Manhattan shoreline — bedrock is 30 feet deeper here than in midtown.","City Hall":"The original City Hall station (1904) is still there — take the 6 train past Brooklyn Bridge and you can glimpse it through the windows."},
+  chi:{"Chicago":"The L's downtown Loop is one of only a few remaining elevated inner-city rail loops in the world — most cities demolished theirs.","O'Hare":"A planned O'Hare extension to Rosemont was approved, funded, delayed, and finally cancelled in 2002 after years of political deadlock.","Millennium":"The station opened in 2001 to serve Millennium Park — but the park itself didn't fully open until 2004."},
+  bos:{"Park Street":"America's oldest continuously operating subway station — opened September 1, 1897, seven years before the NYC Subway.","Kendall/MIT":"MIT students once rigged sensors to the platform to time experiments using train arrivals — the conductor had no idea.","Harvard":"Harvard Square has two separate station entrances 300 feet apart, both equally confusing to first-time visitors."},
+  nyc_extra:{"Atlantic Av-Barclays Ctr":"Serves more subway lines (11) than any other station in the system."},
+};
+const BINGO_SQUARES=[
+  {id:"win_dc",label:"Win\nDC"},
+  {id:"win_nyc",label:"Win\nNYC"},
+  {id:"win_bos",label:"Win\nBoston"},
+  {id:"win_atl",label:"Win\nAtlanta"},
+  {id:"win_la",label:"Win\nLA"},
+  {id:"win_pdx",label:"Win\nPortland"},
+  {id:"win_chi",label:"Win\nChicago"},
+  {id:"win_balt",label:"Win\nBaltimore"},
+  {id:"streak_3",label:"3-Win\nStreak"},
+  {id:"streak_7",label:"7-Win\nStreak"},
+  {id:"no_hints",label:"Win\nNo Hints"},
+  {id:"photo_mode",label:"Photo\nMode Win"},
+  {id:"line_done",label:"Finish\na Line"},
+  {id:"free",label:"★\nFREE"},
+  {id:"daily_challenge",label:"Daily\nChallenge"},
+  {id:"xp_1000",label:"Reach\n1000 XP"},
+  {id:"shield_used",label:"Shield\nUsed"},
+  {id:"night_owl",label:"Night Owl\nWin"},
+  {id:"rush_hour",label:"Rush Hour\nWin"},
+  {id:"weekend_win",label:"Weekend\nWin"},
+  {id:"blitz_win",label:"Blitz\nMode Win"},
+  {id:"card_battle",label:"Card\nBattle Win"},
+  {id:"trivia_win",label:"Trivia\nWin"},
+  {id:"win_states",label:"Win\nStates"},
+  {id:"win_nfl",label:"Win\nNFL"},
+];
+function getBingoState():string[]{try{return JSON.parse(localStorage.getItem("tgg:bingo")||'["free"]');}catch{return["free"];}}
+function markBingo(id:string):void{const s=getBingoState();if(!s.includes(id))localStorage.setItem("tgg:bingo",JSON.stringify([...s,id]));}
+function checkBingoWin(state:string[]):boolean{const g=(i:number)=>state.includes(BINGO_SQUARES[i].id);const rows=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24]];const cols=[[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24]];const diags=[[0,6,12,18,24],[4,8,12,16,20]];return[...rows,...cols,...diags].some(line=>line.every(i=>g(i)));}
+const MILESTONE_XP=[1000,5000,10000];
+function getMilestonesShown():number[]{try{return JSON.parse(localStorage.getItem("tgg:milestones")||"[]");}catch{return[];}}
+function markMilestoneShown(xp:number):void{const m=getMilestonesShown();if(!m.includes(xp))localStorage.setItem("tgg:milestones",JSON.stringify([...m,xp]));}
+function getCompletedCities():{[k:string]:number}{try{return JSON.parse(localStorage.getItem("tgg:completed-cities")||"{}");}catch{return {};}}
+function markCityGuess(gameKey:string,won:boolean):void{if(!won)return;const c=getCompletedCities();c[gameKey]=(c[gameKey]||0)+1;localStorage.setItem("tgg:completed-cities",JSON.stringify(c));}
+const FAKE_STATION_SUFFIXES=["Junction","Heights","Crossing","Park","Square","Avenue","Boulevard","Center","Terminal","Station","Plaza","Way"];
+function generateFakeName(realNames:string[]):string{const parts=realNames.flatMap(n=>n.split(/[\s-]/)).filter(w=>w.length>3&&!/^(the|and|of|at|to)$/i.test(w));const base=parts[Math.floor(Math.random()*parts.length)]||"Oak";const suf=FAKE_STATION_SUFFIXES[Math.floor(Math.random()*FAKE_STATION_SUFFIXES.length)];const fake=`${base} ${suf}`;return realNames.includes(fake)?`${base} ${FAKE_STATION_SUFFIXES[(FAKE_STATION_SUFFIXES.indexOf(suf)+1)%FAKE_STATION_SUFFIXES.length]}`:fake;}
+const NEIGHBORHOOD_CARDS:{[city:string]:{[station:string]:{neighborhood:string,vibe:string}}}={
+  dc:{"Metro Center":{neighborhood:"Downtown DC",vibe:"Government & Commerce"},"Dupont Circle":{neighborhood:"Dupont Circle",vibe:"Arts & Diplomacy"},"Columbia Heights":{neighborhood:"Columbia Heights",vibe:"Latin Culture & Local"},"U Street":{neighborhood:"U Street Corridor",vibe:"Music & History"},"Anacostia":{neighborhood:"Anacostia",vibe:"Community & Heritage"},"Foggy Bottom":{neighborhood:"Foggy Bottom",vibe:"University & Government"},"Georgetown":{neighborhood:"Georgetown",vibe:"Historic Shopping"}},
+  nyc:{"Times Sq-42 St":{neighborhood:"Midtown",vibe:"Entertainment Hub"},"Atlantic Av-Barclays Ctr":{neighborhood:"Prospect Heights",vibe:"Sports & Culture"},"Bedford Av":{neighborhood:"Williamsburg",vibe:"Indie & Creative"},"Canal St":{neighborhood:"Chinatown/Tribeca",vibe:"Food & History"},"125 St":{neighborhood:"Harlem",vibe:"Music & Culture"},"Fulton St":{neighborhood:"Lower Manhattan",vibe:"Finance & History"}},
+  chi:{"Chicago":{neighborhood:"The Loop",vibe:"Business & Transit Hub"},"Belmont":{neighborhood:"Lakeview",vibe:"Nightlife & Diverse"},"Wicker Park":{neighborhood:"Wicker Park",vibe:"Art & Indie Music"},"Hyde Park":{neighborhood:"Hyde Park",vibe:"Academic & Historic"}},
+  bos:{"Park Street":{neighborhood:"Downtown Crossing",vibe:"Shopping & History"},"Kendall/MIT":{neighborhood:"Kendall Square",vibe:"Tech & Innovation"},"Harvard":{neighborhood:"Harvard Square",vibe:"Academic & Books"},"Davis":{neighborhood:"Somerville",vibe:"Young & Creative"}},
+};
+function getStationOfWeek(gameKey:string):string{const stations=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:[];if(!stations.length)return"";const week=Math.floor(getDayNum()/7);return(stations[_h(week*7919+stations.length)%stations.length]?.name)||"";}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="bos"?6:gameKey==="atl"?7:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
