@@ -4,6 +4,7 @@ const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -340,8 +341,8 @@ app.post("/api/claims", claimsLimiter, async (req, res) => {
     return res.status(409).json({ error: "This reward has already been claimed on this device." });
   }
 
-  const claim = { id, label, email, city, xp, firstPlay: serverFirstPlay, deviceId, ts: ts || new Date().toISOString() };
   const claimId = genId();
+  const claim = { _id: claimId, id, label, email, city, xp, firstPlay: serverFirstPlay, deviceId, ts: ts || new Date().toISOString() };
   await store.set(`claim:${claimId}`, claim);
   await store.set(emailKey, claimId);
   await store.set(deviceKey, claimId);
@@ -349,12 +350,232 @@ app.post("/api/claims", claimsLimiter, async (req, res) => {
   return res.json({ ok: true, claimId });
 });
 
-// ── ADMIN: list all pending claims (no auth for MVP — Railway env only) ───────
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+function adminAuth(req, res, next) {
+  const pw = process.env.ADMIN_PASSWORD;
+  if (!pw) return res.status(503).send("Admin access not configured. Set ADMIN_PASSWORD env var.");
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Basic ")) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="UrbanIQ Admin"');
+    return res.status(401).send("Authentication required");
+  }
+  const decoded = Buffer.from(auth.slice(6), "base64").toString();
+  const pass = decoded.slice(decoded.indexOf(":") + 1);
+  if (pass !== pw) { res.setHeader("WWW-Authenticate", 'Basic realm="UrbanIQ Admin"'); return res.status(401).send("Invalid password"); }
+  next();
+}
+
+const ADMIN_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UrbanIQ Admin</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:system-ui,sans-serif;background:#f4f4f4;color:#111;padding:24px;max-width:900px;margin:0 auto;}h1{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-0.5px;}p.sub{font-size:12px;color:#888;margin-bottom:20px;}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}.stat{background:#fff;border-radius:10px;padding:14px 18px;border:1px solid #e5e5e5;}.stat-val{font-size:28px;font-weight:800;color:#0a0a0a;}.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-top:3px;}.section{background:#fff;border-radius:10px;border:1px solid #e5e5e5;margin-bottom:20px;overflow:hidden;}.section-hdr{padding:14px 18px;border-bottom:1px solid #e5e5e5;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#555;display:flex;justify-content:space-between;align-items:center;}table{width:100%;border-collapse:collapse;}th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;border-bottom:1px solid #f0f0f0;}td{padding:10px 14px;border-bottom:1px solid #f5f5f5;font-size:13px;vertical-align:middle;word-break:break-all;}tr:last-child td{border-bottom:none;}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}.pend{background:#fef3c7;color:#92400e;}.done{background:#d1fae5;color:#065f46;}.btn{padding:5px 12px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:inherit;}.btn-do{background:#111;color:#fff;}.btn-do:disabled{background:#ccc;cursor:default;}.refresh{background:none;border:1px solid #ddd;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:inherit;}</style></head>
+<body>
+<h1>UrbanIQ Admin</h1><p class="sub">Reward claims &amp; player stats</p>
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Total Claims</div></div>
+  <div class="stat"><div class="stat-val" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
+  <div class="stat"><div class="stat-val" id="s-fulfilled">—</div><div class="stat-lbl">Fulfilled</div></div>
+  <div class="stat"><div class="stat-val" id="s-dau">—</div><div class="stat-lbl">Today's Players</div></div>
+</div>
+<div class="section">
+  <div class="section-hdr">Reward Claims <button class="refresh" onclick="loadAll()">↻ Refresh</button></div>
+  <table><thead><tr><th>Date</th><th>Reward</th><th>Email</th><th>City</th><th>XP</th><th>Status</th><th>Action</th></tr></thead>
+  <tbody id="tbody"></tbody></table>
+</div>
+<script>
+async function loadAll(){
+  const [cr, sr] = await Promise.all([fetch('/api/claims'), fetch('/api/admin/stats')]);
+  const claims = await cr.json();
+  const stats = sr.ok ? await sr.json() : {};
+  let pend=0, done=0;
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML='';
+  claims.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  claims.forEach(c=>{
+    if(c.fulfilled) done++; else pend++;
+    const tr = document.createElement('tr');
+    const cid = c._id || '';
+    tr.innerHTML = '<td>'+new Date(c.ts).toLocaleDateString()+'</td>'
+      +'<td>'+escHtml(c.label||c.id)+'</td>'
+      +'<td>'+escHtml(c.email)+'</td>'
+      +'<td>'+(c.city||'—')+'</td>'
+      +'<td>'+(c.xp||'?')+'</td>'
+      +'<td><span class="badge '+(c.fulfilled?'done':'pend')+'">'+(c.fulfilled?'Fulfilled':'Pending')+'</span></td>'
+      +'<td><button class="btn btn-do" '+(c.fulfilled?'disabled':'')
+      +' onclick="fulfill(\''+cid+'\',this)">'+(c.fulfilled?'Done':'Mark Fulfilled')+'</button></td>';
+    tbody.appendChild(tr);
+  });
+  document.getElementById('s-total').textContent = claims.length;
+  document.getElementById('s-pending').textContent = pend;
+  document.getElementById('s-fulfilled').textContent = done;
+  document.getElementById('s-dau').textContent = stats.dau ?? '—';
+}
+async function fulfill(cid, btn){
+  if(!cid){alert('No claim ID');return;}
+  btn.disabled=true;btn.textContent='...';
+  const r = await fetch('/api/claims/'+cid+'/fulfill',{method:'PATCH'});
+  if(r.ok){
+    const td=btn.closest('tr');
+    td.querySelector('.badge').className='badge done';
+    td.querySelector('.badge').textContent='Fulfilled';
+    btn.textContent='Done';
+    const p=document.getElementById('s-pending');const d=document.getElementById('s-fulfilled');
+    p.textContent=Number(p.textContent)-1;d.textContent=Number(d.textContent)+1;
+  }else{btn.disabled=false;btn.textContent='Mark Fulfilled';alert('Failed');}
+}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+loadAll();
+</script></body></html>`;
+
+app.get("/admin", adminAuth, (_req, res) => res.send(ADMIN_HTML));
+
 app.get("/api/claims", async (req, res) => {
   const keys = await store.list("claim:");
   const claimKeys = keys.filter(k => k.match(/^claim:[a-z0-9]+$/));
-  const claims = await Promise.all(claimKeys.map(k => store.get(k)));
+  const claims = await Promise.all(claimKeys.map(async k => {
+    const c = await store.get(k);
+    if (!c) return null;
+    return c._id ? c : { ...c, _id: k.replace("claim:", "") };
+  }));
   return res.json(claims.filter(Boolean));
+});
+
+app.patch("/api/claims/:claimId/fulfill", adminAuth, async (req, res) => {
+  const { claimId } = req.params;
+  const claim = await store.get(`claim:${claimId}`);
+  if (!claim) return res.status(404).json({ error: "Claim not found." });
+  await store.set(`claim:${claimId}`, { ...claim, fulfilled: true, fulfilledAt: new Date().toISOString() });
+  return res.json({ ok: true });
+});
+
+app.get("/api/admin/stats", adminAuth, async (req, res) => {
+  let dau = 0;
+  if (supabase) {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data } = await supabase.from("leaderboard").select("device_id").gte("ts", today + "T00:00:00Z");
+    if (data) dau = new Set(data.map(r => r.device_id).filter(Boolean)).size;
+  }
+  return res.json({ dau });
+});
+
+// ── ACCOUNTS (magic-link / OTP auth) ─────────────────────────────────────────
+// Required Supabase tables (run once in dashboard):
+//   CREATE TABLE IF NOT EXISTS users (
+//     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+//     email TEXT UNIQUE NOT NULL,
+//     display_name TEXT,
+//     xp INTEGER NOT NULL DEFAULT 0,
+//     streak INTEGER NOT NULL DEFAULT 0,
+//     last_win_date TEXT,
+//     shields INTEGER NOT NULL DEFAULT 0,
+//     pro_status BOOLEAN NOT NULL DEFAULT false,
+//     created_at TIMESTAMPTZ DEFAULT NOW(),
+//     updated_at TIMESTAMPTZ DEFAULT NOW()
+//   );
+//   CREATE TABLE IF NOT EXISTS otps (
+//     id BIGSERIAL PRIMARY KEY,
+//     email TEXT NOT NULL,
+//     code TEXT NOT NULL,
+//     expires_at TIMESTAMPTZ NOT NULL,
+//     used BOOLEAN NOT NULL DEFAULT false
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_otps_email ON otps(email, used, expires_at);
+//
+// Required env vars: JWT_SECRET, and optionally RESEND_API_KEY for email delivery.
+// Without RESEND_API_KEY the OTP is returned directly in the API response (dev mode).
+
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+
+function jwtRequired(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer ")) return res.status(401).json({ error: "Not authenticated." });
+  try {
+    req.user = jwt.verify(auth.slice(7), process.env.JWT_SECRET || "urbaniq-dev-secret");
+    next();
+  } catch { return res.status(401).json({ error: "Invalid or expired token." }); }
+}
+
+async function sendOtpEmail(email, code) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    try {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: "UrbanIQ <noreply@urbaniq.quest>",
+          to: [email],
+          subject: `Your UrbanIQ sign-in code: ${code}`,
+          html: `<p>Your UrbanIQ sign-in code is:</p><h1 style="letter-spacing:4px;font-size:36px">${code}</h1><p>This code expires in 10 minutes. If you didn't request this, ignore it.</p>`,
+        }),
+      });
+      return true;
+    } catch (e) { console.error("[auth/email]", e.message); }
+  }
+  console.log(`[auth/otp] ${email} → ${code}`);
+  return false;
+}
+
+// POST /api/auth/send — send OTP to email
+app.post("/api/auth/send", authLimiter, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Accounts not configured (needs Supabase)." });
+  const { email } = req.body || {};
+  if (!email || !/\S+@\S+\.\S+/.test(email)) return res.status(400).json({ error: "Valid email required." });
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  const { error } = await supabase.from("otps").insert({ email: email.toLowerCase().trim(), code, expires_at: expiresAt, used: false });
+  if (error) { console.error("[auth/send]", error.message); return res.status(500).json({ error: "Could not send code." }); }
+  const emailSent = await sendOtpEmail(email, code);
+  if (!emailSent && !process.env.RESEND_API_KEY) {
+    return res.json({ ok: true, _devCode: code, note: "Set RESEND_API_KEY to send real emails." });
+  }
+  return res.json({ ok: true });
+});
+
+// POST /api/auth/verify — verify OTP, return JWT + user profile
+app.post("/api/auth/verify", authLimiter, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Accounts not configured." });
+  const { email, code } = req.body || {};
+  if (!email || !code) return res.status(400).json({ error: "Email and code required." });
+  const cleanEmail = email.toLowerCase().trim();
+  const { data: rows, error: qErr } = await supabase.from("otps")
+    .select("*").eq("email", cleanEmail).eq("code", code).eq("used", false)
+    .gte("expires_at", new Date().toISOString()).order("id", { ascending: false }).limit(1);
+  if (qErr || !rows || rows.length === 0) return res.status(401).json({ error: "Invalid or expired code." });
+  await supabase.from("otps").update({ used: true }).eq("id", rows[0].id);
+  let { data: users } = await supabase.from("users").select("*").eq("email", cleanEmail).limit(1);
+  let user = users?.[0];
+  if (!user) {
+    const { data: newUser, error: insErr } = await supabase.from("users").insert({ email: cleanEmail }).select().single();
+    if (insErr) { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
+    user = newUser;
+  }
+  const token = jwt.sign({ userId: user.id, email: cleanEmail }, process.env.JWT_SECRET || "urbaniq-dev-secret", { expiresIn: "90d" });
+  return res.json({ ok: true, token, user: { id: user.id, email: user.email, displayName: user.display_name, xp: user.xp, streak: user.streak, shields: user.shields, proStatus: user.pro_status } });
+});
+
+// GET /api/me — fetch own profile
+app.get("/api/me", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { data, error } = await supabase.from("users").select("*").eq("id", req.user.userId).single();
+  if (error || !data) return res.status(404).json({ error: "User not found." });
+  return res.json({ id: data.id, email: data.email, displayName: data.display_name, xp: data.xp, streak: data.streak, shields: data.shields, proStatus: data.pro_status });
+});
+
+// POST /api/me/sync — push local progress to server (take-max for XP, server wins for streak if more recent)
+app.post("/api/me/sync", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { xp, streak, lastWinDate, shields, displayName } = req.body || {};
+  const { data: cur } = await supabase.from("users").select("xp,streak,last_win_date,shields,display_name").eq("id", req.user.userId).single();
+  if (!cur) return res.status(404).json({ error: "User not found." });
+  const updates = {
+    xp: Math.max(cur.xp || 0, Number(xp) || 0),
+    streak: Number(streak) || cur.streak,
+    last_win_date: lastWinDate || cur.last_win_date,
+    shields: Math.max(cur.shields || 0, Number(shields) || 0),
+    updated_at: new Date().toISOString(),
+  };
+  if (displayName) updates.display_name = String(displayName).trim().slice(0, 30);
+  await supabase.from("users").update(updates).eq("id", req.user.userId);
+  return res.json({ ok: true, ...updates });
 });
 
 // ── STRIPE ────────────────────────────────────────────────────────────────────

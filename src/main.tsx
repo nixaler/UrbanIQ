@@ -1495,6 +1495,14 @@ function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=ga
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
 function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
 function getDailyChallengeGames():string[]{const T=["pdx","dc","balt","la","nyc","chi","bos","atl"];const day=getDayNum();const used=new Set<number>();const out:number[]=[];const base=_h(_h(day*31337)^_h(88799));for(let a=0;out.length<3&&a<T.length*4;a++){const idx=_h(base^_h(a+1))%T.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out.map(i=>T[i]);}
+function getLineMap(gk:string):Record<string,any[]>{
+  const its=gk==="pdx"?PDX_STATIONS:gk==="dc"?DC_STATIONS:gk==="balt"?BALT_STATIONS:gk==="la"?LA_STATIONS:gk==="nyc"?NYC_STATIONS:gk==="chi"?CHI_STATIONS:gk==="bos"?BOS_STATIONS:gk==="atl"?ATL_STATIONS:[];
+  const m:Record<string,any[]>={};
+  for(const it of its){for(const l of(it.lines||[])){if(!m[l])m[l]=[];m[l].push(it);}}
+  return m;
+}
+function getLCProgress(gk:string,line:string):string[]{try{return JSON.parse(localStorage.getItem(`tgg:lc:${gk}:${line}`)||"[]");}catch{return[];}}
+function saveLCProgress(gk:string,line:string,names:string[]):void{localStorage.setItem(`tgg:lc:${gk}:${line}`,JSON.stringify(names));}
 function getDailyTrivia(questions:any[]){const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
@@ -4563,6 +4571,119 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   );
 }
 
+function AccountModal({onClose}:{onClose:()=>void}){
+  const[phase,setPhase]=useState<"idle"|"sent"|"done">(()=>getAuthToken()?"done":"idle");
+  const[email,setEmail]=useState(()=>getServerProfile()?.email||"");
+  const[code,setCode]=useState("");
+  const[errMsg,setErrMsg]=useState("");
+  const[loading,setLoading]=useState(false);
+  const[syncing,setSyncing]=useState(false);
+  const[syncMsg,setSyncMsg]=useState("");
+  const[profile,setProfile]=useState(()=>getServerProfile());
+
+  async function sendCode(){
+    if(!/\S+@\S+\.\S+/.test(email)){setErrMsg("Enter a valid email address.");return;}
+    setLoading(true);setErrMsg("");
+    try{
+      const r=await fetch("/api/auth/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+      const d=await r.json();
+      if(!r.ok){setErrMsg(d.error||"Failed to send code.");setLoading(false);return;}
+      if(d._devCode)setCode(d._devCode);
+      setPhase("sent");
+    }catch{setErrMsg("Network error — try again.");}
+    setLoading(false);
+  }
+
+  async function verifyCode(){
+    if(code.length<6){setErrMsg("Enter the 6-digit code.");return;}
+    setLoading(true);setErrMsg("");
+    try{
+      const r=await fetch("/api/auth/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,code})});
+      const d=await r.json();
+      if(!r.ok){setErrMsg(d.error||"Invalid or expired code.");setLoading(false);return;}
+      setAuthToken(d.token);
+      const prof=d.user;
+      localStorage.setItem("tgg:server-profile",JSON.stringify(prof));
+      if(prof.xp>getXP())localStorage.setItem("tgg:xp",String(prof.xp));
+      setProfile(prof);
+      await syncToServer();
+      setPhase("done");
+    }catch{setErrMsg("Network error — try again.");}
+    setLoading(false);
+  }
+
+  async function handleSync(){
+    setSyncing(true);setSyncMsg("");
+    try{
+      await syncToServer();
+      const r=await fetch("/api/me",{headers:{"Authorization":`Bearer ${getAuthToken()}`}});
+      if(r.ok){
+        const d=await r.json();
+        localStorage.setItem("tgg:server-profile",JSON.stringify(d));
+        if(d.xp>getXP())localStorage.setItem("tgg:xp",String(d.xp));
+        setProfile(d);setSyncMsg("Synced ✓");
+      }else{setSyncMsg("Sync failed");}
+    }catch{setSyncMsg("Network error");}
+    setSyncing(false);
+  }
+
+  function signOut(){clearAuthToken();setProfile(null);setEmail("");setCode("");setPhase("idle");setSyncMsg("");}
+
+  const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"28px 24px 44px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
+          <div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>SYNC PROGRESS</div>
+            <div style={{fontSize:10,fontWeight:600,letterSpacing:"2px",color:mut,marginTop:3}}>PLAY ACROSS DEVICES · KEEP YOUR XP SAFE</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:mut,padding:4}}>✕</button>
+        </div>
+
+        {phase==="done"&&profile?(
+          <>
+            <div style={{background:surf,borderRadius:12,padding:"16px",marginBottom:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:txt,marginBottom:4}}>👤 {profile.email}</div>
+              <div style={{display:"flex",gap:16,marginTop:8}}>
+                <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getXP(),profile.xp)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>XP</div></div>
+                <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getGlobalData().streak,profile.streak)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>STREAK</div></div>
+                <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getShieldCount(),profile.shields)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>SHIELDS</div></div>
+              </div>
+            </div>
+            {syncMsg&&<div style={{fontSize:12,color:syncMsg.includes("✓")?"#22C55E":"#E8294A",fontWeight:600,marginBottom:12,textAlign:"center"}}>{syncMsg}</div>}
+            <button onClick={handleSync} disabled={syncing} style={{width:"100%",background:"#4169E1",color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",marginBottom:10,opacity:syncing?.6:1}}>{syncing?"Syncing...":"↑↓ SYNC NOW"}</button>
+            <button onClick={signOut} style={{width:"100%",background:surf,color:mut,border:`1px solid ${bdr}`,borderRadius:8,padding:"11px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Sign Out</button>
+          </>
+        ):phase==="sent"?(
+          <>
+            <div style={{fontSize:13,color:mut,marginBottom:16}}>Enter the 6-digit code sent to <strong>{email}</strong></div>
+            <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))}
+              onKeyDown={e=>{if(e.key==="Enter")verifyCode();}}
+              placeholder="123456" maxLength={6} autoFocus inputMode="numeric"
+              style={{width:"100%",padding:"14px",border:`1.5px solid ${bdr}`,borderRadius:8,fontSize:22,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:"8px",outline:"none",boxSizing:"border-box",textAlign:"center",marginBottom:10}}/>
+            {errMsg&&<div style={{color:"#E8294A",fontSize:12,marginBottom:8,textAlign:"center"}}>{errMsg}</div>}
+            <button onClick={verifyCode} disabled={loading||code.length<6} style={{width:"100%",background:txt,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",marginBottom:10,opacity:(loading||code.length<6)?.5:1}}>VERIFY →</button>
+            <button onClick={()=>{setPhase("idle");setCode("");setErrMsg("");}} style={{width:"100%",background:"none",border:"none",color:mut,fontSize:12,cursor:"pointer",padding:"8px",fontFamily:"'Outfit',sans-serif"}}>← Back</button>
+          </>
+        ):(
+          <>
+            <div style={{fontSize:13,color:mut,marginBottom:16}}>Enter your email. We'll send a 6-digit code — no password needed.</div>
+            <input type="email" value={email} onChange={e=>setEmail(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter")sendCode();}}
+              placeholder="your@email.com" autoFocus
+              style={{width:"100%",padding:"14px",border:`1.5px solid ${bdr}`,borderRadius:8,fontSize:15,fontFamily:"'Outfit',sans-serif",outline:"none",boxSizing:"border-box",marginBottom:10}}/>
+            {errMsg&&<div style={{color:"#E8294A",fontSize:12,marginBottom:8,textAlign:"center"}}>{errMsg}</div>}
+            <button onClick={sendCode} disabled={loading} style={{width:"100%",background:txt,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",opacity:loading?.6:1}}>SEND CODE →</button>
+            <div style={{fontSize:10,color:mut,textAlign:"center",marginTop:12,letterSpacing:1}}>XP & streaks are synced server-side · No spam ever</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:string)=>void}){
   const cities=useMemo(getDailyChallengeGames,[]);
   const today=useMemo(getToday,[]);
@@ -4714,6 +4835,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showNavMenu,setShowNavMenu]=useState(false);
   const [showMaps,setShowMaps]=useState(false);
   const [showRewards,setShowRewards]=useState(false);
+  const [showAccount,setShowAccount]=useState(false);
+  const [isLoggedIn,setIsLoggedIn]=useState(()=>!!getAuthToken());
   const [betaCode]=useState(()=>getBetaCode());
   const {canNativeInstall,install,isIOS,installed}=usePWAInstall();
   const [hoveredGame,setHoveredGame]=useState<string|null>(null);
@@ -4850,6 +4973,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showMaps&&<MapsGuideModal onClose={()=>setShowMaps(false)} onSelectGame={onSelectGame}/>}
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
       {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
+      {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}}/>}
     </>
   );
 
@@ -5109,6 +5233,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <div style={{position:"fixed",inset:0,zIndex:98}} onClick={()=>setShowNavMenu(false)}/>
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
+                  {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
                   {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
                   {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},
                   ...(!installed?[{emoji:"📲",label:"Install App",action:()=>{setShowNavMenu(false);setShowInstall(true);}}]:[]),
@@ -5588,6 +5713,16 @@ function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;l
 function getGlobalData():{streak:number,lastWin:string,proStatus:boolean}{try{const d=JSON.parse(localStorage.getItem("tgg:global")||'{}');return{streak:d.streak||0,lastWin:d.lastWin||"",proStatus:!!d.proStatus};}catch{return{streak:0,lastWin:"",proStatus:false};}}
 function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({...g,streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
 function getUserWallet():{xp:number,shields:number,streak:number,proStatus:boolean,hintsRemaining:number}{const g=getGlobalData();return{xp:getXP(),shields:getShieldCount(),streak:g.streak,proStatus:g.proStatus,hintsRemaining:Number(localStorage.getItem("tgg:hints")||0)};}
+// ── ACCOUNT AUTH HELPERS ──────────────────────────────────────────────────────
+function getAuthToken():string|null{return localStorage.getItem("tgg:auth-token");}
+function setAuthToken(t:string):void{localStorage.setItem("tgg:auth-token",t);}
+function clearAuthToken():void{localStorage.removeItem("tgg:auth-token");localStorage.removeItem("tgg:server-profile");}
+function getServerProfile():any|null{try{return JSON.parse(localStorage.getItem("tgg:server-profile")||"null");}catch{return null;}}
+async function syncToServer():Promise<void>{
+  const token=getAuthToken();if(!token)return;
+  const g=getGlobalData();
+  try{await fetch("/api/me/sync",{method:"POST",headers:{"Authorization":`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify({xp:getXP(),streak:g.streak,lastWinDate:g.lastWin,shields:getShieldCount()})});}catch{}
+}
 function tryShieldHeal():boolean{const today=new Date().toISOString().slice(0,10);const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);const g=getGlobalData();if(!g.lastWin||g.lastWin===today||g.lastWin===yest)return false;if(!consumeShield())return false;localStorage.setItem("tgg:global",JSON.stringify({...g,lastWin:yest}));return true;}
 function PersistentHUD({streak,xp,shields}:{streak:number,xp:number,shields:number}){
   const level=Math.floor(xp/500)+1;const xpInLevel=xp%500;
@@ -7007,8 +7142,377 @@ function TriviaGame({T,fs,questions,gameKey,onClose}:{T:any,fs:any,questions:any
   );
 }
 
+function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any,gameKey:string,items:any[],lineColors:any,onClose:()=>void}){
+  const lineMap=useMemo(()=>getLineMap(gameKey),[gameKey]);
+  const lines=useMemo(()=>Object.keys(lineMap).sort(),[lineMap]);
+  const[lcPhase,setLcPhase]=useState<"pick"|"playing"|"done">("pick");
+  const[selLine,setSelLine]=useState("");
+  const[sessionItems,setSessionItems]=useState<any[]>([]);
+  const[sIdx,setSIdx]=useState(0);
+  const[guesses,setGuesses]=useState<string[]>([]);
+  const[revealed,setRevealed]=useState(false);
+  const[sessionWins,setSessionWins]=useState(0);
+  const[lcInput,setLcInput]=useState("");
+  const[lcSugg,setLcSugg]=useState<any[]>([]);
+  const[progress,setProgress]=useState<Record<string,string[]>>(()=>{
+    const p:Record<string,string[]>={};
+    Object.keys(getLineMap(gameKey)).forEach(l=>{p[l]=getLCProgress(gameKey,l);});
+    return p;
+  });
+
+  function startLine(line:string){
+    const lineStations=lineMap[line]||[];
+    const done=new Set(progress[line]||[]);
+    const unplayed=lineStations.filter(s=>!done.has(s.name));
+    if(unplayed.length===0){return;}
+    const day=getDayNum();
+    const sorted=[...unplayed].sort((a,b)=>(_h(day+a.name.charCodeAt(0))-_h(day+b.name.charCodeAt(0))));
+    setSessionItems(sorted.slice(0,Math.min(3,sorted.length)));
+    setSIdx(0);setGuesses([]);setRevealed(false);setSessionWins(0);setLcInput("");setLcSugg([]);
+    setSelLine(line);setLcPhase("playing");
+  }
+
+  const target=sessionItems[sIdx];
+
+  function handleLcChange(val:string){
+    setLcInput(val);
+    if(!val.trim()){setLcSugg([]);return;}
+    const lineStations=lineMap[selLine]||[];
+    setLcSugg(lineStations.filter(s=>s.name.toLowerCase().includes(val.toLowerCase())&&!guesses.includes(s.name)).slice(0,6));
+  }
+
+  function submitGuess(name?:string){
+    const guess=(name||lcInput).trim();if(!guess)return;
+    setLcInput("");setLcSugg([]);
+    const newGuesses=[...guesses,guess];
+    setGuesses(newGuesses);
+    const isWin=target&&guess.toLowerCase()===target.name.toLowerCase();
+    if(isWin){
+      const newDone=[...(progress[selLine]||[]),target.name];
+      saveLCProgress(gameKey,selLine,newDone);
+      setProgress(p=>({...p,[selLine]:newDone}));
+      addXP(50);setSessionWins(w=>w+1);
+      setTimeout(()=>advance(true),1400);
+    }else if(newGuesses.length>=3){
+      setRevealed(true);
+      setTimeout(()=>advance(false),2200);
+    }
+  }
+
+  function advance(won:boolean){
+    const next=sIdx+1;
+    if(next>=sessionItems.length){setLcPhase("done");}
+    else{setSIdx(next);setGuesses([]);setRevealed(false);setLcInput("");setLcSugg([]);}
+  }
+
+  const bg="#fff";const surf="#f7f7f7";const bdr="#e5e5e5";const txt="#0a0a0a";const mut="#888";
+
+  if(lcPhase==="pick"){
+    const transitGames=["pdx","dc","balt","la","nyc","chi","bos","atl"];
+    if(!transitGames.includes(gameKey)){
+      return(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+          <div style={{background:bg,borderRadius:16,padding:32,maxWidth:400,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontSize:32,marginBottom:12}}>🚊</div>
+            <div style={{fontWeight:700,marginBottom:8}}>Line Challenges</div>
+            <div style={{color:mut,fontSize:13,marginBottom:20}}>Line Challenges are only available for transit games (DC, NYC, Chicago, etc.)</div>
+            <button onClick={onClose} style={{background:txt,color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",cursor:"pointer",fontWeight:700,fontFamily:"'Outfit',sans-serif"}}>Close</button>
+          </div>
+        </div>
+      );
+    }
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,maxHeight:"80vh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <div>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2}}>LINE CHALLENGES</div>
+              <div style={{fontSize:10,color:mut,letterSpacing:2,marginTop:2}}>COMPLETE EVERY STATION ON A LINE · +50 XP EACH</div>
+            </div>
+            <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:mut}}>✕</button>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {lines.map(line=>{
+              const total=(lineMap[line]||[]).length;
+              const done=(progress[line]||[]).length;
+              const pct=Math.round(done/total*100);
+              const color=lineColors[line]||"#888";
+              const complete=done>=total;
+              return(
+                <div key={line} style={{background:surf,borderRadius:12,padding:"14px 16px",border:`1.5px solid ${complete?color:bdr}`}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                    <div style={{width:14,height:14,borderRadius:"50%",background:color,flexShrink:0}}/>
+                    <div style={{flex:1,fontWeight:700,fontSize:14}}>{line} Line</div>
+                    <div style={{fontSize:12,fontWeight:700,color:complete?color:mut}}>{done}/{total}</div>
+                    {complete?(
+                      <div style={{fontSize:11,fontWeight:700,color:color,letterSpacing:1}}>✓ DONE</div>
+                    ):(
+                      <button onClick={()=>startLine(line)} style={{background:color,color:"#fff",border:"none",borderRadius:6,padding:"7px 14px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>PLAY →</button>
+                    )}
+                  </div>
+                  <div style={{height:4,borderRadius:2,background:bdr,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${pct}%`,background:color,borderRadius:2,transition:"width .3s"}}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if(lcPhase==="done"){
+    const lineStations=lineMap[selLine]||[];
+    const done=(progress[selLine]||[]).length;
+    const allDone=done>=lineStations.length;
+    if(allDone){addXP(200);}
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:16,padding:32,maxWidth:360,width:"90%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:36,marginBottom:10}}>{allDone?"🏆":"✅"}</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:6}}>{allDone?"LINE COMPLETE!":"SESSION DONE"}</div>
+          <div style={{color:mut,fontSize:12,marginBottom:8}}>{selLine} Line · {sessionWins}/{sessionItems.length} correct</div>
+          <div style={{color:"#22C55E",fontWeight:700,fontSize:13,marginBottom:20}}>+{sessionWins*50}{allDone?" + 200 BONUS":""} XP earned</div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={()=>startLine(selLine)} disabled={(progress[selLine]||[]).length>=(lineMap[selLine]||[]).length} style={{flex:1,background:lineColors[selLine]||txt,color:"#fff",border:"none",borderRadius:8,padding:"11px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Next 3 →</button>
+            <button onClick={()=>setLcPhase("pick")} style={{flex:1,background:surf,color:txt,border:`1px solid ${bdr}`,borderRadius:8,padding:"11px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>All Lines</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // playing phase
+  if(!target)return null;
+  const clueCount=Math.min(guesses.length+1,3);
+  const allClues=[
+    target.lines?.length?`🚊 Serves ${target.lines.filter((l:string)=>l!==selLine).length>0?`${selLine} Line + ${target.lines.filter((l:string)=>l!==selLine).length} more`:`${selLine} Line only`}`:"",
+    target.zone?`📍 Zone: ${target.zone}`:"",
+    target.year?`📅 Opened: ${target.year}`:"",
+    target.traffic?`🚶 Traffic: ${["","Ghost","Quiet","Moderate","Busy","Packed"][target.traffic]||"Unknown"}`:"",
+  ].filter(Boolean);
+  const visClues=allClues.slice(0,clueCount);
+  const isWin=guesses.some(g=>g.toLowerCase()===target.name.toLowerCase());
+  const isLoss=!isWin&&guesses.length>=3;
+  const color=lineColors[selLine]||T.accent;
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+      <div style={{background:bg,borderRadius:"20px 20px 0 0",width:"100%",maxWidth:520,padding:"20px 20px 36px",boxSizing:"border-box"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
+          <div style={{width:12,height:12,borderRadius:"50%",background:color}}/>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:mut}}>{selLine.toUpperCase()} LINE · STATION {sIdx+1} OF {sessionItems.length}</div>
+          <button onClick={onClose} style={{marginLeft:"auto",background:"none",border:"none",fontSize:18,cursor:"pointer",color:mut}}>✕</button>
+        </div>
+
+        <div style={{background:surf,borderRadius:10,padding:"14px 16px",marginBottom:14,minHeight:80}}>
+          {visClues.map((c:string,i:number)=>(
+            <div key={i} style={{fontSize:13,color:txt,marginBottom:i<visClues.length-1?6:0}}>{c}</div>
+          ))}
+          {(isWin||isLoss)&&<div style={{marginTop:8,fontFamily:"'Bebas Neue',sans-serif",fontSize:22,color:isWin?"#22C55E":"#E8294A",letterSpacing:1}}>{target.name.toUpperCase()}</div>}
+        </div>
+
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12,minHeight:72}}>
+          {guesses.map((g,i)=>{
+            const correct=g.toLowerCase()===target.name.toLowerCase();
+            return(<div key={i} style={{padding:"8px 12px",borderRadius:6,background:correct?"#f0fdf4":i===guesses.length-1&&!correct?"#fff5f5":"#f9f9f9",border:`1px solid ${correct?"#86efac":"#fca5a5"}`,fontSize:13,color:correct?"#15803d":"#dc2626",fontWeight:600}}>{g} {correct?"✓":"✗"}</div>);
+          })}
+        </div>
+
+        {!isWin&&!isLoss&&(
+          <>
+            <div style={{position:"relative"}}>
+              <input value={lcInput} onChange={e=>handleLcChange(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter")submitGuess();}}
+                placeholder={`Guess ${guesses.length+1} of 3 — type station name`}
+                style={{width:"100%",padding:"12px 14px",border:`1.5px solid ${bdr}`,borderRadius:8,fontSize:14,fontFamily:"'Outfit',sans-serif",outline:"none",boxSizing:"border-box"}}
+                autoFocus/>
+              {lcSugg.length>0&&(
+                <div style={{position:"absolute",top:"100%",left:0,right:0,background:bg,border:`1px solid ${bdr}`,borderRadius:8,boxShadow:"0 4px 16px rgba(0,0,0,0.12)",zIndex:10,maxHeight:180,overflow:"auto"}}>
+                  {lcSugg.map((s:any)=>(
+                    <div key={s.name} onClick={()=>submitGuess(s.name)} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,borderBottom:`1px solid ${bdr}`}} onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.background=surf} onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.background=bg}>{s.name}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={()=>submitGuess()} style={{marginTop:8,width:"100%",background:color,color:"#fff",border:"none",borderRadius:8,padding:"12px",fontSize:12,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>SUBMIT GUESS →</button>
+            <div style={{textAlign:"center",fontSize:10,color:mut,marginTop:8,letterSpacing:1}}>{3-guesses.length} GUESS{3-guesses.length!==1?"ES":""} REMAINING · +50 XP FOR CORRECT</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PhotoMode({T,fs,gameKey,items,onClose}:{T:any,fs:any,gameKey:string,items:any[],onClose:()=>void}){
+  const transitGames=["pdx","dc","balt","la","nyc","chi","bos","atl"];
+  const isTransit=transitGames.includes(gameKey);
+  const cityName=gameKey==="dc"?"Washington DC":gameKey==="nyc"?"New York City":gameKey==="chi"?"Chicago":gameKey==="la"?"Los Angeles":gameKey==="bos"?"Boston":gameKey==="atl"?"Atlanta":gameKey==="pdx"?"Portland":gameKey==="balt"?"Baltimore":"";
+  const ROUNDS=5;
+  const MAX_GUESSES=3;
+  const[pmPhase,setPmPhase]=useState<"loading"|"playing"|"done">("loading");
+  const[pmRound,setPmRound]=useState(0);
+  const[pmScore,setPmScore]=useState(0);
+  const[pmGuesses,setPmGuesses]=useState<string[]>([]);
+  const[pmInput,setPmInput]=useState("");
+  const[pmSugg,setPmSugg]=useState<any[]>([]);
+  const[photoUrl,setPhotoUrl]=useState<string|null>(null);
+  const[photoLoading,setPhotoLoading]=useState(true);
+  const[photoFailed,setPhotoFailed]=useState(false);
+  const[roundTargets,setRoundTargets]=useState<any[]>([]);
+  const[showAnswer,setShowAnswer]=useState(false);
+  const[roundResult,setRoundResult]=useState<"won"|"lost"|null>(null);
+
+  useEffect(()=>{
+    if(!isTransit){setPmPhase("done");return;}
+    const day=getDayNum();
+    const pool=[...items];
+    const seeded=[...pool].sort((a,b)=>_h(day*31+a.name.charCodeAt(0))-_h(day*31+b.name.charCodeAt(0)));
+    setRoundTargets(seeded.slice(0,ROUNDS));
+    setPmPhase("playing");
+  },[]);
+
+  const target=roundTargets[pmRound];
+
+  useEffect(()=>{
+    if(!target||pmPhase!=="playing")return;
+    setPhotoLoading(true);setPhotoFailed(false);setPhotoUrl(null);setPmGuesses([]);setShowAnswer(false);setRoundResult(null);setPmInput("");setPmSugg([]);
+    const term=`${target.name} ${cityName} metro station`;
+    getWikiImage(term).then(url=>{
+      if(url){setPhotoUrl(url);setPhotoLoading(false);}
+      else{setPhotoFailed(true);setPhotoLoading(false);}
+    });
+  },[pmRound,target]);
+
+  function handlePmChange(val:string){
+    setPmInput(val);
+    if(!val.trim()){setPmSugg([]);return;}
+    setPmSugg(items.filter(s=>s.name.toLowerCase().includes(val.toLowerCase())&&!pmGuesses.includes(s.name)).slice(0,6));
+  }
+
+  function submitPmGuess(name?:string){
+    const guess=(name||pmInput).trim();if(!guess)return;
+    setPmInput("");setPmSugg([]);
+    const newGuesses=[...pmGuesses,guess];
+    setPmGuesses(newGuesses);
+    const isWin=guess.toLowerCase()===target.name.toLowerCase();
+    if(isWin){
+      const pts=MAX_GUESSES-newGuesses.length+1;
+      setPmScore(s=>s+pts);
+      addXP(pts*15);
+      setRoundResult("won");
+      setShowAnswer(true);
+      setTimeout(()=>advancePm(),2000);
+    }else if(newGuesses.length>=MAX_GUESSES){
+      setRoundResult("lost");
+      setShowAnswer(true);
+      setTimeout(()=>advancePm(),2500);
+    }
+  }
+
+  function advancePm(){
+    if(pmRound+1>=ROUNDS){setPmPhase("done");}
+    else{setPmRound(r=>r+1);}
+  }
+
+  function skipPhoto(){advancePm();}
+
+  const bg="#fff";const surf="#f7f7f7";const bdr="#e5e5e5";const txt="#0a0a0a";const mut="#888";
+
+  if(!isTransit){
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:16,padding:32,maxWidth:340,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:32,marginBottom:12}}>📸</div>
+          <div style={{fontWeight:700,marginBottom:8}}>Photo Mode</div>
+          <div style={{color:mut,fontSize:13,marginBottom:20}}>Photo Mode is currently available for transit games only.</div>
+          <button onClick={onClose} style={{background:txt,color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",cursor:"pointer",fontWeight:700,fontFamily:"'Outfit',sans-serif"}}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  if(pmPhase==="done"){
+    const maxScore=ROUNDS*MAX_GUESSES;
+    const pct=Math.round(pmScore/maxScore*100);
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:16,padding:32,maxWidth:340,width:"90%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:36,marginBottom:10}}>📸</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,marginBottom:6}}>PHOTO MODE DONE</div>
+          <div style={{fontSize:32,fontWeight:800,margin:"12px 0"}}>{pmScore}<span style={{fontSize:16,color:mut}}>/{maxScore}</span></div>
+          <div style={{color:mut,fontSize:12,marginBottom:8}}>{ROUNDS} stations · {pct}% accuracy</div>
+          <div style={{color:"#22C55E",fontWeight:700,marginBottom:20}}>+{pmScore*15} XP earned</div>
+          <button onClick={onClose} style={{background:txt,color:"#fff",border:"none",borderRadius:8,padding:"12px 24px",fontSize:12,fontWeight:700,letterSpacing:1.5,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>DONE</button>
+        </div>
+      </div>
+    );
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end"}}>
+      {/* Photo area */}
+      <div style={{flex:1,width:"100%",maxWidth:520,position:"relative",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+        {photoLoading&&<div style={{color:"rgba(255,255,255,0.4)",fontSize:13,letterSpacing:2}}>LOADING PHOTO...</div>}
+        {photoFailed&&(
+          <div style={{color:"rgba(255,255,255,0.4)",textAlign:"center"}}>
+            <div style={{fontSize:32,marginBottom:8}}>📷</div>
+            <div style={{fontSize:12,letterSpacing:1}}>NO PHOTO AVAILABLE</div>
+            <button onClick={skipPhoto} style={{marginTop:12,background:"rgba(255,255,255,0.1)",color:"#fff",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,padding:"8px 16px",fontSize:11,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>SKIP →</button>
+          </div>
+        )}
+        {photoUrl&&!photoFailed&&(
+          <img src={photoUrl} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:showAnswer?0.4:1,transition:"opacity .3s"}}/>
+        )}
+        {showAnswer&&target&&(
+          <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div style={{background:"rgba(0,0,0,0.8)",borderRadius:12,padding:"16px 24px",textAlign:"center"}}>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:2,color:roundResult==="won"?"#22C55E":"#E8294A"}}>{target.name.toUpperCase()}</div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.5)",marginTop:4}}>{roundResult==="won"?`+${(MAX_GUESSES-pmGuesses.length+1)*15} XP`:"Better luck next one"}</div>
+            </div>
+          </div>
+        )}
+        {/* Round counter */}
+        <div style={{position:"absolute",top:16,right:16,background:"rgba(0,0,0,0.6)",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.7)",letterSpacing:1}}>{pmRound+1}/{ROUNDS}</div>
+        {/* Score */}
+        <div style={{position:"absolute",top:16,left:16,background:"rgba(0,0,0,0.6)",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:700,color:"#FFB800",letterSpacing:1}}>⚡ {pmScore}</div>
+        <button onClick={onClose} style={{position:"absolute",bottom:16,right:16,background:"rgba(0,0,0,0.6)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,padding:"6px 12px",fontSize:11,color:"rgba(255,255,255,0.6)",cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>✕ EXIT</button>
+      </div>
+
+      {/* Guess panel */}
+      <div style={{background:bg,width:"100%",maxWidth:520,padding:"16px 20px 32px",boxSizing:"border-box",borderRadius:"16px 16px 0 0"}}>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:mut,marginBottom:10,textAlign:"center"}}>WHICH STATION IS THIS? · {MAX_GUESSES-pmGuesses.length} GUESS{MAX_GUESSES-pmGuesses.length!==1?"ES":""} LEFT</div>
+        {!showAnswer&&(
+          <div style={{position:"relative",marginBottom:8}}>
+            <input value={pmInput} onChange={e=>handlePmChange(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter")submitPmGuess();}}
+              placeholder="Type station name..."
+              autoFocus
+              style={{width:"100%",padding:"12px 14px",border:`1.5px solid ${bdr}`,borderRadius:8,fontSize:14,fontFamily:"'Outfit',sans-serif",outline:"none",boxSizing:"border-box"}}/>
+            {pmSugg.length>0&&(
+              <div style={{position:"absolute",bottom:"100%",left:0,right:0,background:bg,border:`1px solid ${bdr}`,borderRadius:8,boxShadow:"0 -4px 16px rgba(0,0,0,0.1)",zIndex:10,maxHeight:160,overflow:"auto"}}>
+                {pmSugg.map((s:any)=>(
+                  <div key={s.name} onClick={()=>submitPmGuess(s.name)} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,borderBottom:`1px solid ${bdr}`}} onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.background=surf} onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.background=bg}>{s.name}</div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <div style={{display:"flex",gap:6}}>
+          {Array.from({length:MAX_GUESSES}).map((_,i)=>{
+            const g=pmGuesses[i];const isWin=g&&g.toLowerCase()===target?.name.toLowerCase();
+            return(<div key={i} style={{flex:1,height:6,borderRadius:3,background:g?(isWin?"#22C55E":"#E8294A"):"#e5e5e5"}}/>);
+          })}
+        </div>
+        {pmGuesses.length>0&&!showAnswer&&<div style={{marginTop:8,fontSize:11,color:mut,textAlign:"center"}}>Last guess: {pmGuesses[pmGuesses.length-1]}</div>}
+      </div>
+    </div>
+  );
+}
+
 // ── BONUS GAMES SECTION (extracted from GameApp JSX to fix hooks-in-IIFE violation) ──
-function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void}){
+function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void}){
   const[bonusOpen,setBonusOpen]=useState(false);
   return(
     <div style={{marginTop:20,marginBottom:12}}>
@@ -7026,6 +7530,8 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
           {emoji:"⚡",title:"Blitz Mode",body:gameKey==="nfl"?"Name all AFC East teams. Every NFC team. All Midwest region teams. 60 seconds.":gameKey==="states"?"Name every Midwest state. Every state starting with 'N'. Pure memory test.":"Name all stations starting with 'P'. Every Red Line station. No dropdown.",onClick:()=>setShowBlitz(true)},
           {emoji:G.emoji,title:`${gameKey==="states"?"State":gameKey==="nfl"?"Team":"Station"} of the Week`,body:`Deep dive on one ${G.itemLabel} — history, facts, and 3 quiz questions. Changes every Monday.`,onClick:()=>setShowItemOfWeek(true)},
           {emoji:"🧠",title:gameKey==="nfl"?"Daily NFL Trivia":gameKey==="states"?"Daily Civics Quiz":"Daily Transit Trivia",body:"5 questions. New set every day. How deep does your knowledge go?",onClick:()=>setShowTrivia(true)},
+          {emoji:"🚊",title:"Line Challenges",body:"Work through every station on a specific transit line. Progress saved. Complete a full line for +200 XP bonus.",onClick:()=>setShowLineChallenge(true)},
+          {emoji:"📸",title:"Photo Mode",body:"A photo of a station appears. Can you name it? 5 rounds, 3 guesses each. Tests your visual transit knowledge.",onClick:()=>setShowPhotoMode(true)},
         ].map((item,i)=>(
           <div key={i} onClick={item.onClick} style={{background:T.surface,border:`1.5px solid ${T.border}`,borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"border-color .2s"}}
             onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.borderColor=T.accent}
@@ -7117,6 +7623,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showBlitz,setShowBlitz]=useState(false);
   const[showItemOfWeek,setShowItemOfWeek]=useState(false);
   const[showTrivia,setShowTrivia]=useState(false);
+  const[showLineChallenge,setShowLineChallenge]=useState(false);
+  const[showPhotoMode,setShowPhotoMode]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
   const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
@@ -7861,11 +8369,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia}/>
+          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode}/>
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
           {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
+          {showLineChallenge&&<LineChallengeMode T={T} fs={fs} gameKey={gameKey} items={items} lineColors={lineColors} onClose={()=>setShowLineChallenge(false)}/>}
+          {showPhotoMode&&<PhotoMode T={T} fs={fs} gameKey={gameKey} items={items} onClose={()=>setShowPhotoMode(false)}/>}
 
           <div style={{textAlign:"center",marginTop:8}}>
             <a href="https://mc.buymeacoffee.com/links/SyEkenCIAfWPKEhbhyglsDjuxVxSSjqkeHbXYWMXWcARvFhFzRCgIASnBhHieeDGIBlkfaEMkvhKXYgPCXWGCPB/3480126?link=nixalerllc" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:7,background:T.surface,color:"#FFDD00",border:"1px solid rgba(255,221,0,.2)",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,letterSpacing:1,padding:"9px 16px",borderRadius:7,textDecoration:"none"}}>☕ Enjoying it? Buy me a coffee</a>
