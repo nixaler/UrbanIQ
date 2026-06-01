@@ -5531,10 +5531,10 @@ const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines
   bos:{name:"Boston",emoji:"🦞",color:"#DA291C",lines:[{name:"Red Line",color:"#DA291C"},{name:"Orange Line",color:"#ED8B00"},{name:"Blue Line",color:"#003DA5"},{name:"Green Line",color:"#00843D"},{name:"Silver Line",color:"#7C878E"}],hubs:["Park Street","Downtown Crossing","South Station","North Station","Harvard"],lc:{"Red":"#DA291C","Orange":"#ED8B00","Blue":"#003DA5","Green":"#00843D","Silver":"#7C878E"},stations:BOS_XS},
   atl:{name:"Atlanta",emoji:"🍑",color:"#CE1141",lines:[{name:"Red Line",color:"#CE1141"},{name:"Gold Line",color:"#F0A500"},{name:"Blue Line",color:"#0033A0"},{name:"Green Line",color:"#007A53"}],hubs:["Five Points","Airport","Peachtree Center","Lindbergh Center","Buckhead"],lc:{"Red":"#CE1141","Gold":"#F0A500","Blue":"#0033A0","Green":"#007A53"},stations:ATL_XS},
 };
-type ExplorePickItem={name:string,type:string,desc:string,partner?:boolean,offer?:string,offerCode?:string,questId?:string};
+type ExplorePickItem={name:string,type:string,desc:string,partner?:boolean,offer?:string,offerId?:string,questId?:string};
 const EXPLORE_PICKS:{[k:string]:ExplorePickItem[]}={
   pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
-  dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops.",partner:true,offer:"15% off any food item",offerCode:"BUSBOYS15",questId:"dc_q3"},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
+  dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops.",partner:true,offer:"15% off any food item",offerId:"busboys-dc",questId:"dc_q3"},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
   balt:[{name:"Lexington Market",type:"🛍️ Market",desc:"One of the world's oldest public markets since 1782."},{name:"LP Steamers",type:"🦀 Seafood",desc:"Famous blue crab shack in South Baltimore."},{name:"Union Craft Brewing",type:"🍺 Brewery",desc:"Baltimore's neighborhood brewery in Woodberry."}],
   la:[{name:"Grand Central Market",type:"🛍️ Market",desc:"Downtown LA's historic market hall since 1917."},{name:"Philippe The Original",type:"🥩 Deli",desc:"Home of the French Dip sandwich since 1908."},{name:"Clifton's Republic",type:"🍴 Diner",desc:"Quirky retro cafeteria in the heart of DTLA."}],
   nyc:[{name:"Katz's Delicatessen",type:"🥪 Deli",desc:"NYC's most famous deli since 1888 on Houston St."},{name:"The Strand Bookstore",type:"📚 Books",desc:"18 miles of books — a New York institution."},{name:"Russ & Daughters",type:"🐟 Deli",desc:"Iconic appetizing shop since 1914 on Houston St."}],
@@ -5694,15 +5694,20 @@ function OfferModal({pick,onClose}:{pick:ExplorePickItem,onClose:()=>void}){
   const today=new Date().toISOString().slice(0,10);
   const dateLabel=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
   const[copied,setCopied]=useState(false);
+  const[code,setCode]=useState("");
+  useEffect(()=>{
+    if(!pick.offerId)return;
+    fetch(`/api/offers/code/${pick.offerId}`).then(r=>r.json()).then(j=>{if(j.code)setCode(j.code);}).catch(()=>{});
+  },[pick.offerId]);
   function copyCode(){
-    if(!pick.offerCode)return;
-    navigator.clipboard.writeText(pick.offerCode).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}).catch(()=>{});
+    if(!code)return;
+    navigator.clipboard.writeText(code).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}).catch(()=>{});
   }
   function markUsed(){
-    if(!pick.offerCode)return;
+    if(!pick.offerId)return;
     const key=`tgg:offers:used:${today}`;
     const used=JSON.parse(localStorage.getItem(key)||"[]");
-    if(!used.includes(pick.offerCode)){used.push(pick.offerCode);localStorage.setItem(key,JSON.stringify(used));}
+    if(!used.includes(pick.offerId)){used.push(pick.offerId);localStorage.setItem(key,JSON.stringify(used));}
     onClose();
   }
   return(
@@ -5716,8 +5721,8 @@ function OfferModal({pick,onClose}:{pick:ExplorePickItem,onClose:()=>void}){
         <div style={{background:"rgba(2,138,72,0.06)",border:"1px solid rgba(2,138,72,0.2)",borderRadius:10,padding:"14px",textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:"13px",fontWeight:800,color:"#028A48",letterSpacing:"0.5px",textTransform:"uppercase"}}>{pick.offer}</div>
         </div>
-        <div onClick={copyCode} style={{background:"#F8F7F5",border:"2px solid #EDEBE8",borderRadius:10,padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",marginBottom:12,WebkitTapHighlightColor:"transparent",transition:"border-color .15s",...(copied?{borderColor:"#028A48"}:{})}}>
-          <span style={{fontSize:"20px",fontWeight:800,color:"#0A0A0A",letterSpacing:"2px"}}>{pick.offerCode}</span>
+        <div onClick={copyCode} style={{background:"#F8F7F5",border:"2px solid #EDEBE8",borderRadius:10,padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:code?"pointer":"default",marginBottom:12,WebkitTapHighlightColor:"transparent",transition:"border-color .15s",...(copied?{borderColor:"#028A48"}:{})}}>
+          <span style={{fontSize:"20px",fontWeight:800,color:code?"#0A0A0A":"#C8C5BF",letterSpacing:"2px"}}>{code||"Loading…"}</span>
           <span style={{fontSize:"18px"}}>{copied?"✅":"📋"}</span>
         </div>
         {copied&&<div style={{fontSize:"11px",color:"#028A48",textAlign:"center",fontWeight:600,marginBottom:8}}>Copied to clipboard!</div>}
@@ -5884,7 +5889,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
           {picks.map((p,i)=>{
             const questDone=!p.questId||completedQuests.has(p.questId);
-            const usedToday=!!(p.offerCode&&claimedToday.has(p.offerCode));
+            const usedToday=!!(p.offerId&&claimedToday.has(p.offerId));
             return(
             <div key={i} style={{border:`1px solid ${p.partner?"#4169E1":"#EDEBE8"}`,borderRadius:10,padding:"14px 16px",background:"#FAFAFA",position:"relative"}}>
               {p.partner&&<div style={{position:"absolute",top:10,right:12,fontSize:"9px",fontWeight:700,color:"#4169E1",border:"1px solid #4169E1",borderRadius:20,padding:"2px 8px",letterSpacing:"0.5px"}}>⭐ PARTNER</div>}

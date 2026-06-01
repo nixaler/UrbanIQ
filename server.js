@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const compression = require("compression");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -260,18 +261,46 @@ app.get("/api/wmata/incidents", async (req, res) => {
   }
 });
 
+// ── PARTNER OFFER CODES (server-side only — never sent in bundle) ─────────────
+const OFFER_CODES = {
+  "busboys-dc": "BUSBOYS15",
+};
+
+app.get("/api/offers/code/:offerId", (req, res) => {
+  const code = OFFER_CODES[req.params.offerId];
+  if (!code) return res.status(404).json({ error: "Offer not found." });
+  return res.json({ code });
+});
+
 // ── REWARD CLAIMS ────────────────────────────────────────────────────────────
+const claimsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many claim attempts. Please wait 15 minutes." },
+});
+
 // Stores claims server-side and enforces: one claim per email+tier, one claim
 // per device+tier, and a minimum account age of 12 days for $10 cash.
-app.post("/api/claims", async (req, res) => {
+// first-play is anchored on first claim — client cannot reset it after that.
+app.post("/api/claims", claimsLimiter, async (req, res) => {
   const { id, label, email, city, xp, firstPlay, deviceId, ts } = req.body || {};
   if (!id || !email || !deviceId || !/\S+@\S+\.\S+/.test(email)) {
     return res.status(400).json({ error: "Invalid claim data." });
   }
 
-  // Minimum account age check for $10 tier
-  if (id === "cash10" && firstPlay) {
-    const ageDays = (Date.now() - new Date(firstPlay).getTime()) / 86400000;
+  // Anchor first-play server-side: record once per device, never overwrite.
+  const fpKey = `device:firstPlay:${deviceId}`;
+  let serverFirstPlay = await store.get(fpKey);
+  if (!serverFirstPlay && firstPlay) {
+    serverFirstPlay = firstPlay;
+    await store.set(fpKey, firstPlay);
+  }
+
+  // Minimum account age check for $10 tier — uses server-anchored timestamp.
+  if (id === "cash10" && serverFirstPlay) {
+    const ageDays = (Date.now() - new Date(serverFirstPlay).getTime()) / 86400000;
     if (ageDays < 12) {
       return res.status(403).json({ error: "Keep playing! $10 cash requires 14 days of play." });
     }
@@ -279,19 +308,17 @@ app.post("/api/claims", async (req, res) => {
 
   // Duplicate email+tier check
   const emailKey = `claim:email:${id}:${email.toLowerCase().trim()}`;
-  const existingEmail = await store.get(emailKey);
-  if (existingEmail) {
+  if (await store.get(emailKey)) {
     return res.status(409).json({ error: "This email has already claimed this reward." });
   }
 
   // Duplicate device+tier check
   const deviceKey = `claim:device:${id}:${deviceId}`;
-  const existingDevice = await store.get(deviceKey);
-  if (existingDevice) {
+  if (await store.get(deviceKey)) {
     return res.status(409).json({ error: "This reward has already been claimed on this device." });
   }
 
-  const claim = { id, label, email, city, xp, firstPlay, deviceId, ts: ts || new Date().toISOString() };
+  const claim = { id, label, email, city, xp, firstPlay: serverFirstPlay, deviceId, ts: ts || new Date().toISOString() };
   const claimId = genId();
   await store.set(`claim:${claimId}`, claim);
   await store.set(emailKey, claimId);
