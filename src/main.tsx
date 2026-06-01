@@ -5401,15 +5401,16 @@ const EXPLORE_PICKS:{[k:string]:{name:string,type:string,desc:string}[]}={
   bos:[{name:"Mike's Pastry",type:"🧁 Bakery",desc:"North End's legendary cannoli shop since 1946."},{name:"Boston Public Market",type:"🛍️ Market",desc:"Year-round indoor market with local New England goods."},{name:"Cheers (Bull & Finch Pub)",type:"🍺 Bar",desc:"The bar that inspired the classic TV show, on Beacon Hill."}],
   atl:[{name:"Ponce City Market",type:"🛍️ Market",desc:"Historic Sears building turned food hall near BeltLine."},{name:"Fox Theatre",type:"🎭 Theater",desc:"Gorgeous 1929 movie palace on Peachtree Street."},{name:"Gladys Knight's Chicken & Waffles",type:"🍗 Soul Food",desc:"Atlanta institution for late-night soul food."}],
 };
-const MICRO_QUESTS:{[k:string]:{id:string,title:string,desc:string,xp:number,shield:boolean}[]}={
-  pdx:[{id:"pdx_q1",title:"End-to-End Run",desc:"Ride the Blue Line from Hillsboro to Gresham — the full length.",xp:150,shield:true},{id:"pdx_q2",title:"Farmers Market",desc:"Grab something from the PSU Farmers Market near Pioneer Square.",xp:75,shield:false},{id:"pdx_q3",title:"Coffee Run",desc:"Get a coffee from a café within walking distance of any MAX stop.",xp:50,shield:false}],
-  dc:[{id:"dc_q1",title:"Red Line Run",desc:"Ride the Red Line from Shady Grove to Glenmont — end to end.",xp:150,shield:true},{id:"dc_q2",title:"Capitol Dome View",desc:"Spot the Capitol dome from the Capitol South station exit.",xp:75,shield:false},{id:"dc_q3",title:"Ethiopian Run",desc:"Try Ethiopian food on U Street near the Green/Yellow Line.",xp:50,shield:false}],
-  balt:[{id:"balt_q1",title:"Metro SubwayLink Run",desc:"Ride from Owings Mills to Johns Hopkins Hospital — end to end.",xp:150,shield:true},{id:"balt_q2",title:"Inner Harbor Walk",desc:"Walk to the Inner Harbor from the Convention Center stop.",xp:75,shield:false},{id:"balt_q3",title:"Crab Cake Quest",desc:"Find a Maryland blue crab cake near a MTA station.",xp:50,shield:false}],
-  la:[{id:"la_q1",title:"B Line Run",desc:"Ride the B Line from North Hollywood to Wilshire/Western — full length.",xp:150,shield:true},{id:"la_q2",title:"Hollywood History",desc:"Visit the Hollywood/Highland station area and its historic surroundings.",xp:75,shield:false},{id:"la_q3",title:"Taco Run",desc:"Find authentic street tacos within walking distance of a Metro stop.",xp:50,shield:false}],
-  nyc:[{id:"nyc_q1",title:"A Train Run",desc:"Ride the A Train — NYC's longest subway line, end to end.",xp:150,shield:true},{id:"nyc_q2",title:"Subway Musician",desc:"Tip a busker performing in Times Square or Grand Central.",xp:75,shield:false},{id:"nyc_q3",title:"Bagel Run",desc:"Grab a fresh bagel from a deli near your station.",xp:50,shield:false}],
-  chi:[{id:"chi_q1",title:"Ride the Loop",desc:"Take the elevated Loop line around downtown Chicago.",xp:150,shield:true},{id:"chi_q2",title:"Find the Bean",desc:"Visit Cloud Gate (the Bean) near the Loop stations.",xp:75,shield:false},{id:"chi_q3",title:"Deep Dish",desc:"Get a slice of Chicago-style deep dish near any CTA stop.",xp:50,shield:false}],
-  bos:[{id:"bos_q1",title:"Red Line Run",desc:"Ride the Red Line from Alewife to Braintree — the full length.",xp:150,shield:true},{id:"bos_q2",title:"Freedom Trail",desc:"Walk part of the Freedom Trail from Downtown Crossing station.",xp:75,shield:false},{id:"bos_q3",title:"Cannoli Run",desc:"Get a cannoli from the North End near Haymarket station.",xp:50,shield:false}],
-  atl:[{id:"atl_q1",title:"Red Line Run",desc:"Ride MARTA's Red Line from Airport to North Springs — end to end.",xp:150,shield:true},{id:"atl_q2",title:"BeltLine Walk",desc:"Find the Atlanta BeltLine near North Avenue or King Memorial station.",xp:75,shield:false},{id:"atl_q3",title:"Southern Comfort",desc:"Get chicken & waffles or biscuits near any MARTA stop.",xp:50,shield:false}],
+type MicroQuest={id:string,title:string,desc:string,xp:number,shield:boolean,targetCoords?:{lat:number,lng:number}};
+const MICRO_QUESTS:{[k:string]:MicroQuest[]}={
+  pdx:[{id:"pdx_q1",title:"End-to-End Run",desc:"Ride the Blue Line from Hillsboro to Gresham — the full length.",xp:150,shield:true,targetCoords:{lat:45.5241,lng:-122.9898}},{id:"pdx_q2",title:"Farmers Market",desc:"Grab something from the PSU Farmers Market near Pioneer Square.",xp:75,shield:false,targetCoords:{lat:45.5120,lng:-122.6826}},{id:"pdx_q3",title:"Coffee Run",desc:"Get a coffee from a café within walking distance of any MAX stop.",xp:50,shield:false}],
+  dc:[{id:"dc_q1",title:"Red Line Run",desc:"Ride the Red Line from Shady Grove to Glenmont — end to end.",xp:150,shield:true,targetCoords:{lat:39.1198,lng:-77.1664}},{id:"dc_q2",title:"Capitol Dome View",desc:"Spot the Capitol dome from the Capitol South station exit.",xp:75,shield:false,targetCoords:{lat:38.8851,lng:-77.0047}},{id:"dc_q3",title:"Ethiopian Run",desc:"Try Ethiopian food on U Street near the Green/Yellow Line.",xp:50,shield:false,targetCoords:{lat:38.9165,lng:-77.0288}}],
+  balt:[{id:"balt_q1",title:"Metro SubwayLink Run",desc:"Ride from Owings Mills to Johns Hopkins Hospital — end to end.",xp:150,shield:true,targetCoords:{lat:39.4220,lng:-76.7800}},{id:"balt_q2",title:"Inner Harbor Walk",desc:"Walk to the Inner Harbor from the Convention Center stop.",xp:75,shield:false,targetCoords:{lat:39.2848,lng:-76.6144}},{id:"balt_q3",title:"Crab Cake Quest",desc:"Find a Maryland blue crab cake near a MTA station.",xp:50,shield:false}],
+  la:[{id:"la_q1",title:"B Line Run",desc:"Ride the B Line from North Hollywood to Wilshire/Western — full length.",xp:150,shield:true,targetCoords:{lat:34.1697,lng:-118.3765}},{id:"la_q2",title:"Hollywood History",desc:"Visit the Hollywood/Highland station area and its historic surroundings.",xp:75,shield:false,targetCoords:{lat:34.1016,lng:-118.3387}},{id:"la_q3",title:"Taco Run",desc:"Find authentic street tacos within walking distance of a Metro stop.",xp:50,shield:false}],
+  nyc:[{id:"nyc_q1",title:"A Train Run",desc:"Ride the A Train — NYC's longest subway line, end to end.",xp:150,shield:true,targetCoords:{lat:40.6043,lng:-73.7563}},{id:"nyc_q2",title:"Subway Musician",desc:"Tip a busker performing in Times Square or Grand Central.",xp:75,shield:false,targetCoords:{lat:40.7555,lng:-73.9876}},{id:"nyc_q3",title:"Bagel Run",desc:"Grab a fresh bagel from a deli near your station.",xp:50,shield:false}],
+  chi:[{id:"chi_q1",title:"Ride the Loop",desc:"Take the elevated Loop line around downtown Chicago.",xp:150,shield:true,targetCoords:{lat:41.8857,lng:-87.6278}},{id:"chi_q2",title:"Find the Bean",desc:"Visit Cloud Gate (the Bean) near the Loop stations.",xp:75,shield:false,targetCoords:{lat:41.8826,lng:-87.6233}},{id:"chi_q3",title:"Deep Dish",desc:"Get a slice of Chicago-style deep dish near any CTA stop.",xp:50,shield:false}],
+  bos:[{id:"bos_q1",title:"Red Line Run",desc:"Ride the Red Line from Alewife to Braintree — the full length.",xp:150,shield:true,targetCoords:{lat:42.3958,lng:-71.1422}},{id:"bos_q2",title:"Freedom Trail",desc:"Walk part of the Freedom Trail from Downtown Crossing station.",xp:75,shield:false,targetCoords:{lat:42.3556,lng:-71.0602}},{id:"bos_q3",title:"Cannoli Run",desc:"Get a cannoli from the North End near Haymarket station.",xp:50,shield:false,targetCoords:{lat:42.3637,lng:-71.0579}}],
+  atl:[{id:"atl_q1",title:"Red Line Run",desc:"Ride MARTA's Red Line from Airport to North Springs — end to end.",xp:150,shield:true,targetCoords:{lat:33.6404,lng:-84.4459}},{id:"atl_q2",title:"BeltLine Walk",desc:"Find the Atlanta BeltLine near North Avenue or King Memorial station.",xp:75,shield:false,targetCoords:{lat:33.7490,lng:-84.3760}},{id:"atl_q3",title:"Southern Comfort",desc:"Get chicken & waffles or biscuits near any MARTA stop.",xp:50,shield:false}],
 };
 const CITY_TRANSIT_INFO:{[k:string]:{health:number,stations:number,riders:string,officialMap:string,status:{line:string,color:string,ok:boolean}[]}}={
   pdx:{health:94,stations:97,riders:"95K/day",officialMap:"https://trimet.org/ride/system-map.htm",
@@ -5452,19 +5453,46 @@ function getSimPulse(cityKey:string,station:string,tick:number):{line:string,lin
     return{line:ln.name,lineColor:ln.color,dest,mins,crowd};
   });
 }
-function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string,xp:number,shield:boolean},onVerified:()=>void,onClose:()=>void}){
+function haversineMeters(lat1:number,lng1:number,lat2:number,lng2:number):number{const R=6371000;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+const QUEST_CODES:Record<string,string[]>={
+  pdx_q1:["MAXRIDE","BLUEMAX","HILLGRE"],pdx_q2:["FARMPDX","PSUMKT1"],pdx_q3:["BEANPDX","COFFMAX"],
+  dc_q1:["REDLINE","METRO24","WMATA1"],dc_q2:["CAPITOL","CSOUTH1","DOMED24"],dc_q3:["USTREET","ETHI24","DCQUEST"],
+  balt_q1:["BSUBWAY","OMJHOP1"],balt_q2:["HARBOR1","INNERBAY"],balt_q3:["CRABMTA","BLTCRAB"],
+  la_q1:["BLINE24","NOHLYWD","LAMETRO"],la_q2:["HLYWDHX","HWOOD24"],la_q3:["TACOLAX","METROLA"],
+  nyc_q1:["ATRAIN1","NYCMTA1","FARRWAY"],nyc_q2:["TSQBUSK","SUBWAY1"],nyc_q3:["BAGELNY","NYCBGL1"],
+  chi_q1:["THELOOP","CTARIDE","CHILOOP"],chi_q2:["BEANCHI","CLOUDGT"],chi_q3:["DPSHCHI","CHICTA1"],
+  bos_q1:["REDMBTA","ALEWIFE","BRNTRE1"],bos_q2:["FREEDTL","DTXBOS1"],bos_q3:["CANNOLI","HAYMKT1"],
+  atl_q1:["REDMRTA","AIRTATL","MARTARL"],atl_q2:["BLTLINE","KINGMEM"],atl_q3:["SOULFOD","ATLMRTA"],
+};
+function MarkDoneModal({quest,onVerified,onClose}:{quest:MicroQuest,onVerified:()=>void,onClose:()=>void}){
   const[step,setStep]=useState<1|2>(1);
-  const[gpsState,setGpsState]=useState<"checking"|"ok">("checking");
+  const[gpsState,setGpsState]=useState<"checking"|"ok"|"denied"|"far">("checking");
+  const[gpsMsg,setGpsMsg]=useState("");
   const[code,setCode]=useState("");
   const[codeErr,setCodeErr]=useState(false);
+  const[codeErrMsg,setCodeErrMsg]=useState("Code not recognized — check the venue card");
   const inputRef=useRef<HTMLInputElement>(null);
   useEffect(()=>{
-    if(step===1){const t=setTimeout(()=>setGpsState("ok"),2600);return()=>clearTimeout(t);}
+    if(step===1){
+      if(!navigator.geolocation||!quest.targetCoords){setGpsState("ok");setGpsMsg("Location check skipped");return;}
+      navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+          const dist=haversineMeters(pos.coords.latitude,pos.coords.longitude,quest.targetCoords!.lat,quest.targetCoords!.lng);
+          if(dist<=400){setGpsState("ok");setGpsMsg(`${Math.round(dist)}m from venue ✓`);}
+          else{setGpsState("far");setGpsMsg(`${Math.round(dist)}m away — need to be within 400m`);}
+        },
+        ()=>{setGpsState("denied");setGpsMsg("Location access denied");},
+        {enableHighAccuracy:true,timeout:8000}
+      );
+    }
     if(step===2)setTimeout(()=>inputRef.current?.focus(),200);
   },[step]);
   function submitCode(){
-    if(code.trim().length>=4){onVerified();}
-    else{setCodeErr(true);setTimeout(()=>setCodeErr(false),1400);}
+    const trimmed=code.trim().toUpperCase();
+    const validCodes=QUEST_CODES[quest.id]||[];
+    if(validCodes.length===0||validCodes.includes(trimmed)){onVerified();}
+    else if(trimmed.length<4){setCodeErrMsg("Code too short — check the venue card");setCodeErr(true);setTimeout(()=>setCodeErr(false),1800);}
+    else{setCodeErrMsg("Code not recognized — check the venue card");setCodeErr(true);setTimeout(()=>setCodeErr(false),1800);}
   }
   return(
     <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"flex-end",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
@@ -5478,9 +5506,12 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string
         </div>
         {step===1&&(
           <div style={{textAlign:"center",padding:"16px 0 8px"}}>
-            <div style={{fontSize:"44px",marginBottom:14}}>📍</div>
-            <div style={{fontSize:"16px",fontWeight:700,color:"#0A0A0A",marginBottom:6}}>{gpsState==="checking"?"Checking your location…":"Location verified ✓"}</div>
-            <div style={{fontSize:"12px",color:"#888580",marginBottom:20}}>Required: within 0.25 mi (400m) of venue</div>
+            <div style={{fontSize:"44px",marginBottom:14}}>{gpsState==="ok"?"✅":gpsState==="far"?"📍":gpsState==="denied"?"🔒":"📍"}</div>
+            <div style={{fontSize:"16px",fontWeight:700,color:gpsState==="ok"?"#028A48":gpsState==="far"?"#E8294A":"#0A0A0A",marginBottom:6}}>
+              {gpsState==="checking"?"Checking your location…":gpsState==="ok"?"Location verified ✓":gpsState==="far"?"Not close enough":gpsState==="denied"?"Location access denied":"Checking…"}
+            </div>
+            {gpsMsg&&<div style={{fontSize:"12px",color:"#888580",marginBottom:16}}>{gpsMsg}</div>}
+            {!gpsMsg&&<div style={{fontSize:"12px",color:"#888580",marginBottom:20}}>Required: within 0.25 mi (400m) of venue</div>}
             {gpsState==="checking"&&(
               <>
                 <div style={{background:"#EDEBE8",borderRadius:8,height:6,overflow:"hidden",maxWidth:260,margin:"0 auto 16px"}}>
@@ -5492,6 +5523,12 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string
             {gpsState==="ok"&&(
               <button onClick={()=>setStep(2)} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"14px 36px",fontSize:"12px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Continue →</button>
             )}
+            {(gpsState==="far"||gpsState==="denied")&&(
+              <div style={{display:"flex",flexDirection:"column",gap:10,marginTop:8}}>
+                <button onClick={()=>setStep(2)} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"14px 36px",fontSize:"12px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Skip GPS — Use Code Only →</button>
+                <div style={{fontSize:"10px",color:"#C8C5BF"}}>You can still verify with your partner code.</div>
+              </div>
+            )}
           </div>
         )}
         {step===2&&(
@@ -5501,14 +5538,10 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:{id:string,title:string
             <input ref={inputRef} value={code} onChange={e=>setCode(e.target.value.toUpperCase().slice(0,8))} placeholder="e.g.  URBAN1" maxLength={8}
               style={{width:"100%",padding:"16px",fontSize:"22px",fontWeight:700,letterSpacing:"6px",textAlign:"center",border:`2px solid ${codeErr?"#E8294A":"#EDEBE8"}`,borderRadius:10,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box",background:codeErr?"#FFF5F5":"#FAFAFA",transition:"border-color .2s"}}
               onKeyDown={e=>{if(e.key==="Enter")submitCode();}}/>
-            {codeErr&&<div style={{color:"#E8294A",fontSize:"11px",textAlign:"center",marginTop:6,fontWeight:600}}>Code too short — try again</div>}
+            {codeErr&&<div style={{color:"#E8294A",fontSize:"11px",textAlign:"center",marginTop:6,fontWeight:600}}>{codeErrMsg}</div>}
             <div style={{marginTop:14,display:"flex",gap:10}}>
               <button onClick={()=>setStep(1)} style={{flex:1,padding:"13px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:8,fontSize:"11px",fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>← Back</button>
               <button onClick={submitCode} style={{flex:2,padding:"13px",background:code.length>=4?"#0A0A0A":"#EDEBE8",color:code.length>=4?"#fff":"#C8C5BF",border:"none",borderRadius:8,fontSize:"11px",fontWeight:700,letterSpacing:"1.5px",textTransform:"uppercase",cursor:code.length>=4?"pointer":"default",fontFamily:"'Outfit',sans-serif",transition:"all .2s"}}>Verify &amp; Claim →</button>
-            </div>
-            <div style={{marginTop:14,padding:"10px 14px",background:"rgba(65,105,225,0.05)",border:"1px solid rgba(65,105,225,0.15)",borderRadius:8,textAlign:"center"}}>
-              <span style={{fontSize:"9px",fontWeight:700,color:"#4169E1",letterSpacing:"1.5px",textTransform:"uppercase"}}>DEMO MODE</span>
-              <span style={{fontSize:"9px",color:"#888580",marginLeft:8}}>Any 4+ char code works. Live validation requires a partner API key.</span>
             </div>
           </div>
         )}
@@ -5564,6 +5597,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     setCompletedQuests(next);
     localStorage.setItem("tgg:quests:done",JSON.stringify([...next]));
     addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
+    if(isShield){incGlobalStreak();}
     if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
   }
   return(
