@@ -29,6 +29,30 @@ const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
   : null;
 
+// Trust Railway's load balancer so rate limiters see real client IPs
+app.set("trust proxy", 1);
+
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
+// CORS — allow only production domain (and localhost for dev)
+const ALLOWED_ORIGINS = ["https://urbaniq.quest", "https://www.urbaniq.quest", "http://localhost:5173", "http://localhost:5000"];
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader("Vary", "Origin");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
 // Compress all responses (gzip) — reduces JS bundle from ~750KB to ~210KB on the wire
 app.use(compression({ level: 6 }));
 
