@@ -4947,6 +4947,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showMaps,setShowMaps]=useState(false);
   const [showRewards,setShowRewards]=useState(false);
   const [showAccount,setShowAccount]=useState(false);
+  const [showArcadeHub,setShowArcadeHub]=useState(false);
+  const [showStreetLevel,setShowStreetLevel]=useState(false);
+  const [showTransferOptimizer,setShowTransferOptimizer]=useState(false);
+  const [showRidershipRace,setShowRidershipRace]=useState(false);
+  const [showSoundboard,setShowSoundboard]=useState(false);
+  const [showSeasonalEvents,setShowSeasonalEvents]=useState(false);
+  const [showFakeStation_sp,setShowFakeStation_sp]=useState(false);
+  const [showStationAge_sp,setShowStationAge_sp]=useState(false);
+  const [showCityShowdown_sp,setShowCityShowdown_sp]=useState(false);
+  const [showBingo_sp,setShowBingo_sp]=useState(false);
+  const [showGhosts_sp,setShowGhosts_sp]=useState(false);
   const [isLoggedIn,setIsLoggedIn]=useState(()=>!!getAuthToken());
   const [betaCode]=useState(()=>getBetaCode());
   const {canNativeInstall,install,isIOS,installed}=usePWAInstall();
@@ -5091,6 +5102,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
       {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
       {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}}/>}
+      {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents}/>}
+      {showStreetLevel&&<StreetLevelMode onClose={()=>setShowStreetLevel(false)}/>}
+      {showTransferOptimizer&&<TransferOptimizerMode onClose={()=>setShowTransferOptimizer(false)}/>}
+      {showRidershipRace&&<RidershipRaceMode onClose={()=>setShowRidershipRace(false)}/>}
+      {showSoundboard&&<SoundboardMode onClose={()=>setShowSoundboard(false)}/>}
+      {showSeasonalEvents&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents(false)}/>}
+      {showFakeStation_sp&&<FakeStationMode gameKey="dc" T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowFakeStation_sp(false)}/>}
+      {showStationAge_sp&&<StationAgeMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowStationAge_sp(false)}/>}
+      {showCityShowdown_sp&&<CityShowdownMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowCityShowdown_sp(false)}/>}
+      {showBingo_sp&&<TransitBingoModal T={getTheme("dc")} onClose={()=>setShowBingo_sp(false)}/>}
+      {showGhosts_sp&&<GhostStationsModal T={getTheme("dc")} onClose={()=>setShowGhosts_sp(false)}/>}
     </>
   );
 
@@ -5233,7 +5255,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                   </button>
                   {!collapsed&&(
                     <div style={{marginTop:6,display:"grid",gridTemplateColumns:`repeat(${Math.min(cols,cards.length)},1fr)`,gap:8,animation:"spFadeIn .25s ease both"}}>
-                      {cards.map((g,i)=><DkCard key={g.key} g={g} delay={i*.06} darkHov={darkHov} setDarkHov={setDarkHov} onSelectGame={onSelectGame}/>)}
+                      {cards.map((g,i)=><DkCard key={g.key} g={g} delay={i*.06} darkHov={darkHov} setDarkHov={setDarkHov} onSelectGame={(k)=>k==="minigames"?setShowArcadeHub(true):onSelectGame(k)}/>)}
                     </div>
                   )}
                 </div>
@@ -5487,7 +5509,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                   <div style={{animation:"lmFadeIn .2s ease both"}}>
                     {cards.map((g,i)=>(
                       <div key={g.key} className="lm-game-row"
-                        onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+                        onClick={()=>{SoundEngine.play("select");if(g.key==="minigames")setShowArcadeHub(true);else onSelectGame(g.key);}}
                         style={{borderBottom:i<cards.length-1?"1px solid #EDEBE8":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
                         {g.photo&&(
                           <div style={{width:80,minHeight:70,flexShrink:0,position:"relative",overflow:"hidden"}}>
@@ -5497,8 +5519,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                         <div style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
                           <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
                           <div style={{flex:1}}>
-                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.name}</div>
-                            <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:2}}>{g.sub}</div>
+                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.key==="minigames"?"Arcade Hub":g.name}</div>
+                            <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:2}}>{g.key==="minigames"?"10 Mini-Games · Earn XP in every mode":g.sub}</div>
                           </div>
                           {g.key===hotGameKey&&<div className="lm-live-dot"/>}
                           <div style={{fontSize:"12px",color:"rgba(255,255,255,0.35)",flexShrink:0}}>→</div>
@@ -7879,8 +7901,350 @@ function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,d
   );
 }
 
+// ── NEW STUB GAME IMPLEMENTATIONS ────────────────────────────────────────────
+function StreetLevelMode({onClose}:{onClose:()=>void}){
+  const allWithImg=useMemo(()=>{
+    const all=[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.img);
+    return all.sort(()=>Math.random()-0.5);
+  },[]);
+  const ROUNDS=3;
+  const[round,setRound]=useState(0);
+  const[score,setScore]=useState(0);
+  const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");
+  const[chosen,setChosen]=useState<string|null>(null);
+  const[choices,setChoices]=useState<any[]>([]);
+  const[targets,setTargets]=useState<any[]>([]);
+  useEffect(()=>{if(allWithImg.length>=4){const t=allWithImg.slice(0,ROUNDS);setTargets(t);}},[allWithImg]);
+  useEffect(()=>{
+    if(!targets[round]||allWithImg.length<4)return;
+    const correct=targets[round];
+    const wrong=allWithImg.filter(s=>s.name!==correct.name&&s.img).sort(()=>Math.random()-0.5).slice(0,3);
+    const opts=[correct,...wrong].sort(()=>Math.random()-0.5);
+    setChoices(opts);setChosen(null);setPhase("play");
+  },[round,targets]);
+  function pick(name:string){const c=targets[round]?.name;setChosen(name);setPhase("reveal");if(name===c){setScore(s=>s+1);addXP(150);}}
+  function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
+  if(!allWithImg.length||!targets.length)return null;
+  const target=targets[round];
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>📸</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>STREET LEVEL</div>
+        <div style={{fontSize:48,fontWeight:900,color:"#E8294A",marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Perfect eye!":score>=2?"Good visual sense!":"Practice makes perfect!"}</div>
+        <button onClick={onClose} style={{background:"#E8294A",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,overflow:"hidden",width:"100%",maxWidth:520,maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{position:"relative",height:220,background:"#1a1a1a"}}>
+          <img src={target.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:phase==="play"?"blur(2px) brightness(0.9)":"brightness(0.85)"}} onError={(e)=>{(e.target as HTMLElement).style.display="none";}}/>
+          <div style={{position:"absolute",top:12,right:12,background:"rgba(0,0,0,0.6)",color:"#fff",fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,letterSpacing:1}}>ROUND {round+1}/{ROUNDS}</div>
+          {phase==="reveal"&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{background:"rgba(0,0,0,0.82)",borderRadius:12,padding:"12px 20px",textAlign:"center"}}><div style={{fontSize:18,fontWeight:900,color:chosen===target.name?"#22C55E":"#E8294A",letterSpacing:1}}>{target.name.toUpperCase()}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>{target.zone}</div></div></div>}
+        </div>
+        <div style={{padding:"16px 20px 24px"}}>
+          <div style={{fontSize:12,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:12,textAlign:"center"}}>WHICH STATION IS THIS?</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {choices.map(opt=>{const isCorrect=opt.name===target.name;const isChosen=opt.name===chosen;const rev=phase==="reveal";return(
+              <button key={opt.name} disabled={rev} onClick={()=>pick(opt.name)} style={{background:rev?(isCorrect?"#0A0A0A":isChosen?"#E8294A11":"#f5f5f5"):"#f5f5f5",border:rev?(isCorrect?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"12px 16px",fontSize:13,fontWeight:700,cursor:rev?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorrect?"#fff":"#0A0A0A",transition:"all .15s"}}>
+                {opt.name}
+                {rev&&isCorrect&&<span style={{fontSize:10,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✓</span>}
+                {rev&&isChosen&&!isCorrect&&<span style={{fontSize:10,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✗</span>}
+              </button>
+            );})}
+          </div>
+          {phase==="reveal"&&<button onClick={next} style={{marginTop:12,width:"100%",background:"#0A0A0A",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+        </div>
+      </div>
+    </div>
+  );
+}
+function TransferOptimizerMode({onClose}:{onClose:()=>void}){
+  const adj=DC_ADJ;const zones=Object.keys(adj);const ROUNDS=3;
+  const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");
+  const[chosen,setChosen]=useState<string|null>(null);const[start,setStart]=useState("");const[end,setEnd]=useState("");const[options,setOptions]=useState<string[]>([]);const[correct,setCorrect]=useState("");
+  function bfsPath(from:string,to:string):string[]{const visited=new Set([from]);const queue:string[][]=[[from]];while(queue.length){const path=queue.shift()!;const node=path[path.length-1];if(node===to)return path;for(const nb of(adj[node]||[])){if(!visited.has(nb)){visited.add(nb);queue.push([...path,nb]);}}}return[from,to];}
+  useEffect(()=>{buildRound();},[round]);
+  function buildRound(){
+    let s="",e="",path:string[]=[];
+    for(let attempt=0;attempt<50;attempt++){s=zones[Math.floor(Math.random()*zones.length)];e=zones[Math.floor(Math.random()*zones.length)];if(s===e)continue;path=bfsPath(s,e);if(path.length>=3)break;}
+    if(path.length<3){s="Montgomery County MD";e="Prince George's County MD";path=bfsPath(s,e);}
+    const transfers=path.slice(1,-1);const correctTransfer=transfers[Math.floor(Math.random()*transfers.length)];
+    const decoys=zones.filter(z=>!path.includes(z)&&z!==s&&z!==e).sort(()=>Math.random()-0.5).slice(0,2);
+    const opts=[correctTransfer,...decoys].sort(()=>Math.random()-0.5);
+    setStart(s);setEnd(e);setOptions(opts);setCorrect(correctTransfer);setChosen(null);setPhase("play");
+  }
+  function pick(z:string){setChosen(z);setPhase("reveal");if(z===correct){setScore(s=>s+1);addXP(100);}}
+  function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>🗺️</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>TRANSFER OPTIMIZER</div>
+        <div style={{fontSize:48,fontWeight:900,color:"#4169E1",marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Perfect route planner!":score>=2?"Smart commuter!":"Transit puzzles are tricky!"}</div>
+        <button onClick={onClose} style={{background:"#4169E1",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>TRANSFER OPTIMIZER · DC METRO · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:15,fontWeight:800,color:"#0A0A0A",marginBottom:16}}>Where should you transfer?</div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:8}}>
+            <div style={{background:"#4169E1",color:"#fff",borderRadius:8,padding:"8px 14px",fontSize:12,fontWeight:700}}>{start}</div>
+            <div style={{fontSize:20,color:"#aaa"}}>→</div>
+            <div style={{background:"#BF0000",color:"#fff",borderRadius:8,padding:"8px 14px",fontSize:12,fontWeight:700}}>{end}</div>
+          </div>
+          <div style={{fontSize:12,color:"#888"}}>Pick the optimal transfer point for DC Metro</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {options.map(z=>{const rev=phase==="reveal";const isCorr=z===correct;const isChosen=z===chosen;return(
+            <button key={z} disabled={rev} onClick={()=>pick(z)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#E8294A11":"#f5f5f5"):"#f5f5f5",border:rev?(isCorr?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"14px 18px",fontSize:13,fontWeight:700,cursor:rev?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorr?"#fff":"#0A0A0A",transition:"all .15s"}}>
+              {z}{rev&&isCorr&&<span style={{fontSize:11,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>OPTIMAL</span>}{rev&&isChosen&&!isCorr&&<span style={{fontSize:11,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>NOPE</span>}
+            </button>
+          );})}
+        </div>
+        {phase==="reveal"&&<button onClick={next} style={{marginTop:16,width:"100%",background:"#4169E1",color:"#fff",border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function RidershipRaceMode({onClose}:{onClose:()=>void}){
+  const pool=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...CHI_STATIONS,...LA_STATIONS,...PDX_STATIONS].filter(s=>s.traffic).sort(()=>Math.random()-0.5),[]);
+  const ROUNDS=5;
+  const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");const[pair,setPair]=useState<[any,any]|null>(null);const[chosen,setChosen]=useState<string|null>(null);
+  useEffect(()=>{buildRound();},[round,pool]);
+  function buildRound(){
+    let a:any,b:any;
+    for(let i=0;i<100;i++){const idx=Math.floor(Math.random()*(pool.length-2));a=pool[idx];b=pool[idx+1];if(a&&b&&a.traffic!==b.traffic)break;}
+    if(!a||!b||a.traffic===b.traffic){a=pool[0];b=pool[2];}
+    setPair([a,b]);setChosen(null);setPhase("play");
+  }
+  function pick(name:string){
+    if(!pair)return;const[a,b]=pair;const correct=a.traffic>b.traffic?a.name:b.name;
+    setChosen(name);setPhase("reveal");if(name===correct){setScore(s=>s+1);addXP(80);}
+  }
+  function next(){if(round+1>=ROUNDS){if(score===ROUNDS-1)addXP(50);setPhase("done");}else setRound(r=>r+1);}
+  if(!pair)return null;
+  const[a,b]=pair;const correctName=a.traffic>b.traffic?a.name:b.name;
+  const TRAFFIC_LABELS=["","Quiet","Light","Moderate","Busy","Major Hub"];
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>📊</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>RIDERSHIP RACE</div>
+        <div style={{fontSize:48,fontWeight:900,color:"#FF6B35",marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:8}}>{score===ROUNDS?"Ridership expert!":score>=3?"Strong transit sense!":"Ridership data is tricky!"}</div>
+        {score===ROUNDS&&<div style={{fontSize:12,color:"#22C55E",fontWeight:700,marginBottom:8}}>+50 bonus XP for perfect score!</div>}
+        <button onClick={onClose} style={{background:"#FF6B35",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>RIDERSHIP RACE · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:17,fontWeight:800}}>Which station has more riders?</div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {[a,b].map(st=>{const rev=phase==="reveal";const isCorr=st.name===correctName;const isChosen=st.name===chosen;return(
+            <button key={st.name} disabled={rev} onClick={()=>pick(st.name)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#E8294A11":"#f8f8f8"):"#f8f8f8",border:rev?(isCorr?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:12,padding:"20px 14px",cursor:rev?"default":"pointer",textAlign:"center",transition:"all .15s"}}>
+              <div style={{fontSize:24,marginBottom:6}}>🚇</div>
+              <div style={{fontSize:12,fontWeight:800,color:rev&&isCorr?"#fff":"#0A0A0A",marginBottom:4}}>{st.name}</div>
+              <div style={{fontSize:10,color:rev&&isCorr?"#FFB800":"#888",marginBottom:4}}>{st.zone}</div>
+              {rev&&<div style={{fontSize:10,fontWeight:700,color:rev&&isCorr?"#FFB800":"#888"}}>{TRAFFIC_LABELS[st.traffic]}</div>}
+            </button>
+          );})}
+        </div>
+        {phase==="reveal"&&<div style={{marginTop:10,fontSize:12,color:"#666",textAlign:"center",lineHeight:1.5,padding:"0 8px"}}>{a.traffic>b.traffic?a.fact:b.fact}</div>}
+        {phase==="reveal"&&<button onClick={next} style={{marginTop:10,width:"100%",background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function SoundboardMode({onClose}:{onClose:()=>void}){
+  const JINGLES=[
+    {city:"DC Metro",emoji:"🚇",tones:[[392,0,"sine"],[349,0.25,"sine"],[330,0.5,"sine"],[262,0.75,"sine"]] as [number,number,string][]},
+    {city:"NYC Subway",emoji:"🗽",tones:[[880,0,"square"],[880,0.12,"square"],[660,0.28,"square"],[880,0.44,"square"]] as [number,number,string][]},
+    {city:"Portland MAX",emoji:"🌹",tones:[[262,0,"sine"],[330,0.2,"sine"],[392,0.4,"sine"],[523,0.65,"sine"]] as [number,number,string][]},
+    {city:"Chicago L",emoji:"🌬️",tones:[[392,0,"sawtooth"],[330,0.18,"sawtooth"],[294,0.36,"sawtooth"],[330,0.54,"sawtooth"]] as [number,number,string][]},
+    {city:"Boston T",emoji:"🦞",tones:[[523,0,"sine"],[523,0.09,"sine"],[392,0.2,"sine"],[523,0.32,"sine"]] as [number,number,string][]},
+    {city:"LA Metro",emoji:"🌴",tones:[[440,0,"sine"],[554,0.25,"sine"],[659,0.5,"sine"],[880,0.8,"sine"]] as [number,number,string][]},
+  ];
+  const ROUNDS=4;
+  const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");const[chosen,setChosen]=useState<string|null>(null);const[target,setTarget]=useState<typeof JINGLES[0]|null>(null);const[choices,setChoices]=useState<typeof JINGLES>([]);const[played,setPlayed]=useState(false);
+  useEffect(()=>{buildRound();},[round]);
+  function buildRound(){const shuffled=[...JINGLES].sort(()=>Math.random()-0.5);const t=shuffled[0];const opts=shuffled.slice(0,4);setTarget(t);setChoices(opts);setChosen(null);setPhase("play");setPlayed(false);}
+  function playJingle(jingle:typeof JINGLES[0]){
+    try{
+      const ctx=new(window.AudioContext||(window as any).webkitAudioContext)();
+      jingle.tones.forEach(([freq,delay,type])=>{
+        const osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);
+        osc.type=type as OscillatorType;osc.frequency.value=freq;
+        const t=ctx.currentTime+delay;g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
+        osc.start(t);osc.stop(t+0.3);
+      });setPlayed(true);
+    }catch(e){}
+  }
+  function pick(city:string){if(!target)return;setChosen(city);setPhase("reveal");if(city===target.city){setScore(s=>s+1);addXP(80);}}
+  function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>🔊</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>SOUNDBOARD</div>
+        <div style={{fontSize:48,fontWeight:900,color:"#FF6B35",marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Perfect ear!":score>=3?"Good ear for transit!":"Train your ears!"}</div>
+        <button onClick={onClose} style={{background:"#FF6B35",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>SOUNDBOARD · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:17,fontWeight:800,marginBottom:16}}>Which transit system is this?</div>
+          <button onClick={()=>target&&playJingle(target)} style={{background:played?"#028A48":"#0A0A0A",color:"#fff",border:"none",borderRadius:12,padding:"16px 32px",fontSize:14,fontWeight:700,cursor:"pointer",letterSpacing:2,transition:"background .2s"}}>{played?"▶ PLAY AGAIN":"▶ PLAY SOUND"}</button>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {choices.map(c=>{const rev=phase==="reveal";const isCorr=c.city===target?.city;const isChosen=c.city===chosen;return(
+            <button key={c.city} disabled={rev||!played} onClick={()=>pick(c.city)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#E8294A11":"#f5f5f5"):"#f5f5f5",border:rev?(isCorr?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"14px 18px",fontSize:13,fontWeight:700,cursor:(rev||!played)?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorr?"#fff":"#0A0A0A",opacity:!played&&!rev?0.5:1,transition:"all .15s"}}>
+              <span>{c.emoji} {c.city}</span>
+              {rev&&isCorr&&<span style={{fontSize:10,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✓</span>}
+              {rev&&isChosen&&!isCorr&&<span style={{fontSize:10,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✗</span>}
+            </button>
+          );})}
+        </div>
+        {phase==="reveal"&&<button onClick={next} style={{marginTop:14,width:"100%",background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function SeasonalEventsMode({onClose}:{onClose:()=>void}){
+  const month=new Date().getMonth();
+  const season=month>=2&&month<=4?"spring":month>=5&&month<=7?"summer":month>=8&&month<=10?"fall":"winter";
+  const SEASON_EMOJI:{[k:string]:string}={spring:"🌸",summer:"☀️",fall:"🍂",winter:"❄️"};
+  const SEASON_LABEL:{[k:string]:string}={spring:"Spring",summer:"Summer",fall:"Fall",winter:"Winter"};
+  const SEASON_COLOR:{[k:string]:string}={spring:"#22C55E",summer:"#FFB800",fall:"#FF6B35",winter:"#4169E1"};
+  const SEASON_QUESTIONS:{[k:string]:{q:string,a:string,opts:string[]}[]}={
+    spring:[
+      {q:"Which transit system serves DC's famous cherry blossom areas?",a:"DC Metro",opts:["DC Metro","NYC Subway","Boston T","Chicago L"]},
+      {q:"What does MBTA stand for?",a:"Massachusetts Bay Transportation Authority",opts:["Massachusetts Bay Transportation Authority","Metro Boston Transit Area","Massachusetts Bike and Transit Agency","Metro Bus and Train Administration"]},
+      {q:"Which city's transit uses 'SmarTrip' cards?",a:"DC Metro",opts:["DC Metro","NYC Subway","Chicago L","Boston T"]},
+      {q:"Portland MAX's Blue Line runs to which airport?",a:"Portland International Airport",opts:["Portland International Airport","PDX Hillsboro","PDX Gresham","PDX Clackamas"]},
+    ],
+    summer:[
+      {q:"Which station serves Coney Island in NYC?",a:"Coney Island–Stillwell Av",opts:["Coney Island–Stillwell Av","Far Rockaway","Brighton Beach","Bay Ridge–95 St"]},
+      {q:"LA Metro's Blue Line was renamed in 2020 to what?",a:"A Line",opts:["A Line","Blue Line","Coast Line","Pacific Line"]},
+      {q:"Which DC Metro station is closest to the National Mall?",a:"Smithsonian",opts:["Smithsonian","Federal Triangle","Archives","L'Enfant Plaza"]},
+      {q:"Which city's subway has the most stations?",a:"NYC Subway",opts:["NYC Subway","Tokyo Metro","Moscow Metro","London Underground"]},
+    ],
+    fall:[
+      {q:"The DC Metro opened in which year?",a:"1976",opts:["1968","1976","1982","1970"]},
+      {q:"Which transit system uses the 'Ventra' card?",a:"Chicago L",opts:["Chicago L","Boston T","LA Metro","Portland MAX"]},
+      {q:"Atlanta's MARTA stands for?",a:"Metropolitan Atlanta Rapid Transit Authority",opts:["Metropolitan Atlanta Rapid Transit Authority","Metro Atlanta Rail and Transit Agency","Modern Atlanta Rail Transit Administration","Municipal Atlanta Regional Transit Authority"]},
+      {q:"The first subway in the US opened in which city?",a:"Boston",opts:["New York","Chicago","Boston","Philadelphia"]},
+    ],
+    winter:[
+      {q:"Which DC Metro line runs to Dulles Airport?",a:"Silver Line",opts:["Silver Line","Orange Line","Blue Line","Yellow Line"]},
+      {q:"Chicago's 'L' Purple Line serves which neighborhood?",a:"Evanston",opts:["Evanston","Hyde Park","Wicker Park","Pilsen"]},
+      {q:"Boston's Green Line is known as what type of transit?",a:"Light rail",opts:["Light rail","Heavy rail","Monorail","BRT"]},
+      {q:"Which DC Metro station is the deepest below ground?",a:"Forest Glen",opts:["Forest Glen","Wheaton","Bethesda","DuPont Circle"]},
+    ],
+  };
+  const questions=useMemo(()=>(SEASON_QUESTIONS[season]||SEASON_QUESTIONS.spring).sort(()=>Math.random()-0.5).slice(0,4),[season]);
+  const ROUNDS=questions.length;
+  const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");const[chosen,setChosen]=useState<string|null>(null);
+  const q=questions[round];const color=SEASON_COLOR[season];const emoji=SEASON_EMOJI[season];
+  function pick(opt:string){setChosen(opt);setPhase("reveal");if(opt===q.a){setScore(s=>s+1);addXP(150);}}
+  function next(){if(round+1>=ROUNDS)setPhase("done");else{setRound(r=>r+1);setChosen(null);setPhase("play");}}
+  if(phase==="done")return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
+        <div style={{fontSize:48,marginBottom:8}}>{emoji}</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>SEASONAL EVENTS</div>
+        <div style={{fontSize:13,fontWeight:700,color,marginBottom:4}}>{SEASON_LABEL[season]} Edition · 1.5× XP</div>
+        <div style={{fontSize:48,fontWeight:900,color,marginBottom:4}}>{score}/{ROUNDS}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Seasonal transit expert!":score>=2?"Good seasonal knowledge!":"Try again next season!"}</div>
+        <button onClick={onClose} style={{background:color,color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:24,marginBottom:6}}>{emoji}</div>
+          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:6}}>SEASONAL EVENTS · {SEASON_LABEL[season].toUpperCase()} · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{display:"inline-block",background:`${color}22`,color,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,marginBottom:12}}>⚡ 1.5× XP BONUS</div>
+          <div style={{fontSize:15,fontWeight:800,color:"#0A0A0A",lineHeight:1.4}}>{q.q}</div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {q.opts.map(opt=>{const rev=phase==="reveal";const isCorr=opt===q.a;const isChosen=opt===chosen;return(
+            <button key={opt} disabled={rev} onClick={()=>pick(opt)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#E8294A11":"#f5f5f5"):"#f5f5f5",border:rev?(isCorr?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"12px 16px",fontSize:12,fontWeight:700,cursor:rev?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorr?"#fff":"#0A0A0A",transition:"all .15s",lineHeight:1.3}}>
+              <span style={{flex:1}}>{opt}</span>
+              {rev&&isCorr&&<span style={{flexShrink:0,marginLeft:8,fontSize:10,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✓</span>}
+              {rev&&isChosen&&!isCorr&&<span style={{flexShrink:0,marginLeft:8,fontSize:10,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✗</span>}
+            </button>
+          );})}
+        </div>
+        {phase==="reveal"&&<button onClick={next} style={{marginTop:14,width:"100%",background:color,color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
+      </div>
+    </div>
+  );
+}
+function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents}:{onClose:()=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void}){
+  const month=new Date().getMonth();const season=month>=2&&month<=4?"spring":month>=5&&month<=7?"summer":month>=8&&month<=10?"fall":"winter";
+  const SEASON_EMOJI:{[k:string]:string}={spring:"🌸",summer:"☀️",fall:"🍂",winter:"❄️"};
+  const games=[
+    {emoji:"🕵️",title:"Fake Station",body:"Spot the station that doesn't exist",color:"#7B2FBE",onClick:()=>{setShowFakeStation(true);onClose();}},
+    {emoji:"🕰️",title:"Station Age",body:"Guess when each station opened",color:"#028A48",onClick:()=>{setShowStationAge(true);onClose();}},
+    {emoji:"🏆",title:"City Showdown",body:"Which city wins? Compare systems",color:"#E8294A",onClick:()=>{setShowCityShowdown(true);onClose();}},
+    {emoji:"🎯",title:"Transit Bingo",body:"Complete achievements on your bingo card",color:"#4169E1",onClick:()=>{setShowBingo(true);onClose();}},
+    {emoji:"👻",title:"Ghost Stations",body:"Unlock abandoned stations with XP",color:"#0A0A0A",onClick:()=>{setShowGhosts(true);onClose();}},
+    {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>{setShowStreetLevel(true);onClose();}},
+    {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>{setShowTransferOptimizer(true);onClose();}},
+    {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>{setShowRidershipRace(true);onClose();}},
+    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",onClick:()=>{setShowSoundboard(true);onClose();}},
+    {emoji:SEASON_EMOJI[season]||"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>{setShowSeasonalEvents(true);onClose();}},
+  ];
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(8px)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:540,maxHeight:"90vh",overflowY:"auto",padding:"24px 20px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div>
+            <div style={{fontSize:22,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🎮 ARCADE</div>
+            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>10 MINI-GAMES · EARN XP IN EVERY MODE</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#888",padding:4,lineHeight:1}}>✕</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          {games.map((g,i)=>(
+            <div key={i} onClick={g.onClick}
+              style={{background:"#f8f8f8",border:"2px solid #eee",borderRadius:12,padding:"16px 14px",cursor:"pointer",transition:"border-color .15s,transform .15s"}}
+              onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=g.color;(e.currentTarget as HTMLDivElement).style.transform="scale(1.02)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#eee";(e.currentTarget as HTMLDivElement).style.transform="scale(1)";}}>
+              <div style={{fontSize:28,marginBottom:8}}>{g.emoji}</div>
+              <div style={{fontSize:13,fontWeight:800,color:g.color,marginBottom:4}}>{g.title}</div>
+              <div style={{fontSize:10,color:"#888",lineHeight:1.4}}>{g.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── BONUS GAMES SECTION (extracted from GameApp JSX to fix hooks-in-IIFE violation) ──
-function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowComingSoon}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void}){
+function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowComingSoon}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void}){
   const[bonusOpen,setBonusOpen]=useState(false);
   type CardItem={emoji:string,title:string,body:string,color?:string,stub?:boolean,stubDesc?:string,onClick?:()=>void};
   const cards:CardItem[]=[
@@ -7894,15 +8258,15 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
     {emoji:"🏆",title:"City Showdown",body:"Which city wins? Compare systems",color:"#E8294A",onClick:()=>setShowCityShowdown(true)},
     {emoji:"🎯",title:"Transit Bingo",body:"Complete achievements on your bingo card",color:"#4169E1",onClick:()=>setShowBingo(true)},
     {emoji:"👻",title:"Ghost Stations",body:"Unlock abandoned stations with XP",color:"#0A0A0A",onClick:()=>setShowGhosts(true)},
-    {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",stub:true,stubDesc:"Live ridership data from transit APIs. Coming soon."},
+    {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>setShowRidershipRace(true)},
     {emoji:"👥",title:"Buddy Streaks",body:"Match streaks with a friend",color:"#028A48",stub:true,stubDesc:"Friend challenges powered by real accounts. Coming soon."},
-    {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",stub:true,stubDesc:"Multi-stop routing puzzle. Coming soon."},
-    {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",stub:true,stubDesc:"Street-level photo challenges. Coming soon."},
+    {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>setShowTransferOptimizer(true)},
+    {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>setShowStreetLevel(true)},
     {emoji:"📝",title:"Transit Wordl",body:"Word search: find the station names",color:"#7B2FBE",stub:true,stubDesc:"Transit word search. Coming soon."},
-    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",stub:true,stubDesc:"Ambient city transit audio. Coming soon."},
+    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",onClick:()=>setShowSoundboard(true)},
     {emoji:"🏗️",title:"Route Architect",body:"Design your own transit line",color:"#028A48",stub:true,stubDesc:"Route design sandbox. Coming soon."},
     {emoji:"📱",title:"Offline Mode",body:"Download a city for offline play",color:"#4169E1",stub:true,stubDesc:"Service worker cache. Coming soon."},
-    {emoji:"🎃",title:"Seasonal Events",body:"Special themed challenges",color:"#E8294A",stub:true,stubDesc:"Holiday & seasonal game modes. Coming soon."},
+    {emoji:"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>setShowSeasonalEvents(true)},
     {emoji:"🗺️",title:"Partner Map",body:"Interactive map of partner spots",color:"#028A48",stub:true,stubDesc:"Map layer in the Explore portal. Coming soon."},
   ];
   return(
@@ -8018,6 +8382,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showGhosts,setShowGhosts]=useState(false);
   const[showComingSoon,setShowComingSoon]=useState<{title:string,emoji:string,desc:string}|null>(null);
   const[showMilestonePostcard,setShowMilestonePostcard]=useState(false);
+  const[showStreetLevel_ga,setShowStreetLevel_ga]=useState(false);
+  const[showTransferOptimizer_ga,setShowTransferOptimizer_ga]=useState(false);
+  const[showRidershipRace_ga,setShowRidershipRace_ga]=useState(false);
+  const[showSoundboard_ga,setShowSoundboard_ga]=useState(false);
+  const[showSeasonalEvents_ga,setShowSeasonalEvents_ga]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
   const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
@@ -8767,7 +9136,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowComingSoon={setShowComingSoon}/>
+          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowStreetLevel={setShowStreetLevel_ga} setShowTransferOptimizer={setShowTransferOptimizer_ga} setShowRidershipRace={setShowRidershipRace_ga} setShowSoundboard={setShowSoundboard_ga} setShowSeasonalEvents={setShowSeasonalEvents_ga} setShowComingSoon={setShowComingSoon}/>
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
@@ -8781,6 +9150,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           {showGhosts&&<GhostStationsModal T={T} onClose={()=>setShowGhosts(false)}/>}
           {showComingSoon&&<ComingSoonModal {...showComingSoon} onClose={()=>setShowComingSoon(null)}/>}
           {showMilestonePostcard&&<MilestonePostcardModal xp={getXP()} T={T} onClose={()=>setShowMilestonePostcard(false)}/>}
+          {showStreetLevel_ga&&<StreetLevelMode onClose={()=>setShowStreetLevel_ga(false)}/>}
+          {showTransferOptimizer_ga&&<TransferOptimizerMode onClose={()=>setShowTransferOptimizer_ga(false)}/>}
+          {showRidershipRace_ga&&<RidershipRaceMode onClose={()=>setShowRidershipRace_ga(false)}/>}
+          {showSoundboard_ga&&<SoundboardMode onClose={()=>setShowSoundboard_ga(false)}/>}
+          {showSeasonalEvents_ga&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents_ga(false)}/>}
 
           <div style={{textAlign:"center",marginTop:8}}>
             <a href="https://mc.buymeacoffee.com/links/SyEkenCIAfWPKEhbhyglsDjuxVxSSjqkeHbXYWMXWcARvFhFzRCgIASnBhHieeDGIBlkfaEMkvhKXYgPCXWGCPB/3480126?link=nixalerllc" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:7,background:T.surface,color:"#FFDD00",border:"1px solid rgba(255,221,0,.2)",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,letterSpacing:1,padding:"9px 16px",borderRadius:7,textDecoration:"none"}}>☕ Enjoying it? Buy me a coffee</a>
