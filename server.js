@@ -374,6 +374,19 @@ const ADMIN_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><
   <div class="stat"><div class="stat-val" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
   <div class="stat"><div class="stat-val" id="s-fulfilled">—</div><div class="stat-lbl">Fulfilled</div></div>
   <div class="stat"><div class="stat-val" id="s-dau">—</div><div class="stat-lbl">Today's Players</div></div>
+  <div class="stat"><div class="stat-val" id="s-pv30">—</div><div class="stat-lbl">Views (30d)</div></div>
+  <div class="stat"><div class="stat-val" id="s-pvtoday">—</div><div class="stat-lbl">Views Today</div></div>
+  <div class="stat"><div class="stat-val" id="s-mobile">—</div><div class="stat-lbl">Mobile %</div></div>
+</div>
+<div class="section">
+  <div class="section-hdr">Page Views — Last 30 Days <button class="refresh" onclick="loadAnalytics()">↻ Refresh</button></div>
+  <div style="padding:14px 18px">
+    <canvas id="pv-chart" height="120" style="width:100%"></canvas>
+  </div>
+</div>
+<div class="section" id="refs-section" style="display:none">
+  <div class="section-hdr">Top Referrers</div>
+  <table><thead><tr><th>Source</th><th>Visits</th></tr></thead><tbody id="refs-tbody"></tbody></table>
 </div>
 <div class="section">
   <div class="section-hdr">Reward Claims <button class="refresh" onclick="loadAll()">↻ Refresh</button></div>
@@ -408,6 +421,50 @@ async function loadAll(){
   document.getElementById('s-fulfilled').textContent = done;
   document.getElementById('s-dau').textContent = stats.dau ?? '—';
 }
+async function loadAnalytics(){
+  const r = await fetch('/api/analytics?days=30');
+  if(!r.ok) return;
+  const d = await r.json();
+  const today = new Date().toISOString().slice(0,10);
+  const todayViews = (d.daily.find(x=>x.date===today)||{}).views || 0;
+  document.getElementById('s-pv30').textContent = d.total.toLocaleString();
+  document.getElementById('s-pvtoday').textContent = todayViews.toLocaleString();
+  const pct = d.total ? Math.round((d.mobile/(d.mobile+d.desktop||1))*100) : 0;
+  document.getElementById('s-mobile').textContent = pct+'%';
+  drawChart(d.daily);
+  if(d.topRefs && d.topRefs.length){
+    document.getElementById('refs-section').style.display='';
+    const tb = document.getElementById('refs-tbody');
+    tb.innerHTML = d.topRefs.map(r=>'<tr><td>'+escHtml(r.host||'direct')+'</td><td>'+r.count+'</td></tr>').join('');
+  }
+}
+function drawChart(daily){
+  const canvas = document.getElementById('pv-chart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * devicePixelRatio;
+  canvas.height = 120 * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  const W = canvas.offsetWidth, H = 120;
+  ctx.clearRect(0,0,W,H);
+  if(!daily.length) return;
+  const max = Math.max(...daily.map(d=>d.views), 1);
+  const barW = Math.max(2, Math.floor((W - daily.length) / daily.length));
+  const gap = Math.floor((W - barW * daily.length) / (daily.length + 1));
+  daily.forEach((d, i) => {
+    const h = Math.round((d.views / max) * (H - 24));
+    const x = gap + i * (barW + gap);
+    const y = H - 16 - h;
+    ctx.fillStyle = '#4169E1';
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, h, [2,2,0,0]);
+    ctx.fill();
+  });
+  ctx.fillStyle = '#888';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'center';
+  if(daily.length > 0) ctx.fillText(daily[0].date.slice(5), gap + barW/2, H - 2);
+  if(daily.length > 1) ctx.fillText(daily[daily.length-1].date.slice(5), gap + (daily.length-1)*(barW+gap) + barW/2, H - 2);
+}
 async function fulfill(cid, btn){
   if(!cid){alert('No claim ID');return;}
   btn.disabled=true;btn.textContent='...';
@@ -422,7 +479,7 @@ async function fulfill(cid, btn){
   }else{btn.disabled=false;btn.textContent='Mark Fulfilled';alert('Failed');}
 }
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-loadAll();
+loadAll();loadAnalytics();
 </script></body></html>`;
 
 app.get("/admin", adminAuth, (_req, res) => res.send(ADMIN_HTML));
@@ -673,9 +730,78 @@ app.get("/api/scores", async (req, res) => {
   return res.json(data || []);
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+// ── ANALYTICS ────────────────────────────────────────────────────────────────
+// Supabase table (run once in dashboard):
+//   CREATE TABLE IF NOT EXISTS page_views (
+//     id BIGSERIAL PRIMARY KEY,
+//     ts TIMESTAMPTZ DEFAULT NOW(),
+//     path TEXT NOT NULL DEFAULT '/',
+//     referrer TEXT,
+//     country TEXT,
+//     ua_type TEXT  -- 'mobile' | 'desktop' | 'bot'
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_pv_ts ON page_views(ts DESC);
+
+const _mem = { total: 0, days: {}, refs: {} }; // in-memory fallback
+
+function uaType(ua = "") {
+  if (/bot|crawl|spider|slurp|facebookexternalhit|twitterbot/i.test(ua)) return "bot";
+  if (/mobile|android|iphone|ipad/i.test(ua)) return "mobile";
+  return "desktop";
+}
+
+// Track every page-load (non-API, non-asset)
+app.use(async (req, res, next) => {
+  next();
+  if (req.method !== "GET") return;
+  if (/^\/api\/|^\/manifest|\./.test(req.path)) return;
+  const today = new Date().toISOString().slice(0, 10);
+  const ua = req.headers["user-agent"] || "";
+  const type = uaType(ua);
+  if (type === "bot") return;
+  const ref = (req.headers.referer || req.headers.referrer || "").slice(0, 200);
+  const pth = req.path.slice(0, 100);
+  // in-memory
+  _mem.total++;
+  _mem.days[today] = (_mem.days[today] || 0) + 1;
+  if (ref) _mem.refs[new URL(ref).hostname] = (_mem.refs[new URL(ref).hostname] || 0) + 1;
+  // persist to Supabase if available
+  if (supabase) {
+    supabase.from("page_views").insert({ path: pth, referrer: ref || null, ua_type: type }).then(() => {});
+  }
 });
+
+app.get("/api/analytics", adminAuth, async (req, res) => {
+  const days = Number(req.query.days) || 30;
+  const since = new Date(Date.now() - days * 86400000).toISOString();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("page_views")
+      .select("ts, referrer, ua_type")
+      .gte("ts", since)
+      .neq("ua_type", "bot");
+    if (error) return res.status(500).json({ error: error.message });
+    const rows = data || [];
+    const dailyMap = {};
+    const refMap = {};
+    let mobile = 0, desktop = 0;
+    for (const r of rows) {
+      const d = r.ts.slice(0, 10);
+      dailyMap[d] = (dailyMap[d] || 0) + 1;
+      if (r.referrer) { try { const h = new URL(r.referrer).hostname; refMap[h] = (refMap[h] || 0) + 1; } catch {} }
+      if (r.ua_type === "mobile") mobile++; else desktop++;
+    }
+    const daily = Object.entries(dailyMap).sort(([a], [b]) => a.localeCompare(b)).map(([date, views]) => ({ date, views }));
+    const topRefs = Object.entries(refMap).sort(([,a], [,b]) => b - a).slice(0, 10).map(([host, count]) => ({ host, count }));
+    return res.json({ total: rows.length, daily, topRefs, mobile, desktop, days });
+  }
+  // fallback: return in-memory stats
+  const daily = Object.entries(_mem.days).sort(([a], [b]) => a.localeCompare(b)).map(([date, views]) => ({ date, views }));
+  const topRefs = Object.entries(_mem.refs).sort(([,a], [,b]) => b - a).slice(0, 10).map(([host, count]) => ({ host, count }));
+  return res.json({ total: _mem.total, daily, topRefs, note: "In-memory only — add Supabase for persistence" });
+});
+
+
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
