@@ -7902,8 +7902,22 @@ function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,d
 }
 
 // ── NEW STUB GAME IMPLEMENTATIONS ────────────────────────────────────────────
+async function getStationPhoto(station:any):Promise<string|null>{
+  if(station.img){
+    try{
+      const filename=station.img.split("Special:FilePath/")[1];
+      if(filename){
+        const res=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodeURIComponent(filename))}&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*`);
+        const data=await res.json();
+        const pages=data?.query?.pages;
+        if(pages){const page=Object.values(pages)[0] as any;const url=page?.imageinfo?.[0]?.thumburl||page?.imageinfo?.[0]?.url;if(url)return url;}
+      }
+    }catch{}
+  }
+  return null;
+}
 function StreetLevelMode({onClose}:{onClose:()=>void}){
-  const allStations=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].sort(()=>Math.random()-0.5),[]);
+  const allWithImg=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.img).sort(()=>Math.random()-0.5),[]);
   const ROUNDS=3;
   const[round,setRound]=useState(0);
   const[score,setScore]=useState(0);
@@ -7913,15 +7927,14 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   const[targets,setTargets]=useState<any[]>([]);
   const[photoUrl,setPhotoUrl]=useState<string|null>(null);
   const[photoLoading,setPhotoLoading]=useState(true);
-  useEffect(()=>{if(allStations.length>=4){setTargets(allStations.slice(0,ROUNDS));}},[allStations]);
+  useEffect(()=>{if(allWithImg.length>=4){setTargets(allWithImg.slice(0,ROUNDS));}},[allWithImg]);
   useEffect(()=>{
-    if(!targets[round]||allStations.length<4)return;
+    if(!targets[round]||allWithImg.length<4)return;
     const correct=targets[round];
-    const wrong=allStations.filter(s=>s.name!==correct.name).sort(()=>Math.random()-0.5).slice(0,3);
+    const wrong=allWithImg.filter(s=>s.name!==correct.name).sort(()=>Math.random()-0.5).slice(0,3);
     setChoices([correct,...wrong].sort(()=>Math.random()-0.5));
     setChosen(null);setPhase("play");setPhotoUrl(null);setPhotoLoading(true);
-    const city=DC_STATIONS.includes(correct)?"Washington DC metro station":NYC_STATIONS.includes(correct)?"New York City subway station":PDX_STATIONS.includes(correct)?"Portland MAX station":CHI_STATIONS.includes(correct)?"Chicago L station":LA_STATIONS.includes(correct)?"Los Angeles Metro station":"Boston T station";
-    getWikiImage(`${correct.name} ${city}`).then(url=>{setPhotoUrl(url);setPhotoLoading(false);});
+    getStationPhoto(correct).then(url=>{setPhotoUrl(url);setPhotoLoading(false);});
   },[round,targets]);
   function pick(name:string){const c=targets[round]?.name;setChosen(name);setPhase("reveal");if(name===c){setScore(s=>s+1);addXP(150);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
@@ -8073,62 +8086,106 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
   );
 }
 function SoundboardMode({onClose}:{onClose:()=>void}){
-  const JINGLES=[
-    {city:"DC Metro",emoji:"🚇",tones:[[392,0,"sine"],[349,0.25,"sine"],[330,0.5,"sine"],[262,0.75,"sine"]] as [number,number,string][]},
-    {city:"NYC Subway",emoji:"🗽",tones:[[880,0,"square"],[880,0.12,"square"],[660,0.28,"square"],[880,0.44,"square"]] as [number,number,string][]},
-    {city:"Portland MAX",emoji:"🌹",tones:[[262,0,"sine"],[330,0.2,"sine"],[392,0.4,"sine"],[523,0.65,"sine"]] as [number,number,string][]},
-    {city:"Chicago L",emoji:"🌬️",tones:[[392,0,"sawtooth"],[330,0.18,"sawtooth"],[294,0.36,"sawtooth"],[330,0.54,"sawtooth"]] as [number,number,string][]},
-    {city:"Boston T",emoji:"🦞",tones:[[523,0,"sine"],[523,0.09,"sine"],[392,0.2,"sine"],[523,0.32,"sine"]] as [number,number,string][]},
-    {city:"LA Metro",emoji:"🌴",tones:[[440,0,"sine"],[554,0.25,"sine"],[659,0.5,"sine"],[880,0.8,"sine"]] as [number,number,string][]},
+  type Clue={system:string,emoji:string,color:string,announcement:string,context:string};
+  const ALL_CLUES:Clue[]=[
+    {system:"NYC Subway",emoji:"🗽",color:"#E8294A",
+     announcement:'"Stand clear of the closing doors, please."',
+     context:"Recorded by Charlie Pellett, this phrase plays on every modern NYC subway car before doors close. The city's subway never closes — it runs 24/7, 365 days a year."},
+    {system:"DC Metro",emoji:"🚇",color:"#0066CC",
+     announcement:'"Doors closing." ♩♪♫ [three ascending chime tones]',
+     context:"WMATA's stations play a distinctive three-note electronic chime (E–A–B) before every door closure. The platforms also display exact countdown timers in seconds."},
+    {system:"Chicago L",emoji:"🌬️",color:"#565A5C",
+     announcement:'"Doors open on the left at [Station]. Transfer to the Red, Blue, and Green Lines."',
+     context:"CTA conductors manually announce which side doors open on — critical because the L's elevated curves mean it varies by station. The 'L' stands for Elevated."},
+    {system:"Boston T",emoji:"🦞",color:"#DA291C",
+     announcement:'"This is an inbound train to Alewife. Next stop, Park Street. Change here for the Red and Green Lines."',
+     context:"The MBTA opened in 1897 — the first subway in the Western Hemisphere. Park Street station is the historic hub where multiple lines intersect underground."},
+    {system:"Portland MAX",emoji:"🌹",color:"#028A48",
+     announcement:'"Proof of payment is required while aboard MAX. Fares may be inspected at any time."',
+     context:"Unlike most systems, TriMet MAX has no turnstiles. It uses honor-based fare enforcement with roving inspectors. Downtown Portland's 'Free Rail Zone' was eliminated in 2012."},
+    {system:"LA Metro",emoji:"🌴",color:"#E04E39",
+     announcement:'"The next A Line train to Long Beach departs in 3 minutes from Platform 2."',
+     context:"LA Metro renamed all its lines from colors to letters in 2022. The A Line (formerly Blue) was LA's first modern rail line, opened 1990 — in a city built entirely around cars."},
+    {system:"DC Metro",emoji:"🚇",color:"#0066CC",
+     announcement:'"Welcome aboard. This is a Silver Line train to Dulles International Airport. The next stop is Foggy Bottom-GWU."',
+     context:"The Silver Line extension to Dulles opened in 2022 — the first rail-direct connection between a US capital city and its main international airport."},
+    {system:"NYC Subway",emoji:"🗽",color:"#E8294A",
+     announcement:'"This is a Brooklyn-bound F express train. The next stop is Jay St-MetroTech. This train will skip [station]."',
+     context:"The NYC subway has both local and express tracks running in the same tunnel. Express trains skip 10–15 stops, cutting travel time significantly — a feature unique to NYC."},
+    {system:"Chicago L",emoji:"🌬️",color:"#565A5C",
+     announcement:'"This is the last train on the Blue Line tonight. Service resumes at 4:00 AM."',
+     context:"Unlike NYC, the Chicago L does close overnight on most lines — though the Blue and Red Lines run 24 hours. The elevated Loop downtown encircles the central business district."},
+    {system:"Boston T",emoji:"🦞",color:"#DA291C",
+     announcement:'"Attention passengers: Green Line trains are experiencing delays due to a disabled vehicle at Kenmore."',
+     context:"The Green Line is the surface-level trolley portion of the MBTA, running through Boston streets at grade — the oldest light rail line in the US, opened 1897."},
+    {system:"Portland MAX",emoji:"🌹",color:"#028A48",
+     announcement:'"Next stop, Pioneer Courthouse Square — the living room of Portland."',
+     context:"Pioneer Courthouse Square is the most-visited public space in Oregon. MAX runs directly through downtown on city streets, sharing lanes with cars and pedestrians."},
+    {system:"LA Metro",emoji:"🌴",color:"#E04E39",
+     announcement:'"Attention passengers: due to track work, B Line trains are single-tracking between North Hollywood and Universal City."',
+     context:"LA Metro's B Line (formerly Red) runs entirely underground through Hollywood and the San Fernando Valley. It's one of only two fully underground Metro lines in the city."},
   ];
-  const ROUNDS=4;
-  const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");const[chosen,setChosen]=useState<string|null>(null);const[target,setTarget]=useState<typeof JINGLES[0]|null>(null);const[choices,setChoices]=useState<typeof JINGLES>([]);const[played,setPlayed]=useState(false);
+  const ROUNDS=5;
+  const[usedIdx]=useState<Set<number>>(()=>new Set());
+  const[round,setRound]=useState(0);
+  const[score,setScore]=useState(0);
+  const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");
+  const[chosen,setChosen]=useState<string|null>(null);
+  const[clue,setClue]=useState<Clue|null>(null);
+  const[choices,setChoices]=useState<string[]>([]);
+  const ALL_SYSTEMS=["NYC Subway","DC Metro","Chicago L","Boston T","Portland MAX","LA Metro"];
   useEffect(()=>{buildRound();},[round]);
-  function buildRound(){const shuffled=[...JINGLES].sort(()=>Math.random()-0.5);const t=shuffled[0];const opts=shuffled.slice(0,4);setTarget(t);setChoices(opts);setChosen(null);setPhase("play");setPlayed(false);}
-  function playJingle(jingle:typeof JINGLES[0]){
-    try{
-      const ctx=new(window.AudioContext||(window as any).webkitAudioContext)();
-      ctx.resume().then(()=>{
-        jingle.tones.forEach(([freq,delay,type])=>{
-          const osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);
-          osc.type=type as OscillatorType;osc.frequency.value=freq;
-          const t=ctx.currentTime+0.05+delay;g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
-          osc.start(t);osc.stop(t+0.3);
-        });
-      });setPlayed(true);
-    }catch(e){}
+  function buildRound(){
+    const available=ALL_CLUES.map((_,i)=>i).filter(i=>!usedIdx.has(i));
+    const pool=available.length>=1?available:ALL_CLUES.map((_,i)=>i);
+    const idx=pool[Math.floor(Math.random()*pool.length)];
+    usedIdx.add(idx);
+    const c=ALL_CLUES[idx];
+    setClue(c);
+    const wrong=ALL_SYSTEMS.filter(s=>s!==c.system).sort(()=>Math.random()-0.5).slice(0,3);
+    setChoices([c.system,...wrong].sort(()=>Math.random()-0.5));
+    setChosen(null);setPhase("play");
   }
-  function pick(city:string){if(!target)return;setChosen(city);setPhase("reveal");if(city===target.city){setScore(s=>s+1);addXP(80);}}
+  function pick(system:string){if(!clue)return;setChosen(system);setPhase("reveal");if(system===clue.system){setScore(s=>s+1);addXP(80);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
   if(phase==="done")return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
-        <div style={{fontSize:48,marginBottom:8}}>🔊</div>
-        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>SOUNDBOARD</div>
+        <div style={{fontSize:48,marginBottom:8}}>📻</div>
+        <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>TRANSIT CALLS</div>
         <div style={{fontSize:48,fontWeight:900,color:"#FF6B35",marginBottom:4}}>{score}/{ROUNDS}</div>
-        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"Perfect ear!":score>=3?"Good ear for transit!":"Train your ears!"}</div>
+        <div style={{fontSize:13,color:"#666",marginBottom:20}}>{score===ROUNDS?"You know every system cold!":score>=4?"Sharp transit ear!":score>=3?"Good instincts!":"Keep riding — knowledge comes with the miles."}</div>
         <button onClick={onClose} style={{background:"#FF6B35",color:"#fff",border:"none",borderRadius:8,padding:"12px 28px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>DONE</button>
       </div>
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
-        <div style={{textAlign:"center",marginBottom:20}}>
-          <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>SOUNDBOARD · ROUND {round+1}/{ROUNDS}</div>
-          <div style={{fontSize:17,fontWeight:800,marginBottom:16}}>Which transit system is this?</div>
-          <button onClick={()=>target&&playJingle(target)} style={{background:played?"#028A48":"#0A0A0A",color:"#fff",border:"none",borderRadius:12,padding:"16px 32px",fontSize:14,fontWeight:700,cursor:"pointer",letterSpacing:2,transition:"background .2s"}}>{played?"▶ PLAY AGAIN":"▶ PLAY SOUND"}</button>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,maxHeight:"92vh",overflowY:"auto"}}>
+        <div style={{background:"#0A0A0A",borderRadius:"16px 16px 0 0",padding:"16px 20px"}}>
+          <div style={{fontSize:10,letterSpacing:3,color:"rgba(255,255,255,0.4)",marginBottom:4}}>TRANSIT CALLS · ROUND {round+1}/{ROUNDS}</div>
+          <div style={{fontSize:12,letterSpacing:2,color:"rgba(255,255,255,0.5)",marginBottom:12}}>Which system made this announcement?</div>
+          <div style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"14px 16px"}}>
+            <div style={{fontSize:15,color:"#fff",fontStyle:"italic",lineHeight:1.55,marginBottom:0}}>{clue?.announcement}</div>
+          </div>
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
-          {choices.map(c=>{const rev=phase==="reveal";const isCorr=c.city===target?.city;const isChosen=c.city===chosen;return(
-            <button key={c.city} disabled={rev||!played} onClick={()=>pick(c.city)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#E8294A11":"#f5f5f5"):"#f5f5f5",border:rev?(isCorr?"2px solid #0A0A0A":isChosen?"2px solid #E8294A":"2px solid #eee"):"2px solid #eee",borderRadius:10,padding:"14px 18px",fontSize:13,fontWeight:700,cursor:(rev||!played)?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorr?"#fff":"#0A0A0A",opacity:!played&&!rev?0.5:1,transition:"all .15s"}}>
-              <span>{c.emoji} {c.city}</span>
-              {rev&&isCorr&&<span style={{fontSize:10,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✓</span>}
-              {rev&&isChosen&&!isCorr&&<span style={{fontSize:10,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✗</span>}
-            </button>
-          );})}
+        <div style={{padding:"16px 20px 20px"}}>
+          {phase==="reveal"&&clue&&(
+            <div style={{background:chosen===clue.system?"#f0fdf4":"#fff5f5",border:`1px solid ${chosen===clue.system?"#86efac":"#fca5a5"}`,borderRadius:10,padding:"12px 14px",marginBottom:14,fontSize:12,color:"#374151",lineHeight:1.55}}>
+              <span style={{fontWeight:700,color:chosen===clue.system?"#16a34a":"#dc2626"}}>{chosen===clue.system?"✓ Correct! ":"✗ "}</span>{clue.context}
+            </div>
+          )}
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {choices.map(s=>{const rev=phase==="reveal";const isCorr=s===clue?.system;const isChosen=s===chosen;return(
+              <button key={s} disabled={rev} onClick={()=>pick(s)} style={{background:rev?(isCorr?"#0A0A0A":isChosen?"#fef2f2":"#f9fafb"):"#f9fafb",border:`2px solid ${rev?(isCorr?"#0A0A0A":isChosen?"#E8294A":"#e5e7eb"):"#e5e7eb"}`,borderRadius:10,padding:"13px 16px",fontSize:13,fontWeight:700,cursor:rev?"default":"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center",color:rev&&isCorr?"#fff":"#111",transition:"all .15s"}}>
+                {s}
+                {rev&&isCorr&&<span style={{fontSize:10,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✓</span>}
+                {rev&&isChosen&&!isCorr&&<span style={{fontSize:10,background:"#E8294A",color:"#fff",padding:"2px 8px",borderRadius:4,letterSpacing:1}}>✗</span>}
+              </button>
+            );})}
+          </div>
+          {phase==="reveal"&&<button onClick={next} style={{marginTop:12,width:"100%",background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
         </div>
-        {phase==="reveal"&&<button onClick={next} style={{marginTop:14,width:"100%",background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:700,fontSize:13,cursor:"pointer",letterSpacing:1}}>{round+1>=ROUNDS?"SEE RESULTS →":"NEXT →"}</button>}
       </div>
     </div>
   );
@@ -8218,7 +8275,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
     {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>{setShowStreetLevel(true);onClose();}},
     {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>{setShowTransferOptimizer(true);onClose();}},
     {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>{setShowRidershipRace(true);onClose();}},
-    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",onClick:()=>{setShowSoundboard(true);onClose();}},
+    {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>{setShowSoundboard(true);onClose();}},
     {emoji:SEASON_EMOJI[season]||"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>{setShowSeasonalEvents(true);onClose();}},
   ];
   return(
@@ -8268,7 +8325,7 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
     {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>setShowTransferOptimizer(true)},
     {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>setShowStreetLevel(true)},
     {emoji:"📝",title:"Transit Wordl",body:"Word search: find the station names",color:"#7B2FBE",stub:true,stubDesc:"Transit word search. Coming soon."},
-    {emoji:"🔊",title:"Soundboard",body:"Guess the city by its transit sounds",color:"#FF6B35",onClick:()=>setShowSoundboard(true)},
+    {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>setShowSoundboard(true)},
     {emoji:"🏗️",title:"Route Architect",body:"Design your own transit line",color:"#028A48",stub:true,stubDesc:"Route design sandbox. Coming soon."},
     {emoji:"📱",title:"Offline Mode",body:"Download a city for offline play",color:"#4169E1",stub:true,stubDesc:"Service worker cache. Coming soon."},
     {emoji:"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>setShowSeasonalEvents(true)},
