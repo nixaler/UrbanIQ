@@ -7903,17 +7903,21 @@ function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,d
 
 // ── NEW STUB GAME IMPLEMENTATIONS ────────────────────────────────────────────
 async function getStationPhoto(station:any):Promise<string|null>{
-  if(station.img){
-    try{
-      const filename=station.img.split("Special:FilePath/")[1];
-      if(filename){
-        const res=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodeURIComponent(filename))}&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*`);
-        const data=await res.json();
-        const pages=data?.query?.pages;
-        if(pages){const page=Object.values(pages)[0] as any;const url=page?.imageinfo?.[0]?.thumburl||page?.imageinfo?.[0]?.url;if(url)return url;}
-      }
-    }catch{}
-  }
+  if(!station.img)return null;
+  try{
+    // Follow the Special:FilePath redirect — response.url is the direct upload.wikimedia.org address
+    const res=await fetch(station.img,{method:"HEAD"});
+    if(res.ok&&res.url&&res.url!==station.img)return res.url;
+  }catch{}
+  // Fallback: imageinfo API
+  try{
+    const filename=station.img.split("Special:FilePath/")[1];
+    if(!filename)return null;
+    const res=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(decodeURIComponent(filename))}&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*`);
+    const data=await res.json();
+    const pages=data?.query?.pages;
+    if(pages){const page=Object.values(pages)[0] as any;return page?.imageinfo?.[0]?.thumburl||page?.imageinfo?.[0]?.url||null;}
+  }catch{}
   return null;
 }
 function StreetLevelMode({onClose}:{onClose:()=>void}){

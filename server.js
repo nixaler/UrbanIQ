@@ -541,6 +541,17 @@ app.get("/api/admin/stats", adminAuth, async (req, res) => {
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
 
+// In-memory OTP fallback — used when Supabase otps table isn't set up yet
+const _otpStore = new Map(); // email -> { code, expires }
+function otpSet(email, code) { _otpStore.set(email, { code, expires: Date.now() + 10 * 60 * 1000 }); }
+function otpGet(email) {
+  const r = _otpStore.get(email);
+  if (!r) return null;
+  if (Date.now() > r.expires) { _otpStore.delete(email); return null; }
+  return r.code;
+}
+function otpClear(email) { _otpStore.delete(email); }
+
 function jwtRequired(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Bearer ")) return res.status(401).json({ error: "Not authenticated." });
@@ -578,26 +589,45 @@ app.post("/api/auth/send", authLimiter, async (req, res) => {
   if (!email || !/\S+@\S+\.\S+/.test(email)) return res.status(400).json({ error: "Valid email required." });
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-  const { error } = await supabase.from("otps").insert({ email: email.toLowerCase().trim(), code, expires_at: expiresAt, used: false });
-  if (error) { console.error("[auth/send]", error.message); return res.status(500).json({ error: "Could not send code." }); }
-  const emailSent = await sendOtpEmail(email, code);
+  const cleanEmail = email.toLowerCase().trim();
+  let usedMemory = false;
+  if (supabase) {
+    const { error } = await supabase.from("otps").insert({ email: cleanEmail, code, expires_at: expiresAt, used: false });
+    if (error) {
+      console.warn("[auth/send] Supabase otps unavailable, using memory:", error.message);
+      otpSet(cleanEmail, code);
+      usedMemory = true;
+    }
+  } else {
+    otpSet(cleanEmail, code);
+    usedMemory = true;
+  }
+  const emailSent = await sendOtpEmail(cleanEmail, code);
   if (!emailSent && !process.env.RESEND_API_KEY) {
     return res.json({ ok: true, _devCode: code, note: "Set RESEND_API_KEY to send real emails." });
   }
+  if (!emailSent) return res.status(500).json({ error: "Could not send code." });
   return res.json({ ok: true });
 });
 
 // POST /api/auth/verify — verify OTP, return JWT + user profile
 app.post("/api/auth/verify", authLimiter, async (req, res) => {
-  if (!supabase) return res.status(503).json({ error: "Accounts not configured." });
   const { email, code } = req.body || {};
   if (!email || !code) return res.status(400).json({ error: "Email and code required." });
   const cleanEmail = email.toLowerCase().trim();
-  const { data: rows, error: qErr } = await supabase.from("otps")
-    .select("*").eq("email", cleanEmail).eq("code", code).eq("used", false)
-    .gte("expires_at", new Date().toISOString()).order("id", { ascending: false }).limit(1);
-  if (qErr || !rows || rows.length === 0) return res.status(401).json({ error: "Invalid or expired code." });
-  await supabase.from("otps").update({ used: true }).eq("id", rows[0].id);
+  // Check in-memory store first (fallback when Supabase tables not ready)
+  const memCode = otpGet(cleanEmail);
+  if (memCode) {
+    if (memCode !== code) return res.status(401).json({ error: "Invalid or expired code." });
+    otpClear(cleanEmail);
+  } else {
+    if (!supabase) return res.status(503).json({ error: "Accounts not configured." });
+    const { data: rows, error: qErr } = await supabase.from("otps")
+      .select("*").eq("email", cleanEmail).eq("code", code).eq("used", false)
+      .gte("expires_at", new Date().toISOString()).order("id", { ascending: false }).limit(1);
+    if (qErr || !rows || rows.length === 0) return res.status(401).json({ error: "Invalid or expired code." });
+    await supabase.from("otps").update({ used: true }).eq("id", rows[0].id);
+  }
   let { data: users } = await supabase.from("users").select("*").eq("email", cleanEmail).limit(1);
   let user = users?.[0];
   if (!user) {
