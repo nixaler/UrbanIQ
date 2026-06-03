@@ -8088,11 +8088,13 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
   function playJingle(jingle:typeof JINGLES[0]){
     try{
       const ctx=new(window.AudioContext||(window as any).webkitAudioContext)();
-      jingle.tones.forEach(([freq,delay,type])=>{
-        const osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);
-        osc.type=type as OscillatorType;osc.frequency.value=freq;
-        const t=ctx.currentTime+delay;g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
-        osc.start(t);osc.stop(t+0.3);
+      ctx.resume().then(()=>{
+        jingle.tones.forEach(([freq,delay,type])=>{
+          const osc=ctx.createOscillator(),g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);
+          osc.type=type as OscillatorType;osc.frequency.value=freq;
+          const t=ctx.currentTime+0.05+delay;g.gain.setValueAtTime(0.15,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
+          osc.start(t);osc.stop(t+0.3);
+        });
       });setPlayed(true);
     }catch(e){}
   }
