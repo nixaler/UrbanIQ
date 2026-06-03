@@ -7903,10 +7903,7 @@ function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,d
 
 // ── NEW STUB GAME IMPLEMENTATIONS ────────────────────────────────────────────
 function StreetLevelMode({onClose}:{onClose:()=>void}){
-  const allWithImg=useMemo(()=>{
-    const all=[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.img);
-    return all.sort(()=>Math.random()-0.5);
-  },[]);
+  const allStations=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].sort(()=>Math.random()-0.5),[]);
   const ROUNDS=3;
   const[round,setRound]=useState(0);
   const[score,setScore]=useState(0);
@@ -7914,17 +7911,21 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   const[chosen,setChosen]=useState<string|null>(null);
   const[choices,setChoices]=useState<any[]>([]);
   const[targets,setTargets]=useState<any[]>([]);
-  useEffect(()=>{if(allWithImg.length>=4){const t=allWithImg.slice(0,ROUNDS);setTargets(t);}},[allWithImg]);
+  const[photoUrl,setPhotoUrl]=useState<string|null>(null);
+  const[photoLoading,setPhotoLoading]=useState(true);
+  useEffect(()=>{if(allStations.length>=4){setTargets(allStations.slice(0,ROUNDS));}},[allStations]);
   useEffect(()=>{
-    if(!targets[round]||allWithImg.length<4)return;
+    if(!targets[round]||allStations.length<4)return;
     const correct=targets[round];
-    const wrong=allWithImg.filter(s=>s.name!==correct.name&&s.img).sort(()=>Math.random()-0.5).slice(0,3);
-    const opts=[correct,...wrong].sort(()=>Math.random()-0.5);
-    setChoices(opts);setChosen(null);setPhase("play");
+    const wrong=allStations.filter(s=>s.name!==correct.name).sort(()=>Math.random()-0.5).slice(0,3);
+    setChoices([correct,...wrong].sort(()=>Math.random()-0.5));
+    setChosen(null);setPhase("play");setPhotoUrl(null);setPhotoLoading(true);
+    const city=DC_STATIONS.includes(correct)?"Washington DC metro station":NYC_STATIONS.includes(correct)?"New York City subway station":PDX_STATIONS.includes(correct)?"Portland MAX station":CHI_STATIONS.includes(correct)?"Chicago L station":LA_STATIONS.includes(correct)?"Los Angeles Metro station":"Boston T station";
+    getWikiImage(`${correct.name} ${city}`).then(url=>{setPhotoUrl(url);setPhotoLoading(false);});
   },[round,targets]);
   function pick(name:string){const c=targets[round]?.name;setChosen(name);setPhase("reveal");if(name===c){setScore(s=>s+1);addXP(150);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
-  if(!allWithImg.length||!targets.length)return null;
+  if(!targets.length)return null;
   const target=targets[round];
   if(phase==="done")return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
@@ -7940,8 +7941,10 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,overflow:"hidden",width:"100%",maxWidth:520,maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
-        <div style={{position:"relative",height:220,background:"#1a1a1a"}}>
-          <img src={target.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:phase==="play"?"blur(2px) brightness(0.9)":"brightness(0.85)"}} onError={(e)=>{(e.target as HTMLElement).style.display="none";}}/>
+        <div style={{position:"relative",height:220,background:"#1a1a1a",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          {photoLoading&&<div style={{color:"rgba(255,255,255,0.4)",fontSize:12,letterSpacing:2}}>LOADING...</div>}
+          {!photoLoading&&photoUrl&&<img src={photoUrl} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",filter:phase==="play"?"blur(2px) brightness(0.9)":"brightness(0.85)"}}/>}
+          {!photoLoading&&!photoUrl&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:12,letterSpacing:2,textAlign:"center",padding:16}}>📸<br/>No photo available</div>}
           <div style={{position:"absolute",top:12,right:12,background:"rgba(0,0,0,0.6)",color:"#fff",fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,letterSpacing:1}}>ROUND {round+1}/{ROUNDS}</div>
           {phase==="reveal"&&<div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{background:"rgba(0,0,0,0.82)",borderRadius:12,padding:"12px 20px",textAlign:"center"}}><div style={{fontSize:18,fontWeight:900,color:chosen===target.name?"#22C55E":"#E8294A",letterSpacing:1}}>{target.name.toUpperCase()}</div><div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>{target.zone}</div></div></div>}
         </div>
