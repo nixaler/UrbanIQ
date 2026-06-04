@@ -718,17 +718,17 @@ const LA_ZONE_DIST:{[k:string]:number}={"Downtown LA":0,"Mid-Wilshire":1,"Hollyw
 const LA_ZONE_COORDS:{[k:string]:[number,number]}={"Downtown LA":[0,0],"Mid-Wilshire":[-2,1],"Hollywood":[0,3],"East LA":[3,0],"South LA":[0,-2],"North Hollywood":[-1,4],"Inglewood/Crenshaw":[-1,-3],"Pasadena/SGV":[5,2],"Long Beach":[2,-5],"South Bay/LAX":[-2,-4],"West LA/Santa Monica":[-5,0],"Pomona/Azusa":[8,2]};
 const LA_ADJ:{[k:string]:string[]}={"Downtown LA":["Mid-Wilshire","Hollywood","East LA","South LA"],"Mid-Wilshire":["Downtown LA","Hollywood","West LA/Santa Monica","Inglewood/Crenshaw"],"Hollywood":["Downtown LA","Mid-Wilshire","North Hollywood"],"East LA":["Downtown LA","Pasadena/SGV","South LA"],"South LA":["Downtown LA","East LA","Inglewood/Crenshaw","Long Beach"],"North Hollywood":["Hollywood"],"Inglewood/Crenshaw":["Mid-Wilshire","South LA","West LA/Santa Monica","South Bay/LAX"],"Pasadena/SGV":["East LA","Pomona/Azusa"],"Long Beach":["South LA","South Bay/LAX"],"South Bay/LAX":["Inglewood/Crenshaw","Long Beach"],"West LA/Santa Monica":["Mid-Wilshire","Inglewood/Crenshaw"],"Pomona/Azusa":["Pasadena/SGV"]};
 
-const NYC_ZONE_DIST:{[k:string]:number}={"Manhattan":0,"Brooklyn":1,"Queens":1,"Bronx":1};
-const NYC_ZONE_COORDS:{[k:string]:[number,number]}={"Manhattan":[0,0],"Brooklyn":[1,-2],"Queens":[2,1],"Bronx":[0,3]};
-const NYC_ADJ:{[k:string]:string[]}={"Manhattan":["Brooklyn","Queens","Bronx"],"Brooklyn":["Manhattan","Queens"],"Queens":["Manhattan","Brooklyn","Bronx"],"Bronx":["Manhattan","Queens"]};
+const NYC_ZONE_DIST:{[k:string]:number}={"Manhattan":0,"Brooklyn":1,"Queens":1,"Bronx":1,"Staten Island":2};
+const NYC_ZONE_COORDS:{[k:string]:[number,number]}={"Manhattan":[0,0],"Brooklyn":[1,-2],"Queens":[2,1],"Bronx":[0,3],"Staten Island":[-2,-3]};
+const NYC_ADJ:{[k:string]:string[]}={"Manhattan":["Brooklyn","Queens","Bronx"],"Brooklyn":["Manhattan","Queens","Staten Island"],"Queens":["Manhattan","Brooklyn","Bronx"],"Bronx":["Manhattan","Queens"],"Staten Island":["Brooklyn"]};
 
 const CHI_ZONE_DIST:{[k:string]:number}={"Loop":0,"North":1,"Northwest":2,"West":2,"Southwest":2,"South":2,"North Shore":3};
 const CHI_ZONE_COORDS:{[k:string]:[number,number]}={"Loop":[0,0],"North":[0,3],"Northwest":[-2,2],"West":[-3,0],"Southwest":[-1,-2],"South":[0,-3],"North Shore":[0,5]};
-const CHI_ADJ:{[k:string]:string[]}={"Loop":["North","Northwest","West","Southwest","South"],"North":["Loop","Northwest","North Shore"],"Northwest":["Loop","North","West"],"West":["Loop","Northwest","Southwest"],"Southwest":["Loop","West","South"],"South":["Loop","Southwest"],"North Shore":["North"]};
+const CHI_ADJ:{[k:string]:string[]}={"Loop":["North","Northwest","Near North","Near West","West","Southwest","South"],"North":["Loop","Northwest","Near North","North Shore"],"Northwest":["Loop","North","West"],"Near North":["Loop","North","Northwest"],"Near West":["Loop","West","Southwest"],"West":["Loop","Northwest","Near West","Southwest"],"Southwest":["Loop","Near West","West","South"],"South":["Loop","Southwest"],"North Shore":["North"]};
 
 const BOS_ZONE_DIST:{[k:string]:number}={"Downtown Boston":0,"Back Bay/Fenway":1,"Cambridge":2,"East Boston":2,"South Boston":2,"Jamaica Plain":3,"North Shore":3,"South Shore":4,"Outer Suburbs":4};
 const BOS_ZONE_COORDS:{[k:string]:[number,number]}={"Downtown Boston":[0,0],"Back Bay/Fenway":[-2,0],"Cambridge":[-2,3],"East Boston":[3,0],"South Boston":[1,-2],"Jamaica Plain":[-1,-3],"North Shore":[4,2],"South Shore":[0,-5],"Outer Suburbs":[-5,0]};
-const BOS_ADJ:{[k:string]:string[]}={"Downtown Boston":["Back Bay/Fenway","East Boston","South Boston","Cambridge"],"Back Bay/Fenway":["Downtown Boston","Cambridge","Jamaica Plain"],"Cambridge":["Downtown Boston","Back Bay/Fenway","North Shore"],"East Boston":["Downtown Boston","North Shore"],"South Boston":["Downtown Boston","Jamaica Plain","South Shore"],"Jamaica Plain":["Back Bay/Fenway","South Boston","Outer Suburbs"],"North Shore":["East Boston","Cambridge"],"South Shore":["South Boston"],"Outer Suburbs":["Jamaica Plain"]};
+const BOS_ADJ:{[k:string]:string[]}={"Downtown Boston":["Back Bay/Fenway","Back Bay","South End","East Boston","South Boston","Cambridge"],"Back Bay/Fenway":["Downtown Boston","Back Bay","South End","Cambridge","Allston/Brighton","Brookline","Jamaica Plain"],"Back Bay":["Downtown Boston","Back Bay/Fenway","South End","Allston/Brighton"],"South End":["Downtown Boston","Back Bay","Back Bay/Fenway","South Boston","Jamaica Plain","Dorchester"],"Cambridge":["Downtown Boston","Back Bay/Fenway","East Cambridge","Somerville","North Shore"],"East Cambridge":["Cambridge","Downtown Boston"],"Somerville":["Cambridge","East Cambridge","Medford"],"Medford":["Somerville","North Shore"],"East Boston":["Downtown Boston","Chelsea","Revere","North Shore"],"Chelsea":["East Boston","Revere","North Shore"],"Revere":["East Boston","Chelsea","North Shore"],"North Shore":["East Boston","Chelsea","Revere","Cambridge","Medford"],"South Boston":["Downtown Boston","South End","Jamaica Plain","Dorchester","South Shore"],"Jamaica Plain":["Back Bay/Fenway","South End","South Boston","Allston/Brighton","Brookline","Dorchester","Outer Suburbs"],"Allston/Brighton":["Back Bay/Fenway","Back Bay","Jamaica Plain","Brookline","Chestnut Hill"],"Brookline":["Back Bay/Fenway","Jamaica Plain","Allston/Brighton","Chestnut Hill","Newton"],"Chestnut Hill":["Brookline","Allston/Brighton","Newton","Outer Suburbs"],"Newton":["Brookline","Chestnut Hill","Outer Suburbs"],"Dorchester":["South Boston","South End","Jamaica Plain","South Shore"],"South Shore":["South Boston","Dorchester"],"Outer Suburbs":["Jamaica Plain","Chestnut Hill","Newton"]};
 
 const ATL_ZONE_DIST:{[k:string]:number}={"Downtown Atlanta":0,"Midtown":1,"Buckhead":2,"West End/Westside":2,"East Atlanta/Decatur":2,"Northeast Atlanta":3,"Airport/South":3,"North Springs":4};
 const ATL_ZONE_COORDS:{[k:string]:[number,number]}={"Downtown Atlanta":[0,0],"Midtown":[0,2],"Buckhead":[0,4],"West End/Westside":[-3,0],"East Atlanta/Decatur":[3,0],"Northeast Atlanta":[2,3],"Airport/South":[0,-4],"North Springs":[0,6]};
@@ -1709,8 +1709,6 @@ const PDX_RAW:any[]=[
   ["North Killingsworth Street",["Yellow"],"North Portland",3,2004,"Killingsworth corridor — revitalizing commercial street","Killingsworth Street has undergone a significant restaurant and arts renaissance since the Yellow Line opened."],
   ["North Lombard Transit Center",["Yellow"],"North Portland",3,2004,"Major bus transfer hub on Lombard Street","One of the Yellow Line's busiest bus transfer stations, connecting North Portland to regional routes."],
   ["Rosa Parks",["Yellow"],"North Portland",3,2004,"Named for civil rights icon Rosa Parks","Renamed in honor of Rosa Parks — one of the most meaningfully named transit stations in the Pacific Northwest."],
-  ["Delta Park/Vanport",["Yellow"],"North Portland",2,2004,"Named for Vanport — WWII city destroyed by 1948 flooding","Vanport was a city of 40,000 built in 1942. A catastrophic 1948 Columbia River flood destroyed it entirely in one afternoon."],
-  ["Expo Center",["Yellow"],"North Portland",2,2004,"Northern terminus — Portland Expo Center, Columbia River","The northern end of the Yellow Line serves the Portland Expo Center steps from the Oregon/Washington border."],
   ["NE 60th Avenue",["Blue","Green","Red"],"NE Portland",2,1986,"NE 60th Ave corridor, Beaumont-Wilshire neighborhood","Serves walkable Beaumont Village — one of Northeast Portland's most charming commercial districts."],
   ["NE 82nd Avenue",["Blue","Green","Red"],"NE Portland",3,1986,"82nd Avenue — diverse global food corridor","NE/SE 82nd is one of Oregon's most diverse dining streets, with Vietnamese, Ethiopian, Mexican, and Filipino cuisines."],
   ["Hollywood/NE 42nd Avenue",["Blue","Green","Red"],"NE Portland",3,1986,"Named for the Hollywood Theatre, independent cinema since 1926","The Hollywood Theatre has shown films continuously since 1926 — one of Portland's most beloved indie cinemas."],
@@ -1732,7 +1730,7 @@ const PDX_RAW:any[]=[
   ["Quatama",["Blue"],"Hillsboro",2,2003,"Quatama area in outer Hillsboro","Quatama opened in 2003 with Hillsboro's eastern expansion — serving newer residential development."],
   ["Hawthorn Farm",["Blue"],"Hillsboro",2,2003,"Hawthorn Farm development area","Serves the Hawthorn Farm area of Hillsboro — near Intel's massive Ronler Acres campus."],
   ["Orenco/NW 231st Avenue",["Blue"],"Hillsboro",2,2003,"Celebrated transit-oriented development community","Orenco Station is one of the most-cited examples of successful transit-oriented development in the US."],
-  ["Fair Complex/Hillsboro Airport",["Blue","Red"],"Hillsboro",2,1998,"Hillsboro Airport and Washington County Fairgrounds","Serves general aviation and the Washington County Fair."],
+  ["Fair Complex/Hillsboro Airport",["Blue"],"Hillsboro",2,1998,"Hillsboro Airport and Washington County Fairgrounds","Serves general aviation and the Washington County Fair. Red Line terminus is Beaverton TC — this stop is Blue Line only."],
   ["Hillsboro Central/SE 3rd Avenue TC",["Blue"],"Hillsboro",2,1998,"Downtown Hillsboro — capital of Oregon's Silicon Forest","Hillsboro is home to Intel's largest US campus — the center of Oregon's technology industry."],
   ["Hillsboro Health District",["Blue"],"Hillsboro",2,1998,"Hillsboro Medical Center campus","Formerly Tuality Hospital — renamed in 2021 to reflect the expanded Hillsboro Medical Center campus."],
   ["Washington/SE 12th Avenue",["Blue"],"Hillsboro",1,1998,"Quiet residential corridor in southern Hillsboro","Serves a residential stretch near the Tualatin Valley Highway."],
@@ -1745,7 +1743,7 @@ const PDX_RAW:any[]=[
   ["E 122nd Avenue",["Blue","Green","Red"],"East Portland",3,1986,"122nd Ave — diverse East Portland neighborhood","122nd Avenue is one of East Portland's most multicultural corridors."],
   ["E 148th Avenue",["Blue","Green","Red"],"East Portland",2,1986,"Outer East Portland near the Gresham border","One of the gateway stations to Gresham from East Portland."],
   ["E 162nd Avenue",["Blue","Green","Red"],"East Portland",2,1986,"162nd Ave, far outer East Portland","Serves the residential community of outer East Portland near the Gresham boundary."],
-  ["E 172nd Avenue",["Blue"],"Gresham",2,1986,"Eastern gateway to Gresham","Part of the original 1986 Blue Line extension into Gresham."],
+  ["E 172nd Avenue",["Blue","Green","Red"],"Gresham",2,1986,"Eastern gateway to Gresham","Part of the original 1986 Blue Line extension into Gresham, also served by Green and Red Lines through the Gresham corridor."],
   ["Rockwood/E 188th Ave TC",["Blue","Green","Red"],"Gresham",3,1986,"Rockwood neighborhood — diverse community","Rockwood is one of East Portland's most diverse communities — the Green Line added frequency in 2009."],
   ["Ruby Junction/E 197th Ave",["Blue","Green","Red"],"Gresham",2,1986,"Near TriMet's main MAX maintenance facility","Ruby Junction is the home of TriMet's main MAX vehicle maintenance and storage facility."],
   ["Civic Drive",["Blue","Green","Red"],"Gresham",2,1986,"Gresham City Hall and government buildings","Serves Gresham's civic center — Oregon's 4th largest city and the eastern anchor of the MAX system."],
@@ -1793,7 +1791,7 @@ const DC_RAW:any[]=[
   ["Federal Center SW",["Orange","Silver","Blue"],"Penn Quarter/SW",3,1977,"Southwest federal office complex","Serves a cluster of federal agencies in the Southwest waterfront area."],
   ["Archives-Navy Memorial",["Yellow","Green"],"Penn Quarter/SW",3,1983,"National Archives, Navy Memorial, Pennsylvania Ave","The National Archives houses the Declaration of Independence and Constitution — this is their Metro stop."],
   ["Mt Vernon Sq/7th St-Convention Center",["Yellow","Green"],"Penn Quarter/SW",3,2001,"DC Convention Center and Mount Vernon Square","Serves the Walter E. Washington Convention Center — DC's largest convention facility at 2.3 million square feet."],
-  ["Judiciary Square",["Red"],"Penn Quarter/SW",2,1977,"DC Superior Court and Municipal Center","Serves DC's court complex and municipal government buildings."],
+  ["Judiciary Square",["Red"],"Penn Quarter/SW",2,1976,"DC Superior Court and Municipal Center","Serves DC's court complex and municipal government buildings — one of Metro's original 1976 opening-day stations."],
   ["Waterfront",["Green"],"Penn Quarter/SW",2,1991,"SW Waterfront — The Wharf entertainment district","Serves The Wharf — a $3.6 billion waterfront development that transformed Southwest DC's Potomac riverfront."],
   ["Navy Yard-Ballpark",["Green"],"Capitol Hill",3,1991,"Nationals Park — Washington Nationals MLB stadium","When the Nationals play, this station sees some of the largest single-event ridership surges in the system."],
   ["Capitol South",["Orange","Silver","Blue"],"Capitol Hill",4,1977,"US Capitol Building and House of Representatives","The primary Metro stop for the US Capitol — members of Congress and their staffs use this station daily."],
@@ -1837,8 +1835,8 @@ const DC_RAW:any[]=[
   ["New Carrollton",["Orange","Silver"],"Prince George's County MD",3,1978,"Major PG County hub — Amtrak and MARC connections","New Carrollton is a major regional transportation hub connecting Metro, Amtrak, and MARC commuter rail."],
   ["Landover",["Orange"],"Prince George's County MD",1,1978,"Landover — suburban Prince George's County","Serves the Landover area of Prince George's County."],
   ["Cheverly",["Orange"],"Prince George's County MD",1,1978,"Cheverly — small-town feel near DC","Cheverly is a small incorporated town near DC, known as one of the first planned communities in the region."],
-  ["Deanwood",["Orange"],"Prince George's County MD",1,1978,"Deanwood neighborhood in northeastern DC area","Serves the historic Deanwood community — one of Washington's oldest African American neighborhoods."],
-  ["Minnesota Ave",["Orange"],"Prince George's County MD",1,1978,"Minnesota Avenue corridor in eastern DC","Serves the Minnesota Avenue corridor at the eastern edge of Washington, DC."],
+  ["Deanwood",["Orange"],"NE DC",1,1978,"Deanwood neighborhood in northeastern DC","Serves the historic Deanwood community — one of Washington's oldest African American neighborhoods, inside DC limits."],
+  ["Minnesota Ave",["Orange"],"NE DC",1,1978,"Minnesota Avenue corridor in eastern DC","Serves the Minnesota Avenue corridor at the eastern edge of Washington, DC — inside DC limits, not Maryland."],
   ["Benning Road",["Blue","Silver"],"Prince George's County MD",1,1978,"Benning Road in eastern DC area","Serves the Benning Road corridor at the boundary between eastern DC and Prince George's County."],
   ["Capitol Heights",["Blue","Silver"],"Prince George's County MD",1,1978,"Capitol Heights — suburban Prince George's County","Capitol Heights is an unincorporated suburb just across the DC border in Prince George's County."],
   ["Addison Road-Seat Pleasant",["Blue","Silver"],"Prince George's County MD",1,1978,"Seat Pleasant — historic PG County community","Seat Pleasant is one of Prince George's County's older incorporated municipalities."],
@@ -1966,17 +1964,17 @@ const BALT_RAW:any[]=[
   ["Owings Mills",["Metro"],"Baltimore County N",3,1987,"Northwest terminus of Metro SubwayLink in Baltimore County","Owings Mills is a major commercial and residential hub in Baltimore County — one of the busier park-and-ride stations on the Metro."],
   ["Old Court",["Metro"],"Baltimore County N",2,1987,"Old Court Road area in northwest Baltimore County","Serves the Pikesville area in northwest Baltimore County — a mid-county stop along the Reisterstown Road corridor."],
   ["Milford Mill",["Metro"],"Baltimore County N",2,1987,"Milford Mill neighborhood inside the Baltimore Beltway","Serves the diverse Milford Mill community just inside the Baltimore Beltway in western Baltimore County."],
-  ["Reisterstown Plaza",["Metro"],"Northwest Baltimore",3,1987,"Reisterstown Road Plaza — major northwest Baltimore commercial hub","Reisterstown Plaza is one of Baltimore's key suburban-urban commercial corridors, serving northwest Baltimore communities."],
-  ["Rogers Avenue",["Metro"],"Northwest Baltimore",2,1987,"Rogers Avenue in the Forest Park neighborhood","Serves Forest Park — a classic Baltimore row house neighborhood along the historic Pennsylvania Avenue corridor."],
-  ["West Cold Spring",["Metro"],"North Baltimore",2,1987,"Cold Spring Lane area in north Baltimore City","Near the Cold Spring Lane neighborhood, just one stop from the Light Rail at Cold Spring Lane station."],
-  ["Mondawmin",["Metro"],"Northwest Baltimore",3,1987,"Mondawmin Mall — one of Baltimore's most important transit hubs","Mondawmin is a critical transfer point for dozens of bus routes and the Metro, serving northwest Baltimore and its large shopping mall."],
-  ["Penn North",["Metro"],"North Baltimore",2,1987,"Pennsylvania Avenue corridor in north Baltimore","Serves the historic Pennsylvania Avenue — the heart of Baltimore's African American cultural and commercial heritage."],
-  ["Upton",["Metro"],"North Baltimore",2,1987,"Upton neighborhood along the Pennsylvania Avenue corridor","Upton is a historic Baltimore neighborhood along Pennsylvania Avenue, adjacent to the Druid Hill Park community."],
-  ["State Center",["Metro","Light Rail"],"Midtown",3,1987,"Maryland state government complex — Metro and Light Rail transfer","State Center serves Maryland's main government complex and is the transfer point between the Metro SubwayLink and Light Rail."],
-  ["Lexington Market",["Metro","Light Rail"],"Downtown",4,1987,"Historic Lexington Market — one of America's oldest public markets","Lexington Market has operated since 1782 — one of the oldest continuously operating public markets in America, serving both rail lines."],
-  ["Charles Center",["Metro"],"Downtown",4,1987,"Charles Center — heart of downtown Baltimore's business district","The core of downtown Baltimore's business district, steps from the Inner Harbor redevelopment that transformed the city in the 1980s."],
-  ["Shot Tower/Market Place",["Metro"],"Downtown",3,1987,"Historic 1828 Phoenix Shot Tower near the Inner Harbor","The 1828 Phoenix Shot Tower was the tallest structure in the United States for decades — it stands just steps from this station."],
-  ["Johns Hopkins Hospital",["Metro"],"East Baltimore",3,1983,"World-renowned Johns Hopkins Hospital — consistently the #1 hospital in the US","Johns Hopkins Hospital is one of the world's most celebrated medical institutions — the Metro's eastern terminus since 1983."],
+  ["Reisterstown Plaza",["Metro"],"Northwest Baltimore",3,1983,"Reisterstown Road Plaza — major northwest Baltimore commercial hub","Reisterstown Plaza is one of Baltimore's key suburban-urban commercial corridors, serving northwest Baltimore communities."],
+  ["Rogers Avenue",["Metro"],"Northwest Baltimore",2,1983,"Rogers Avenue in the Forest Park neighborhood","Serves Forest Park — a classic Baltimore row house neighborhood along the historic Pennsylvania Avenue corridor."],
+  ["West Cold Spring",["Metro"],"North Baltimore",2,1983,"Cold Spring Lane area in north Baltimore City","Near the Cold Spring Lane neighborhood, just one stop from the Light Rail at Cold Spring Lane station."],
+  ["Mondawmin",["Metro"],"Northwest Baltimore",3,1983,"Mondawmin Mall — one of Baltimore's most important transit hubs","Mondawmin is a critical transfer point for dozens of bus routes and the Metro, serving northwest Baltimore and its large shopping mall."],
+  ["Penn North",["Metro"],"North Baltimore",2,1983,"Pennsylvania Avenue corridor in north Baltimore","Serves the historic Pennsylvania Avenue — the heart of Baltimore's African American cultural and commercial heritage."],
+  ["Upton",["Metro"],"North Baltimore",2,1983,"Upton neighborhood along the Pennsylvania Avenue corridor","Upton is a historic Baltimore neighborhood along Pennsylvania Avenue, adjacent to the Druid Hill Park community."],
+  ["State Center",["Metro","Light Rail"],"Midtown",3,1983,"Maryland state government complex — Metro and Light Rail transfer","State Center serves Maryland's main government complex and is the transfer point between the Metro SubwayLink (1983) and Light Rail (1992)."],
+  ["Lexington Market",["Metro","Light Rail"],"Downtown",4,1983,"Historic Lexington Market — one of America's oldest public markets","Lexington Market has operated since 1782 — one of the oldest continuously operating public markets in America, serving both rail lines."],
+  ["Charles Center",["Metro"],"Downtown",4,1983,"Charles Center — heart of downtown Baltimore's business district","The core of downtown Baltimore's business district, steps from the Inner Harbor redevelopment that transformed the city in the 1980s."],
+  ["Shot Tower/Market Place",["Metro"],"Downtown",3,1995,"Historic 1828 Phoenix Shot Tower near the Inner Harbor","The 1828 Phoenix Shot Tower was the tallest structure in the United States for decades — this station opened with the 1995 eastern Metro extension."],
+  ["Johns Hopkins Hospital",["Metro"],"East Baltimore",3,1995,"World-renowned Johns Hopkins Hospital — consistently the #1 hospital in the US","Johns Hopkins Hospital is one of the world's most celebrated medical institutions — the eastern Metro terminus, opened November 1995."],
   ["Hunt Valley",["Light Rail"],"Baltimore County N",2,1992,"Northern terminus of Light Rail in Baltimore County","Hunt Valley is a major employment center in Baltimore County — transit access helped develop this suburban business park corridor."],
   ["Pepper Road",["Light Rail"],"Baltimore County N",1,1992,"Quiet suburban Light Rail stop along York Road","A residential suburban stop in northern Baltimore County, serving neighborhoods along the historic York Road corridor."],
   ["McCormick Road",["Light Rail"],"Baltimore County N",1,1992,"McCormick Road station in northern Baltimore County","A northern suburban stop on the Light Rail serving the communities along the York Road corridor between Pepper Road and Gilroy Road."],
@@ -2015,14 +2013,12 @@ const BALT_RAW:any[]=[
 const BALT_IMG:Record<string,string>={
   "Camden Yards":"Baltimore_Light_Rail_at_Camden_Yards.jpg",
   "Convention Center":"Baltimore_Convention_Center.jpg",
-  "Pratt Street":"Baltimore_Inner_Harbor.jpg",
-  "Baltimore Street":"Baltimore_Street_downtown.jpg",
   "Charles Center":"Baltimore_Charles_Center_station.jpg",
   "Lexington Market":"Lexington_Market_Baltimore.jpg",
   "State Center":"State_Center_Baltimore.jpg",
   "Cultural Center":"Lyric_Theatre_Baltimore.jpg",
-  "Mount Royal/MICA":"MICA_Baltimore.jpg",
-  "North Avenue":"North_Avenue_Baltimore_Metro.jpg",
+  "Mt. Royal / MICA":"MICA_Baltimore.jpg",
+  "North Ave":"North_Avenue_Baltimore_Metro.jpg",
   "Woodberry":"Woodberry_Baltimore_Metro.jpg",
   "Cold Spring Lane":"Cold_Spring_Lane_Baltimore_Metro.jpg",
   "Johns Hopkins Hospital":"Johns_Hopkins_Hospital.jpg",
@@ -2039,10 +2035,10 @@ const BALT_IMG:Record<string,string>={
   "Lutherville":"Lutherville_Maryland.jpg",
   "Falls Road":"Falls_Road_Baltimore.jpg",
   "Mt. Washington":"Mount_Washington_Baltimore.jpg",
-  "BWI Marshall Airport":"BWI_Airport_terminal.jpg",
+  "BWI Airport":"BWI_Airport_terminal.jpg",
   "BWI Business District":"BWI_Business_District_station.jpg",
   "Linthicum":"Linthicum_Maryland.jpg",
-  "Cromwell Station/Glen Burnie":"Glen_Burnie_Maryland.jpg",
+  "Cromwell/Glen Burnie":"Glen_Burnie_Maryland.jpg",
   "Patapsco":"Patapsco_River_Maryland.jpg",
   "Hamburg Street":"Baltimore_Inner_Harbor.jpg",
   "Westport":"Westport_Baltimore.jpg",
@@ -2068,7 +2064,7 @@ const LA_RAW:any[]=[
   ["Lincoln/Cypress",["A"],"East LA",2,2003,"Lincoln Heights and Cypress Park neighborhoods","Lincoln Heights is one of LA's oldest neighborhoods, founded in the 1870s — the Arroyo Seco parkway runs nearby."],
   ["Heritage Square/Arroyo",["A"],"East LA",2,2003,"Heritage Square Museum and the Arroyo Seco","Heritage Square Museum preserves 8 Victorian-era structures relocated from across LA — a living museum of 19th-century architecture."],
   ["Southwest Museum",["A"],"East LA",1,2003,"Southwest Museum — one of the nation's oldest Western heritage museums","The Southwest Museum (now the Autry's Southwest Museum) opened in 1914 — one of the oldest museums in Los Angeles, perched on a hilltop above the Arroyo."],
-  ["Fillmore",["A"],"East LA",3,2003,"Highland Park — one of LA's fastest-evolving neighborhoods","Fillmore anchors Highland Park's transformation — York Boulevard has become one of LA's most celebrated restaurant streets."],
+  ["Fillmore",["A"],"Pasadena/SGV",3,2003,"Highland Park — one of LA's fastest-evolving neighborhoods","Fillmore anchors Highland Park's transformation — York Boulevard has become one of LA's most celebrated restaurant streets."],
   ["Del Mar",["A"],"Pasadena/SGV",3,2003,"Old Pasadena — Rose Parade route, Colorado Blvd","Del Mar drops riders into Old Pasadena's Colorado Blvd — the Rose Parade route and one of SoCal's premier dining corridors."],
   ["Memorial Park",["A"],"Pasadena/SGV",3,2003,"Pasadena's civic green — near City Hall","Memorial Park honors Pasadena's veterans and provides green space in the heart of one of the region's most walkable cities."],
   ["Lake",["A"],"Pasadena/SGV",3,2003,"Lake Ave commercial corridor in east Pasadena","Lake Avenue is Pasadena's main north-south commercial spine — home to the city's largest concentration of retail and dining."],
@@ -2128,6 +2124,7 @@ const LA_RAW:any[]=[
   ["Wilshire/Fairfax",["D"],"Mid-Wilshire",3,2023,"The Grove and Farmers Market — Fairfax Village","Wilshire/Fairfax is steps from The Grove and the historic 1934 Farmers Market — two of LA's most visited destinations."],
   ["Wilshire/La Cienega",["D"],"Mid-Wilshire",3,2023,"Beverly Hills gateway — 2023 extension station","Wilshire/La Cienega opened in 2023 as part of the D Line extension, marking the edge of Beverly Hills on the Westside."],
   ["Wilshire/Rodeo",["D"],"Mid-Wilshire",3,2025,"Rodeo Drive and Beverly Hills — Phase 2","Wilshire/Rodeo puts riders steps from world-famous Rodeo Drive — the heart of Beverly Hills luxury retail."],
+  ["Century City/Constellation",["D"],"West LA/Santa Monica",4,2025,"Century City's high-rise business district — Phase 2","Century City/Constellation serves one of LA's densest employment corridors — Fox Studios, CAA, and dozens of office towers are within walking distance."],
   ["Westwood/UCLA",["D"],"West LA/Santa Monica",4,2026,"UCLA campus — 46,000 students served by rail","With 46,000 students, UCLA generates enormous demand — Westwood/UCLA is one of the most anticipated D Line Phase 2 stations."],
   ["Westwood/VA Hospital",["D"],"West LA/Santa Monica",2,2026,"VA West LA campus — western terminus of D Line","Westwood/VA Hospital serves the Veterans Affairs campus and marks the 2026 western terminus of the D Line Phase 2 extension."],
   // ── REGIONAL CONNECTOR underground (A + E, 2023) ────────────────────────
@@ -2139,7 +2136,7 @@ const LA_RAW:any[]=[
   ["Expo/Vermont",["E"],"South LA",3,2012,"Vermont Ave and Expo Blvd — near Exposition Park","Expo/Vermont serves South LA's Exposition Park area — home to the California Science Center, Natural History Museum, and the Coliseum."],
   ["Expo/Western",["E"],"South LA",2,2012,"Western Ave and Expo Blvd — South LA bus connector","Expo/Western serves South LA's Western Avenue corridor, one of the area's major north-south bus corridors."],
   ["Farmdale",["E"],"Inglewood/Crenshaw",2,2012,"Farmdale neighborhood — quiet E Line stop","Farmdale is a quieter E Line stop serving South LA's residential communities along the Exposition Boulevard corridor."],
-  ["Expo/Crenshaw",["E","K"],"Inglewood/Crenshaw",3,2022,"Transfer: E and K Lines — gateway to Crenshaw","Expo/Crenshaw is the northern terminus of the K Line and an E Line transfer — key gateway to the Crenshaw and Inglewood corridors."],
+  ["Expo/Crenshaw",["E","K"],"Inglewood/Crenshaw",3,2012,"Transfer: E and K Lines — gateway to Crenshaw","Expo/Crenshaw opened on the E Line in 2012; the K Line (Crenshaw/LAX) was added in 2022 — key gateway to the Crenshaw and Inglewood corridors."],
   ["Expo/La Brea",["E"],"Mid-Wilshire",2,2012,"Expo Blvd at La Brea — West Adams corridor","A quieter E Line station between the La Brea corridor and the emerging West Adams neighborhood along Exposition Blvd."],
   ["La Cienega/Jefferson",["E"],"Mid-Wilshire",3,2012,"La Cienega and Jefferson — Mid-Cities connector","La Cienega/Jefferson sits between Culver City and the Crenshaw corridor, serving a dense residential and commercial area."],
   ["Culver City",["E"],"Mid-Wilshire",4,2012,"Sony Pictures, Apple, Amazon — Culver City tech hub","Culver City transformed into an LA tech and creative hub — Sony Pictures, Apple, and Amazon all have major offices nearby."],
@@ -2221,7 +2218,7 @@ const LA_IMG:Record<string,string>={
   "Compton":"Compton_California.jpg",
   "Downtown Long Beach":"Downtown_Long_Beach_Metro_station.jpg",
   "LAX/Metro Transit Center":"Los_Angeles_International_Airport.jpg",
-  "Aviation/Lax (C)":"Los_Angeles_International_Airport.jpg",
+  "Aviation/LAX":"Los_Angeles_International_Airport.jpg",
   "Redondo Beach":"Redondo_Beach_California.jpg",
   "Norwalk":"Norwalk_station_LA_Metro.jpg",
   "Harbor Freeway":"Harbor_Freeway_station_LA_Metro.jpg",
@@ -2341,8 +2338,8 @@ const NYC_RAW:any[]=[
   ["Astoria-Ditmars Blvd",["N","W"],"Queens",3,1917,"Northern terminus in Astoria — near LaGuardia Airport","Astoria has the best Greek food outside of Greece — the community has been here since the 1960s."],
   ["Pelham Bay Park",["6"],"Bronx",2,1920,"Eastern Bronx terminus — adjacent to the largest park in NYC","At 2,772 acres, Pelham Bay Park is three times the size of Central Park with a nature center and beach."],
   ["Woodlawn",["4"],"Bronx",2,1918,"Northern Bronx terminus near the historic cemetery","Woodlawn Cemetery is the final resting place of Miles Davis, Herman Melville, and Joseph Pulitzer."],
-  ["Far Rockaway-Mott Av",["A"],"Queens",2,1872,"Far end of the A train — practically at the Atlantic Ocean","The Rockaways are a barrier peninsula — you can walk from this station to the beach in minutes."],
-  ["Stillwell Av",["D","F","N","Q"],"Brooklyn",4,1919,"Open-air Coney Island terminal — 4 lines end here","Nathan's Famous hot dog stand opened on Coney Island in 1916 — annual eating contests draw thousands."],
+  ["Far Rockaway-Mott Av",["A"],"Queens",2,1956,"Far end of the A train — practically at the Atlantic Ocean","The Rockaways are a barrier peninsula — you can walk from this station to the beach in minutes. The IND A train reached here in 1956."],
+  ["Coney Island-Stillwell Av",["D","F","N","Q"],"Brooklyn",4,1919,"Open-air Coney Island terminal — 4 lines end here","Nathan's Famous hot dog stand opened on Coney Island in 1916 — annual eating contests draw thousands."],
   ["Delancey St-Essex St",["F","J","M","Z"],"Manhattan",3,1908,"Lower East Side hub — center of immigrant New York","The Lower East Side Tenement Museum preserves the stories of immigrant families from the 1800s."],
   ["Fordham Rd",["4","D"],"Bronx",3,1933,"Major Bronx commercial corridor — near Fordham University","Fordham Road is one of the busiest retail strips in the US by foot traffic."],
   ["Jamaica-179 St",["F"],"Queens",2,1950,"Eastern Queens terminus of the F — near JFK Airport","AirTrain JFK departs from the Jamaica LIRR/AirTrain station, a short walk from here."],
@@ -2365,7 +2362,6 @@ const NYC_RAW:any[]=[
   ["Tremont Av",["B","D"],"Bronx",2,1917,"Mid-Bronx stop on the B and D — Fordham Road corridor","The Bronx was the birthplace of hip-hop — DJ Kool Herc threw the first recognized hip-hop party in 1973."],
   ["Simpson St",["5"],"Bronx",2,1920,"South Bronx elevated station in Longwood","The South Bronx's muralism and street art scene is one of the most vibrant in the world."],
   ["Dekalb Av",["B","D","N","Q","R"],"Brooklyn",4,1916,"Major Downtown Brooklyn transfer — 5 lines cross here","DeKalb Avenue sits at the epicenter of Brooklyn's downtown revival, surrounded by hip restaurants and boutiques."],
-  ["Pacific St",["2","3","4","5","B","D","N","Q","R"],"Brooklyn",5,1878,"Busy Brooklyn hub adjacent to Atlantic Terminal","Atlantic Terminal is the largest shopping mall in Brooklyn — over 100 stores above the transit hub."],
   ["7 Av",["B","Q"],"Brooklyn",3,1920,"Park Slope's main subway stop — Brooklyn's most family-friendly neighborhood","Park Slope's brownstone-lined streets were rated among the best neighborhoods to live in by multiple publications."],
   ["Bay Ridge-95 St",["R"],"Brooklyn",2,1925,"Southern terminus of the R — at the foot of the Verrazzano-Narrows Bridge","The Verrazzano-Narrows Bridge, completed in 1964, was the world's longest suspension bridge for 17 years."],
   ["Coney Island-Stillwell Av",["D","F","N","Q"],"Brooklyn",4,1919,"Multi-line open-air terminal at Coney Island","Coney Island's Luna Park first opened in 1903 — the roller coasters and boardwalk are still thrilling visitors."],
@@ -2392,7 +2388,7 @@ const NYC_RAW:any[]=[
   ["42 St-Bryant Park",["B","D","F","M"],"Manhattan",4,1908,"Under Bryant Park — the New York Public Library's celebrated backyard","The New York Public Library's main branch, steps away, holds over 55 million items in its collection."],
   ["Wall St",["2","3","4","5"],"Manhattan",4,1878,"Financial district heartbeat — beneath the world's most famous financial street","The New York Stock Exchange on Wall Street has been the world's largest stock exchange since 1903."],
   ["Bowling Green",["4","5"],"Manhattan",3,1905,"Southern tip of Manhattan's financial district — foot of Broadway","The famous Charging Bull sculpture nearby became a symbol of financial optimism after being placed overnight in 1989."],
-  ["World Trade Center",["E"],"Manhattan",4,2003,"Memorial station rebuilt after 9/11 — a profound transit landmark","The rebuilt WTC complex includes the 9/11 Memorial pools placed in the exact footprints of the Twin Towers."],
+  ["World Trade Center",["E"],"Manhattan",4,1971,"Memorial station rebuilt after 9/11 — originally opened 1971, reopened 2003","The rebuilt WTC complex includes the 9/11 Memorial pools placed in the exact footprints of the Twin Towers."],
   ["Whitehall St-South Ferry",["R","W"],"Manhattan",3,1918,"Broadway's southern terminus — walking distance to the Staten Island Ferry","The Staten Island Ferry carries 70,000 riders per day and is completely free — the best way to see New York Harbor."],
   ["Brooklyn Bridge-City Hall",["4","5","6"],"Manhattan",4,1904,"Historic curved station — connects Civic Center and the Brooklyn Bridge approach","The original 1904 City Hall loop station is preserved underground — occasional tours reveal its ornate tile arches."],
   ["Astor Pl",["6"],"Manhattan",3,1904,"East Village stop — below the historic Cooper Union building","Cooper Union is one of the few colleges in the US that historically provided full-tuition scholarships to all students."],
@@ -2403,9 +2399,9 @@ const NYC_RAW:any[]=[
   ["103 St",["6"],"Manhattan",3,1919,"Upper East Side / Spanish Harlem border — gateway to El Barrio","The neighborhood north of 96th Street transitions dramatically into El Barrio, NYC's vibrant Puerto Rican cultural heart."],
   ["110 St",["B","C"],"Manhattan",3,1906,"Cathedral Pkwy — edge of Central Park at the gateway to Harlem","The Cathedral Church of St. John the Divine, steps away, is the largest Gothic cathedral in the world by volume."],
   ["Bedford Av",["L"],"Brooklyn",4,1928,"Williamsburg's main station — epicenter of Brooklyn's creative scene","Bedford Avenue in Williamsburg has the highest density of independent coffee shops, vintage stores, and studios in Brooklyn."],
-  ["1 Av",["L"],"Manhattan",3,2001,"East Village doorstep — the L train's first stop on the Manhattan side","The L train's East Village stops helped transform what was once one of NYC's grittier neighborhoods."],
+  ["1 Av",["L"],"Manhattan",3,1924,"East Village doorstep — the L train's first stop on the Manhattan side","The L train's East Village stops helped transform what was once one of NYC's grittier neighborhoods."],
   ["Montrose Av",["L"],"Brooklyn",3,1928,"Williamsburg / Bushwick border station on the L train","Montrose serves the southern edge of Williamsburg and the northern edge of Bushwick — both transformed in the 2010s."],
-  ["Mets-Willets Point",["7"],"Queens",3,1964,"Home of the New York Mets — Citi Field is adjacent to this station","Shea Stadium (now Citi Field) hosted the Beatles in 1965 — the first stadium rock concert in history."],
+  ["Mets-Willets Point",["7"],"Queens",3,1928,"Home of the New York Mets — Citi Field is adjacent to this station","Shea Stadium hosted the Beatles in 1965 — the first stadium rock concert ever. Shea was demolished in 2009 and replaced by the nearby Citi Field."],
   ["Woodside-61 St",["7"],"Queens",3,1917,"LIRR and 7 train transfer — gateway to Woodside's Irish-Filipino community","Woodside has one of the largest Filipino communities in the US — a cultural mosaic unique to Queens."],
   ["High St-Brooklyn Bridge",["A","C"],"Brooklyn",3,1936,"First Brooklyn stop on the A/C — below the historic Brooklyn Heights neighborhood","Brooklyn Heights was the first neighborhood in NYC to receive historic landmark status in 1965."],
   ["Clark St",["2","3"],"Brooklyn",3,1919,"Deep underground station in Brooklyn Heights — one of the system's deepest stops","The Clark St station is so deep riders must take an elevator to reach the platform — a rare subway experience."],
@@ -2429,7 +2425,7 @@ const NYC_RAW:any[]=[
   ["Houston St",["1"],"Manhattan",3,1918,"SoHo and Greenwich Village stop on the 1 train","The 1 train's Houston Street station sits at the edge of SoHo — steps from the vibrant restaurant scene of Varick Street."],
   ["Franklin St",["1"],"Manhattan",3,1918,"Tribeca stop on the 1 — the neighborhood of film and finance","Tribeca (Triangle Below Canal) transformed from a warehouse district to one of NYC's most expensive zip codes."],
   ["Rector St",["1","R","W"],"Manhattan",3,1905,"Financial District stop near the Battery and 9/11 Memorial","Rector Street's old Trinity Church cemetery holds some of the earliest New York history — Alexander Hamilton is buried there."],
-  ["Cortlandt St",["1","R","W"],"Manhattan",3,2018,"WTC-adjacent station rebuilt after 9/11 — reopened in 2018","The rebuilt Cortlandt St station includes the restored original 1918 artwork — a moving symbol of the city's recovery."],
+  ["Cortlandt St",["1","R","W"],"Manhattan",3,1918,"WTC-adjacent station — originally opened 1918, destroyed 9/11, rebuilt 2018","The rebuilt Cortlandt St station includes restored original 1918 artwork — a moving symbol of the city's recovery from the attacks."],
   ["50 St",["C","E"],"Manhattan",3,1932,"Midtown west stop serving Hell's Kitchen and the theater district","50th Street sits in the heart of Hell's Kitchen — the neighborhood that went from industrial to foodie destination."],
   ["57 St-7 Av",["N","Q","R","W"],"Manhattan",3,1919,"Carnegie Hall's subway stop — at the southern edge of Central Park","Carnegie Hall, steps away, has hosted virtually every major classical and popular musician since 1891."],
   ["5 Av-59 St",["N","R","W"],"Manhattan",4,1919,"Steps from the Plaza Hotel and Grand Army Plaza — the luxury shopping heart of Manhattan","Fifth Avenue here is the most expensive retail corridor in the world — Tiffany's, Bergdorf Goodman, and Apple's iconic cube."],
@@ -2474,7 +2470,6 @@ const NYC_RAW:any[]=[
   ["Beach 67 St",["A"],"Queens",2,1956,"Arverne station on the Far Rockaway A branch","The Rockaways A branch parallels the Atlantic Ocean — a rare beachside commute on the subway system."],
   ["Beach 90 St",["A"],"Queens",2,1956,"Rockaway Beach station near Jacob Riis Park","Jacob Riis Park is one of New York's great public beaches — free and accessible by subway."],
   ["Beach 105 St",["A"],"Queens",2,1956,"Rockaway Beach A train stop near the commercial strip","Rockaway Beach has been a summer destination for working-class New Yorkers since the 1880s."],
-  ["Mott Av",["A"],"Queens",2,1872,"Near the Far Rockaway terminus — gateway to the Rockaways peninsula","The Rockaways is a barrier beach peninsula — isolated from the rest of Queens but deeply urban in character."],
   ["Nostrand Av",["A","C"],"Brooklyn",3,1936,"Bed-Stuy and Crown Heights stop on the A/C — a busy shopping corridor","Nostrand Avenue is one of the great Black main streets of Brooklyn — historic churches, beauty shops, and Caribbean restaurants."],
   ["Utica Av",["A","C"],"Brooklyn",3,1936,"East New York A/C stop — a neighborhood anchor","Utica Avenue is one of Brooklyn's main commercial arteries, connecting Bed-Stuy, Crown Heights, and East New York."],
   ["Ralph Av",["C"],"Brooklyn",2,1936,"Brownsville station on the C train","Ralph Avenue runs through Brownsville, one of New York's most resilient communities — longstanding center of tenant organizing."],
@@ -2719,14 +2714,10 @@ const NYC_RAW:any[]=[
   ["Morrison Av-Soundview",["6"],"Bronx",2,1920,"Soundview neighborhood local stop on the 6","The Soundview section of the Bronx has strong roots in Puerto Rican and Dominican-American culture."],
   ["St Lawrence Av",["6"],"Bronx",1,1920,"Eastern Bronx stop on the 6 — Zerega area","St. Lawrence Avenue is a quiet residential corridor in the eastern Bronx near the Zerega neighborhood."],
   // ── Line 7 missing Queens local stops ──────────────────────────────────────
-  ["Willets Point-Mets",["7"],"Queens",3,1928,"Citi Field and USTA Tennis Center stop on the 7","Citi Field, home of the Mets since 2009, and the USTA Billie Jean King National Tennis Center both sit steps from this stop."],
-  ["74 St-Broadway",["7"],"Queens",3,1917,"Jackson Heights/Elmhurst express stop on the 7","The Broadway/Roosevelt Ave intersection in Jackson Heights is one of the busiest street corners in Queens."],
   ["69 St",["7"],"Queens",2,1917,"Woodside local stop on the 7 — Filipino community hub","Woodside's Little Manila is one of the largest Filipino communities in the northeastern United States."],
   ["61 St-Woodside",["7"],"Queens",3,1917,"Woodside stop on the 7 — LIRR connection","Woodside is an important transit junction connecting the 7 train to the Long Island Rail Road."],
   ["52 St",["7"],"Queens",2,1917,"Woodside/Sunnyside stop on the 7 local","Sunnyside is one of Queens' oldest planned neighborhoods, developed in the 1920s with progressive garden-city principles."],
   ["40 St-Lowery St",["7"],"Queens",2,1917,"Sunnyside/Woodside stop on the 7","The Lowery Street area of Sunnyside has seen major reinvestment as part of the Long Island City development boom."],
-  ["Queensboro Plaza",["7","N","W"],"Queens",4,1917,"Major Queens transfer — 7, N, and W trains connect here","Queensboro Plaza is one of the largest elevated transfer stations in the outer boroughs — five lines converge nearby."],
-  ["21 St-Queensbridge",["F","N","W"],"Queens",3,1939,"Queensbridge stop on the F — largest public housing complex in the US","Queensbridge Houses, visible from this station, is the largest public housing project in the United States with over 7,000 residents."],
   // ── Line G (Brooklyn/Queens crosstown) ────────────────────────────────────
   ["4 Av-9 St",["F","G"],"Brooklyn",2,1933,"Park Slope/Gowanus stop on the F and G","Fourth Avenue is Park Slope's main commercial street, lined with restaurants, bars, and independent businesses."],
   ["7 Av",["F"],"Brooklyn",3,1933,"Park Slope stop on the F — heart of the slope","Seventh Avenue is Park Slope's most beloved main street — weekend brunch lines stretch out the door at every café."],
@@ -2765,8 +2756,7 @@ const NYC_RAW:any[]=[
   ["Park Place",["2","3"],"Manhattan",2,1918,"Lower Manhattan 2/3 stop near the World Trade Center site","Park Place is one of Manhattan's oldest streets — the block where the World Trade Center complex begins."],
   ["Clinton-Washington Avs",["G"],"Brooklyn",2,1933,"Clinton Hill G train stop — Pratt Institute area","Pratt Institute, one of America's most prestigious design schools, sits just blocks from this station."],
   ["15 St-Prospect Park",["F","G"],"Brooklyn",2,1954,"Windsor Terrace/Park Slope stop on the F and G","15th Street and Prospect Park West is the gateway to the 585-acre Prospect Park — Brooklyn's backyard."],
-  ["163 St-Amsterdam Av",["A","C","D"],"Manhattan",2,1932,"Washington Heights stop on the A, C, and D trains","163rd Street is in the heart of Washington Heights — home to one of the largest Dominican-American communities in the world."],
-  ["155 St",["A","C","B","D"],"Manhattan",2,1905,"Harlem/Sugar Hill stop on the A, B, C, and D lines","155th Street and Edgecombe Avenue is in Sugar Hill — the neighborhood where Duke Ellington, Thurgood Marshall, and W.E.B. Du Bois lived."],
+  ["163 St-Amsterdam Av",["A","C"],"Manhattan",2,1932,"Washington Heights stop on the A and C trains","163rd Street is in the heart of Washington Heights — home to one of the largest Dominican-American communities in the world. D train ends at 155 St, not here."],
   ["Cypress Hills",["J"],"Brooklyn",2,1888,"East New York/Cypress Hills stop on the J train","Cypress Hills Cemetery, spanning Brooklyn and Queens, is the resting place of Mae West, Joey Ramone, and many Civil War veterans."],
   ["55 St",["D"],"Brooklyn",2,1916,"Bensonhurst stop on the D train — Bay Ridge area","55th Street is a quiet residential stop in the heart of Bensonhurst, one of Brooklyn's most densely settled Italian-American neighborhoods."],
   ["New Utrecht Av",["N"],"Brooklyn",2,1916,"Borough Park stop on the N train — Bensonhurst/Borough Park","New Utrecht Avenue is the main commercial street of Borough Park, one of the largest Orthodox Jewish communities in the US."],
@@ -2995,11 +2985,9 @@ const CHI_RAW:any[]=[
   ["Division",["Blue"],"Near North",3,1951,"Wicker Park and Ukrainian Village Blue Line stop near Division Street","Division Street between Damen and Milwaukee is known for its bars, music venues, and dense neighborhood character."],
   ["Grand",["Blue"],"Near North",3,1951,"Blue Line subway at Grand Avenue — River North gateway","The Blue Line's Grand stop serves River North and the Near North Side — the stretch toward Navy Pier is packed with nightlife."],
   ["Washington",["Blue"],"Loop",4,1951,"Blue Line subway beneath Washington Street — directly below Daley Plaza","Washington/Dearborn is the Blue Line's core downtown station — beneath the iconic Picasso sculpture in Daley Plaza."],
-  ["Oak Park",["Blue","Green"],"Near West",2,1958,"Blue and Green Line stop at Oak Park Avenue — suburb border","Oak Park is Frank Lloyd Wright's hometown — dozens of his Prairie Style buildings are within a short walk."],
+  ["Oak Park",["Blue"],"Near West",2,1958,"Blue Line stop at Oak Park Avenue — suburb border","Oak Park is Frank Lloyd Wright's hometown — dozens of his Prairie Style buildings are within a short walk. Blue Line only; Green Line ends at Harlem/Lake."],
   ["Austin",["Blue"],"Near West",2,1954,"Blue Line west-side stop in the Austin neighborhood — Chicago's largest community","Austin has been a neighborhood anchor since the early 1900s — its tree-lined streets recall the streetcar suburb era."],
   ["Central",["Blue"],"Near West",2,1954,"Blue Line stop near the Oak Park/Chicago border on the west side","The Central Avenue stop sits at the edge of the Galewood neighborhood — a quiet residential enclave near the suburb border."],
-  ["Cicero",["Blue","Pink"],"West",2,1954,"Blue and Pink Line stop near Cicero Avenue — North Austin neighborhood","Cicero Avenue is one of Chicago's great north-south arteries, running through dozens of distinct communities."],
-  ["Kostner",["Blue","Pink"],"West",2,1954,"Blue and Pink Line stop in North Lawndale — near Kostner Avenue","North Lawndale was a center of Dr. Martin Luther King Jr.'s Chicago Freedom Movement in 1966."],
   ["Racine",["Blue"],"Near West",2,1958,"Blue Line stop near Racine Avenue in the Near West Side medical corridor","Racine connects the UIC campus and medical district with the residential Near West Side communities."],
   // Oakton-Skokie Yellow Line
   ["Oakton-Skokie",["Yellow"],"North Shore",2,1984,"Intermediate Yellow Line stop between Howard and Skokie terminus","The Yellow Line has just two stops — Oakton-Skokie and the Skokie terminus — making it Chicago's shortest L line."],
@@ -3013,8 +3001,7 @@ const CHI_RAW:any[]=[
   // Pink Line - unique west segment
   ["18th",["Pink"],"Near West",3,2006,"Pink Line stop in Pilsen — gateway to Chicago's Mexican-American cultural heart","18th Street in Pilsen is the main artery of the neighborhood — murals, taquerias, and galleries fill every block."],
   ["Polk",["Pink"],"Near West",2,2006,"Pink Line stop at Polk Street near the Medical District and Pilsen border","Polk Street connects the Mexican-American Pilsen neighborhood to the University of Illinois Medical Center corridor."],
-  ["Western",["Pink","Orange"],"Near West",2,2006,"Pink and Orange Line stop at Western Avenue — different from the Blue Line's Western","This Western Ave stop serves the southwest neighborhoods of Bridgeport and Back of the Yards near the stockyards site."],
-  ["Damen",["Pink","Brown"],"Near West",2,2006,"Pink and Brown Line stop — different from the Blue Line's Damen in Wicker Park","This Damen Ave stop serves the Pilsen and Bridgeport communities, a different neighborhood from the Blue Line Damen."],
+  ["Western",["Orange"],"Southwest",2,2006,"Orange Line Western — Bridgeport/Back of the Yards","Orange Line Western Ave at 26th St, serving Bridgeport and Back of the Yards — different from the Blue Line's Western in Humboldt Park."],
   // Green Line - south segment stations
   ["51st",["Green"],"South",2,1892,"Green Line stop in Washington Park — near the University of Chicago","The University of Chicago campus is steps away from this station — world-class Gothic architecture in the South Side."],
   ["King Dr",["Green"],"South",2,1892,"Martin Luther King Jr Drive station on the South Side Green Line","MLK Drive runs through the heart of Bronzeville — a historic boulevard named in honor of the great civil rights leader."],
@@ -3039,7 +3026,6 @@ const CHI_RAW:any[]=[
   // Purple Line — missing Evanston stops
   // Brown Line — missing stops
   ["Kedzie",["Brown"],"Northwest",2,1907,"Brown Line stop in Albany Park — Kedzie Avenue corridor","Kedzie Avenue in Albany Park is a major commercial street — the neighborhood's diverse Middle Eastern and Southeast Asian communities thrive here."],
-  ["Kimball",["Brown"],"Northwest",2,1907,"Northern terminus of the Brown Line — Albany Park neighborhood","The Brown Line terminus gives access to Albany Park's incredible diversity of restaurants and neighborhoods."],
   // Orange Line — missing southwest stops
   ["Halsted",["Orange"],"Southwest",2,1993,"Orange Line stop in Bridgeport — gateway to Guaranteed Rate Field area","Halsted Street on the Orange Line serves Bridgeport — one of Chicago's most historically political neighborhoods, home to five mayors."],
   ["Ashland",["Orange"],"Southwest",2,1993,"Orange Line stop at Ashland Avenue — Back of the Yards gateway","Ashland Avenue runs through Back of the Yards — the neighborhood made famous by Upton Sinclair's 'The Jungle' in 1906."],
@@ -3048,22 +3034,15 @@ const CHI_RAW:any[]=[
   ["Damen",["Pink"],"Near West",2,2006,"Pink Line stop at Damen Avenue — Pilsen neighborhood","The Pink Line's Damen station is a gateway to the Heart of Pilsen — the neighborhood's main artery."],
   // Green Line South — missing stops
   ["47th",["Green"],"South",2,1892,"Green Line stop at 47th Street — Kenwood/Bronzeville neighborhood","47th Street on the Green Line runs through Kenwood — a neighborhood of grand mansions and the Obama family home."],
-  // Blue Line — missing O'Hare branch stops
-  ["Harlem",["Blue"],"Near West",3,1984,"Penultimate Blue Line stop before Forest Park — Chicago/Oak Park border","Oak Park's famous Frank Lloyd Wright Home and Studio is steps from this station — a Prairie Style landmark."],
-  ["Austin",["Blue"],"Near West",2,1954,"Blue Line stop in Austin — the western edge of the North Side","Austin is Chicago's largest community area — over 100,000 residents in its dense residential streets."],
-  ["Central",["Blue"],"Near West",2,1954,"Blue Line stop near the Oak Park/Chicago border on the west side","The Central Avenue stop serves the Galewood neighborhood — a quiet residential enclave near the suburb border."],
+  // Blue Line — missing O'Hare branch stops (Harlem, Austin, Central, Illinois Medical District already defined above)
   ["Cicero",["Blue"],"West",2,1954,"Blue Line stop near Cicero Avenue — North Austin neighborhood","Cicero Avenue is one of Chicago's great north-south arteries, running through dozens of distinct communities."],
   ["Kostner",["Blue"],"West",2,1954,"Blue Line stop in North Lawndale — near Kostner Avenue","North Lawndale was a center of Dr. Martin Luther King Jr.'s Chicago Freedom Movement in 1966."],
   ["Pulaski",["Blue"],"West",2,1954,"Blue Line stop at Pulaski Road — Garfield Park neighborhood","Pulaski Road on the Blue Line runs through Garfield Park — the site of the stunning Garfield Park Conservatory."],
-  ["Illinois Medical District",["Blue"],"Near West",2,1958,"Serving the largest medical district in the US by area","The Illinois Medical District covers 560 acres — Rush, UIC, and Cook County hospitals all cluster here."],
   // Pink/Green — missing West Side stops
   ["California",["Green","Pink"],"West",2,1895,"Green and Pink Line stop at California Avenue — East Garfield Park","California Avenue runs through East Garfield Park — a neighborhood along the Green Line's historic western corridor."],
   ["Kedzie",["Green","Pink"],"West",2,1895,"Green and Pink Line stop at Kedzie Avenue — East Garfield Park","Kedzie Avenue on the Green/Pink lines serves East Garfield Park — a historically significant South Side corridor."],
   ["Pulaski",["Green","Pink"],"West",2,1895,"Green and Pink Line stop at Pulaski Road — the Garfield Park area","The Garfield Park Conservatory, one of the world's largest, is near Pulaski on the Green Line — a Victorian botanical treasure."],
-  // Green Line East additional
-  ["Indiana",["Green"],"South",2,1892,"Bronzeville stop on the Green Line — historic jazz corridor","Indiana Avenue was once lined with jazz and blues clubs during the Great Migration era."],
-  ["43rd St",["Green"],"South",2,1892,"Washington Park / Bronzeville — near the DuSable Museum","The DuSable Museum of African American History, founded in 1961, is the oldest such institution in the US."],
-  ["King Dr",["Green"],"South",2,1892,"Martin Luther King Jr Drive station on the South Side Green Line","MLK Drive runs through the heart of Bronzeville — a historic boulevard named in honor of the great civil rights leader."],
+  // Green Line East additional (Indiana, 43rd St, King Dr already defined above)
 ];
 const CHI_IMG:Record<string,string>={
   "O'Hare":"O%27Hare_International_Airport_Chicago.jpg",
@@ -3139,12 +3118,12 @@ const BOS_RAW:any[]=[
   ["Copley",["Green"],"Back Bay/Fenway",4,1897,"Back Bay's most elegant station — at the intersection of art and architecture","Copley Square above has Trinity Church (1877) and the Boston Public Library (1895) facing each other."],
   ["Back Bay",["Orange"],"Back Bay/Fenway",4,1987,"Orange Line and Amtrak station in Boston's most upscale neighborhood","Back Bay was literally filled in from the bay between 1857 and 1882 — the grid layout is famously un-Bostonian."],
   ["Ruggles",["Orange"],"Back Bay/Fenway",3,1987,"Northeastern University gateway station — an important academic hub","Northeastern's co-op program makes it one of the most career-connected universities in the US."],
-  ["Roxbury Crossing",["Orange"],"Back Bay/Fenway",3,1987,"Roxbury hub connecting the Orange Line to MBTA bus routes","Roxbury has been a center of Boston's African-American community since the Great Migration."],
+  ["Roxbury Crossing",["Orange"],"Jamaica Plain",3,1987,"Roxbury hub connecting the Orange Line to MBTA bus routes","Roxbury has been a center of Boston's African-American community since the Great Migration."],
   ["Harvard",["Red"],"Cambridge",5,1912,"Red Line station 105 feet underground — deepest station in the Boston T","Harvard University, founded in 1636, is the oldest university in the United States."],
   ["Central",["Red"],"Cambridge",4,1912,"Central Square — diverse dining, music venues, and activist culture in Cambridge","Central Square is Cambridge's most diverse neighborhood — a beloved mix of cultures and cuisines."],
   ["Kendall/MIT",["Red"],"Cambridge",4,1918,"MIT's gateway station — at the center of the world's top innovation cluster","Kendall Square is home to more biotech and tech startups per square mile than anywhere else on Earth."],
-  ["Porter",["Red"],"Cambridge",3,1984,"Porter Square in Cambridge — Red Line and commuter rail connections","Porter Square has an acclaimed Japanese restaurant scene — a reflection of the MIT and Harvard international community."],
-  ["Davis",["Red"],"Cambridge",4,1984,"Davis Square in Somerville — one of Greater Boston's liveliest neighborhoods","Davis Square was named 'the hippest neighborhood in America' by Rolling Stone in the late 1990s."],
+  ["Porter",["Red"],"Somerville",3,1984,"Porter Square on the Cambridge/Somerville border — Red Line and commuter rail connections","Porter Square has an acclaimed Japanese restaurant scene — a reflection of the MIT and Harvard international community."],
+  ["Davis",["Red"],"Somerville",4,1984,"Davis Square in Somerville — one of Greater Boston's liveliest neighborhoods","Davis Square was named 'the hippest neighborhood in America' by Rolling Stone in the late 1990s."],
   ["Alewife",["Red"],"Outer Suburbs",3,1985,"Northwestern terminus of the Red Line — major park-and-ride hub","Alewife opened in 1985, built over Alewife Brook — the gateway station for Cambridge and the northwest suburbs."],
   ["Airport",["Blue"],"East Boston",4,1952,"Blue Line's direct connection to Logan Airport — 8 minutes from downtown Boston","The shuttle between Airport station and all Logan terminals makes this one of the fastest airport rail connections in the US."],
   ["Maverick",["Blue"],"East Boston",3,1924,"East Boston's main Blue Line hub — served the immigrant community for decades","East Boston has been Boston's gateway for immigrants since the 1840s — a vibrant Italian-American neighborhood historically."],
@@ -3166,8 +3145,8 @@ const BOS_RAW:any[]=[
   ["Jackson Square",["Orange"],"Jamaica Plain",3,1987,"Orange Line station in Jamaica Plain — arts and culture hub","Jamaica Plain is known for its vibrant Latino community, craft breweries, and the Jamaica Pond walking path."],
   ["Stony Brook",["Orange"],"Jamaica Plain",2,1987,"Quiet Jamaica Plain residential station on the Orange Line","The Southwest Corridor Park runs along the Orange Line here — a green linear park through the heart of Boston."],
   ["Green Street",["Orange"],"Jamaica Plain",2,1987,"Leafy Jamaica Plain residential stop on the Orange Line","Green Street station serves the residential heart of Jamaica Plain — the neighborhood was named for Jamaican rum trade."],
-  ["Sullivan Square",["Orange"],"Cambridge",3,1901,"Charlestown industrial district — Orange Line connection to Bunker Hill","The Bunker Hill Monument, site of the American Revolution's first major battle, is a short walk from Sullivan Square."],
-  ["Community College",["Orange"],"Cambridge",2,1901,"Bunker Hill Community College area — Charlestown neighborhood station","Charlestown is Boston's oldest neighborhood — settled in 1629, predating Boston itself."],
+  ["Sullivan Square",["Orange"],"North Shore",3,1901,"Charlestown industrial district — Orange Line connection to Bunker Hill","The Bunker Hill Monument, site of the American Revolution's first major battle, is a short walk from Sullivan Square."],
+  ["Community College",["Orange"],"North Shore",2,1901,"Bunker Hill Community College area — Charlestown neighborhood station","Charlestown is Boston's oldest neighborhood — settled in 1629, predating Boston itself."],
   ["Oak Grove",["Orange"],"Outer Suburbs",2,1977,"Northern terminus of the Orange Line in Malden","Malden Center station on the commuter rail connects Oak Grove to the regional rail network."],
   ["Wellington",["Orange"],"Outer Suburbs",3,1977,"Revere/Malden border station — large park-and-ride on the Orange Line","Wellington station is one of the Orange Line's most-used park-and-ride facilities for northern suburbs."],
   ["Assembly",["Orange"],"Outer Suburbs",3,2014,"One of the newest stations on the Orange Line — Assembly Row mixed-use development","Assembly Row is one of Greater Boston's largest mixed-use developments — retail, restaurants, and residential along the Mystic River."],
@@ -3178,8 +3157,8 @@ const BOS_RAW:any[]=[
   ["Tufts Medical Center",["Orange"],"Downtown Boston",3,1987,"Orange Line station serving Tufts Medical Center and Boston Medical Center","The area around this station is part of Boston's South End Medical Area — one of the largest in New England."],
   // Green Line Trunk
   ["Boylston",["Green"],"Downtown Boston",4,1897,"Steps from Boston Common and the Theatre District — one of the busiest Green Line stops","Boston Common, America's oldest public park (1634), is directly above Boylston station."],
-  ["Arlington",["Green"],"Back Bay",4,1897,"Entrance to Back Bay from the Public Garden — named for Arlington Street Church","The Public Garden, across the street, has the famous Swan Boats — a beloved Boston tradition since 1877."],
-  ["Hynes Convention Center",["Green"],"Back Bay",3,1914,"Serves the Hynes Convention Center and Newbury Street shopping","Newbury Street is Boston's most fashionable shopping destination — eight blocks of galleries, boutiques, and cafes."],
+  ["Arlington",["Green"],"Back Bay/Fenway",4,1897,"Entrance to Back Bay from the Public Garden — named for Arlington Street Church","The Public Garden, across the street, has the famous Swan Boats — a beloved Boston tradition since 1877."],
+  ["Hynes Convention Center",["Green"],"Back Bay/Fenway",3,1914,"Serves the Hynes Convention Center and Newbury Street shopping","Newbury Street is Boston's most fashionable shopping destination — eight blocks of galleries, boutiques, and cafes."],
   ["Science Park/West End",["Green"],"Downtown Boston",3,1955,"Elevated station above the Charles River — spectacular views of the Boston skyline","Science Park offers panoramic views of the Boston skyline and Charles River from its elevated platform."],
   ["Lechmere",["Green"],"East Cambridge",3,2022,"Green Line Extension terminus in East Cambridge — part of the 2022 GLX opening","The GLX (Green Line Extension) opened in 2022 after decades of planning — transforming transit in Somerville and Medford."],
   ["Union Square",["Green"],"Somerville",3,2022,"Green Line Extension station in Union Square, Somerville — a food and arts destination","Union Square is Somerville's creative hub — acclaimed restaurants and the annual Fluff Festival call it home."],
@@ -3200,7 +3179,7 @@ const BOS_RAW:any[]=[
   ["Newton Centre",["Green"],"Newton",2,1959,"Newton's downtown stop on the D branch — the civic heart of an affluent suburb","Newton Centre has one of Greater Boston's most charming downtown commercial areas — boutiques and local restaurants."],
   ["Riverside",["Green"],"Newton",2,1959,"Western terminus of the Green Line D branch — large park-and-ride facility","Riverside is the endpoint of the D branch — 22 stations from Government Center, a 40-minute ride through five communities."],
   // Green Line E Branch
-  ["Prudential",["Green"],"Back Bay",4,1914,"Below the Prudential Center — Back Bay's iconic shopping and office tower","The Prudential Tower (1964) was Boston's first modern skyscraper — the observation deck offers 360-degree views."],
+  ["Prudential",["Green"],"Back Bay/Fenway",4,1914,"Below the Prudential Center — Back Bay's iconic shopping and office tower","The Prudential Tower (1964) was Boston's first modern skyscraper — the observation deck offers 360-degree views."],
   ["Symphony",["Green"],"South End",3,1914,"Steps from Symphony Hall — home of the world-renowned Boston Symphony Orchestra","Symphony Hall (1900) is considered one of the three finest concert halls in the world for acoustic quality."],
   ["Northeastern",["Green"],"South End",3,1914,"Gateway to Northeastern University and the Back Bay Fens","Northeastern's co-op program makes it one of the most career-connected universities in the country."],
   ["Museum of Fine Arts",["Green"],"South End",3,1959,"Named for one of America's great art museums — steps from the Huntington cultural strip","The MFA Boston has over 500,000 works of art — one of the most comprehensive collections in the Americas."],
@@ -3267,12 +3246,10 @@ const BOS_RAW:any[]=[
   ["Hawes St",["Green"],"Brookline",2,1897,"C branch stop in Brookline — between Kent Street and Coolidge Corner","Hawes Street is a quiet residential stop on the C branch — the surface line runs through leafy Brookline streets here."],
   // Silver Line — missing eastern extension stops
   ["Silver Line Way",["Silver"],"South Boston",2,2004,"Silver Line connection between South Station and the Seaport District","Silver Line Way serves the Seaport District's rapidly developing innovation and biotech corridor."],
-  ["Design Center",["Silver"],"South Boston",2,2004,"Silver Line stop at the Boston Design Center — Seaport District","The Boston Design Center is a hub for interior design and architecture firms — a creative industry anchor in the Seaport."],
   ["Eastern Ave",["Silver"],"East Boston",2,2018,"Silver Line SL3 stop in East Boston — connecting to Chelsea extension","Eastern Avenue station serves a growing residential section of East Boston — the Silver Line extension improved access significantly."],
   ["Box District",["Silver"],"Chelsea",2,2018,"Silver Line stop in the Box District of Chelsea","The Box District is Chelsea's arts and creative district — warehouse buildings converted to studios and galleries."],
   ["Bellingham Sq",["Silver"],"Chelsea",2,2018,"Silver Line stop in Bellingham Square — the heart of Chelsea","Bellingham Square is Chelsea's civic center — City Hall and the main commercial district are steps from this stop."],
   // Orange Line — there are no missing stops (all 20 are present)
-  ["Washington St (GLX)",["Green"],"Somerville",2,2022,"Green Line Extension station in Somerville — new 2022 station","Washington Street station in Somerville was part of the 2022 Green Line Extension — bringing rapid transit to this underserved neighborhood."],
 ];
 const BOS_STATIONS=BOS_RAW.map(([name,lines,zone,traffic,year,desc,fact]:any[])=>({name,lines,zone,traffic,year,desc,fact,img:""}));
 
@@ -3308,21 +3285,21 @@ const ATL_RAW:any[]=[
   ["Chamblee",["Gold"],"Northeast Atlanta",3,1984,"Gold Line station in Chamblee — one of metro Atlanta's most diverse cities","Chamblee is known as 'Chambodia' for its large Southeast Asian population — the International Village on Buford Highway is nearby."],
   ["Doraville",["Gold"],"Northeast Atlanta",2,1992,"Northeastern terminus of the Gold Line — gateway to the International Village corridor","Doraville and neighboring Chamblee form the most ethnically diverse corridor in Georgia — the Buford Highway food scene is legendary."],
   ["Garnett",["Red","Gold"],"Downtown Atlanta",3,1979,"Red and Gold Lines south of Five Points — the southbound gateway toward the airport","Garnett station serves the historic Mechanicsville neighborhood and connects to Forsyth Street corridor."],
-  ["West End",["Red","Gold"],"Downtown Atlanta",3,1979,"Historic African-American neighborhood — Red and Gold Lines along the Westside","West End is one of Atlanta's oldest neighborhoods — the birthplace of Atlanta University Center's legacy."],
-  ["Oakland City",["Red","Gold"],"Downtown Atlanta",2,1979,"Red and Gold Lines in Southwest Atlanta — serving the airport corridor","Oakland City is a historic southwest Atlanta community with a strong neighborhood association and arts scene."],
-  ["Lakewood/Ft McPherson",["Red","Gold"],"Downtown Atlanta",2,1979,"Red and Gold Lines near Fort McPherson — historic military installation site","Fort McPherson, a former Army base, is being redeveloped as Tyler Perry Studios — one of the largest film studios in the US."],
+  ["West End",["Red","Gold"],"West End/Westside",3,1979,"Historic African-American neighborhood — Red and Gold Lines along the Westside","West End is one of Atlanta's oldest neighborhoods — the birthplace of Atlanta University Center's legacy."],
+  ["Oakland City",["Red","Gold"],"West End/Westside",2,1979,"Red and Gold Lines in Southwest Atlanta — serving the airport corridor","Oakland City is a historic southwest Atlanta community with a strong neighborhood association and arts scene."],
+  ["Lakewood/Ft McPherson",["Red","Gold"],"West End/Westside",2,1979,"Red and Gold Lines near Fort McPherson — historic military installation site","Fort McPherson, a former Army base, is being redeveloped as Tyler Perry Studios — one of the largest film studios in the US."],
   ["East Point",["Red","Gold"],"Airport/South",3,1979,"Red and Gold Lines in East Point — gateway city to Hartsfield-Jackson Airport","East Point is known as the city within a city — its own downtown sits between Atlanta and the world's busiest airport."],
   ["College Park",["Red","Gold"],"Airport/South",3,1979,"Red and Gold Lines in College Park — southern suburbs near the airport","College Park is home to the Georgia International Convention Center and several major hotels near Hartsfield-Jackson."],
   ["Hartsfield-Jackson Airport",["Red","Gold"],"Airport/South",5,1988,"World's busiest airport, served by MARTA's Red and Gold Lines","Hartsfield-Jackson has been the world's busiest airport by passenger count every year since 1998 — 104 million passengers in 2023."],
-  ["H.E. Holmes",["Blue","Green"],"West End/Westside",2,1979,"Western terminus of the Blue and Green Lines — Hamilton E. Holmes station","Holmes was a pioneering figure — one of the first two Black students to desegregate the University of Georgia in 1961."],
+  ["H.E. Holmes",["Blue"],"West End/Westside",2,1979,"Western terminus of the Blue Line — Hamilton E. Holmes station","Holmes was a pioneering figure — one of the first two Black students to desegregate the University of Georgia in 1961. Blue Line only; Green Line's western terminus is Bankhead."],
   ["West Lake",["Blue"],"West End/Westside",2,1979,"Blue Line station in the West Lake neighborhood of Atlanta's Westside","The Westside is one of Atlanta's fastest-growing areas — major investment has flowed here since the 2000s."],
   ["Ashby",["Blue","Green"],"West End/Westside",3,1979,"Blue and Green Lines in West Atlanta — near the Atlanta University Center","The Atlanta University Center (Morehouse, Spelman, Clark Atlanta) is the largest consortium of HBCUs in the world."],
   ["Vine City",["Blue","Green"],"Downtown Atlanta",3,1979,"Historic Civil Rights neighborhood — steps from Mercedes-Benz Stadium","Vine City was home to many Civil Rights leaders — Martin Luther King Jr. and John Lewis lived in this neighborhood."],
   ["GWCC/CNN Center",["Blue","Green"],"Downtown Atlanta",4,1979,"Blue and Green Lines at CNN Center and the Georgia World Congress Center","CNN's world headquarters has been here since 1976 — the Georgia World Congress Center is one of the largest in the US."],
   ["Georgia State",["Blue","Green"],"Downtown Atlanta",3,1979,"Blue and Green Lines near Georgia State University — in Sweet Auburn","Sweet Auburn Historic District is the birthplace of Martin Luther King Jr. and a National Historic Landmark."],
   ["King Memorial",["Blue","Green"],"East Atlanta/Decatur",3,1979,"Named for Martin Luther King Jr. — near the MLK National Historic Site","The Martin Luther King Jr. National Historic Site is walking distance from this station — a must-visit landmark."],
-  ["Inman Park/Reynoldstown",["Blue"],"East Atlanta/Decatur",4,1979,"Gateway to Atlanta's most popular neighborhood — founded as Atlanta's first planned suburb in 1889","Inman Park's Victorian homes and bungalows are among the most sought-after in Atlanta — the Beltline runs nearby."],
-  ["Edgewood/Candler Park",["Blue"],"East Atlanta/Decatur",3,1979,"Blue Line station serving Edgewood and Candler Park neighborhoods","Candler Park is one of Atlanta's most beloved urban neighborhoods — the Little Five Points area is nearby."],
+  ["Inman Park/Reynoldstown",["Blue","Green"],"East Atlanta/Decatur",4,1979,"Gateway to Atlanta's most popular neighborhood — founded as Atlanta's first planned suburb in 1889","Inman Park's Victorian homes and bungalows are among the most sought-after in Atlanta — the Beltline runs nearby."],
+  ["Edgewood/Candler Park",["Blue","Green"],"East Atlanta/Decatur",3,1979,"Blue and Green Line station — Green Line's eastern terminus","Candler Park is one of Atlanta's most beloved urban neighborhoods — the Little Five Points area is nearby. Edgewood/Candler Park is the Green Line's eastern terminus."],
   ["Decatur",["Blue"],"East Atlanta/Decatur",4,1979,"City of Decatur station — a model of walkable, transit-oriented urbanism in Georgia","Decatur's downtown has been cited as a national model for transit-oriented development and walkability."],
   ["East Lake",["Blue"],"East Atlanta/Decatur",3,1979,"Blue Line station in the East Lake neighborhood — site of major urban renewal","The East Lake Golf Club is steps away — site of the TOUR Championship and a major neighborhood revitalization story."],
   ["Avondale",["Blue"],"East Atlanta/Decatur",2,1979,"Blue Line station in Avondale Estates — a historic planned community","Avondale Estates was built in 1924 as a planned Tudor-style community — one of metro Atlanta's most distinctive neighborhoods."],
@@ -7303,6 +7280,17 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
     Object.keys(getLineMap(gameKey)).forEach(l=>{p[l]=getLCProgress(gameKey,l);});
     return p;
   });
+  const[lineBonusAwarded,setLineBonusAwarded]=useState<Set<string>>(()=>new Set());
+  useEffect(()=>{
+    if(lcPhase==="done"&&selLine){
+      const lineStations=lineMap[selLine]||[];
+      const done=(progress[selLine]||[]).length;
+      if(done>=lineStations.length&&!lineBonusAwarded.has(selLine)){
+        addXP(200);
+        setLineBonusAwarded(s=>new Set([...s,selLine]));
+      }
+    }
+  },[lcPhase,selLine]);
 
   function startLine(line:string){
     const lineStations=lineMap[line]||[];
@@ -7410,7 +7398,6 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
     const lineStations=lineMap[selLine]||[];
     const done=(progress[selLine]||[]).length;
     const allDone=done>=lineStations.length;
-    if(allDone){addXP(200);}
     return(
       <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
         <div style={{background:bg,borderRadius:16,padding:32,maxWidth:360,width:"90%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
@@ -8051,7 +8038,7 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
     if(!pair)return;const[a,b]=pair;const correct=a.traffic>b.traffic?a.name:b.name;
     setChosen(name);setPhase("reveal");if(name===correct){setScore(s=>s+1);addXP(80);}
   }
-  function next(){if(round+1>=ROUNDS){if(score===ROUNDS-1)addXP(50);setPhase("done");}else setRound(r=>r+1);}
+  function next(){if(round+1>=ROUNDS){if(score===ROUNDS)addXP(50);setPhase("done");}else setRound(r=>r+1);}
   if(!pair)return null;
   const[a,b]=pair;const correctName=a.traffic>b.traffic?a.name:b.name;
   const TRAFFIC_LABELS=["","Quiet","Light","Moderate","Busy","Major Hub"];

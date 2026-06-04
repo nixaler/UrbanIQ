@@ -349,7 +349,7 @@ app.post("/api/claims", claimsLimiter, async (req, res) => {
   if (id === "cash10" && serverFirstPlay) {
     const ageDays = (Date.now() - new Date(serverFirstPlay).getTime()) / 86400000;
     if (ageDays < 12) {
-      return res.status(403).json({ error: "Keep playing! $10 cash requires 14 days of play." });
+      return res.status(403).json({ error: "Keep playing! $10 cash requires 12 days of play." });
     }
   }
 
@@ -508,7 +508,7 @@ loadAll();loadAnalytics();
 
 app.get("/admin", adminAuth, (_req, res) => res.send(ADMIN_HTML));
 
-app.get("/api/claims", async (req, res) => {
+app.get("/api/claims", adminAuth, async (req, res) => {
   const keys = await store.list("claim:");
   const claimKeys = keys.filter(k => k.match(/^claim:[a-z0-9]+$/));
   const claims = await Promise.all(claimKeys.map(async k => {
@@ -818,7 +818,7 @@ app.use(async (req, res, next) => {
   // in-memory
   _mem.total++;
   _mem.days[today] = (_mem.days[today] || 0) + 1;
-  if (ref) _mem.refs[new URL(ref).hostname] = (_mem.refs[new URL(ref).hostname] || 0) + 1;
+  if (ref) { try { const h = new URL(ref).hostname; if (h) _mem.refs[h] = (_mem.refs[h] || 0) + 1; } catch {} }
   // persist to Supabase if available
   if (supabase) {
     supabase.from("page_views").insert({ path: pth, referrer: ref || null, ua_type: type }).then(() => {});
