@@ -3008,6 +3008,7 @@ const CHI_RAW:any[]=[
   ["Rockwell",["Brown"],"Northwest",2,1907,"Brown Line stop in Ravenswood — a quiet tree-lined residential stop","The Ravenswood neighborhood along Rockwell Street is classic Chicago — two-flats and small apartment buildings."],
   ["Irving Park",["Brown"],"North",3,1907,"Brown Line stop in the Irving Park neighborhood","The Brown Line's Irving Park station serves a dense residential corridor along Milwaukee Avenue."],
   ["Addison",["Brown"],"North",2,1900,"Brown Line Addison stop — Northcenter neighborhood, near the Irving Park corridor","The Northcenter neighborhood near this station is a family-friendly enclave known for its coffeeshops and parks."],
+  ["Addison",["Blue"],"Northwest",2,1895,"Blue Line stop in Avondale — between Irving Park and Belmont on the O'Hare branch","Avondale is one of Chicago's most diverse Northwest Side neighborhoods — a long-time home to Polish and Mexican communities."],
   ["Montrose",["Brown"],"North",2,1907,"Brown Line stop at Montrose Avenue — Lincoln Square edge","Montrose Avenue leads to the lakefront — Montrose Harbor and beach are a short bike ride from this station."],
   // Pink Line - unique west segment
   ["18th",["Pink"],"Near West",3,2006,"Pink Line stop in Pilsen — gateway to Chicago's Mexican-American cultural heart","18th Street in Pilsen is the main artery of the neighborhood — murals, taquerias, and galleries fill every block."],
