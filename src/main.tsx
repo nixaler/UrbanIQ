@@ -4931,7 +4931,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showRidershipRace,setShowRidershipRace]=useState(false);
   const [showSoundboard,setShowSoundboard]=useState(false);
   const [showSeasonalEvents,setShowSeasonalEvents]=useState(false);
-  const [showTransitWordl,setShowTransitWordl]=useState(false);
   const [showRouteArchitect,setShowRouteArchitect]=useState(false);
   const [showOfflineManager,setShowOfflineManager]=useState(false);
   const [showBuddyStreaks,setShowBuddyStreaks]=useState(false);
@@ -5094,7 +5093,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showRidershipRace&&<RidershipRaceMode onClose={()=>setShowRidershipRace(false)}/>}
       {showSoundboard&&<SoundboardMode onClose={()=>setShowSoundboard(false)}/>}
       {showSeasonalEvents&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents(false)}/>}
-      {showTransitWordl&&<TransitWordlMode onClose={()=>setShowTransitWordl(false)}/>}
       {showRouteArchitect&&<RouteArchitectMode onClose={()=>setShowRouteArchitect(false)}/>}
       {showOfflineManager&&<OfflineManagerMode onClose={()=>setShowOfflineManager(false)}/>}
       {showBuddyStreaks&&<BuddyStreaksMode onClose={()=>setShowBuddyStreaks(false)}/>}
@@ -6165,14 +6163,6 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
   const[showStationPicker,setShowStationPicker]=useState(false);
-  const[exploreHudXP,setExploreHudXP]=useState(()=>getXP());
-  const[exploreHudShields,setExploreHudShields]=useState(()=>getShieldCount());
-  const[exploreHudStreak,setExploreHudStreak]=useState(()=>getGlobalData().streak);
-  useEffect(()=>{
-    const onStorage=()=>{setExploreHudXP(getXP());setExploreHudShields(getShieldCount());setExploreHudStreak(getGlobalData().streak);};
-    window.addEventListener("storage",onStorage);
-    return()=>window.removeEventListener("storage",onStorage);
-  },[]);
   function goBack(){setCityKey("");setSelStation(null);setStationSearch("");setShowStationPicker(false);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}
   const stList=meta?.stations||(meta?.hubs||[]).map((h:string)=>({n:h,l:[] as string[],c:""}));
   const filtered=(stList||[]).filter((s:any)=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some((ln:string)=>ln.toLowerCase().includes(stationSearch.toLowerCase())));
@@ -6181,13 +6171,12 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     const next=new Set([...completedQuests,qid]);
     setCompletedQuests(next);
     localStorage.setItem("tgg:quests:done",JSON.stringify([...next]));
-    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);setExploreHudXP(getXP());
-    if(isShield){incGlobalStreak();setExploreHudStreak(getGlobalData().streak);}
-    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);setExploreHudShields(getShieldCount());}
+    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
+    if(isShield){incGlobalStreak();}
+    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
-      <PersistentHUD streak={exploreHudStreak} xp={exploreHudXP} shields={exploreHudShields}/>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
       {!cityKey?(
@@ -8317,96 +8306,6 @@ function buildWordSearchGrid(words:string[],size=10):{grid:string[][],placements
   for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(!g[r][c])g[r][c]=alpha[Math.floor(Math.random()*26)];
   return{grid:g,placements:placed};
 }
-function TransitWordlMode({onClose}:{onClose:()=>void}){
-  const CITIES=["pdx","dc","la","nyc","chi","bos"];
-  const RAW_MAP:{[k:string]:any[]}={pdx:PDX_RAW,dc:DC_RAW,la:LA_RAW,nyc:NYC_RAW,chi:CHI_RAW,bos:BOS_RAW};
-  const CITY_NAMES:{[k:string]:string}={pdx:"Portland",dc:"Washington DC",la:"Los Angeles",nyc:"New York City",chi:"Chicago",bos:"Boston"};
-  const[cityKey]=useState(()=>CITIES[Math.floor(Math.random()*CITIES.length)]);
-  const[{grid,placements,words},setGame]=useState<{grid:string[][],placements:{word:string,r:number,c:number,dr:number,dc:number}[],words:string[]}>({grid:[],placements:[],words:[]});
-  const[found,setFound]=useState<string[]>([]);
-  const[startCell,setStartCell]=useState<[number,number]|null>(null);
-  const[score,setScore]=useState(0);
-  const[done,setDone]=useState(false);
-  useEffect(()=>{
-    const raw=RAW_MAP[cityKey]||[];
-    const candidates=raw.filter(([name]:any[])=>{const n=name.replace(/\s/g,"").toUpperCase();return n.length>=4&&n.length<=9;});
-    const shuffled=[...candidates].sort(()=>Math.random()-.5).slice(0,6);
-    const ws=shuffled.map(([name]:any[])=>name.replace(/\s/g,"").toUpperCase());
-    const result=buildWordSearchGrid(ws,10);
-    setGame({...result,words:ws});
-  },[]);
-  function handleCellTap(r:number,c:number){
-    if(done)return;
-    if(!startCell){setStartCell([r,c]);return;}
-    const[r1,c1]=startCell;
-    if(r1===r&&c1===c){setStartCell(null);return;}
-    const dr=Math.sign(r-r1);const dc=Math.sign(c-c1);
-    const len=Math.max(Math.abs(r-r1),Math.abs(c-c1))+1;
-    let built="";
-    for(let i=0;i<len;i++){const rr=r1+dr*i;const cc=c1+dc*i;if(rr<0||rr>=10||cc<0||cc>=10){built="";break;}built+=grid[rr][cc];}
-    const match=placements.find(p=>p.word===built&&p.r===r1&&p.c===c1&&p.dr===dr&&p.dc===dc);
-    if(match&&!found.includes(match.word)){
-      const newFound=[...found,match.word];
-      const xpEarned=30;
-      addXP(xpEarned);
-      setScore(s=>s+xpEarned);
-      setFound(newFound);
-      if(newFound.length===placements.length){addXP(50);setScore(s=>s+50);setDone(true);}
-    }
-    setStartCell(null);
-  }
-  if(done)return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:380,padding:32,textAlign:"center"}}>
-        <div style={{fontSize:48,marginBottom:12}}>🔤</div>
-        <div style={{fontSize:22,fontWeight:900,color:"#0A0A0A",marginBottom:6}}>PUZZLE COMPLETE!</div>
-        <div style={{fontSize:13,color:"#888",marginBottom:20}}>{CITY_NAMES[cityKey]} stations found</div>
-        <div style={{fontSize:32,fontWeight:900,color:"#FF6B35",marginBottom:6}}>{score} XP</div>
-        <div style={{fontSize:11,color:"#aaa",marginBottom:24}}>All 6 stations discovered</div>
-        <button onClick={onClose} style={{background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontWeight:800,fontSize:14,cursor:"pointer",letterSpacing:1}}>DONE</button>
-      </div>
-    </div>
-  );
-  return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflowY:"auto"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div>
-            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🔤 TRANSIT WORDL</div>
-            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>{CITY_NAMES[cityKey].toUpperCase()} · FIND 6 STATION NAMES</div>
-          </div>
-          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
-        </div>
-        <div style={{fontSize:10,color:"#666",marginBottom:10,textAlign:"center"}}>Tap first letter, then last letter of a word to select it</div>
-        {grid.length>0&&(
-          <div style={{display:"grid",gridTemplateColumns:"repeat(10,1fr)",gap:2,marginBottom:16,fontFamily:"monospace"}}>
-            {grid.map((row,r)=>row.map((cell,c)=>{
-              const isStart=startCell&&startCell[0]===r&&startCell[1]===c;
-              const isFound=placements.some(p=>p.word&&found.includes(p.word)&&(()=>{for(let i=0;i<p.word.length;i++)if(p.r+p.dr*i===r&&p.c+p.dc*i===c)return true;return false;})());
-              return(<div key={`${r}-${c}`} onClick={()=>handleCellTap(r,c)}
-                style={{width:"100%",aspectRatio:"1",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"clamp(10px,3vw,13px)",fontWeight:700,cursor:"pointer",borderRadius:4,background:isFound?"#028A48":isStart?"#FFB800":"#f5f5f5",color:isFound?"#fff":isStart?"#fff":"#0A0A0A",border:`1px solid ${isFound?"#028A48":isStart?"#FFB800":"#e0e0e0"}`,transition:"background .15s",userSelect:"none"}}>
-                {cell}
-              </div>);
-            }))}
-          </div>
-        )}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
-          {words.map((w,i)=>{
-            const raw=RAW_MAP[cityKey]||[];
-            const orig=raw.find(([name]:any[])=>name.replace(/\s/g,"").toUpperCase()===w)?.[0]||w;
-            const isF=found.includes(w);
-            return(<div key={i} style={{background:isF?"#028A48":"#f8f8f8",border:`1px solid ${isF?"#028A48":"#eee"}`,borderRadius:8,padding:"8px 10px",display:"flex",alignItems:"center",gap:6}}>
-              <span style={{fontSize:14}}>{isF?"✓":"○"}</span>
-              <span style={{fontSize:11,fontWeight:700,color:isF?"#fff":"#666",textDecoration:isF?"line-through":"none"}}>{orig}</span>
-            </div>);
-          })}
-        </div>
-        <div style={{marginTop:12,textAlign:"center",fontSize:11,color:"#888"}}>Found: {found.length}/{words.length} · Score: {score} XP</div>
-      </div>
-    </div>
-  );
-}
-
 // ── ROUTE ARCHITECT MODE ──────────────────────────────────────────────────────
 function RouteArchitectMode({onClose}:{onClose:()=>void}){
   const CITY_LINES:{[k:string]:string[]}={
@@ -8911,7 +8810,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showRidershipRace_ga,setShowRidershipRace_ga]=useState(false);
   const[showSoundboard_ga,setShowSoundboard_ga]=useState(false);
   const[showSeasonalEvents_ga,setShowSeasonalEvents_ga]=useState(false);
-  const[showTransitWordl_ga,setShowTransitWordl_ga]=useState(false);
   const[showRouteArchitect_ga,setShowRouteArchitect_ga]=useState(false);
   const[showOfflineManager_ga,setShowOfflineManager_ga]=useState(false);
   const[showBuddyStreaks_ga,setShowBuddyStreaks_ga]=useState(false);
