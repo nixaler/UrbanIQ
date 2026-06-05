@@ -4641,8 +4641,8 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   useEffect(()=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[]);
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)"}}>
-      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:16,width:"100%",maxWidth:640,minHeight:"75dvh",maxHeight:"92dvh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:"env(safe-area-inset-top,8px)",backdropFilter:"blur(6px)"}}>
+      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:16,width:"100%",maxWidth:640,maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto",boxShadow:"0 8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
           <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
