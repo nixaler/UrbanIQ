@@ -4931,6 +4931,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showRidershipRace,setShowRidershipRace]=useState(false);
   const [showSoundboard,setShowSoundboard]=useState(false);
   const [showSeasonalEvents,setShowSeasonalEvents]=useState(false);
+  const [showTransitWordl,setShowTransitWordl]=useState(false);
+  const [showRouteArchitect,setShowRouteArchitect]=useState(false);
+  const [showOfflineManager,setShowOfflineManager]=useState(false);
+  const [showBuddyStreaks,setShowBuddyStreaks]=useState(false);
+  const [showPartnerMap,setShowPartnerMap]=useState(false);
+  const [challengeData,setChallengeData]=useState<{streak:number,xp:number,played:number}|null>(()=>{
+    try{const p=new URLSearchParams(window.location.search);const c=p.get("challenge");return c?JSON.parse(atob(c)):null;}catch{return null;}
+  });
   const [showFakeStation_sp,setShowFakeStation_sp]=useState(false);
   const [showStationAge_sp,setShowStationAge_sp]=useState(false);
   const [showCityShowdown_sp,setShowCityShowdown_sp]=useState(false);
@@ -5080,12 +5088,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
       {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
       {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}}/>}
-      {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents}/>}
+      {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents} setShowTransitWordl={setShowTransitWordl} setShowRouteArchitect={setShowRouteArchitect} setShowOfflineManager={setShowOfflineManager} setShowBuddyStreaks={setShowBuddyStreaks} setShowPartnerMap={setShowPartnerMap}/>}
       {showStreetLevel&&<StreetLevelMode onClose={()=>setShowStreetLevel(false)}/>}
       {showTransferOptimizer&&<TransferOptimizerMode onClose={()=>setShowTransferOptimizer(false)}/>}
       {showRidershipRace&&<RidershipRaceMode onClose={()=>setShowRidershipRace(false)}/>}
       {showSoundboard&&<SoundboardMode onClose={()=>setShowSoundboard(false)}/>}
       {showSeasonalEvents&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents(false)}/>}
+      {showTransitWordl&&<TransitWordlMode onClose={()=>setShowTransitWordl(false)}/>}
+      {showRouteArchitect&&<RouteArchitectMode onClose={()=>setShowRouteArchitect(false)}/>}
+      {showOfflineManager&&<OfflineManagerMode onClose={()=>setShowOfflineManager(false)}/>}
+      {showBuddyStreaks&&<BuddyStreaksMode onClose={()=>setShowBuddyStreaks(false)}/>}
+      {showPartnerMap&&<PartnerMapMode onClose={()=>setShowPartnerMap(false)}/>}
       {showFakeStation_sp&&<FakeStationMode gameKey="dc" T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowFakeStation_sp(false)}/>}
       {showStationAge_sp&&<StationAgeMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowStationAge_sp(false)}/>}
       {showCityShowdown_sp&&<CityShowdownMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowCityShowdown_sp(false)}/>}
@@ -5186,6 +5199,21 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
         {(()=>{const g=getGlobalData();if(!g.lastWin)return null;const diff=(Date.now()-new Date(g.lastWin).getTime())/(1000*60*60);if(diff<24||diff>72)return null;return(<div style={{background:"rgba(232,41,74,0.08)",border:"1px solid rgba(232,41,74,0.2)",borderRadius:8,padding:"10px 16px",margin:"0 16px 12px",display:"flex",alignItems:"center",gap:10}}>  <div style={{fontSize:18}}>⚠️</div><div><div style={{fontSize:11,fontWeight:700,letterSpacing:1,color:"#E8294A"}}>STREAK AT RISK</div><div style={{fontSize:11,color:"#888"}}>Play today to keep your {g.streak}-day streak alive</div></div></div>);})()}
         {(()=>{const tm=getTimeMultiplier();if(!tm)return null;return(<div style={{margin:"0 16px 12px",background:`rgba(255,184,0,0.08)`,border:"1px solid rgba(255,184,0,0.3)",borderRadius:8,padding:"10px 16px",display:"flex",alignItems:"center",gap:10}}><div style={{fontSize:18}}>{tm.emoji}</div><div><div style={{fontSize:11,fontWeight:700,letterSpacing:1,color:"#FFB800"}}>{tm.label} ACTIVE</div><div style={{fontSize:11,color:"#888"}}>All XP this session is multiplied!</div></div></div>);})()}
+        {challengeData&&(
+          <div style={{margin:"0 16px 12px",background:"rgba(65,105,225,0.08)",border:"1px solid rgba(65,105,225,0.3)",borderRadius:10,padding:"14px 16px"}}>
+            <div style={{fontSize:11,fontWeight:700,letterSpacing:1,color:"#4169E1",marginBottom:8}}>🏆 CHALLENGE RECEIVED</div>
+            <div style={{display:"flex",gap:14,marginBottom:10}}>
+              <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:900,color:"#FF6B35"}}>🔥 {challengeData.streak}</div><div style={{fontSize:9,color:"#888",letterSpacing:1}}>STREAK</div></div>
+              <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:900,color:"#FFB800"}}>{challengeData.xp}</div><div style={{fontSize:9,color:"#888",letterSpacing:1}}>XP</div></div>
+              <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:900,color:"#4169E1"}}>{challengeData.played}</div><div style={{fontSize:9,color:"#888",letterSpacing:1}}>PLAYED</div></div>
+            </div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginBottom:10}}>Can you beat this streak?</div>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>{setChallengeData(null);window.history.replaceState({},"",window.location.pathname);}} style={{flex:1,background:"#4169E1",color:"#fff",border:"none",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,cursor:"pointer"}}>ACCEPT CHALLENGE</button>
+              <button onClick={()=>{setChallengeData(null);window.history.replaceState({},"",window.location.pathname);}} style={{flex:0,background:"transparent",color:"rgba(255,255,255,0.3)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"9px 12px",fontSize:11,cursor:"pointer"}}>✕</button>
+            </div>
+          </div>
+        )}
 
         {/* Cards */}
         <div className="sp-dark-grid" style={{position:"relative",zIndex:10,padding:"0 48px 40px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
@@ -8264,7 +8292,435 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
     </div>
   );
 }
-function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents}:{onClose:()=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void}){
+// ── TRANSIT WORDL MODE ────────────────────────────────────────────────────────
+function buildWordSearchGrid(words:string[],size=10):{grid:string[][],placements:{word:string,r:number,c:number,dr:number,dc:number}[]}{
+  const g:string[][]=Array.from({length:size},()=>Array(size).fill(""));
+  const dirs:[number,number][]=[[0,1],[1,0],[1,1],[1,-1]];
+  const placed:{word:string,r:number,c:number,dr:number,dc:number}[]=[];
+  for(const word of words){
+    let ok=false;
+    for(let attempt=0;attempt<200&&!ok;attempt++){
+      const[dr,dc]=dirs[Math.floor(Math.random()*dirs.length)];
+      const rMax=dr>=0?size-word.length*Math.max(dr,0)||size-1:size-1;
+      const rMin=dr<0?word.length-1:0;
+      const cMax=dc>0?size-word.length:dc<0?size-1:size-1;
+      const cMin=dc<0?word.length-1:0;
+      if(rMax<rMin||cMax<cMin)continue;
+      const r=rMin+Math.floor(Math.random()*(rMax-rMin+1));
+      const c=cMin+Math.floor(Math.random()*(cMax-cMin+1));
+      let fits=true;
+      for(let i=0;i<word.length;i++){const cell=g[r+dr*i]?.[c+dc*i];if(cell&&cell!==word[i]){fits=false;break;}}
+      if(fits){for(let i=0;i<word.length;i++)g[r+dr*i][c+dc*i]=word[i];placed.push({word,r,c,dr,dc});ok=true;}
+    }
+  }
+  const alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(!g[r][c])g[r][c]=alpha[Math.floor(Math.random()*26)];
+  return{grid:g,placements:placed};
+}
+function TransitWordlMode({onClose}:{onClose:()=>void}){
+  const CITIES=["pdx","dc","la","nyc","chi","bos"];
+  const RAW_MAP:{[k:string]:any[]}={pdx:PDX_RAW,dc:DC_RAW,la:LA_RAW,nyc:NYC_RAW,chi:CHI_RAW,bos:BOS_RAW};
+  const CITY_NAMES:{[k:string]:string}={pdx:"Portland",dc:"Washington DC",la:"Los Angeles",nyc:"New York City",chi:"Chicago",bos:"Boston"};
+  const[cityKey]=useState(()=>CITIES[Math.floor(Math.random()*CITIES.length)]);
+  const[{grid,placements,words},setGame]=useState<{grid:string[][],placements:{word:string,r:number,c:number,dr:number,dc:number}[],words:string[]}>({grid:[],placements:[],words:[]});
+  const[found,setFound]=useState<string[]>([]);
+  const[startCell,setStartCell]=useState<[number,number]|null>(null);
+  const[score,setScore]=useState(0);
+  const[done,setDone]=useState(false);
+  useEffect(()=>{
+    const raw=RAW_MAP[cityKey]||[];
+    const candidates=raw.filter(([name]:any[])=>{const n=name.replace(/\s/g,"").toUpperCase();return n.length>=4&&n.length<=9;});
+    const shuffled=[...candidates].sort(()=>Math.random()-.5).slice(0,6);
+    const ws=shuffled.map(([name]:any[])=>name.replace(/\s/g,"").toUpperCase());
+    const result=buildWordSearchGrid(ws,10);
+    setGame({...result,words:ws});
+  },[]);
+  function handleCellTap(r:number,c:number){
+    if(done)return;
+    if(!startCell){setStartCell([r,c]);return;}
+    const[r1,c1]=startCell;
+    if(r1===r&&c1===c){setStartCell(null);return;}
+    const dr=Math.sign(r-r1);const dc=Math.sign(c-c1);
+    const len=Math.max(Math.abs(r-r1),Math.abs(c-c1))+1;
+    let built="";
+    for(let i=0;i<len;i++){const rr=r1+dr*i;const cc=c1+dc*i;if(rr<0||rr>=10||cc<0||cc>=10){built="";break;}built+=grid[rr][cc];}
+    const match=placements.find(p=>p.word===built&&p.r===r1&&p.c===c1&&p.dr===dr&&p.dc===dc);
+    if(match&&!found.includes(match.word)){
+      const newFound=[...found,match.word];
+      const xpEarned=30;
+      addXP(xpEarned);
+      setScore(s=>s+xpEarned);
+      setFound(newFound);
+      if(newFound.length===placements.length){addXP(50);setScore(s=>s+50);setDone(true);}
+    }
+    setStartCell(null);
+  }
+  if(done)return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:380,padding:32,textAlign:"center"}}>
+        <div style={{fontSize:48,marginBottom:12}}>🔤</div>
+        <div style={{fontSize:22,fontWeight:900,color:"#0A0A0A",marginBottom:6}}>PUZZLE COMPLETE!</div>
+        <div style={{fontSize:13,color:"#888",marginBottom:20}}>{CITY_NAMES[cityKey]} stations found</div>
+        <div style={{fontSize:32,fontWeight:900,color:"#FF6B35",marginBottom:6}}>{score} XP</div>
+        <div style={{fontSize:11,color:"#aaa",marginBottom:24}}>All 6 stations discovered</div>
+        <button onClick={onClose} style={{background:"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontWeight:800,fontSize:14,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflowY:"auto"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🔤 TRANSIT WORDL</div>
+            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>{CITY_NAMES[cityKey].toUpperCase()} · FIND 6 STATION NAMES</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
+        </div>
+        <div style={{fontSize:10,color:"#666",marginBottom:10,textAlign:"center"}}>Tap first letter, then last letter of a word to select it</div>
+        {grid.length>0&&(
+          <div style={{display:"grid",gridTemplateColumns:"repeat(10,1fr)",gap:2,marginBottom:16,fontFamily:"monospace"}}>
+            {grid.map((row,r)=>row.map((cell,c)=>{
+              const isStart=startCell&&startCell[0]===r&&startCell[1]===c;
+              const isFound=placements.some(p=>p.word&&found.includes(p.word)&&(()=>{for(let i=0;i<p.word.length;i++)if(p.r+p.dr*i===r&&p.c+p.dc*i===c)return true;return false;})());
+              return(<div key={`${r}-${c}`} onClick={()=>handleCellTap(r,c)}
+                style={{width:"100%",aspectRatio:"1",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"clamp(10px,3vw,13px)",fontWeight:700,cursor:"pointer",borderRadius:4,background:isFound?"#028A48":isStart?"#FFB800":"#f5f5f5",color:isFound?"#fff":isStart?"#fff":"#0A0A0A",border:`1px solid ${isFound?"#028A48":isStart?"#FFB800":"#e0e0e0"}`,transition:"background .15s",userSelect:"none"}}>
+                {cell}
+              </div>);
+            }))}
+          </div>
+        )}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+          {words.map((w,i)=>{
+            const raw=RAW_MAP[cityKey]||[];
+            const orig=raw.find(([name]:any[])=>name.replace(/\s/g,"").toUpperCase()===w)?.[0]||w;
+            const isF=found.includes(w);
+            return(<div key={i} style={{background:isF?"#028A48":"#f8f8f8",border:`1px solid ${isF?"#028A48":"#eee"}`,borderRadius:8,padding:"8px 10px",display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:14}}>{isF?"✓":"○"}</span>
+              <span style={{fontSize:11,fontWeight:700,color:isF?"#fff":"#666",textDecoration:isF?"line-through":"none"}}>{orig}</span>
+            </div>);
+          })}
+        </div>
+        <div style={{marginTop:12,textAlign:"center",fontSize:11,color:"#888"}}>Found: {found.length}/{words.length} · Score: {score} XP</div>
+      </div>
+    </div>
+  );
+}
+
+// ── ROUTE ARCHITECT MODE ──────────────────────────────────────────────────────
+function RouteArchitectMode({onClose}:{onClose:()=>void}){
+  const CITY_LINES:{[k:string]:string[]}={
+    dc:["Red","Blue","Orange","Silver","Green","Yellow"],
+    nyc:["A","1","F","N"],
+    chi:["Red","Blue","Green","Brown"],
+    bos:["Red","Green","Blue","Orange"],
+    pdx:["Blue","Red","Green","Yellow","Orange"],
+    la:["A Line","B Line","C Line","E Line"],
+  };
+  const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",bos:"Boston",pdx:"Portland",la:"Los Angeles"};
+  const RAW_MAP:{[k:string]:any[]}={dc:DC_RAW,nyc:NYC_RAW,chi:CHI_RAW,bos:BOS_RAW,pdx:PDX_RAW,la:LA_RAW};
+  const ROUNDS=3;
+  const[roundNum,setRoundNum]=useState(0);
+  const[totalScore,setTotalScore]=useState(0);
+  const[gameOver,setGameOver]=useState(false);
+  const[roundData,setRoundData]=useState<{city:string,line:string,stations:string[],shuffled:string[]}|null>(null);
+  const[playerOrder,setPlayerOrder]=useState<string[]>([]);
+  const[bank,setBank]=useState<string[]>([]);
+  const[checked,setChecked]=useState<boolean[]|null>(null);
+  const[roundScore,setRoundScore]=useState<number|null>(null);
+  function pickRound(){
+    const cities=Object.keys(CITY_LINES);
+    const city=cities[Math.floor(Math.random()*cities.length)];
+    const lines=CITY_LINES[city];
+    const line=lines[Math.floor(Math.random()*lines.length)];
+    const raw=RAW_MAP[city]||[];
+    const onLine=raw.filter(([,ls]:any[])=>Array.isArray(ls)&&ls.some((l:string)=>l===line||l.includes(line.split(" ")[0]))).map(([name]:any[])=>name);
+    const capped=onLine.slice(0,8);
+    if(capped.length<3){
+      pickRound();return;
+    }
+    const shuffled=[...capped].sort(()=>Math.random()-.5);
+    setRoundData({city,line,stations:capped,shuffled:[...shuffled]});
+    setBank([...shuffled]);
+    setPlayerOrder([]);
+    setChecked(null);
+    setRoundScore(null);
+  }
+  useEffect(()=>{pickRound();},[]);
+  function tapBank(name:string){
+    if(checked!==null)return;
+    setBank(b=>b.filter(x=>x!==name));
+    setPlayerOrder(p=>[...p,name]);
+  }
+  function tapRoute(name:string){
+    if(checked!==null)return;
+    setPlayerOrder(p=>p.filter(x=>x!==name));
+    setBank(b=>[...b,name]);
+  }
+  function checkOrder(){
+    if(!roundData||playerOrder.length===0)return;
+    const correct=roundData.stations;
+    const result=playerOrder.map((n,i)=>n===correct[i]);
+    const numCorrect=result.filter(Boolean).length;
+    const pct=playerOrder.length>0?numCorrect/correct.length:0;
+    let xp=0;
+    if(pct>=0.7){xp=60;addXP(60);}
+    setChecked(result);
+    setRoundScore(xp);
+    setTotalScore(s=>s+xp);
+  }
+  function nextRound(){
+    const next=roundNum+1;
+    if(next>=ROUNDS){setGameOver(true);}
+    else{setRoundNum(next);pickRound();}
+  }
+  if(gameOver)return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:380,padding:32,textAlign:"center"}}>
+        <div style={{fontSize:48,marginBottom:12}}>🏗️</div>
+        <div style={{fontSize:22,fontWeight:900,color:"#0A0A0A",marginBottom:6}}>ROUTES COMPLETE!</div>
+        <div style={{fontSize:32,fontWeight:900,color:"#028A48",marginBottom:6}}>{totalScore} XP</div>
+        <div style={{fontSize:11,color:"#aaa",marginBottom:24}}>Across {ROUNDS} transit lines</div>
+        <button onClick={onClose} style={{background:"#028A48",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontWeight:800,fontSize:14,cursor:"pointer",letterSpacing:1}}>DONE</button>
+      </div>
+    </div>
+  );
+  if(!roundData)return null;
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflowY:"auto"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🏗️ ROUTE ARCHITECT</div>
+            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>ROUND {roundNum+1}/{ROUNDS} · {CITY_NAMES[roundData.city]} {roundData.line}</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
+        </div>
+        <div style={{fontSize:11,color:"#555",marginBottom:12,textAlign:"center"}}>
+          Order: <strong>{roundData.stations[0]}</strong> → <strong>{roundData.stations[roundData.stations.length-1]}</strong>
+        </div>
+        <div style={{marginBottom:12}}>
+          <div style={{fontSize:10,letterSpacing:2,color:"#888",marginBottom:6}}>YOUR ROUTE ({playerOrder.length}/{roundData.stations.length})</div>
+          <div style={{minHeight:48,background:"#f8f8f8",borderRadius:10,padding:8,display:"flex",flexWrap:"wrap",gap:6}}>
+            {playerOrder.map((n,i)=>(
+              <div key={i} onClick={()=>tapRoute(n)} style={{background:checked?checked[i]?"#028A48":"#E8294A":"#4169E1",color:"#fff",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:700,cursor:checked?"default":"pointer"}}>
+                {i+1}. {n}
+              </div>
+            ))}
+            {playerOrder.length===0&&<div style={{color:"#ccc",fontSize:11,padding:4}}>Tap stations below to build your route</div>}
+          </div>
+        </div>
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:10,letterSpacing:2,color:"#888",marginBottom:6}}>STATION BANK</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {bank.map((n,i)=>(
+              <div key={i} onClick={()=>tapBank(n)} style={{background:"#f0f0f0",border:"1px solid #ddd",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:600,cursor:checked?"default":"pointer",color:"#333"}}>
+                {n}
+              </div>
+            ))}
+          </div>
+        </div>
+        {checked===null?(
+          <button onClick={checkOrder} disabled={playerOrder.length===0} style={{width:"100%",background:playerOrder.length===0?"#ccc":"#FF6B35",color:"#fff",border:"none",borderRadius:10,padding:"13px",fontWeight:800,fontSize:13,cursor:playerOrder.length===0?"default":"pointer",letterSpacing:1}}>CHECK ORDER</button>
+        ):(
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:16,fontWeight:800,color:roundScore&&roundScore>0?"#028A48":"#E8294A",marginBottom:8}}>
+              {roundScore&&roundScore>0?`+${roundScore} XP — Good route!`:"No XP — Keep practicing!"}
+            </div>
+            {roundNum+1<ROUNDS?(
+              <button onClick={nextRound} style={{background:"#4169E1",color:"#fff",border:"none",borderRadius:10,padding:"13px 32px",fontWeight:800,fontSize:13,cursor:"pointer",letterSpacing:1}}>NEXT ROUND →</button>
+            ):(
+              <button onClick={()=>setGameOver(true)} style={{background:"#028A48",color:"#fff",border:"none",borderRadius:10,padding:"13px 32px",fontWeight:800,fontSize:13,cursor:"pointer",letterSpacing:1}}>SEE RESULTS →</button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── OFFLINE MANAGER MODE ──────────────────────────────────────────────────────
+function OfflineManagerMode({onClose}:{onClose:()=>void}){
+  const CITIES=[
+    {key:"pdx",emoji:"🌹",name:"Portland",count:97},
+    {key:"dc",emoji:"🌸",name:"Washington DC",count:98},
+    {key:"balt",emoji:"🦀",name:"Baltimore",count:14},
+    {key:"la",emoji:"🌴",name:"Los Angeles",count:105},
+    {key:"nyc",emoji:"🗽",name:"New York City",count:470},
+    {key:"chi",emoji:"💨",name:"Chicago",count:145},
+    {key:"bos",emoji:"🦞",name:"Boston",count:126},
+    {key:"atl",emoji:"🍑",name:"Atlanta",count:38},
+  ];
+  const[saved,setSaved]=useState<{[k:string]:string}>(()=>{
+    const s:{[k:string]:string}={};
+    CITIES.forEach(c=>{if(localStorage.getItem(`tgg:offline:${c.key}`))s[c.key]="saved";});
+    return s;
+  });
+  function saveCity(key:string){
+    setSaved(s=>({...s,[key]:"saving"}));
+    setTimeout(()=>{
+      localStorage.setItem(`tgg:offline:${key}`,"1");
+      setSaved(s=>({...s,[key]:"saved"}));
+    },900);
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>📱 OFFLINE CITIES</div>
+            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>PIN CITIES FOR INSTANT LOADING</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:14}}>
+          {CITIES.map(c=>{
+            const st=saved[c.key];
+            return(
+              <div key={c.key} style={{background:"#f8f8f8",border:"1.5px solid #eee",borderRadius:12,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
+                <div style={{fontSize:24}}>{c.emoji}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:800,color:"#0A0A0A"}}>{c.name}</div>
+                  <div style={{fontSize:10,color:"#aaa"}}>{c.count} stations</div>
+                </div>
+                {st==="saved"?(
+                  <div style={{background:"#028A48",color:"#fff",borderRadius:8,padding:"6px 12px",fontSize:11,fontWeight:700}}>SAVED ✓</div>
+                ):st==="saving"?(
+                  <div style={{background:"#eee",color:"#888",borderRadius:8,padding:"6px 12px",fontSize:11,fontWeight:700}}>Saving...</div>
+                ):(
+                  <button onClick={()=>saveCity(c.key)} style={{background:"#4169E1",color:"#fff",border:"none",borderRadius:8,padding:"6px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>SAVE</button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{marginTop:16,padding:"12px",background:"#f0f8ff",borderRadius:10,textAlign:"center",fontSize:11,color:"#555",lineHeight:1.5}}>
+          Your app is always available offline. Pinned cities load instantly.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── BUDDY STREAKS MODE ────────────────────────────────────────────────────────
+function BuddyStreaksMode({onClose}:{onClose:()=>void}){
+  const[copied,setCopied]=useState(false);
+  const[link,setLink]=useState("");
+  const gd=getGlobalData();
+  const xp=getXP();
+  const streak=gd?.streak||0;
+  const played=(()=>{
+    try{
+      const keys=["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"];
+      return keys.reduce((sum,k)=>{
+        try{const st=JSON.parse(localStorage.getItem(`${k}:stats`)||"{}");return sum+(st.played||0);}catch{return sum;}
+      },0);
+    }catch{return 0;}
+  })();
+  function copyLink(){
+    const payload=btoa(JSON.stringify({streak,xp,played,ts:Date.now()}));
+    const url=window.location.origin+"/?challenge="+payload;
+    setLink(url);
+    navigator.clipboard?.writeText(url).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);}).catch(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);});
+  }
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:480,padding:"24px 20px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>👥 BUDDY STREAKS</div>
+            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>CHALLENGE A FRIEND</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:20}}>
+          {[{label:"STREAK",value:`🔥 ${streak}`,color:"#FF6B35"},{label:"XP",value:xp,color:"#FFB800"},{label:"PLAYED",value:played,color:"#4169E1"}].map((s,i)=>(
+            <div key={i} style={{background:"#f8f8f8",borderRadius:10,padding:"14px 8px",textAlign:"center"}}>
+              <div style={{fontSize:20,fontWeight:900,color:s.color}}>{s.value}</div>
+              <div style={{fontSize:9,letterSpacing:2,color:"#aaa",marginTop:4}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:12,color:"#555",marginBottom:16,textAlign:"center",lineHeight:1.5}}>
+          Share your stats and challenge a friend to beat your streak!
+        </div>
+        <button onClick={copyLink} style={{width:"100%",background:copied?"#028A48":"#4169E1",color:"#fff",border:"none",borderRadius:10,padding:"14px",fontWeight:800,fontSize:13,cursor:"pointer",letterSpacing:1,transition:"background .2s"}}>
+          {copied?"✓ COPIED! SEND TO A FRIEND.":"COPY CHALLENGE LINK"}
+        </button>
+        {link&&<div style={{marginTop:10,padding:"8px 12px",background:"#f5f5f5",borderRadius:8,fontSize:9,color:"#888",wordBreak:"break-all",lineHeight:1.5}}>{link}</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── PARTNER MAP MODE ──────────────────────────────────────────────────────────
+function PartnerMapMode({onClose}:{onClose:()=>void}){
+  const CITY_NAMES:{[k:string]:string}={pdx:"Portland",dc:"Washington DC",balt:"Baltimore",la:"Los Angeles",nyc:"New York City",chi:"Chicago",bos:"Boston",atl:"Atlanta"};
+  const CITY_EMOJIS:{[k:string]:string}={pdx:"🌹",dc:"🌸",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨",bos:"🦞",atl:"🍑"};
+  const DIRECTIONS:{[k:string]:string}={"Busboys & Poets":"Busboys & Poets 14th & V St NW Washington DC"};
+  const[filter,setFilter]=useState("all");
+  const[toast,setToast]=useState<string|null>(null);
+  function showToast(msg:string){setToast(msg);setTimeout(()=>setToast(null),2800);}
+  const partnerPicks:{city:string,name:string,type:string,offer:string,station:string,coming?:boolean}[]=[
+    {city:"dc",name:"Busboys & Poets",type:"☕ Café",offer:"15% off any food item",station:"U Street/African-Amer Civil War Memorial/Cardozo"},
+    {city:"pdx",name:"Voodoo Doughnut",type:"🍩 Bakery",offer:"Coming soon",station:"Old Town/Chinatown",coming:true},
+    {city:"nyc",name:"Katz's Deli",type:"🥪 Deli",offer:"Coming soon",station:"Delancey St",coming:true},
+  ];
+  const cities=["all",...Array.from(new Set(partnerPicks.map(p=>p.city)))];
+  const shown=filter==="all"?partnerPicks:partnerPicks.filter(p=>p.city===filter);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🗺️ PARTNER SPOTS</div>
+            <div style={{fontSize:10,color:"#888",letterSpacing:1,marginTop:2}}>EXCLUSIVE OFFERS</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#888"}}>✕</button>
+        </div>
+        <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+          {cities.map(c=>(
+            <button key={c} onClick={()=>setFilter(c)} style={{background:filter===c?"#0A0A0A":"#f5f5f5",color:filter===c?"#fff":"#555",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer",transition:"all .15s"}}>
+              {c==="all"?"All":`${CITY_EMOJIS[c]||""} ${CITY_NAMES[c]||c}`}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {shown.map((p,i)=>(
+            <div key={i} style={{background:p.coming?"#fafafa":"#f8f8f8",border:`1.5px solid ${p.coming?"#eee":"#e0e0e0"}`,borderRadius:12,padding:"14px 16px",opacity:p.coming?0.65:1}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+                <div style={{fontSize:28}}>{p.coming?"🔒":(CITY_EMOJIS[p.city]||"🏪")}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontWeight:800,color:"#0A0A0A",marginBottom:2}}>{p.name}</div>
+                  <div style={{fontSize:11,color:"#888",marginBottom:3}}>{p.type}</div>
+                  <div style={{fontSize:11,color:"#555"}}>📍 Near: {p.station}</div>
+                </div>
+              </div>
+              <div style={{background:p.coming?"#f0f0f0":"#fff8f0",border:`1px solid ${p.coming?"#e0e0e0":"#FFB800"}`,borderRadius:8,padding:"8px 10px",fontSize:12,fontWeight:700,color:p.coming?"#aaa":"#FF6B35",marginBottom:10}}>
+                🎁 {p.offer}
+              </div>
+              {!p.coming&&(
+                <div style={{display:"flex",gap:8}}>
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(DIRECTIONS[p.name]||p.name+" "+CITY_NAMES[p.city])}`} target="_blank" rel="noopener noreferrer"
+                    style={{flex:1,background:"#4169E1",color:"#fff",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,textAlign:"center",textDecoration:"none",display:"block"}}>
+                    GET DIRECTIONS
+                  </a>
+                  <button onClick={()=>showToast("Open Explore → DC to claim")} style={{flex:1,background:"#028A48",color:"#fff",border:"none",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                    CLAIM OFFER
+                  </button>
+                </div>
+              )}
+              {p.coming&&<div style={{textAlign:"center",fontSize:11,color:"#aaa",fontWeight:700,letterSpacing:1}}>COMING SOON</div>}
+            </div>
+          ))}
+        </div>
+        {toast&&<div style={{position:"fixed",bottom:40,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",borderRadius:10,padding:"10px 20px",fontSize:12,fontWeight:700,zIndex:9000,whiteSpace:"nowrap"}}>{toast}</div>}
+      </div>
+    </div>
+  );
+}
+
+function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowTransitWordl,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{onClose:()=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowTransitWordl:(v:boolean)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
   const month=new Date().getMonth();const season=month>=2&&month<=4?"spring":month>=5&&month<=7?"summer":month>=8&&month<=10?"fall":"winter";
   const SEASON_EMOJI:{[k:string]:string}={spring:"🌸",summer:"☀️",fall:"🍂",winter:"❄️"};
   const games=[
@@ -8278,6 +8734,11 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
     {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>{setShowRidershipRace(true);onClose();}},
     {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>{setShowSoundboard(true);onClose();}},
     {emoji:SEASON_EMOJI[season]||"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>{setShowSeasonalEvents(true);onClose();}},
+    {emoji:"🔤",title:"Transit Wordl",body:"Word search: find station names in a 10×10 grid",color:"#7B2FBE",onClick:()=>{setShowTransitWordl(true);onClose();}},
+    {emoji:"🏗️",title:"Route Architect",body:"Arrange stations in the correct order",color:"#028A48",onClick:()=>{setShowRouteArchitect(true);onClose();}},
+    {emoji:"📱",title:"Offline Cities",body:"Pin cities for instant offline loading",color:"#4169E1",onClick:()=>{setShowOfflineManager(true);onClose();}},
+    {emoji:"👥",title:"Buddy Streaks",body:"Copy a challenge link and compete with friends",color:"#028A48",onClick:()=>{setShowBuddyStreaks(true);onClose();}},
+    {emoji:"🗺️",title:"Partner Spots",body:"Exclusive offers at transit-adjacent venues",color:"#FF6B35",onClick:()=>{setShowPartnerMap(true);onClose();}},
   ];
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(8px)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
@@ -8285,7 +8746,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
             <div style={{fontSize:22,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🎮 ARCADE</div>
-            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>10 MINI-GAMES · EARN XP IN EVERY MODE</div>
+            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>15 MINI-GAMES · EARN XP IN EVERY MODE</div>
           </div>
           <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#888",padding:4,lineHeight:1}}>✕</button>
         </div>
@@ -8307,7 +8768,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
 }
 
 // ── BONUS GAMES SECTION (extracted from GameApp JSX to fix hooks-in-IIFE violation) ──
-function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowComingSoon}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void}){
+function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowComingSoon,setShowTransitWordl,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void,setShowTransitWordl:(v:boolean)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
   const[bonusOpen,setBonusOpen]=useState(false);
   type CardItem={emoji:string,title:string,body:string,color?:string,stub?:boolean,stubDesc?:string,onClick?:()=>void};
   const cards:CardItem[]=[
@@ -8322,15 +8783,15 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
     {emoji:"🎯",title:"Transit Bingo",body:"Complete achievements on your bingo card",color:"#4169E1",onClick:()=>setShowBingo(true)},
     {emoji:"👻",title:"Ghost Stations",body:"Unlock abandoned stations with XP",color:"#0A0A0A",onClick:()=>setShowGhosts(true)},
     {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>setShowRidershipRace(true)},
-    {emoji:"👥",title:"Buddy Streaks",body:"Match streaks with a friend",color:"#028A48",stub:true,stubDesc:"Friend challenges powered by real accounts. Coming soon."},
+    {emoji:"👥",title:"Buddy Streaks",body:"Challenge a friend with a shareable link",color:"#028A48",onClick:()=>setShowBuddyStreaks(true)},
     {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>setShowTransferOptimizer(true)},
     {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>setShowStreetLevel(true)},
-    {emoji:"📝",title:"Transit Wordl",body:"Word search: find the station names",color:"#7B2FBE",stub:true,stubDesc:"Transit word search. Coming soon."},
+    {emoji:"🔤",title:"Transit Wordl",body:"Word search: find station names in a 10×10 grid",color:"#7B2FBE",onClick:()=>setShowTransitWordl(true)},
     {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>setShowSoundboard(true)},
-    {emoji:"🏗️",title:"Route Architect",body:"Design your own transit line",color:"#028A48",stub:true,stubDesc:"Route design sandbox. Coming soon."},
-    {emoji:"📱",title:"Offline Mode",body:"Download a city for offline play",color:"#4169E1",stub:true,stubDesc:"Service worker cache. Coming soon."},
+    {emoji:"🏗️",title:"Route Architect",body:"Arrange stations in correct order",color:"#028A48",onClick:()=>setShowRouteArchitect(true)},
+    {emoji:"📱",title:"Offline Cities",body:"Pin cities for instant offline loading",color:"#4169E1",onClick:()=>setShowOfflineManager(true)},
     {emoji:"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>setShowSeasonalEvents(true)},
-    {emoji:"🗺️",title:"Partner Map",body:"Interactive map of partner spots",color:"#028A48",stub:true,stubDesc:"Map layer in the Explore portal. Coming soon."},
+    {emoji:"🗺️",title:"Partner Spots",body:"Exclusive offers at transit-adjacent venues",color:"#FF6B35",onClick:()=>setShowPartnerMap(true)},
   ];
   return(
     <div style={{marginTop:20,marginBottom:12}}>
@@ -8450,6 +8911,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[showRidershipRace_ga,setShowRidershipRace_ga]=useState(false);
   const[showSoundboard_ga,setShowSoundboard_ga]=useState(false);
   const[showSeasonalEvents_ga,setShowSeasonalEvents_ga]=useState(false);
+  const[showTransitWordl_ga,setShowTransitWordl_ga]=useState(false);
+  const[showRouteArchitect_ga,setShowRouteArchitect_ga]=useState(false);
+  const[showOfflineManager_ga,setShowOfflineManager_ga]=useState(false);
+  const[showBuddyStreaks_ga,setShowBuddyStreaks_ga]=useState(false);
+  const[showPartnerMap_ga,setShowPartnerMap_ga]=useState(false);
   const[showPeek,setShowPeek]=useState(false);
   const[showMapsModal,setShowMapsModal]=useState(false);
   const[showGameDrop,setShowGameDrop]=useState(false);
@@ -9199,7 +9665,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowStreetLevel={setShowStreetLevel_ga} setShowTransferOptimizer={setShowTransferOptimizer_ga} setShowRidershipRace={setShowRidershipRace_ga} setShowSoundboard={setShowSoundboard_ga} setShowSeasonalEvents={setShowSeasonalEvents_ga} setShowComingSoon={setShowComingSoon}/>
+          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowStreetLevel={setShowStreetLevel_ga} setShowTransferOptimizer={setShowTransferOptimizer_ga} setShowRidershipRace={setShowRidershipRace_ga} setShowSoundboard={setShowSoundboard_ga} setShowSeasonalEvents={setShowSeasonalEvents_ga} setShowComingSoon={setShowComingSoon} setShowTransitWordl={setShowTransitWordl_ga} setShowRouteArchitect={setShowRouteArchitect_ga} setShowOfflineManager={setShowOfflineManager_ga} setShowBuddyStreaks={setShowBuddyStreaks_ga} setShowPartnerMap={setShowPartnerMap_ga}/>
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
@@ -9218,6 +9684,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           {showRidershipRace_ga&&<RidershipRaceMode onClose={()=>setShowRidershipRace_ga(false)}/>}
           {showSoundboard_ga&&<SoundboardMode onClose={()=>setShowSoundboard_ga(false)}/>}
           {showSeasonalEvents_ga&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents_ga(false)}/>}
+          {showTransitWordl_ga&&<TransitWordlMode onClose={()=>setShowTransitWordl_ga(false)}/>}
+          {showRouteArchitect_ga&&<RouteArchitectMode onClose={()=>setShowRouteArchitect_ga(false)}/>}
+          {showOfflineManager_ga&&<OfflineManagerMode onClose={()=>setShowOfflineManager_ga(false)}/>}
+          {showBuddyStreaks_ga&&<BuddyStreaksMode onClose={()=>setShowBuddyStreaks_ga(false)}/>}
+          {showPartnerMap_ga&&<PartnerMapMode onClose={()=>setShowPartnerMap_ga(false)}/>}
 
           <div style={{textAlign:"center",marginTop:8}}>
             <a href="https://mc.buymeacoffee.com/links/SyEkenCIAfWPKEhbhyglsDjuxVxSSjqkeHbXYWMXWcARvFhFzRCgIASnBhHieeDGIBlkfaEMkvhKXYgPCXWGCPB/3480126?link=nixalerllc" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:7,background:T.surface,color:"#FFDD00",border:"1px solid rgba(255,221,0,.2)",fontFamily:"'JetBrains Mono',monospace",fontSize:fs(9),fontWeight:700,letterSpacing:1,padding:"9px 16px",borderRadius:7,textDecoration:"none"}}>☕ Enjoying it? Buy me a coffee</a>
