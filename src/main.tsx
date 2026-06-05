@@ -6137,6 +6137,14 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
   const[showStationPicker,setShowStationPicker]=useState(false);
+  const[exploreHudXP,setExploreHudXP]=useState(()=>getXP());
+  const[exploreHudShields,setExploreHudShields]=useState(()=>getShieldCount());
+  const[exploreHudStreak,setExploreHudStreak]=useState(()=>getGlobalData().streak);
+  useEffect(()=>{
+    const onStorage=()=>{setExploreHudXP(getXP());setExploreHudShields(getShieldCount());setExploreHudStreak(getGlobalData().streak);};
+    window.addEventListener("storage",onStorage);
+    return()=>window.removeEventListener("storage",onStorage);
+  },[]);
   function goBack(){setCityKey("");setSelStation(null);setStationSearch("");setShowStationPicker(false);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}
   const stList=meta?.stations||(meta?.hubs||[]).map((h:string)=>({n:h,l:[] as string[],c:""}));
   const filtered=(stList||[]).filter((s:any)=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some((ln:string)=>ln.toLowerCase().includes(stationSearch.toLowerCase())));
@@ -6145,12 +6153,13 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     const next=new Set([...completedQuests,qid]);
     setCompletedQuests(next);
     localStorage.setItem("tgg:quests:done",JSON.stringify([...next]));
-    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);
-    if(isShield){incGlobalStreak();}
-    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
+    addXP(xp);setXpPop(xp);setTimeout(()=>setXpPop(null),2200);setExploreHudXP(getXP());
+    if(isShield){incGlobalStreak();setExploreHudStreak(getGlobalData().streak);}
+    if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);setExploreHudShields(getShieldCount());}
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16}}>
+      <PersistentHUD streak={exploreHudStreak} xp={exploreHudXP} shields={exploreHudShields}/>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
       {!cityKey?(
