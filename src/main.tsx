@@ -654,7 +654,7 @@ function CardSystemTab({pendingCard,onClearPending}){
 
       {sel&&(
         <div onClick={()=>setSel(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:900,padding:20}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:card,border:`1.5px solid ${CARD_RARITY[sel.rarityId?.toUpperCase()]?.color||"#555"}`,borderRadius:16,padding:24,width:"100%",maxWidth:340,maxHeight:"90vh",overflowY:"auto"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:card,border:`1.5px solid ${CARD_RARITY[sel.rarityId?.toUpperCase()]?.color||"#555"}`,borderRadius:16,padding:24,width:"100%",maxWidth:340,maxHeight:"90dvh",overflowY:"auto"}}>
             <div style={{display:"flex",gap:14,marginBottom:18}}>
               <CardVisual card={sel} size="md"/>
               <div style={{flex:1}}>
@@ -4642,7 +4642,7 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   const handleSelect=(gk:string)=>{scrollRef.current?.scrollTo({top:0,behavior:"instant" as ScrollBehavior});onClose();onSelectGame(gk);};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)"}}>
-      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:16,width:"100%",maxWidth:640,minHeight:"75vh",maxHeight:"92vh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
+      <div ref={scrollRef} onClick={e=>e.stopPropagation()} style={{background:"#080c12",borderRadius:16,width:"100%",maxWidth:640,minHeight:"75dvh",maxHeight:"92dvh",overflowY:"auto",boxShadow:"0 -8px 60px rgba(0,0,0,.6)",animation:"obIn .22s ease both",position:"relative"}}>
         <style>{`@keyframes obIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}`}</style>
         <div style={{display:"flex",justifyContent:"center",padding:"10px 0 2px"}}>
           <div style={{width:36,height:4,borderRadius:2,background:"rgba(255,255,255,0.12)"}}/>
@@ -4722,7 +4722,7 @@ function AccountModal({onClose}:{onClose:()=>void}){
 
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>SYNC PROGRESS</div>
@@ -4818,7 +4818,7 @@ function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:strin
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       {shareToast&&<div style={{position:"fixed",top:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)"}}>Copied to clipboard!</div>}
-      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#FFB800,#FF8C42,#E8294A)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>DAILY CHALLENGE</div>
@@ -5947,7 +5947,7 @@ function RewardsModal({onClose}:{onClose:()=>void}){
   useEffect(()=>{(async()=>{const keys=["pdx","dc","balt","la","nyc","chi","bos","atl"];const labels:{[k:string]:string}={pdx:"Portland",dc:"DC Metro",balt:"Baltimore",la:"LA Metro",nyc:"NYC Subway",chi:"Chicago L",bos:"Boston T",atl:"Atlanta"};const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));const perGame=keys.map((k,i)=>({key:k,label:labels[k],played:stats[i]?.played||0,wins:stats[i]?.wins||0,streak:stats[i]?.streak||0})).filter(g=>g.played>0);const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const ts=Math.max(...stats.map((s:any)=>s?.streak||0));setCareer({played:tp,wins:tw,winPct:tp>0?Math.round(tw/tp*100):0,topStreak:ts,perGame});})();},[]);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
-      <div style={{background:"#fff",borderRadius:18,padding:"24px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:"#fff",borderRadius:18,padding:"24px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"rgba(0,0,0,0.3)",lineHeight:1}}>×</button>
         {/* Tab bar */}
         <div style={{display:"flex",gap:4,marginBottom:20,background:"#F8F7F5",borderRadius:10,padding:4}}>
@@ -6252,7 +6252,7 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:MicroQuest,onVerified:(
   }
   return(
     <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:16,padding:"28px 24px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",maxHeight:"90vh",overflowY:"auto"}}>
+      <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:16,padding:"28px 24px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
           <div>
             <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>Verification · Step {step} of 2</div>
@@ -6624,7 +6624,7 @@ function GameSelector({allStats,roundData,blitzBests,onSelect,onBack,settings}:{
 
       <div onClick={onBack} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.22)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",animation:"gsBackdrop .3s ease both"}}/>
 
-      <div style={{position:"relative",zIndex:1,background:bg,borderRadius:"0 0 24px 24px",boxShadow:"0 32px 80px rgba(0,0,0,0.22)",maxHeight:"88vh",overflowY:"auto",animation:"gsSlideDown .2s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif"}}>
+      <div style={{position:"relative",zIndex:1,background:bg,borderRadius:"0 0 24px 24px",boxShadow:"0 32px 80px rgba(0,0,0,0.22)",maxHeight:"88dvh",overflowY:"auto",animation:"gsSlideDown .2s cubic-bezier(.4,0,.2,1) both",fontFamily:"'Inter','Helvetica Neue',sans-serif"}}>
 
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 28px",borderBottom:`1px solid ${border}`}}>
           <div style={{fontSize:"11px",letterSpacing:3,fontWeight:700,color:textMuted}}>SELECT A GAME</div>
@@ -7018,7 +7018,7 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",animation:"obFadeIn .25s ease both"}}>
       <style>{`@keyframes obFadeIn{from{opacity:0}to{opacity:1}}@keyframes obCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}`}</style>
-      <div style={{background:"#fff",borderRadius:16,padding:"32px 24px",width:"100%",maxWidth:420,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,.18)",animation:"obCardIn .32s .05s ease both"}}>
+      <div style={{background:"#fff",borderRadius:16,padding:"32px 24px",width:"100%",maxWidth:420,maxHeight:"90dvh",overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,.18)",animation:"obCardIn .32s .05s ease both"}}>
         <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:28}}>
           {STEPS.map((_,i)=>(<div key={i} style={{width:i===step?24:7,height:7,borderRadius:4,background:i<=step?"#0a0a0a":"#e5e5e5",transition:"all .3s"}}/>))}
         </div>
@@ -7594,7 +7594,7 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
     }
     return(
       <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-        <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,maxHeight:"80vh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
+        <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,maxHeight:"80dvh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
               <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2}}>LINE CHALLENGES</div>
@@ -7909,7 +7909,7 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>FAKE STATION · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>Which station doesn't exist?</div>
@@ -7960,7 +7960,7 @@ function StationAgeMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>STATION AGE · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:19,fontWeight:900,letterSpacing:1,marginBottom:4}}>{station.name}</div>
@@ -8008,7 +8008,7 @@ function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>CITY SHOWDOWN · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:17,fontWeight:800,letterSpacing:1}}>{q.q}</div>
@@ -8035,7 +8035,7 @@ function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
   const won=checkBingoWin(state);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"24px 16px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"24px 16px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>TRANSIT BINGO</div>
           {won&&<div style={{fontSize:13,color:"#028A48",fontWeight:700,marginTop:4}}>🎉 BINGO! You completed a line!</div>}
@@ -8184,7 +8184,7 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,overflow:"hidden",width:"100%",maxWidth:520,maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,overflow:"hidden",width:"100%",maxWidth:520,maxHeight:"90dvh",display:"flex",flexDirection:"column"}}>
         <div style={{position:"relative",height:220,background:"#1a1a1a",display:"flex",alignItems:"center",justifyContent:"center"}}>
           {photoLoading&&<div style={{color:"rgba(255,255,255,0.4)",fontSize:12,letterSpacing:2}}>LOADING...</div>}
           {!photoLoading&&photoUrl&&<img src={photoUrl} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",filter:phase==="play"?"blur(2px) brightness(0.9)":"brightness(0.85)"}}/>}
@@ -8239,7 +8239,7 @@ function TransferOptimizerMode({onClose}:{onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>TRANSFER OPTIMIZER · DC METRO · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:15,fontWeight:800,color:"#0A0A0A",marginBottom:16}}>Where should you transfer?</div>
@@ -8295,7 +8295,7 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>RIDERSHIP RACE · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:17,fontWeight:800}}>Which station has more riders?</div>
@@ -8392,7 +8392,7 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,maxHeight:"92vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,maxHeight:"92dvh",overflowY:"auto"}}>
         <div style={{background:"#0A0A0A",borderRadius:"16px 16px 0 0",padding:"16px 20px"}}>
           <div style={{fontSize:10,letterSpacing:3,color:"rgba(255,255,255,0.4)",marginBottom:4}}>TRANSIT CALLS · ROUND {round+1}/{ROUNDS}</div>
           <div style={{fontSize:12,letterSpacing:2,color:"rgba(255,255,255,0.5)",marginBottom:12}}>Which system made this announcement?</div>
@@ -8473,7 +8473,7 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
   );
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90vh",overflowY:"auto"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:24,marginBottom:6}}>{emoji}</div>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:6}}>SEASONAL EVENTS · {SEASON_LABEL[season].toUpperCase()} · ROUND {round+1}/{ROUNDS}</div>
@@ -8853,7 +8853,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
   ];
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(8px)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:540,maxHeight:"90vh",overflowY:"auto",padding:"24px 20px"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:540,maxHeight:"90dvh",overflowY:"auto",padding:"24px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
             <div style={{fontSize:22,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🎮 ARCADE</div>
@@ -10738,7 +10738,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}>
       <style>{`@keyframes obIn{from{opacity:0;transform:scale(.95) translateY(12px)}to{opacity:1;transform:none}}`}</style>
-      <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:400,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",animation:"obIn .3s ease both",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
+      <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:400,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",animation:"obIn .3s ease both",position:"relative",maxHeight:"90dvh",overflowY:"auto"}}>
         {/* Step dots */}
         <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:24}}>
           {[0,1,2,3].map(i=>(
