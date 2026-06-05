@@ -4914,6 +4914,124 @@ function DkCard({g,featured,delay,darkHov,setDarkHov,onSelectGame}:{g:any,featur
     </div>
   );
 }
+function AnimatedCityBg(){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden",background:"#F7F6F4"}}>
+      <svg viewBox="0 0 520 400" preserveAspectRatio="xMidYMax meet" style={{position:"absolute",bottom:0,left:0,width:"100%",height:"100%",opacity:0.045}} xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>{`
+            .train-g{animation:cityTrain 14s linear infinite}
+            .car1-g{animation:cityCar1 9s linear infinite}
+            .car2-g{animation:cityCar2 11s 2s linear infinite}
+            .bike-g{animation:cityBike 18s 4s linear infinite}
+          `}</style>
+        </defs>
+        {/* ── City skyline silhouettes ── */}
+        <g fill="#0A0A0A">
+          {/* Tall skyscrapers */}
+          <rect x="20" y="80" width="28" height="220"/>
+          <rect x="25" y="60" width="18" height="20"/>
+          {/* antenna */}
+          <rect x="33" y="50" width="2" height="10"/>
+          <rect x="55" y="110" width="22" height="190"/>
+          <rect x="82" y="70" width="35" height="230"/>
+          <rect x="88" y="55" width="23" height="15"/>
+          {/* window grid hint on tall building */}
+          <rect x="120" y="95" width="40" height="205"/>
+          <rect x="165" y="130" width="25" height="170"/>
+          <rect x="195" y="85" width="50" height="215"/>
+          <rect x="200" y="68" width="40" height="17"/>
+          <rect x="218" y="58" width="4" height="10"/>
+          <rect x="250" y="115" width="30" height="185"/>
+          <rect x="285" y="75" width="45" height="225"/>
+          <rect x="290" y="60" width="35" height="15"/>
+          <rect x="335" y="100" width="28" height="200"/>
+          <rect x="368" y="125" width="20" height="175"/>
+          <rect x="393" y="88" width="38" height="212"/>
+          <rect x="398" y="72" width="28" height="16"/>
+          <rect x="436" y="105" width="32" height="195"/>
+          <rect x="473" y="140" width="22" height="160"/>
+          <rect x="500" y="90" width="25" height="210"/>
+          {/* Shorter buildings - foreground */}
+          <rect x="0" y="230" width="18" height="70"/>
+          <rect x="45" y="240" width="12" height="60"/>
+          <rect x="72" y="220" width="16" height="80"/>
+          <rect x="145" y="235" width="18" height="65"/>
+          <rect x="175" y="225" width="14" height="75"/>
+          <rect x="260" y="238" width="20" height="62"/>
+          <rect x="320" y="228" width="15" height="72"/>
+          <rect x="380" y="240" width="18" height="60"/>
+          <rect x="455" y="232" width="16" height="68"/>
+          {/* Ground line */}
+          <rect x="0" y="300" width="520" height="4"/>
+        </g>
+
+        {/* ── Street level ground ── */}
+        <rect x="0" y="316" width="520" height="84" fill="#0A0A0A" opacity="0.03"/>
+
+        {/* ── Moving train ── */}
+        <g className="train-g">
+          {/* Train body */}
+          <rect x="0" y="265" width="110" height="26" rx="4" fill="#0A0A0A"/>
+          {/* Windows */}
+          <rect x="8" y="270" width="16" height="12" rx="2" fill="white" opacity="0.5"/>
+          <rect x="30" y="270" width="16" height="12" rx="2" fill="white" opacity="0.5"/>
+          <rect x="52" y="270" width="16" height="12" rx="2" fill="white" opacity="0.5"/>
+          <rect x="74" y="270" width="16" height="12" rx="2" fill="white" opacity="0.5"/>
+          <rect x="96" y="270" width="10" height="12" rx="2" fill="white" opacity="0.5"/>
+          {/* Wheels */}
+          <circle cx="18" cy="293" r="5" fill="#0A0A0A"/>
+          <circle cx="44" cy="293" r="5" fill="#0A0A0A"/>
+          <circle cx="70" cy="293" r="5" fill="#0A0A0A"/>
+          <circle cx="96" cy="293" r="5" fill="#0A0A0A"/>
+          {/* Pantograph */}
+          <line x1="55" y1="265" x2="55" y2="252" stroke="#0A0A0A" strokeWidth="1.5"/>
+          <line x1="55" y1="252" x2="75" y2="248" stroke="#0A0A0A" strokeWidth="1"/>
+        </g>
+
+        {/* ── Moving car 1 (right-going) ── */}
+        <g className="car1-g">
+          <rect x="0" y="288" width="36" height="14" rx="3" fill="#0A0A0A"/>
+          <rect x="5" y="281" width="22" height="9" rx="2" fill="#0A0A0A"/>
+          <circle cx="8" cy="303" r="4" fill="#0A0A0A"/>
+          <circle cx="28" cy="303" r="4" fill="#0A0A0A"/>
+          {/* Headlight */}
+          <rect x="34" y="290" width="3" height="5" rx="1" fill="#0A0A0A" opacity="0.6"/>
+        </g>
+
+        {/* ── Moving car 2 (left-going) ── */}
+        <g className="car2-g">
+          <rect x="480" y="288" width="36" height="14" rx="3" fill="#0A0A0A"/>
+          <rect x="489" y="281" width="22" height="9" rx="2" fill="#0A0A0A"/>
+          <circle cx="488" cy="303" r="4" fill="#0A0A0A"/>
+          <circle cx="508" cy="303" r="4" fill="#0A0A0A"/>
+          {/* Taillight */}
+          <rect x="479" y="290" width="3" height="5" rx="1" fill="#0A0A0A" opacity="0.6"/>
+        </g>
+
+        {/* ── Moving bicycle ── */}
+        <g className="bike-g">
+          {/* Wheels */}
+          <circle cx="6" cy="300" r="6" fill="none" stroke="#0A0A0A" strokeWidth="1.5"/>
+          <circle cx="22" cy="300" r="6" fill="none" stroke="#0A0A0A" strokeWidth="1.5"/>
+          {/* Frame */}
+          <line x1="6" y1="300" x2="14" y2="289" stroke="#0A0A0A" strokeWidth="1.5"/>
+          <line x1="14" y1="289" x2="22" y2="300" stroke="#0A0A0A" strokeWidth="1.5"/>
+          <line x1="14" y1="289" x2="8" y2="296" stroke="#0A0A0A" strokeWidth="1.5"/>
+          {/* Handlebar */}
+          <line x1="22" y1="293" x2="26" y2="291" stroke="#0A0A0A" strokeWidth="1.5"/>
+          <line x1="24" y1="291" x2="28" y2="291" stroke="#0A0A0A" strokeWidth="1.5"/>
+          {/* Seat */}
+          <line x1="11" y1="289" x2="16" y2="287" stroke="#0A0A0A" strokeWidth="1.5"/>
+          {/* Rider silhouette */}
+          <circle cx="17" cy="283" r="3" fill="#0A0A0A"/>
+          <line x1="17" y1="286" x2="14" y2="294" stroke="#0A0A0A" strokeWidth="1.5"/>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:()=>void,onSelectGame:(gk:string)=>void,initialShowSupport?:boolean,settings?:any}){
   const dayNum=useMemo(getDayNum,[]);
   const hotGameKey=useMemo(()=>{const d=new Date().getDay();return d===0?"nyc":d===1?"pdx":d===2?"dc":d===3?"states":d===4?"nfl":d===5?"bos":d===6?"atl":"chi";},[]);
@@ -5087,7 +5205,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
       {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
       {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}}/>}
-      {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents} setShowTransitWordl={setShowTransitWordl} setShowRouteArchitect={setShowRouteArchitect} setShowOfflineManager={setShowOfflineManager} setShowBuddyStreaks={setShowBuddyStreaks} setShowPartnerMap={setShowPartnerMap}/>}
+      {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents} setShowRouteArchitect={setShowRouteArchitect} setShowOfflineManager={setShowOfflineManager} setShowBuddyStreaks={setShowBuddyStreaks} setShowPartnerMap={setShowPartnerMap}/>}
       {showStreetLevel&&<StreetLevelMode onClose={()=>setShowStreetLevel(false)}/>}
       {showTransferOptimizer&&<TransferOptimizerMode onClose={()=>setShowTransferOptimizer(false)}/>}
       {showRidershipRace&&<RidershipRaceMode onClose={()=>setShowRidershipRace(false)}/>}
@@ -5329,7 +5447,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const si=hotIdx%swipeGames.length;
   const featG=swipeGames[si];
   return(
-    <div style={{minHeight:"100dvh",background:"#FFFFFF",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
+    <div style={{minHeight:"100dvh",background:"transparent",color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",display:"flex",flexDirection:"column",position:"relative",zIndex:1,maxWidth:520,margin:"0 auto",boxSizing:"border-box",paddingBottom:72}}>
       <link rel="manifest" href="/manifest.json"/>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
       <style>{`
@@ -5356,7 +5474,13 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         .lm-cta-main{flex:1;background:#0A0A0A;color:white;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:15px 18px;border-radius:4px;text-align:center;cursor:pointer;border:none;font-family:\'Outfit\',sans-serif;transition:opacity .2s;}
         .lm-cta-main:hover{opacity:0.85;}
         .gs-card{border-radius:12px !important;}
+        @keyframes cityTrain{0%{transform:translateX(-220px)}100%{transform:translateX(560px)}}
+        @keyframes cityCar1{0%{transform:translateX(-120px)}100%{transform:translateX(560px)}}
+        @keyframes cityCar2{0%{transform:translateX(560px)}100%{transform:translateX(-120px)}}
+        @keyframes cityBike{0%{transform:translateX(-80px)}100%{transform:translateX(520px)}}
+        @keyframes pillFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
       `}</style>
+      <AnimatedCityBg/>
 
       {notifMsg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",letterSpacing:1,padding:"12px 22px",borderRadius:8,zIndex:9999,boxShadow:"0 4px 20px rgba(0,0,0,0.18)",pointerEvents:"none",whiteSpace:"nowrap"}}>{notifMsg}</div>}
 
@@ -5395,7 +5519,27 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </nav>
 
-      <PersistentHUD streak={hudStreak} xp={hudXP} shields={hudShields}/>
+      <div style={{display:"flex",justifyContent:"center",padding:"8px 22px 0",position:"sticky",top:52,zIndex:99,pointerEvents:"none",animation:"lmFadeIn .3s ease both"}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:14,background:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(0,0,0,0.08)",borderRadius:100,padding:"6px 18px",boxShadow:"0 2px 16px rgba(0,0,0,0.07)",pointerEvents:"all",animation:"pillFloat 4s ease-in-out infinite"}}>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FF8C42",lineHeight:1}}>{hudStreak}</span>
+          </div>
+          <div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:13}}>⚡</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FFB800",lineHeight:1}}>{hudXP}</span>
+            <div style={{width:40,height:3,background:"rgba(0,0,0,0.07)",borderRadius:2,overflow:"hidden"}}>
+              <div style={{width:`${Math.min(100,(hudXP%500)/500*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF6B35)",borderRadius:2}}/>
+            </div>
+          </div>
+          <div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,fontWeight:800,color:"#4169E1",lineHeight:1}}>{hudShields}</span>
+            <span style={{fontSize:13}}>🛡️</span>
+          </div>
+        </div>
+      </div>
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
       {activeSection==="home"&&<>
       {/* HERO */}
@@ -5456,109 +5600,178 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </div>
 
-      {/* ALL GAMES — Category Accordions */}
-      <div style={{padding:"32px 22px 0",animation:"lmFadeIn .35s ease both"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
+      {/* ── ALL GAMES — Shelf Layout ── */}
+      <div style={{padding:"20px 0 0",animation:"lmFadeIn .35s ease both"}}>
+        {/* Section eyebrow */}
+        <div style={{padding:"0 22px",fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(0,0,0,0.3)",marginBottom:14,display:"flex",alignItems:"center",gap:10}}>
           All Games <div className="lm-eyebrow-line"/>
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
-          {/* DAILY CHALLENGE */}
-          <div style={{border:"2px solid #FFB800",borderRadius:10,overflow:"hidden",background:"#FFFCF0"}}>
-            <button onClick={()=>setShowDailyChallenge(true)}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <span style={{fontSize:"20px"}}>🏆</span>
-                <div>
-                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A",display:"flex",alignItems:"center",gap:6}}>
-                    Daily Challenge
-                    <span style={{fontSize:"9px",fontWeight:700,color:"#FFB800",background:"rgba(255,184,0,0.15)",border:"1px solid rgba(255,184,0,0.4)",borderRadius:3,padding:"1px 5px",letterSpacing:1}}>DAY #{dayNum}</span>
-                  </div>
-                  <div style={{fontSize:"9px",color:"rgba(0,0,0,0.45)",letterSpacing:"1px",marginTop:1}}>3 Cities · Same for everyone · +150 XP</div>
+
+        {/* DAILY CHALLENGE */}
+        <div style={{margin:"0 22px 10px",border:"2px solid #FFB800",borderRadius:10,overflow:"hidden",background:"#FFFCF0"}}>
+          <button onClick={()=>setShowDailyChallenge(true)}
+            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:"20px"}}>🏆</span>
+              <div>
+                <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A",display:"flex",alignItems:"center",gap:6}}>
+                  Daily Challenge
+                  <span style={{fontSize:"9px",fontWeight:700,color:"#FFB800",background:"rgba(255,184,0,0.15)",border:"1px solid rgba(255,184,0,0.4)",borderRadius:3,padding:"1px 5px",letterSpacing:1}}>DAY #{dayNum}</span>
+                </div>
+                <div style={{fontSize:"9px",color:"rgba(0,0,0,0.45)",letterSpacing:"1px",marginTop:1}}>3 Cities · Same for everyone · +150 XP</div>
+              </div>
+            </div>
+            <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
+          </button>
+        </div>
+
+        {/* EXPLORE */}
+        <div style={{margin:"0 22px 20px",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
+          <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:"20px"}}>🧭</span>
+              <div>
+                <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
+                <div style={{fontSize:"9px",color:"rgba(0,0,0,0.4)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+              </div>
+            </div>
+            <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
+          </button>
+        </div>
+
+        {/* TRANSIT SHELF */}
+        <div style={{marginBottom:20}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 22px",marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:3,height:16,background:"#4169E1",borderRadius:2}}/>
+              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🚊 Transit</span>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:10,paddingLeft:22,paddingRight:22,overflowX:"auto",scrollSnapType:"x mandatory",WebkitOverflowScrolling:"touch",scrollbarWidth:"none" as any,msOverflowStyle:"none" as any}}>
+            {gameCards.filter(g=>g.tag==="TRANSIT").map((g,i)=>(
+              <div key={g.key}
+                onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+                onMouseDown={e=>(e.currentTarget.style.transform="scale(0.95)")}
+                onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+                onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+                style={{flexShrink:0,width:130,height:170,borderRadius:14,overflow:"hidden",position:"relative",scrollSnapAlign:"start",cursor:"pointer",transition:"transform .2s ease, box-shadow .2s ease",boxShadow:"0 4px 16px rgba(0,0,0,0.10)",animation:`lmFadeIn .3s ${i*.05}s ease both`}}>
+                <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+                  style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s ease"}}/>
+                <div style={{position:"absolute",inset:0,background:`linear-gradient(to top,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.15) 55%,transparent 100%)`}}/>
+                {g.key===hotGameKey&&<div style={{position:"absolute",top:8,right:8,background:"rgba(255,184,0,0.9)",color:"#0A0A0A",fontSize:"7px",fontWeight:800,letterSpacing:"1px",padding:"3px 6px",borderRadius:4}}>HOT</div>}
+                <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"10px 12px 12px"}}>
+                  <div style={{fontSize:"8px",fontWeight:700,letterSpacing:"1.5px",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",marginBottom:3}}>{g.sub.split("·")[0].trim()}</div>
+                  <div style={{fontSize:"14px",fontWeight:800,color:"#fff",lineHeight:1.2,letterSpacing:"-0.2px",textShadow:"0 1px 6px rgba(0,0,0,0.5)"}}>{g.name}</div>
                 </div>
               </div>
-              <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
-            </button>
+            ))}
           </div>
-          {/* EXPLORE — first item */}
-          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-            <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <span style={{fontSize:"20px"}}>🧭</span>
+        </div>
+
+        {/* GEOGRAPHY — wide cinematic card */}
+        {(()=>{const g=gameCards.find(gc=>gc.tag==="GEOGRAPHY");if(!g)return null;return(
+          <div style={{margin:"0 22px 10px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <div style={{width:3,height:16,background:"#22C55E",borderRadius:2}}/>
+              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Geography</span>
+            </div>
+            <div onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+              onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+              onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
+              <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+                style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.25) 100%)"}}/>
+              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+                <span style={{fontSize:30}}>{g.emoji}</span>
                 <div>
-                  <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
-                  <div style={{fontSize:"9px",color:"rgba(255,255,255,0.45)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                  <div style={{fontSize:"17px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>{g.name}</div>
+                  <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:2}}>{g.sub}</div>
                 </div>
               </div>
-              <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
-            </button>
+              <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.75)",border:"1px solid rgba(255,255,255,0.3)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+            </div>
           </div>
-          {[
-            {tag:"TRANSIT",label:"🚊 Transit",color:"#4169E1"},
-            {tag:"GEOGRAPHY",label:"🗺️ Geography",color:"#22C55E"},
-            {tag:"SPORTS",label:"🏈 Sports",color:"#E8294A"},
-            {tag:"ARCADE",label:"🎮 Arcade",color:"#A855F7"},
-          ].map(({tag,label,color})=>{
-            const cards=gameCards.filter(g=>g.tag===tag);
-            if(cards.length===0)return null;
-            const isOpen=!lmCollapsed.has(tag);
-            return(
-              <div key={tag} style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-                <button onClick={()=>toggleLmSection(tag)}
-                  style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:isOpen?"#F5F5F5":"transparent",border:"none",borderLeft:`5px solid ${color}`,padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}>
-                  <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>{label}</span>
-                  <span style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",transition:"transform .25s",display:"inline-block",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▼</span>
-                </button>
-                {isOpen&&(
-                  <div style={{animation:"lmFadeIn .2s ease both"}}>
-                    {cards.map((g,i)=>(
-                      <div key={g.key} className="lm-game-row"
-                        onClick={()=>{SoundEngine.play("select");if(g.key==="minigames")setShowArcadeHub(true);else onSelectGame(g.key);}}
-                        style={{borderBottom:i<cards.length-1?"1px solid #EDEBE8":"none",borderLeft:"5px solid transparent",borderLeftColor:color,padding:0,gap:0,display:"flex",alignItems:"stretch"}}>
-                        {g.photo&&(
-                          <div style={{width:80,minHeight:70,flexShrink:0,position:"relative",overflow:"hidden"}}>
-                            <img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.85) saturate(1.1)"}}/>
-                          </div>
-                        )}
-                        <div style={{flex:1,display:"flex",alignItems:"center",gap:12,padding:"14px 16px"}}>
-                          <div style={{fontSize:"22px",width:34,textAlign:"center",flexShrink:0}}>{g.emoji}</div>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:"14px",fontWeight:700,color:"#0A0A0A"}}>{g.key==="minigames"?"Arcade Hub":g.name}</div>
-                            <div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:2}}>{g.key==="minigames"?"10 Mini-Games · Earn XP in every mode":g.sub}</div>
-                          </div>
-                          {g.key===hotGameKey&&<div className="lm-live-dot"/>}
-                          <div style={{fontSize:"12px",color:"rgba(255,255,255,0.35)",flexShrink:0}}>→</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+        );})()}
+
+        {/* SPORTS — wide cinematic card */}
+        {(()=>{const g=gameCards.find(gc=>gc.tag==="SPORTS");if(!g)return null;return(
+          <div style={{margin:"0 22px 10px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <div style={{width:3,height:16,background:"#E8294A",borderRadius:2}}/>
+              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🏈 Sports</span>
+            </div>
+            <div onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+              onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+              onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
+              <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+                style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.25) 100%)"}}/>
+              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+                <span style={{fontSize:30}}>{g.emoji}</span>
+                <div>
+                  <div style={{fontSize:"17px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>{g.name}</div>
+                  <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:2}}>{g.sub}</div>
+                </div>
               </div>
-            );
-          })}
-          {/* MAPS single button */}
-          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-            <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
-              onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
-              onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
-              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
-              <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
-            </button>
+              <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.75)",border:"1px solid rgba(255,255,255,0.3)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+            </div>
           </div>
-          {/* REWARDS single button */}
-          <div style={{border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-            <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
-              style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box"}}
-              onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}
-              onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
-                <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getXP()} XP</span>
+        );})()}
+
+        {/* ARCADE — wide card with pulsing glow border */}
+        {(()=>{const g=gameCards.find(gc=>gc.tag==="ARCADE");if(!g)return null;return(
+          <div style={{margin:"0 22px 10px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <div style={{width:3,height:16,background:"#A855F7",borderRadius:2}}/>
+              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🎮 Arcade</span>
+            </div>
+            <div onClick={()=>{SoundEngine.play("select");setShowArcadeHub(true);}}
+              onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+              onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 20px rgba(123,47,190,0.18)",border:"1.5px solid rgba(123,47,190,0.25)"}}>
+              <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+                style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(20,5,40,0.88) 0%,rgba(20,5,40,0.35) 100%)"}}/>
+              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+                <span style={{fontSize:30}}>{g.emoji}</span>
+                <div>
+                  <div style={{fontSize:"17px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>{g.key==="minigames"?"Arcade Hub":g.name}</div>
+                  <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:2}}>14 Mini-Games · Earn XP in every mode</div>
+                </div>
               </div>
-              <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
-            </button>
+              <div style={{position:"absolute",top:10,right:12,background:"rgba(123,47,190,0.25)",border:"1px solid rgba(168,85,247,0.5)",backdropFilter:"blur(8px)",color:"#c084fc",fontSize:"8px",fontWeight:800,letterSpacing:"1.5px",padding:"4px 8px",borderRadius:5}}>14 GAMES</div>
+            </div>
           </div>
+        );})()}
+
+        {/* MAPS & GUIDES */}
+        <div style={{margin:"10px 22px 0",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
+          <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
+            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}
+            onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")}
+            onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+            <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
+            <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
+          </button>
+        </div>
+        {/* REWARDS */}
+        <div style={{margin:"10px 22px 24px",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
+          <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
+            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}
+            onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")}
+            onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
+              <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getXP()} XP</span>
+            </div>
+            <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
+          </button>
         </div>
       </div>
 
@@ -8619,7 +8832,7 @@ function PartnerMapMode({onClose}:{onClose:()=>void}){
   );
 }
 
-function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowTransitWordl,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{onClose:()=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowTransitWordl:(v:boolean)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
+function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{onClose:()=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
   const month=new Date().getMonth();const season=month>=2&&month<=4?"spring":month>=5&&month<=7?"summer":month>=8&&month<=10?"fall":"winter";
   const SEASON_EMOJI:{[k:string]:string}={spring:"🌸",summer:"☀️",fall:"🍂",winter:"❄️"};
   const games=[
@@ -8633,7 +8846,6 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
     {emoji:"📊",title:"Ridership Race",body:"Which station had more riders?",color:"#FF6B35",onClick:()=>{setShowRidershipRace(true);onClose();}},
     {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>{setShowSoundboard(true);onClose();}},
     {emoji:SEASON_EMOJI[season]||"🎃",title:"Seasonal Events",body:"Special themed challenges · 1.5× XP",color:"#E8294A",onClick:()=>{setShowSeasonalEvents(true);onClose();}},
-    {emoji:"🔤",title:"Transit Wordl",body:"Word search: find station names in a 10×10 grid",color:"#7B2FBE",onClick:()=>{setShowTransitWordl(true);onClose();}},
     {emoji:"🏗️",title:"Route Architect",body:"Arrange stations in the correct order",color:"#028A48",onClick:()=>{setShowRouteArchitect(true);onClose();}},
     {emoji:"📱",title:"Offline Cities",body:"Pin cities for instant offline loading",color:"#4169E1",onClick:()=>{setShowOfflineManager(true);onClose();}},
     {emoji:"👥",title:"Buddy Streaks",body:"Copy a challenge link and compete with friends",color:"#028A48",onClick:()=>{setShowBuddyStreaks(true);onClose();}},
@@ -8645,7 +8857,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
             <div style={{fontSize:22,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🎮 ARCADE</div>
-            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>15 MINI-GAMES · EARN XP IN EVERY MODE</div>
+            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>14 MINI-GAMES · EARN XP IN EVERY MODE</div>
           </div>
           <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#888",padding:4,lineHeight:1}}>✕</button>
         </div>
@@ -8667,7 +8879,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
 }
 
 // ── BONUS GAMES SECTION (extracted from GameApp JSX to fix hooks-in-IIFE violation) ──
-function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowComingSoon,setShowTransitWordl,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void,setShowTransitWordl:(v:boolean)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
+function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setShowTrivia,setShowLineChallenge,setShowPhotoMode,setShowFakeStation,setShowStationAge,setShowCityShowdown,setShowBingo,setShowGhosts,setShowStreetLevel,setShowTransferOptimizer,setShowRidershipRace,setShowSoundboard,setShowSeasonalEvents,setShowComingSoon,setShowRouteArchitect,setShowOfflineManager,setShowBuddyStreaks,setShowPartnerMap}:{T:any,fs:any,gameKey:string,G:any,setShowBlitz:(v:boolean)=>void,setShowItemOfWeek:(v:boolean)=>void,setShowTrivia:(v:boolean)=>void,setShowLineChallenge:(v:boolean)=>void,setShowPhotoMode:(v:boolean)=>void,setShowFakeStation:(v:boolean)=>void,setShowStationAge:(v:boolean)=>void,setShowCityShowdown:(v:boolean)=>void,setShowBingo:(v:boolean)=>void,setShowGhosts:(v:boolean)=>void,setShowStreetLevel:(v:boolean)=>void,setShowTransferOptimizer:(v:boolean)=>void,setShowRidershipRace:(v:boolean)=>void,setShowSoundboard:(v:boolean)=>void,setShowSeasonalEvents:(v:boolean)=>void,setShowComingSoon:(v:{title:string,emoji:string,desc:string}|null)=>void,setShowRouteArchitect:(v:boolean)=>void,setShowOfflineManager:(v:boolean)=>void,setShowBuddyStreaks:(v:boolean)=>void,setShowPartnerMap:(v:boolean)=>void}){
   const[bonusOpen,setBonusOpen]=useState(false);
   type CardItem={emoji:string,title:string,body:string,color?:string,stub?:boolean,stubDesc?:string,onClick?:()=>void};
   const cards:CardItem[]=[
@@ -8685,7 +8897,6 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
     {emoji:"👥",title:"Buddy Streaks",body:"Challenge a friend with a shareable link",color:"#028A48",onClick:()=>setShowBuddyStreaks(true)},
     {emoji:"🗺️",title:"Transfer Optimizer",body:"Find the fastest route puzzle",color:"#4169E1",onClick:()=>setShowTransferOptimizer(true)},
     {emoji:"📸",title:"Street Level",body:"Recognize stations from photos",color:"#E8294A",onClick:()=>setShowStreetLevel(true)},
-    {emoji:"🔤",title:"Transit Wordl",body:"Word search: find station names in a 10×10 grid",color:"#7B2FBE",onClick:()=>setShowTransitWordl(true)},
     {emoji:"🔊",title:"Soundboard",body:"Real announcements. Which system said it?",color:"#FF6B35",onClick:()=>setShowSoundboard(true)},
     {emoji:"🏗️",title:"Route Architect",body:"Arrange stations in correct order",color:"#028A48",onClick:()=>setShowRouteArchitect(true)},
     {emoji:"📱",title:"Offline Cities",body:"Pin cities for instant offline loading",color:"#4169E1",onClick:()=>setShowOfflineManager(true)},
@@ -9563,7 +9774,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowStreetLevel={setShowStreetLevel_ga} setShowTransferOptimizer={setShowTransferOptimizer_ga} setShowRidershipRace={setShowRidershipRace_ga} setShowSoundboard={setShowSoundboard_ga} setShowSeasonalEvents={setShowSeasonalEvents_ga} setShowComingSoon={setShowComingSoon} setShowTransitWordl={setShowTransitWordl_ga} setShowRouteArchitect={setShowRouteArchitect_ga} setShowOfflineManager={setShowOfflineManager_ga} setShowBuddyStreaks={setShowBuddyStreaks_ga} setShowPartnerMap={setShowPartnerMap_ga}/>
+          <BonusGamesSection T={T} fs={fs} gameKey={gameKey} G={G} setShowBlitz={setShowBlitz} setShowItemOfWeek={setShowItemOfWeek} setShowTrivia={setShowTrivia} setShowLineChallenge={setShowLineChallenge} setShowPhotoMode={setShowPhotoMode} setShowFakeStation={setShowFakeStation} setShowStationAge={setShowStationAge} setShowCityShowdown={setShowCityShowdown} setShowBingo={setShowBingo} setShowGhosts={setShowGhosts} setShowStreetLevel={setShowStreetLevel_ga} setShowTransferOptimizer={setShowTransferOptimizer_ga} setShowRidershipRace={setShowRidershipRace_ga} setShowSoundboard={setShowSoundboard_ga} setShowSeasonalEvents={setShowSeasonalEvents_ga} setShowComingSoon={setShowComingSoon} setShowRouteArchitect={setShowRouteArchitect_ga} setShowOfflineManager={setShowOfflineManager_ga} setShowBuddyStreaks={setShowBuddyStreaks_ga} setShowPartnerMap={setShowPartnerMap_ga}/>
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
@@ -9582,7 +9793,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           {showRidershipRace_ga&&<RidershipRaceMode onClose={()=>setShowRidershipRace_ga(false)}/>}
           {showSoundboard_ga&&<SoundboardMode onClose={()=>setShowSoundboard_ga(false)}/>}
           {showSeasonalEvents_ga&&<SeasonalEventsMode onClose={()=>setShowSeasonalEvents_ga(false)}/>}
-          {showTransitWordl_ga&&<TransitWordlMode onClose={()=>setShowTransitWordl_ga(false)}/>}
           {showRouteArchitect_ga&&<RouteArchitectMode onClose={()=>setShowRouteArchitect_ga(false)}/>}
           {showOfflineManager_ga&&<OfflineManagerMode onClose={()=>setShowOfflineManager_ga(false)}/>}
           {showBuddyStreaks_ga&&<BuddyStreaksMode onClose={()=>setShowBuddyStreaks_ga(false)}/>}
