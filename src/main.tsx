@@ -6360,6 +6360,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const[cityKey,setCityKey]=useState<string>("");
   const[selStation,setSelStation]=useState<string|null>(null);
   const[stationSearch,setStationSearch]=useState("");
+  const[pulseTick,setPulseTick]=useState(0);
   const today=new Date().toISOString().slice(0,10);
   const[completedQuests,setCompletedQuests]=useState<Set<string>>(()=>new Set(JSON.parse(localStorage.getItem("tgg:quests:done")||"[]")));
   const shieldKey=`tgg:explore:shield:${today}`;
@@ -6376,6 +6377,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
   const[showStationPicker,setShowStationPicker]=useState(false);
+  useEffect(()=>{if(!selStation)return;const id=setInterval(()=>setPulseTick(t=>t+1),8000);return()=>clearInterval(id);},[selStation]);
   function goBack(){setCityKey("");setSelStation(null);setStationSearch("");setShowStationPicker(false);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}
   const stList=meta?.stations||(meta?.hubs||[]).map((h:string)=>({n:h,l:[] as string[],c:""}));
   const filtered=(stList||[]).filter((s:any)=>!stationSearch||s.n.toLowerCase().includes(stationSearch.toLowerCase())||s.l.some((ln:string)=>ln.toLowerCase().includes(stationSearch.toLowerCase())));
@@ -6465,6 +6467,44 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
               </div>
             </div>
           </div>
+          {selStation&&(()=>{
+            const stObj=(stList||[]).find((s:any)=>s.n===selStation);
+            const lines:string[]=stObj?.l||[];
+            const arrivals=getSimPulse(cityKey,selStation,pulseTick).slice(0,3);
+            return(
+              <div style={{padding:"0 22px 12px"}}>
+                <div style={{border:"1px solid #D5D3CF",borderRadius:10,background:"#fff",overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+                  <div style={{padding:"12px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:4}}>STATION INFO</div>
+                      <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A",marginBottom:6}}>{selStation}</div>
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap" as const}}>
+                        {lines.length>0?lines.map(l=>(
+                          <span key={l} style={{fontSize:"10px",fontWeight:700,color:"#fff",background:meta.lc?.[l]||G.accent,borderRadius:4,padding:"2px 7px",letterSpacing:"0.5px"}}>{l}</span>
+                        )):<span style={{fontSize:"11px",color:"#888580"}}>{meta.name}</span>}
+                      </div>
+                    </div>
+                    <button onClick={()=>onSelectGame(cityKey)} style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",flexShrink:0,WebkitTapHighlightColor:"transparent"}}>PLAY →</button>
+                  </div>
+                  {arrivals.length>0&&(
+                    <div style={{padding:"10px 16px"}}>
+                      <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:8}}>NEXT TRAINS</div>
+                      <div style={{display:"flex",flexDirection:"column" as const,gap:6}}>
+                        {arrivals.map((a,i)=>(
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+                            <div style={{width:10,height:10,borderRadius:2,background:a.lineColor,flexShrink:0}}/>
+                            <div style={{flex:1,fontSize:"12px",fontWeight:600,color:"#0A0A0A"}}>{a.dest}</div>
+                            <div style={{fontSize:"12px",fontWeight:700,color:a.mins<=2?"#E8294A":a.mins<=5?"#FF8C42":"#22C55E",flexShrink:0}}>{a.mins} min</div>
+                            <div style={{width:20,height:6,borderRadius:2,background:`rgba(0,0,0,${0.07+a.crowd/100*0.18})`,flexShrink:0,title:`${a.crowd}% full`}}/>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
           <div style={{padding:"0 22px 20px"}}>
             {(()=>{
               const cti=CITY_TRANSIT_INFO[cityKey];
@@ -6472,7 +6512,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
               const okCount=cti.status.filter(s=>s.ok).length;
               const allOk=okCount===cti.status.length;
               return(
-                <div style={{border:"1px solid #EDEBE8",borderRadius:10,background:"#FAFAFA",marginBottom:12,overflow:"hidden"}}>
+                <div style={{border:"1px solid #D5D3CF",borderRadius:10,background:"#fff",marginBottom:12,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
                   <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
                     <div style={{flex:1}}>
                       <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
