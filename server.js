@@ -311,6 +311,9 @@ app.get("/api/wmata/incidents", async (req, res) => {
 // ── PARTNER OFFER CODES (server-side only — never sent in bundle) ─────────────
 const OFFER_CODES = {
   "busboys-dc": "BUSBOYS15",
+  "powells-pdx": "POWELLS10",
+  "katz-nyc": "KATZIQ10",
+  "loumal-chi": "LOUMAL10",
 };
 
 app.get("/api/offers/code/:offerId", (req, res) => {

@@ -4674,7 +4674,7 @@ function AccountModal({onClose}:{onClose:()=>void}){
       const r=await fetch("/api/auth/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email}),signal:ctrl.signal});
       clearTimeout(tid);
       const d=await r.json();
-      if(!r.ok){setErrMsg(d.error||"Failed to send code.");setLoading(false);return;}
+      if(!r.ok){setErrMsg(r.status===503?"Account sync is being set up — check back soon.":(d.error||"Failed to send code."));setLoading(false);return;}
       if(d._devCode)setCode(d._devCode);
       setPhase("sent");
     }catch(e:any){setErrMsg(e?.name==="AbortError"?"Request timed out — try again.":"Network error — try again.");clearTimeout(tid);}
@@ -5546,8 +5546,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       <div style={{padding:"20px 0 0",background:"#FFFFFF"}}>
         {/* Hero text */}
         <div style={{position:"relative",padding:"0 22px",animation:"lmFadeIn .4s ease both",textAlign:"center"}}>
-          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-            <span style={{width:22,height:1,background:"rgba(255,255,255,0.25)",display:"inline-block",flexShrink:0}}/>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(0,0,0,0.38)",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            <span style={{width:22,height:1,background:"rgba(0,0,0,0.15)",display:"inline-block",flexShrink:0}}/>
             {dateStr.split(",").slice(0,2).join(",")} · Day #{dayNum}
           </div>
           <div style={{fontFamily:"'Outfit',sans-serif",fontSize:"clamp(48px,12vw,64px)",fontWeight:900,letterSpacing:"-1px",lineHeight:1,marginBottom:2}}>
@@ -5556,14 +5556,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"clamp(28px,7vw,38px)",lineHeight:1,letterSpacing:2,marginBottom:2}}>
             <span className="lm-grad" style={{display:"block",animationDelay:"-1s"}}>CITY DISCOVERY</span>
           </div>
-          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:0,marginTop:4}}>Play the City. Know the Streets.</div>
+          <div style={{fontSize:"11px",fontWeight:400,letterSpacing:"2px",textTransform:"uppercase",color:"rgba(0,0,0,0.4)",marginBottom:0,marginTop:4}}>Play the City. Know the Streets.</div>
           {topStreak>0&&<div style={{marginTop:10,display:"flex",justifyContent:"center"}}><div style={{background:"white",border:"1px solid #E8E6E2",fontSize:"13px",fontWeight:700,padding:"10px 14px",borderRadius:4,display:"inline-flex",alignItems:"center",gap:5}}><span style={{display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span><span className="lm-grad-fast">{topStreak}</span></div></div>}
         </div>
       </div>
 
       {/* HOT TODAY */}
       <div style={{padding:"16px 22px 0",animation:"lmFadeIn .3s ease both"}}>
-        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
+        <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(0,0,0,0.38)",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
           🔥 Hot Today <div className="lm-eyebrow-line"/>
         </div>
         <div style={{borderRadius:12,overflow:"hidden",marginBottom:8,cursor:"pointer",position:"relative",minHeight:190}}
@@ -5595,7 +5595,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         {/* Dots below card */}
         <div style={{display:"flex",justifyContent:"center",gap:5,marginBottom:16}}>
           {swipeGames.map((_,i)=>(
-            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?20:6,height:6,borderRadius:3,background:i===si?featG.color:"rgba(255,255,255,0.2)",transition:"all .2s",cursor:"pointer"}}/>
+            <div key={i} onClick={()=>setHotIdx(i)} style={{width:i===si?20:6,height:6,borderRadius:3,background:i===si?featG.color:"#D5D3CF",transition:"all .2s",cursor:"pointer"}}/>
           ))}
         </div>
       </div>
@@ -5609,18 +5609,24 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
 
         {/* EXPLORE */}
-        <div style={{margin:"0 22px 20px",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-          <button onClick={()=>{setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
-            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:"20px"}}>🧭</span>
+        <div style={{margin:"0 22px 20px"}}>
+          <div onClick={()=>{SoundEngine.play("select");setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+            onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+            onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            style={{height:90,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
+            <img src="/photo-dc.jpg" alt="Explore" onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+              style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,50,0.82) 0%,rgba(0,0,50,0.25) 100%)"}}/>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+              <span style={{fontSize:28}}>🧭</span>
               <div>
-                <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>Explore</div>
-                <div style={{fontSize:"9px",color:"rgba(0,0,0,0.4)",letterSpacing:"1px",marginTop:1}}>City Guide · Quests · Earn Shields</div>
+                <div style={{fontSize:"17px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>Explore</div>
+                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:2}}>City Guide · Quests · Earn Shields</div>
               </div>
             </div>
-            <span style={{fontSize:"11px",color:"#0A0A0A",fontWeight:600}}>Open →</span>
-          </button>
+            <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.85)",border:"1px solid rgba(255,255,255,0.35)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>OPEN →</div>
+          </div>
         </div>
 
         {/* TRANSIT SHELF */}
@@ -5734,27 +5740,41 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         );})()}
 
         {/* MAPS & GUIDES */}
-        <div style={{margin:"10px 22px 0",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-          <button onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
-            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #0ea5e9",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}
-            onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")}
-            onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
-            <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Maps &amp; Guides</span>
-            <span style={{fontSize:"11px",color:"#0ea5e9",fontWeight:600}}>Open →</span>
-          </button>
+        <div style={{margin:"10px 22px 0"}}>
+          <div onClick={()=>{SoundEngine.play("select");setShowMaps(true);}}
+            onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+            onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            style={{height:76,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
+            <img src="/photo-nyc.jpg" alt="Maps" onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
+              style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,40,80,0.85) 0%,rgba(0,40,80,0.25) 100%)"}}/>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:12}}>
+              <span style={{fontSize:24}}>🗺️</span>
+              <div>
+                <div style={{fontSize:"15px",fontWeight:800,color:"#fff",letterSpacing:-0.2}}>Maps &amp; Guides</div>
+                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:1}}>Network Intelligence · Transit Maps</div>
+              </div>
+            </div>
+            <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.85)",border:"1px solid rgba(255,255,255,0.35)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>OPEN →</div>
+          </div>
         </div>
         {/* REWARDS */}
-        <div style={{margin:"10px 22px 24px",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
-          <button onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
-            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",borderLeft:"5px solid #FFB800",padding:"14px 18px 14px 14px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"background .2s",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}
-            onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")}
-            onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Rewards</span>
-              <span style={{fontSize:"9px",fontWeight:600,letterSpacing:"1px",color:"#FFB800",background:"rgba(255,184,0,0.12)",border:"1px solid rgba(255,184,0,0.3)",borderRadius:4,padding:"2px 6px"}}>{getXP()} XP</span>
+        <div style={{margin:"10px 22px 24px"}}>
+          <div onClick={()=>{SoundEngine.play("select");setShowRewards(true);}}
+            onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+            onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            style={{height:76,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",background:"linear-gradient(135deg,#78350f 0%,#b45309 40%,#d97706 70%,#fbbf24 100%)",boxShadow:"0 4px 20px rgba(180,83,9,0.25)"}}>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:12}}>
+              <span style={{fontSize:24}}>🏆</span>
+              <div>
+                <div style={{fontSize:"15px",fontWeight:800,color:"#fff",letterSpacing:-0.2}}>Rewards</div>
+                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",marginTop:1}}>{getXP()} XP · Redeem for real prizes</div>
+              </div>
             </div>
-            <span style={{fontSize:"11px",color:"#FFB800",fontWeight:600}}>Open →</span>
-          </button>
+            <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.9)",border:"1px solid rgba(255,255,255,0.4)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>OPEN →</div>
+          </div>
         </div>
       </div>
 
@@ -5770,7 +5790,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         return(
           <div style={{animation:"lmFadeIn .4s ease both"}}>
             <div style={{padding:"0 22px",marginBottom:0}}>
-              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
+              <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"3px",textTransform:"uppercase",color:"rgba(0,0,0,0.38)",marginBottom:16,display:"flex",alignItems:"center",gap:10,paddingTop:8}}>
                 Yesterday's Answer <div className="lm-eyebrow-line"/>
               </div>
             </div>
@@ -6131,12 +6151,12 @@ const EXPLORE_CITY_META:{[k:string]:{name:string,emoji:string,color:string,lines
 };
 type ExplorePickItem={name:string,type:string,desc:string,partner?:boolean,offer?:string,offerId?:string,questId?:string};
 const EXPLORE_PICKS:{[k:string]:ExplorePickItem[]}={
-  pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square."},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
+  pdx:[{name:"Powell's Books",type:"📚 Bookstore",desc:"World's largest indie bookstore near Pioneer Square.",partner:true,offer:"10% off any purchase",offerId:"powells-pdx"},{name:"Voodoo Doughnut",type:"🍩 Bakery",desc:"Portland's iconic original doughnut shop on 3rd Ave."},{name:"Multnomah Whiskey Library",type:"🥃 Bar",desc:"1,500+ whiskeys in a stunning library setting."}],
   dc:[{name:"Busboys & Poets",type:"☕ Café",desc:"Arts-focused community restaurant near multiple stops.",partner:true,offer:"15% off any food item",offerId:"busboys-dc",questId:"dc_q3"},{name:"Eastern Market",type:"🛍️ Market",desc:"Historic farmers market on Capitol Hill since 1873."},{name:"Ben's Chili Bowl",type:"🌭 Diner",desc:"DC landmark since 1958, famous half-smokes."}],
   balt:[{name:"Lexington Market",type:"🛍️ Market",desc:"One of the world's oldest public markets since 1782."},{name:"LP Steamers",type:"🦀 Seafood",desc:"Famous blue crab shack in South Baltimore."},{name:"Union Craft Brewing",type:"🍺 Brewery",desc:"Baltimore's neighborhood brewery in Woodberry."}],
   la:[{name:"Grand Central Market",type:"🛍️ Market",desc:"Downtown LA's historic market hall since 1917."},{name:"Philippe The Original",type:"🥩 Deli",desc:"Home of the French Dip sandwich since 1908."},{name:"Clifton's Republic",type:"🍴 Diner",desc:"Quirky retro cafeteria in the heart of DTLA."}],
-  nyc:[{name:"Katz's Delicatessen",type:"🥪 Deli",desc:"NYC's most famous deli since 1888 on Houston St."},{name:"The Strand Bookstore",type:"📚 Books",desc:"18 miles of books — a New York institution."},{name:"Russ & Daughters",type:"🐟 Deli",desc:"Iconic appetizing shop since 1914 on Houston St."}],
-  chi:[{name:"Lou Malnati's",type:"🍕 Deep Dish",desc:"Chicago's deep dish legend since 1971."},{name:"Intelligentsia Coffee",type:"☕ Coffee",desc:"Chicago's specialty coffee pioneer on Randolph St."},{name:"Chicago Riverwalk",type:"🌊 Outdoors",desc:"Scenic path along the river, steps from the Loop stations."}],
+  nyc:[{name:"Katz's Delicatessen",type:"🥪 Deli",desc:"NYC's most famous deli since 1888 on Houston St.",partner:true,offer:"10% off your order",offerId:"katz-nyc"},{name:"The Strand Bookstore",type:"📚 Books",desc:"18 miles of books — a New York institution."},{name:"Russ & Daughters",type:"🐟 Deli",desc:"Iconic appetizing shop since 1914 on Houston St."}],
+  chi:[{name:"Lou Malnati's",type:"🍕 Deep Dish",desc:"Chicago's deep dish legend since 1971.",partner:true,offer:"Free breadsticks with any pizza",offerId:"loumal-chi"},{name:"Intelligentsia Coffee",type:"☕ Coffee",desc:"Chicago's specialty coffee pioneer on Randolph St."},{name:"Chicago Riverwalk",type:"🌊 Outdoors",desc:"Scenic path along the river, steps from the Loop stations."}],
   bos:[{name:"Mike's Pastry",type:"🧁 Bakery",desc:"North End's legendary cannoli shop since 1946."},{name:"Boston Public Market",type:"🛍️ Market",desc:"Year-round indoor market with local New England goods."},{name:"Cheers (Bull & Finch Pub)",type:"🍺 Bar",desc:"The bar that inspired the classic TV show, on Beacon Hill."}],
   atl:[{name:"Ponce City Market",type:"🛍️ Market",desc:"Historic Sears building turned food hall near BeltLine."},{name:"Fox Theatre",type:"🎭 Theater",desc:"Gorgeous 1929 movie palace on Peachtree Street."},{name:"Gladys Knight's Chicken & Waffles",type:"🍗 Soul Food",desc:"Atlanta institution for late-night soul food."}],
 };
