@@ -860,6 +860,45 @@ app.get("/api/analytics", adminAuth, async (req, res) => {
 
 
 
+// ── PHYSICAL CARD REDEMPTION ──────────────────────────────────────────────────
+// In-memory code store (replace with Supabase later)
+const CARD_CATALOG = {
+  "PDX-C-0001": { city:"Portland", stationName:"Pioneer Square North", rarity:"Common", ability:"Local Knowledge", power:32, fact:"Pioneer Square North is one of the oldest MAX stops, opening in 1986." },
+  "PDX-U-0002": { city:"Portland", stationName:"Gateway/NE 99th Ave TC", rarity:"Uncommon", ability:"Transfer Point", power:48, fact:"Gateway is the only MAX station served by all four light rail lines." },
+  "PDX-R-0003": { city:"Portland", stationName:"Lloyd District/NE 11th Ave", rarity:"Rare", ability:"Express Service", power:65, fact:"Lloyd District station sits at the heart of Portland's sports and entertainment zone." },
+  "PDX-L-0004": { city:"Portland", stationName:"Hillsboro Central/SE 3rd", rarity:"Legendary", ability:"Westside Rush", power:88, fact:"Hillsboro Central anchors the western terminus of MAX's Blue Line." },
+  "DC-C-0001": { city:"Washington DC", stationName:"Capitol South", rarity:"Common", ability:"Government Work", power:35, fact:"Capitol South is steps from the US Capitol building and House offices." },
+  "DC-U-0002": { city:"Washington DC", stationName:"Dupont Circle", rarity:"Uncommon", ability:"Circle Transfer", power:52, fact:"Dupont Circle has two entrances—Q Street and P Street—both beloved by locals." },
+  "DC-R-0003": { city:"Washington DC", stationName:"Metro Center", rarity:"Rare", ability:"Hub Control", power:71, fact:"Metro Center is the only station where Red, Orange, Silver, and Blue lines meet." },
+  "DC-L-0004": { city:"Washington DC", stationName:"Union Station", rarity:"Legendary", ability:"Grand Arrival", power:92, fact:"Union Station is one of the busiest train stations in the US, handling Amtrak and Metro." },
+  "NYC-C-0001": { city:"New York City", stationName:"116 St-Columbia University", rarity:"Common", ability:"Academic Edge", power:30, fact:"116th Street station serves both Columbia University and Barnard College." },
+  "NYC-R-0002": { city:"New York City", stationName:"Times Sq-42 St", rarity:"Rare", ability:"Crossroads", power:78, fact:"Times Square is the most complex subway station in New York, with 10 lines converging." },
+  "NYC-L-0003": { city:"New York City", stationName:"Grand Central-42 St", rarity:"Legendary", ability:"Terminal Rush", power:95, fact:"Grand Central Terminal sees 750,000 people daily — more than any airport in the country." },
+  "TEST-L-0001": { city:"Test City", stationName:"Test Station", rarity:"Legendary", ability:"Debug Power", power:99, fact:"This is a test card for development purposes." },
+};
+const _redeemedCodes = new Map(); // code -> { deviceId, ts }
+
+app.post("/api/redeem-card", (req, res) => {
+  const { code, deviceId } = req.body || {};
+  if (!code || typeof code !== "string") return res.status(400).json({ error: "Missing code." });
+  const clean = code.trim().toUpperCase();
+  const card = CARD_CATALOG[clean];
+  if (!card) return res.status(404).json({ error: "Invalid card code." });
+  if (_redeemedCodes.has(clean)) {
+    const r = _redeemedCodes.get(clean);
+    if (r.deviceId !== deviceId) return res.status(409).json({ error: "Already redeemed." });
+  }
+  _redeemedCodes.set(clean, { deviceId: deviceId || "unknown", ts: Date.now() });
+  return res.json({ ok: true, card });
+});
+
+app.get("/api/card/:code", (req, res) => {
+  const clean = (req.params.code || "").trim().toUpperCase();
+  const card = CARD_CATALOG[clean];
+  if (!card) return res.status(404).json({ error: "Invalid card code." });
+  return res.json({ card, alreadyRedeemed: _redeemedCodes.has(clean) });
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
 });

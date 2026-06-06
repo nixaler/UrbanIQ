@@ -5053,6 +5053,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showOfflineManager,setShowOfflineManager]=useState(false);
   const [showBuddyStreaks,setShowBuddyStreaks]=useState(false);
   const [showPartnerMap,setShowPartnerMap]=useState(false);
+  const [showCardRedemption,setShowCardRedemption]=useState(false);
+  const [showCollection,setShowCollection]=useState(false);
+  const [pendingCardCode,setPendingCardCode]=useState<string|null>(()=>{
+    const p=new URLSearchParams(window.location.search);
+    const c=p.get("code");
+    if(c){window.history.replaceState({},"",window.location.pathname);return c.toUpperCase();}
+    return null;
+  });
   const [challengeData,setChallengeData]=useState<{streak:number,xp:number,played:number}|null>(()=>{
     try{const p=new URLSearchParams(window.location.search);const c=p.get("challenge");return c?JSON.parse(atob(c)):null;}catch{return null;}
   });
@@ -5195,6 +5203,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     window.addEventListener("storage",onStorage);
     return()=>window.removeEventListener("storage",onStorage);
   },[topStreak]);
+  useEffect(()=>{if(pendingCardCode)setShowCardRedemption(true);},[pendingCardCode]);
 
   const modals=(
     <>
@@ -5220,6 +5229,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showCityShowdown_sp&&<CityShowdownMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowCityShowdown_sp(false)}/>}
       {showBingo_sp&&<TransitBingoModal T={getTheme("dc")} onClose={()=>setShowBingo_sp(false)}/>}
       {showGhosts_sp&&<GhostStationsModal T={getTheme("dc")} onClose={()=>setShowGhosts_sp(false)}/>}
+      {showCardRedemption&&pendingCardCode&&<CardRedemptionModal code={pendingCardCode} onClose={()=>{setShowCardRedemption(false);setPendingCardCode(null);}}/>}
+      {showCollection&&<CollectionView onClose={()=>setShowCollection(false)}/>}
     </>
   );
 
@@ -5502,6 +5513,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
                   {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
+                  {emoji:"🃏",label:"My Cards",action:()=>{setShowNavMenu(false);setShowCollection(true);}},
                   {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
                   {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},
                   ...(!installed?[{emoji:"📲",label:"Install App",action:()=>{setShowNavMenu(false);setShowInstall(true);}}]:[]),
@@ -8158,6 +8170,148 @@ async function getStationPhoto(station:any):Promise<string|null>{
   }catch{}
   return null;
 }
+// ── CARD REDEMPTION MODAL ────────────────────────────────────────────────────
+function CardRedemptionModal({code,onClose}:{code:string,onClose:()=>void}){
+  const[phase,setPhase]=useState<"loading"|"flip"|"success"|"error">("loading");
+  const[card,setCard]=useState<any>(null);
+  const[errMsg,setErrMsg]=useState("");
+  const[flipped,setFlipped]=useState(false);
+  const deviceId=useMemo(()=>{let d=localStorage.getItem("tgg:device");if(!d){d=Math.random().toString(36).slice(2);localStorage.setItem("tgg:device",d);}return d;},[]);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch("/api/redeem-card",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code,deviceId})});
+        const data=await r.json();
+        if(!r.ok){setErrMsg(data.error||"Redemption failed.");setPhase("error");return;}
+        setCard(data.card);
+        // add to collection
+        const existing:any[]=JSON.parse(localStorage.getItem("tgg:cards")||"[]");
+        if(!existing.find((c:any)=>c.code===code)){
+          existing.push({code,...data.card,ts:Date.now()});
+          localStorage.setItem("tgg:cards",JSON.stringify(existing));
+          addXP(50);
+          window.dispatchEvent(new StorageEvent("storage",{key:"tgg:xp"}));
+        }
+        setPhase("flip");
+        setTimeout(()=>setFlipped(true),400);
+        setTimeout(()=>setPhase("success"),1400);
+      }catch{setErrMsg("Network error — try again.");setPhase("error");}
+    })();
+  },[code,deviceId]);
+  const RARITY_COLORS:Record<string,string>={Common:"#6b7280",Uncommon:"#2563eb",Rare:"#7c3aed",Legendary:"#d97706"};
+  const col=card?RARITY_COLORS[card.rarity]||"#6b7280":"#6b7280";
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.85)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",animation:"lmFadeIn .2s ease both"}}>
+      <style>{`
+        @keyframes cardFlip{0%{transform:perspective(600px) rotateY(0deg)}100%{transform:perspective(600px) rotateY(180deg)}}
+        @keyframes cardReveal{0%{transform:perspective(600px) rotateY(-180deg)}100%{transform:perspective(600px) rotateY(0deg)}}
+        @keyframes cardGlow{0%,100%{box-shadow:0 0 20px ${col}66}50%{box-shadow:0 0 40px ${col}cc}}
+        .card-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+      `}</style>
+      <div style={{background:"#111",borderRadius:20,padding:"28px 24px",maxWidth:340,width:"90%",textAlign:"center",position:"relative"}}>
+        <button onClick={onClose} style={{position:"absolute",top:14,right:14,background:"rgba(255,255,255,0.08)",border:"none",borderRadius:50,width:28,height:28,color:"#fff",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+        {phase==="loading"&&(
+          <div style={{padding:"40px 0",color:"rgba(255,255,255,0.7)"}}>
+            <div style={{fontSize:32,marginBottom:12,animation:"spHotPulse 1.2s ease infinite"}}>📡</div>
+            <div style={{fontSize:13,letterSpacing:2}}>VALIDATING CODE…</div>
+          </div>
+        )}
+        {(phase==="flip"||phase==="success")&&card&&(
+          <>
+            <div style={{fontSize:11,letterSpacing:3,color:"rgba(255,255,255,0.4)",marginBottom:16}}>CARD UNLOCKED</div>
+            <div style={{position:"relative",height:220,margin:"0 auto",width:160,transformStyle:"preserve-3d",animation:flipped?"cardReveal .8s ease both":"none"}}>
+              <div style={{position:"absolute",inset:0,borderRadius:14,background:`linear-gradient(135deg,${col}22,${col}55)`,border:`2px solid ${col}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:12,animation:phase==="success"?"cardGlow 2s ease infinite":"none"}}>
+                <div style={{fontSize:28,marginBottom:4}}>🚉</div>
+                <div style={{fontSize:11,fontWeight:900,letterSpacing:2,color:col,marginBottom:6}}>{card.rarity?.toUpperCase()}</div>
+                <div style={{fontSize:15,fontWeight:800,color:"#fff",lineHeight:1.2,marginBottom:8}}>{card.stationName}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginBottom:8}}>{card.city}</div>
+                <div style={{background:"rgba(255,255,255,0.08)",borderRadius:8,padding:"6px 10px",width:"100%"}}>
+                  <div style={{fontSize:9,letterSpacing:1.5,color:"rgba(255,255,255,0.4)"}}>ABILITY</div>
+                  <div style={{fontSize:11,fontWeight:700,color:col}}>{card.ability}</div>
+                </div>
+                <div style={{marginTop:8,fontSize:28,fontWeight:900,color:"#fff"}}>{card.power}</div>
+              </div>
+            </div>
+            {phase==="success"&&(
+              <div style={{marginTop:20}}>
+                <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",lineHeight:1.5,marginBottom:12,fontStyle:"italic"}}>"{card.fact}"</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,215,0,0.15)",border:"1px solid rgba(255,215,0,0.3)",borderRadius:20,padding:"6px 16px"}}>
+                  <span style={{fontSize:14}}>⚡</span>
+                  <span style={{fontSize:12,fontWeight:700,color:"#ffd700"}}>+50 XP EARNED</span>
+                </div>
+                <div style={{marginTop:10,fontSize:10,letterSpacing:2,color:"rgba(255,255,255,0.4)"}}>ADDED TO COLLECTION</div>
+              </div>
+            )}
+          </>
+        )}
+        {phase==="error"&&(
+          <div style={{padding:"32px 0"}}>
+            <div style={{fontSize:32,marginBottom:12}}>❌</div>
+            <div style={{fontSize:14,color:"#f87171",marginBottom:16}}>{errMsg}</div>
+            <button onClick={onClose} style={{background:"#fff",color:"#000",border:"none",borderRadius:10,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>CLOSE</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── COLLECTION VIEW ──────────────────────────────────────────────────────────
+function CollectionView({onClose}:{onClose:()=>void}){
+  const[cards,setCards]=useState<any[]>(()=>JSON.parse(localStorage.getItem("tgg:cards")||"[]"));
+  const[filter,setFilter]=useState<"all"|"rarity"|"city">("all");
+  const[flippedIdx,setFlippedIdx]=useState<number|null>(null);
+  const RARITY_ORDER=["Legendary","Rare","Uncommon","Common"];
+  const RARITY_COLORS:Record<string,string>={Common:"#6b7280",Uncommon:"#2563eb",Rare:"#7c3aed",Legendary:"#d97706"};
+  const sorted=[...cards].sort((a,b)=>RARITY_ORDER.indexOf(a.rarity)-RARITY_ORDER.indexOf(b.rarity));
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:2000,background:"#0a0a0a",display:"flex",flexDirection:"column",animation:"lmFadeIn .2s ease both"}}>
+      <div style={{padding:"18px 20px 12px",display:"flex",alignItems:"center",gap:14,borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+        <button onClick={onClose} style={{background:"rgba(255,255,255,0.08)",border:"none",borderRadius:50,width:34,height:34,color:"#fff",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <div>
+          <div style={{fontSize:14,fontWeight:900,letterSpacing:3,color:"#fff"}}>MY CARDS</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",letterSpacing:1}}>{cards.length} COLLECTED</div>
+        </div>
+      </div>
+      <div style={{padding:"12px 16px",display:"flex",gap:8}}>
+        {(["all","rarity","city"] as const).map(f=>(
+          <button key={f} onClick={()=>setFilter(f)} style={{fontSize:10,letterSpacing:2,padding:"5px 14px",borderRadius:20,border:`1px solid ${filter===f?"rgba(255,255,255,0.4)":"rgba(255,255,255,0.12)"}`,background:filter===f?"rgba(255,255,255,0.12)":"transparent",color:filter===f?"#fff":"rgba(255,255,255,0.4)",cursor:"pointer",fontFamily:"'Outfit',sans-serif",fontWeight:700}}>
+            {f.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"8px 16px 32px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12,alignContent:"start"}}>
+        {sorted.map((card,i)=>{
+          const col=RARITY_COLORS[card.rarity]||"#6b7280";
+          const isFlipped=flippedIdx===i;
+          return(
+            <div key={card.code||i} onClick={()=>setFlippedIdx(isFlipped?null:i)} style={{borderRadius:12,background:`linear-gradient(135deg,${col}22,${col}44)`,border:`1.5px solid ${col}66`,padding:12,cursor:"pointer",transition:"transform .15s,box-shadow .15s",transform:isFlipped?"scale(1.02)":"scale(1)",boxShadow:isFlipped?`0 0 20px ${col}66`:"none",minHeight:160}}>
+              <div style={{fontSize:9,letterSpacing:2,color:col,fontWeight:700,marginBottom:4}}>{card.rarity?.toUpperCase()}</div>
+              <div style={{fontSize:12,fontWeight:800,color:"#fff",lineHeight:1.3,marginBottom:6}}>{card.stationName}</div>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",marginBottom:8}}>{card.city}</div>
+              {isFlipped&&(
+                <>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.4)",marginBottom:2}}>ABILITY</div>
+                  <div style={{fontSize:10,fontWeight:700,color:col,marginBottom:8}}>{card.ability}</div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",lineHeight:1.4,fontStyle:"italic"}}>"{card.fact}"</div>
+                </>
+              )}
+              {!isFlipped&&<div style={{fontSize:24,fontWeight:900,color:"rgba(255,255,255,0.2)",textAlign:"right",marginTop:"auto"}}>{card.power}</div>}
+            </div>
+          );
+        })}
+        {cards.length===0&&(
+          <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.25)"}}>
+            <div style={{fontSize:40,marginBottom:12}}>🃏</div>
+            <div style={{fontSize:12,letterSpacing:2}}>NO CARDS YET</div>
+            <div style={{fontSize:10,marginTop:8,lineHeight:1.5}}>Scan a QR code from a physical card to add it to your collection</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StreetLevelMode({onClose}:{onClose:()=>void}){
   const allWithImg=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.img).sort(()=>Math.random()-0.5),[]);
   const ROUNDS=3;
