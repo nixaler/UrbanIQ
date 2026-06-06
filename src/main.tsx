@@ -5607,23 +5607,6 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           All Games <div className="lm-eyebrow-line"/>
         </div>
 
-        {/* DAILY CHALLENGE */}
-        <div style={{margin:"0 22px 10px",border:"2px solid #FFB800",borderRadius:10,overflow:"hidden",background:"#FFFCF0"}}>
-          <button onClick={()=>setShowDailyChallenge(true)}
-            style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"transparent",border:"none",padding:"14px 18px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",WebkitTapHighlightColor:"transparent"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:"20px"}}>🏆</span>
-              <div>
-                <div style={{fontSize:"11px",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",color:"#0A0A0A",display:"flex",alignItems:"center",gap:6}}>
-                  Daily Challenge
-                  <span style={{fontSize:"9px",fontWeight:700,color:"#FFB800",background:"rgba(255,184,0,0.15)",border:"1px solid rgba(255,184,0,0.4)",borderRadius:3,padding:"1px 5px",letterSpacing:1}}>DAY #{dayNum}</span>
-                </div>
-                <div style={{fontSize:"9px",color:"rgba(0,0,0,0.45)",letterSpacing:"1px",marginTop:1}}>3 Cities · Same for everyone · +150 XP</div>
-              </div>
-            </div>
-            <span style={{fontSize:"11px",color:"#FFB800",fontWeight:700}}>Play →</span>
-          </button>
-        </div>
 
         {/* EXPLORE */}
         <div style={{margin:"0 22px 20px",border:"1px solid #EDEBE8",borderRadius:10,overflow:"hidden",background:"#FAFAFA"}}>
