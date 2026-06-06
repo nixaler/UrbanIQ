@@ -6453,37 +6453,19 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
           {selStation&&(()=>{
             const stObj=(stList||[]).find((s:any)=>s.n===selStation);
             const lines:string[]=stObj?.l||[];
-            const arrivals=getSimPulse(cityKey,selStation,pulseTick).slice(0,3);
             return(
               <div style={{padding:"0 22px 12px"}}>
-                <div style={{border:"1px solid #D5D3CF",borderRadius:10,background:"#fff",overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
-                  <div style={{padding:"12px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:10}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:4}}>STATION INFO</div>
-                      <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A",marginBottom:6}}>{selStation}</div>
-                      <div style={{display:"flex",gap:5,flexWrap:"wrap" as const}}>
-                        {lines.length>0?lines.map(l=>(
-                          <span key={l} style={{fontSize:"10px",fontWeight:700,color:"#fff",background:meta.lc?.[l]||G.accent,borderRadius:4,padding:"2px 7px",letterSpacing:"0.5px"}}>{l}</span>
-                        )):<span style={{fontSize:"11px",color:"#888580"}}>{meta.name}</span>}
-                      </div>
+                <div style={{border:"1px solid #D5D3CF",borderRadius:10,background:"#fff",overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.06)",padding:"12px 16px",display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:"10px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:4}}>SELECTED STATION</div>
+                    <div style={{fontSize:"15px",fontWeight:800,color:"#0A0A0A",marginBottom:6}}>{selStation}</div>
+                    <div style={{display:"flex",gap:5,flexWrap:"wrap" as const}}>
+                      {lines.length>0?lines.map(l=>(
+                        <span key={l} style={{fontSize:"10px",fontWeight:700,color:"#fff",background:meta.lc?.[l]||G.accent,borderRadius:4,padding:"2px 7px",letterSpacing:"0.5px"}}>{l}</span>
+                      )):<span style={{fontSize:"11px",color:"#888580"}}>{meta.name}</span>}
                     </div>
-                    <button onClick={()=>onSelectGame(cityKey)} style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",flexShrink:0,WebkitTapHighlightColor:"transparent"}}>PLAY →</button>
                   </div>
-                  {arrivals.length>0&&(
-                    <div style={{padding:"10px 16px"}}>
-                      <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2px",color:"#888580",textTransform:"uppercase",marginBottom:8}}>NEXT TRAINS</div>
-                      <div style={{display:"flex",flexDirection:"column" as const,gap:6}}>
-                        {arrivals.map((a,i)=>(
-                          <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
-                            <div style={{width:10,height:10,borderRadius:2,background:a.lineColor,flexShrink:0}}/>
-                            <div style={{flex:1,fontSize:"12px",fontWeight:600,color:"#0A0A0A"}}>{a.dest}</div>
-                            <div style={{fontSize:"12px",fontWeight:700,color:a.mins<=2?"#E8294A":a.mins<=5?"#FF8C42":"#22C55E",flexShrink:0}}>{a.mins} min</div>
-                            <div style={{width:20,height:6,borderRadius:2,background:`rgba(0,0,0,${0.07+a.crowd/100*0.18})`,flexShrink:0,title:`${a.crowd}% full`}}/>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <button onClick={()=>onSelectGame(cityKey)} style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",flexShrink:0,WebkitTapHighlightColor:"transparent"}}>PLAY →</button>
                 </div>
               </div>
             );
@@ -6494,45 +6476,51 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
               if(!cti)return null;
               const okCount=cti.status.filter(s=>s.ok).length;
               const allOk=okCount===cti.status.length;
+              const healthColor=cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A";
               return(
-                <div style={{border:"1px solid #D5D3CF",borderRadius:10,background:"#fff",marginBottom:12,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
-                  <div style={{padding:"13px 16px",borderBottom:"1px solid #EDEBE8",display:"flex",alignItems:"center",gap:12}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:"9px",fontWeight:700,letterSpacing:"2.5px",color:"#888580",textTransform:"uppercase",marginBottom:3}}>SYSTEM STATUS</div>
-                      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const}}>
-                        {cti.status.map(s=>(
-                          <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
-                            <div style={{width:20,height:7,borderRadius:2,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.5}}/>
-                            {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{textAlign:"right",flexShrink:0}}>
-                      <div style={{fontSize:"13px",fontWeight:800,color:allOk?"#22C55E":"#FF8C42",lineHeight:1}}>{allOk?"✓ Normal":"⚠ Delays"}</div>
-                      <div style={{fontSize:"9px",color:"#888580",marginTop:2}}>{okCount}/{cti.status.length} lines clear</div>
+                <div style={{borderRadius:12,overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,0.08)",border:"1px solid rgba(0,0,0,0.06)",marginBottom:12}}>
+                  <div style={{padding:"12px 16px",background:G.accent,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{fontSize:"11px",fontWeight:800,letterSpacing:"2px",color:"rgba(255,255,255,0.9)",textTransform:"uppercase"}}>TRANSIT HEALTH</div>
+                    <div style={{fontSize:"13px",fontWeight:800,color:"#fff",display:"flex",alignItems:"center",gap:6}}>
+                      <span>{allOk?"✓ Normal":"⚠ Delays"}</span>
+                      <span style={{fontSize:"10px",opacity:0.8}}>{okCount}/{cti.status.length} lines</span>
                     </div>
                   </div>
-                  <div style={{padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
-                    <div style={{flex:1,display:"flex",gap:16}}>
-                      <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.stations}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>STATIONS</div></div>
-                      <div><div style={{fontSize:"13px",fontWeight:800,color:"#0A0A0A"}}>{cti.riders}</div><div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>RIDERS</div></div>
-                      <div>
-                        <div style={{display:"flex",alignItems:"center",gap:4}}>
-                          <div style={{fontSize:"13px",fontWeight:800,color:cti.health>=90?"#22C55E":cti.health>=80?"#FF8C42":"#E8294A"}}>{cti.health}%</div>
+                  <div style={{background:"#fff",padding:"12px 16px"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" as const,marginBottom:12}}>
+                      {cti.status.map(s=>(
+                        <div key={s.line} style={{display:"flex",alignItems:"center",gap:3}}>
+                          <div style={{width:28,height:8,borderRadius:3,background:s.ok?s.color:"#EDEBE8",opacity:s.ok?1:0.4}}/>
+                          {!s.ok&&<span style={{fontSize:"8px",color:"#E8294A",fontWeight:700}}>!</span>}
                         </div>
-                        <div style={{fontSize:"8px",color:"#888580",letterSpacing:"0.5px"}}>HEALTH</div>
-                      </div>
+                      ))}
                     </div>
-                    <div style={{display:"flex",gap:8,flexShrink:0}}>
-                      <button onClick={()=>setShowExploreMap(true)}
-                        style={{padding:"8px 12px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
-                        🗺️ MAP
-                      </button>
-                      <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
-                        style={{padding:"8px 12px",background:"#FAFAFA",color:"#0A0A0A",border:"1px solid #EDEBE8",borderRadius:6,fontSize:"10px",fontWeight:700,letterSpacing:"1px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
-                        LIVE ↗
-                      </a>
+                    <div style={{display:"flex",alignItems:"center",gap:0,borderTop:"1px solid #F0EDE8",paddingTop:12}}>
+                      <div style={{flex:1,textAlign:"center"}}>
+                        <div style={{fontSize:"18px",fontWeight:900,color:"#0A0A0A",lineHeight:1}}>{cti.stations}</div>
+                        <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:2,textTransform:"uppercase"}}>Stations</div>
+                      </div>
+                      <div style={{width:1,height:32,background:"#F0EDE8"}}/>
+                      <div style={{flex:1,textAlign:"center"}}>
+                        <div style={{fontSize:"18px",fontWeight:900,color:"#0A0A0A",lineHeight:1}}>{cti.riders}</div>
+                        <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:2,textTransform:"uppercase"}}>Riders</div>
+                      </div>
+                      <div style={{width:1,height:32,background:"#F0EDE8"}}/>
+                      <div style={{flex:1,textAlign:"center"}}>
+                        <div style={{fontSize:"18px",fontWeight:900,color:healthColor,lineHeight:1}}>{cti.health}%</div>
+                        <div style={{fontSize:"8px",color:"#888580",letterSpacing:"1px",marginTop:2,textTransform:"uppercase"}}>Health</div>
+                      </div>
+                      <div style={{width:1,height:32,background:"#F0EDE8"}}/>
+                      <div style={{display:"flex",gap:6,padding:"0 12px",flexShrink:0}}>
+                        <button onClick={()=>setShowExploreMap(true)}
+                          style={{padding:"7px 10px",background:G.accent,color:"#fff",border:"none",borderRadius:6,fontSize:"10px",fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>
+                          🗺️
+                        </button>
+                        <a href={cti.officialMap} target="_blank" rel="noopener noreferrer"
+                          style={{padding:"7px 10px",background:"#F4F3F0",color:"#0A0A0A",border:"1px solid #E0DDD8",borderRadius:6,fontSize:"10px",fontWeight:700,cursor:"pointer",fontFamily:"'Outfit',sans-serif",textDecoration:"none",display:"flex",alignItems:"center"}}>
+                          ↗
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
