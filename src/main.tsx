@@ -249,7 +249,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
     }go();
   },[]);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.95)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.95)",display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace"}}>
       <style>{`
         @keyframes dailyCardIntroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes dailyCardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
@@ -653,7 +653,7 @@ function CardSystemTab({pendingCard,onClearPending}){
       </div>
 
       {sel&&(
-        <div onClick={()=>setSel(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:900,padding:20}}>
+        <div onClick={()=>setSel(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",zIndex:900,padding:20}}>
           <div onClick={e=>e.stopPropagation()} style={{background:card,border:`1.5px solid ${CARD_RARITY[sel.rarityId?.toUpperCase()]?.color||"#555"}`,borderRadius:16,padding:24,width:"100%",maxWidth:340,maxHeight:"90dvh",overflowY:"auto"}}>
             <div style={{display:"flex",gap:14,marginBottom:18}}>
               <CardVisual card={sel} size="md"/>
@@ -3728,7 +3728,7 @@ function usePWAInstall(){
 // ── PWA INSTALL MODAL ─────────────────────────────────────────────────────────
 function InstallModal({isIOS,hasNativePrompt,onInstall,onClose}:{isIOS:boolean,hasNativePrompt:boolean,onInstall:()=>void,onClose:()=>void}){
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:20,backdropFilter:"blur(4px)"}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",zIndex:9999,padding:20,backdropFilter:"blur(4px)"}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:24,padding:"32px 28px",maxWidth:380,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)"}}>
         <div style={{fontSize:"36px",marginBottom:10}}>📲</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"16px",fontWeight:900,color:"#e8e8e8",letterSpacing:2,marginBottom:6}}>ADD TO HOME SCREEN</div>
@@ -3813,7 +3813,7 @@ function PeekModal({T,fs,gameKey,target,DIFF,rd,cost,onConfirm,onClose}:{T:any,f
   const[confirmed,setConfirmed]=useState(false);
   if(!confirmed){
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
         <div onClick={e=>e.stopPropagation()} style={{background:T.bg,border:`1.5px solid rgba(255,90,40,.5)`,borderRadius:14,padding:"24px 20px 20px",maxWidth:380,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.7)"}}>
           <div style={{textAlign:"center",marginBottom:12}}>
             <div style={{fontSize:"40px",marginBottom:6}}>🗺️</div>
@@ -3842,7 +3842,7 @@ function PeekModal({T,fs,gameKey,target,DIFF,rd,cost,onConfirm,onClose}:{T:any,f
     );
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.82)",zIndex:9998,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16,backdropFilter:"blur(3px)"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:T.bg,border:`1.5px solid ${T.border}`,borderRadius:14,padding:"22px 18px 18px",maxWidth:400,width:"100%",fontFamily:"'JetBrains Mono',monospace",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}}>
         <div style={{textAlign:"center",marginBottom:2}}>
           <span style={{fontSize:fs(20),fontWeight:900,color:"#6496e0",letterSpacing:2}}>🗺️ SYSTEM PEEK</span>
@@ -3882,7 +3882,7 @@ function BetaModal({code,onClose}:{code:string,onClose:()=>void}){
   const copy=()=>{navigator.clipboard.writeText(code).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});};
   const formUrl="https://forms.gle/MCqtdQJbYcPRb4yz7";
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:9999,padding:"20px",backdropFilter:"blur(4px)"}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",zIndex:9999,padding:"20px",backdropFilter:"blur(4px)"}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#111",border:"1px solid #2a2a2a",borderRadius:24,padding:"36px 32px",maxWidth:420,width:"100%",textAlign:"center",fontFamily:"'JetBrains Mono','Courier New',monospace",boxShadow:"0 24px 80px rgba(0,0,0,.6)"}}>
         <div style={{fontSize:"32px",marginBottom:12}}>🎖️</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"18px",fontWeight:900,color:"#e8e8e8",letterSpacing:2,marginBottom:8}}>BETA TESTER REWARD</div>
@@ -4008,7 +4008,7 @@ function SupporterModal({onClose,isSupporter,supporterEmail}:{onClose:()=>void,i
     }catch{setErr("Network error");setLoading(false);}
   }
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",zIndex:10000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,animation:"spFadeIn .2s ease both"}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",zIndex:10000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:20,animation:"spFadeIn .2s ease both"}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:8,padding:"36px 32px",maxWidth:440,width:"100%",fontFamily:"'Inter','Helvetica Neue',sans-serif",boxShadow:"0 32px 80px rgba(0,0,0,0.2)",position:"relative"}}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:"18px",cursor:"pointer",color:"rgba(0,0,0,0.35)",lineHeight:1}}>✕</button>
         <div style={{fontSize:"11px",letterSpacing:3,color:"rgba(0,0,0,0.35)",marginBottom:8,fontWeight:700}}>SUPPORT THE GAME</div>
@@ -4721,8 +4721,8 @@ function AccountModal({onClose}:{onClose:()=>void}){
   const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",paddingTop:"env(safe-area-inset-top,8px)",paddingBottom:"env(safe-area-inset-bottom,8px)"}} onClick={onClose}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto",margin:"auto 0"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>SYNC PROGRESS</div>
@@ -4816,9 +4816,9 @@ function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:strin
   }
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",paddingTop:"env(safe-area-inset-top,8px)",paddingBottom:"env(safe-area-inset-bottom,8px)"}} onClick={onClose}>
       {shareToast&&<div style={{position:"fixed",top:24,left:"50%",transform:"translateX(-50%)",background:"#0a0a0a",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)"}}>Copied to clipboard!</div>}
-      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto",margin:"auto 0"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"28px",letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#FFB800,#FF8C42,#E8294A)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>DAILY CHALLENGE</div>
@@ -5881,7 +5881,7 @@ function ClaimModal({tier,onClose}:{tier:typeof REWARD_TIERS[0],onClose:()=>void
     setDone(true);setSubmitting(false);
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:100001,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:100001,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"20px"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:"28px 24px",width:"100%",maxWidth:340,boxShadow:"0 24px 80px rgba(0,0,0,0.35)"}} onClick={e=>e.stopPropagation()}>
         {done?(
           <div style={{textAlign:"center"}}>
@@ -5929,7 +5929,7 @@ function RewardsModal({onClose}:{onClose:()=>void}){
   const [career,setCareer]=useState<any>(null);
   useEffect(()=>{(async()=>{const keys=["pdx","dc","balt","la","nyc","chi","bos","atl"];const labels:{[k:string]:string}={pdx:"Portland",dc:"DC Metro",balt:"Baltimore",la:"LA Metro",nyc:"NYC Subway",chi:"Chicago L",bos:"Boston T",atl:"Atlanta"};const stats=await Promise.all(keys.map(k=>gk(`${k}:stats`,{streak:0,played:0,wins:0,totalGuesses:0})));const perGame=keys.map((k,i)=>({key:k,label:labels[k],played:stats[i]?.played||0,wins:stats[i]?.wins||0,streak:stats[i]?.streak||0})).filter(g=>g.played>0);const tp=stats.reduce((s:number,st:any)=>s+(st?.played||0),0);const tw=stats.reduce((s:number,st:any)=>s+(st?.wins||0),0);const ts=Math.max(...stats.map((s:any)=>s?.streak||0));setCareer({played:tp,wins:tw,winPct:tp>0?Math.round(tw/tp*100):0,topStreak:ts,perGame});})();},[]);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:18,padding:"24px 24px 24px",width:"100%",maxWidth:380,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",position:"relative",maxHeight:"90dvh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"rgba(0,0,0,0.3)",lineHeight:1}}>×</button>
         {/* Tab bar */}
@@ -6234,7 +6234,7 @@ function MarkDoneModal({quest,onVerified,onClose}:{quest:MicroQuest,onVerified:(
     else{setCodeErrMsg("Code not recognized — check the venue card");setCodeErr(true);setTimeout(()=>setCodeErr(false),1800);}
   }
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+    <div style={{position:"fixed",inset:0,zIndex:9000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",background:"rgba(0,0,0,0.55)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div style={{background:"#fff",width:"100%",maxWidth:520,borderRadius:16,padding:"28px 24px",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box",maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:22}}>
           <div>
@@ -6309,7 +6309,7 @@ function OfferModal({pick,onClose}:{pick:ExplorePickItem,onClose:()=>void}){
     onClose();
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:9000,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 20px"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:9000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"0 20px"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div style={{background:"#fff",borderRadius:16,padding:"28px 24px",width:"100%",maxWidth:360,boxShadow:"0 20px 60px rgba(0,0,0,0.25)",animation:"lmFadeIn .2s ease both"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:"32px",marginBottom:8}}>{pick.type.split(" ")[0]}</div>
@@ -7027,7 +7027,7 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
   const colLabels:any=gameKey==="nfl"?{conf:"CONF",div:"DIV",region:"REGION",sb:"SB",year:"YEAR"}:isTransit?{lines:"LINES",zone:"ZONE",busy:"BUSY",direction:"DIR",year:"YEAR"}:{region:"REGION",coast:"COAST",pop:"POP",direction:"DIR",year:"YEAR",size:"SIZE"};
   const s=STEPS[step];
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",animation:"obFadeIn .25s ease both"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:16,overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",animation:"obFadeIn .25s ease both"}}>
       <style>{`@keyframes obFadeIn{from{opacity:0}to{opacity:1}}@keyframes obCardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}`}</style>
       <div style={{background:"#fff",borderRadius:16,padding:"32px 24px",width:"100%",maxWidth:420,maxHeight:"90dvh",overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,.18)",animation:"obCardIn .32s .05s ease both"}}>
         <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:28}}>
@@ -7593,7 +7593,7 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
     const transitGames=["pdx","dc","balt","la","nyc","chi","bos","atl"];
     if(!transitGames.includes(gameKey)){
       return(
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
           <div style={{background:bg,borderRadius:16,padding:32,maxWidth:400,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:32,marginBottom:12}}>🚊</div>
             <div style={{fontWeight:700,marginBottom:8}}>Line Challenges</div>
@@ -7604,7 +7604,7 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
       );
     }
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
         <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,maxHeight:"80dvh",overflow:"auto",padding:"24px 20px 40px",boxSizing:"border-box"}} onClick={e=>e.stopPropagation()}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
@@ -7649,7 +7649,7 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
     const done=(progress[selLine]||[]).length;
     const allDone=done>=lineStations.length;
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
         <div style={{background:bg,borderRadius:16,padding:32,maxWidth:360,width:"90%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:36,marginBottom:10}}>{allDone?"🏆":"✅"}</div>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:6}}>{allDone?"LINE COMPLETE!":"SESSION DONE"}</div>
@@ -7679,7 +7679,7 @@ function LineChallengeMode({T,fs,gameKey,items,lineColors,onClose}:{T:any,fs:any
   const color=lineColors[selLine]||T.accent;
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}}>
       <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"20px 20px 36px",boxSizing:"border-box"}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
           <div style={{width:12,height:12,borderRadius:"50%",background:color}}/>
@@ -7803,7 +7803,7 @@ function PhotoMode({T,fs,gameKey,items,onClose}:{T:any,fs:any,gameKey:string,ite
 
   if(!isTransit){
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
         <div style={{background:bg,borderRadius:16,padding:32,maxWidth:340,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:32,marginBottom:12}}>📸</div>
           <div style={{fontWeight:700,marginBottom:8}}>Photo Mode</div>
@@ -7818,7 +7818,7 @@ function PhotoMode({T,fs,gameKey,items,onClose}:{T:any,fs:any,gameKey:string,ite
     const maxScore=ROUNDS*MAX_GUESSES;
     const pct=Math.round(pmScore/maxScore*100);
     return(
-      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
         <div style={{background:bg,borderRadius:16,padding:32,maxWidth:340,width:"90%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
           <div style={{fontSize:36,marginBottom:10}}>📸</div>
           <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,marginBottom:6}}>PHOTO MODE DONE</div>
@@ -7908,7 +7908,7 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
   function pick(name:string,fake:boolean){setChosen(name);setPhase("reveal");if(fake)setScore(s=>s+1);}
   function next(){if(round+1>=ROUNDS){setPhase("done");markBingo("blitz_win");}else{setRound(r=>r+1);}}
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>🕵️</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>FAKE STATION</div>
@@ -7919,7 +7919,7 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>FAKE STATION · ROUND {round+1}/{ROUNDS}</div>
@@ -7959,7 +7959,7 @@ function StationAgeMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
     setOpts([...decoys].sort((a,b)=>a-b));setChosen(null);setPhase("play");
   },[round,station]);
   if(!station||phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>🕰️</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>STATION AGE</div>
@@ -7970,7 +7970,7 @@ function StationAgeMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>STATION AGE · ROUND {round+1}/{ROUNDS}</div>
@@ -8007,7 +8007,7 @@ function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
   const a=CITY_STATS[pair[0]],b=CITY_STATS[pair[1]];
   const correctKey=q.dir==="asc"?(a[q.field]<b[q.field]?pair[0]:pair[1]):(a[q.field]>b[q.field]?pair[0]:pair[1]);
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>🏆</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>CITY SHOWDOWN</div>
@@ -8018,7 +8018,7 @@ function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>CITY SHOWDOWN · ROUND {round+1}/{ROUNDS}</div>
@@ -8045,7 +8045,7 @@ function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
   const [state,setState]=useState(()=>getBingoState());
   const won=checkBingoWin(state);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"24px 16px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:20,fontWeight:900,letterSpacing:2}}>TRANSIT BINGO</div>
@@ -8070,7 +8070,7 @@ function TransitBingoModal({T,onClose}:{T:any,onClose:()=>void}){
 function GhostStationsModal({T,onClose}:{T:any,onClose:()=>void}){
   const xp=getXP();const unlocked=getGhostUnlocked();
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:16,padding:"28px 20px 40px",width:"100%",maxWidth:520,color:"#fff"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:24,marginBottom:4}}>👻</div>
@@ -8109,7 +8109,7 @@ function MilestonePostcardModal({xp,T,onClose}:{xp:number,T:any,onClose:()=>void
   function share(){const text=`I just hit ${milestone.toLocaleString()} XP on UrbanIQ! ${emoji} ${label}\n🔥 ${wallet.streak} streak · 🛡️ ${wallet.shields} shields\nurbaniq.quest`;navigator.clipboard?.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});}
   useEffect(()=>{markMilestoneShown(milestone);},[]);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:9500,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:9500,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:20}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#0A0A0A",borderRadius:20,padding:32,textAlign:"center",maxWidth:340,width:"100%",border:"2px solid #FFB800",boxShadow:"0 0 40px #FFB80033"}}>
         <div style={{fontSize:52,marginBottom:8}}>{emoji}</div>
         <div style={{fontSize:11,color:"#FFB800",letterSpacing:3,fontWeight:700,marginBottom:4}}>MILESTONE UNLOCKED</div>
@@ -8127,7 +8127,7 @@ function MilestonePostcardModal({xp,T,onClose}:{xp:number,T:any,onClose:()=>void
 }
 function ComingSoonModal({title,emoji,desc,onClose}:{title:string,emoji:string,desc:string,onClose:()=>void}){
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:20}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:300,width:"100%"}}>
         <div style={{fontSize:48,marginBottom:12}}>{emoji}</div>
         <div style={{fontSize:16,fontWeight:900,letterSpacing:2,marginBottom:8}}>{title}</div>
@@ -8183,7 +8183,7 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   if(!targets.length)return null;
   const target=targets[round];
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>📸</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>STREET LEVEL</div>
@@ -8194,7 +8194,7 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",zIndex:8000,display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,overflow:"hidden",width:"100%",maxWidth:520,maxHeight:"90dvh",display:"flex",flexDirection:"column"}}>
         <div style={{position:"relative",height:220,background:"#1a1a1a",display:"flex",alignItems:"center",justifyContent:"center"}}>
           {photoLoading&&<div style={{color:"rgba(255,255,255,0.4)",fontSize:12,letterSpacing:2}}>LOADING...</div>}
@@ -8238,7 +8238,7 @@ function TransferOptimizerMode({onClose}:{onClose:()=>void}){
   function pick(z:string){setChosen(z);setPhase("reveal");if(z===correct){setScore(s=>s+1);addXP(100);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>🗺️</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>TRANSFER OPTIMIZER</div>
@@ -8249,7 +8249,7 @@ function TransferOptimizerMode({onClose}:{onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:8}}>TRANSFER OPTIMIZER · DC METRO · ROUND {round+1}/{ROUNDS}</div>
@@ -8293,7 +8293,7 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
   const[a,b]=pair;const correctName=a.traffic>b.traffic?a.name:b.name;
   const TRAFFIC_LABELS=["","Quiet","Light","Moderate","Busy","Major Hub"];
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>📊</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>RIDERSHIP RACE</div>
@@ -8305,7 +8305,7 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:16}}>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:4}}>RIDERSHIP RACE · ROUND {round+1}/{ROUNDS}</div>
@@ -8391,7 +8391,7 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
   function pick(system:string){if(!clue)return;setChosen(system);setPhase("reveal");if(system===clue.system){setScore(s=>s+1);addXP(80);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>📻</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>TRANSIT CALLS</div>
@@ -8402,7 +8402,7 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"16px"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,maxHeight:"92dvh",overflowY:"auto"}}>
         <div style={{background:"#0A0A0A",borderRadius:"16px 16px 0 0",padding:"16px 20px"}}>
           <div style={{fontSize:10,letterSpacing:3,color:"rgba(255,255,255,0.4)",marginBottom:4}}>TRANSIT CALLS · ROUND {round+1}/{ROUNDS}</div>
@@ -8471,7 +8471,7 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
   function pick(opt:string){setChosen(opt);setPhase("reveal");if(opt===q.a){setScore(s=>s+1);addXP(150);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else{setRound(r=>r+1);setChosen(null);setPhase("play");}}
   if(phase==="done")return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
         <div style={{fontSize:48,marginBottom:8}}>{emoji}</div>
         <div style={{fontSize:22,fontWeight:900,letterSpacing:2,marginBottom:4}}>SEASONAL EVENTS</div>
@@ -8483,7 +8483,7 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
     </div>
   );
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"28px 20px",width:"100%",maxWidth:520,maxHeight:"90dvh",overflowY:"auto"}}>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:24,marginBottom:6}}>{emoji}</div>
@@ -8598,7 +8598,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     else{setRoundNum(next);pickRound();}
   }
   if(gameOver)return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:380,padding:32,textAlign:"center"}}>
         <div style={{fontSize:48,marginBottom:12}}>🏗️</div>
         <div style={{fontSize:22,fontWeight:900,color:"#0A0A0A",marginBottom:6}}>ROUTES COMPLETE!</div>
@@ -8610,7 +8610,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
   );
   if(!roundData)return null;
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:12,overflowY:"auto"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:12,overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
           <div>
@@ -8687,7 +8687,7 @@ function OfflineManagerMode({onClose}:{onClose:()=>void}){
     },900);
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
           <div>
@@ -8747,7 +8747,7 @@ function BuddyStreaksMode({onClose}:{onClose:()=>void}){
     navigator.clipboard?.writeText(url).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);}).catch(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);});
   }
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:480,padding:"24px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
@@ -8792,7 +8792,7 @@ function PartnerMapMode({onClose}:{onClose:()=>void}){
   const cities=["all",...Array.from(new Set(partnerPicks.map(p=>p.city)))];
   const shown=filter==="all"?partnerPicks:partnerPicks.filter(p=>p.city===filter);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:16,overflowY:"auto"}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,width:"100%",maxWidth:520,padding:"20px 16px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
           <div>
@@ -8863,7 +8863,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
     {emoji:"🗺️",title:"Partner Spots",body:"Exclusive offers at transit-adjacent venues",color:"#FF6B35",onClick:()=>{setShowPartnerMap(true);onClose();}},
   ];
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(8px)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(8px)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:540,maxHeight:"90dvh",overflowY:"auto",padding:"24px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
@@ -9379,7 +9379,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       ))}
 
       {showDiffChange&&(
-        <div onClick={()=>setShowDiffChange(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:350,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(4px)"}}>
+        <div onClick={()=>setShowDiffChange(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:350,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:20,backdropFilter:"blur(4px)"}}>
           <div onClick={e=>e.stopPropagation()} style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:18,padding:"22px 18px",width:"100%",maxWidth:420,animation:"dpIn .25s cubic-bezier(.4,0,.2,1)"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:fs(16),color:T.text}}>Change Difficulty</div>
@@ -10747,7 +10747,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
     </div>,
   ];
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:99999,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"16px",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}>
       <style>{`@keyframes obIn{from{opacity:0;transform:scale(.95) translateY(12px)}to{opacity:1;transform:none}}`}</style>
       <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:400,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",animation:"obIn .3s ease both",position:"relative",maxHeight:"90dvh",overflowY:"auto"}}>
         {/* Step dots */}
