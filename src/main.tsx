@@ -10054,7 +10054,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         </div>
       )}
 
-      {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
       {tab==="maps"&&(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 20px",gap:14}}>
           <div style={{fontSize:36}}>🗺️</div>
@@ -10071,6 +10070,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         <HelpTab T={T} fs={fs} G={G} DIFF={DIFF} gameKey={gameKey} onPlay={()=>setTab("play")}/>
       )}
     </div>
+    {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
     {showFeedback&&<BetaModal code={feedbackCode} onClose={()=>setShowFeedback(false)}/>}
     {showSupportModal&&<SupporterModal isSupporter={isSupporter} supporterEmail={supporterEmail} onClose={()=>{setShowSupportModal(false);setShieldAvail(shieldAvailableForSupporter());}}/>}
     {showPeek&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(()=>{
