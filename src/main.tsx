@@ -4927,8 +4927,8 @@ function AccountModal({onClose,onOpenFriends}:{onClose:()=>void,onOpenFriends?:(
   const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",paddingTop:"env(safe-area-inset-top,8px)",paddingBottom:"env(safe-area-inset-bottom,8px)"}} onClick={onClose}>
-      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto",margin:"auto 0"}} onClick={e=>e.stopPropagation()}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",paddingTop:"env(safe-area-inset-top,8px)",paddingBottom:"env(safe-area-inset-bottom,8px)",padding:"env(safe-area-inset-top,8px) 0 env(safe-area-inset-bottom,8px)"}} onClick={onClose}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:520,padding:"28px 24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
           <div>
             <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,lineHeight:1,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>SYNC PROGRESS</div>
@@ -5073,7 +5073,7 @@ function FriendsModal({onClose}:{onClose:()=>void}){
   }
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"16px",paddingTop:"env(safe-area-inset-top,16px)"}} onClick={onClose}>
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"env(safe-area-inset-top,8px) 0 env(safe-area-inset-bottom,8px)"}} onClick={onClose}>
       <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:480,padding:"24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
         {/* Header */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
