@@ -5897,21 +5897,23 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
           </div>
         );})()}
 
-        {/* SPORTS — wide cinematic card */}
-        {(()=>{const g=gameCards.find(gc=>gc.tag==="SPORTS");if(!g)return null;return(
+        {/* SPORTS — one card per SPORTS game */}
+        {(()=>{const sCards=gameCards.filter(gc=>gc.tag==="SPORTS");if(!sCards.length)return null;return(
           <div style={{margin:"0 22px 10px"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
               <div style={{width:3,height:16,background:"#E8294A",borderRadius:2}}/>
-              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🏈 Sports</span>
+              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Sports</span>
             </div>
-            <div onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {sCards.map(g=>(
+            <div key={g.key} onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
               onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
               onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
               onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
               style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
               <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
                 style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.25) 100%)"}}/>
+              <div style={{position:"absolute",inset:0,background:`linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.25) 100%)`}}/>
               <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
                 <span style={{fontSize:30}}>{g.emoji}</span>
                 <div>
@@ -5920,6 +5922,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
                 </div>
               </div>
               <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.75)",border:"1px solid rgba(255,255,255,0.3)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+            </div>
+            ))}
             </div>
           </div>
         );})()}
