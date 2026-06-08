@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Identity Hub',
-  description: 'Modular, data-driven personal dashboard',
+  title: 'Confess — anonymous Q&A',
+  description: 'Say what you really think. Anonymously.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="dark">
       <body>{children}</body>
     </html>
   );

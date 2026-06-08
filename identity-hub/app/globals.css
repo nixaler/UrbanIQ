@@ -3,46 +3,42 @@
 @tailwind utilities;
 
 /* ============================================================
-   THEME ENGINE — CSS custom properties keyed by data-theme
-   Applied to <html> by ThemeProvider; each Tile can also carry
-   its own data-theme to override locally.
+   THEME ENGINE
    ============================================================ */
 
-/* -- Light (default) ---------------------------------------- */
-[data-theme="light"],
-:root {
-  --color-bg:         #ffffff;
-  --color-surface:    #f4f6f8;
-  --color-text:       #1a1a2e;
-  --color-text-muted: #64748b;
-  --color-accent:     #2563eb;
-  --color-accent-fg:  #ffffff;
-  --color-border:     #e2e8f0;
-  --tile-radius:      12px;
-  --tile-shadow:      0 2px 10px rgba(0, 0, 0, 0.07);
-  --font-family:      system-ui, -apple-system, sans-serif;
-  --grid-gap:         12px;
-}
-
-/* -- Dark --------------------------------------------------- */
+:root,
 [data-theme="dark"] {
-  --color-bg:         #0d1117;
-  --color-surface:    #161b22;
-  --color-text:       #e6edf3;
-  --color-text-muted: #8b949e;
-  --color-accent:     #58a6ff;
-  --color-accent-fg:  #0d1117;
-  --color-border:     #30363d;
-  --tile-radius:      12px;
-  --tile-shadow:      0 2px 12px rgba(0, 0, 0, 0.45);
+  --color-bg:         #080810;
+  --color-surface:    #10101c;
+  --color-surface-2:  #17172a;
+  --color-text:       #e8e8f0;
+  --color-text-muted: #64647a;
+  --color-accent:     #7c3aed;
+  --color-accent-fg:  #ffffff;
+  --color-border:     #1e1e32;
+  --tile-radius:      14px;
+  --tile-shadow:      0 0 0 1px #1e1e32, 0 4px 24px rgba(0,0,0,0.5);
   --font-family:      system-ui, -apple-system, sans-serif;
-  --grid-gap:         12px;
 }
 
-/* -- MySpace Retro ------------------------------------------ */
+[data-theme="light"] {
+  --color-bg:         #f5f5fa;
+  --color-surface:    #ffffff;
+  --color-surface-2:  #f0f0f8;
+  --color-text:       #18181f;
+  --color-text-muted: #888898;
+  --color-accent:     #7c3aed;
+  --color-accent-fg:  #ffffff;
+  --color-border:     #e4e4f0;
+  --tile-radius:      14px;
+  --tile-shadow:      0 2px 12px rgba(0,0,0,0.06);
+  --font-family:      system-ui, -apple-system, sans-serif;
+}
+
 [data-theme="myspace-retro"] {
   --color-bg:         #000066;
   --color-surface:    #000099;
+  --color-surface-2:  #0000bb;
   --color-text:       #ffffff;
   --color-text-muted: #ffff00;
   --color-accent:     #ff00ff;
@@ -51,56 +47,106 @@
   --tile-radius:      0px;
   --tile-shadow:      3px 3px 0 #ff00ff, 6px 6px 0 #00ffff;
   --font-family:      'Comic Sans MS', 'Chalkboard SE', cursive;
-  --grid-gap:         8px;
 }
 
-/* -- Base styles -------------------------------------------- */
-html,
-body {
+/* ============================================================
+   BASE
+   ============================================================ */
+
+html, body {
   background-color: var(--color-bg);
   color:            var(--color-text);
   font-family:      var(--font-family);
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition:       background-color 0.2s, color 0.2s;
 }
 
-/* -- Tile shell --------------------------------------------- */
-.tile-shell {
+/* ============================================================
+   CONFESSION CARDS
+   ============================================================ */
+
+.card {
   background:    var(--color-surface);
   border:        1px solid var(--color-border);
   border-radius: var(--tile-radius);
   box-shadow:    var(--tile-shadow);
-  overflow:      hidden;
-  height:        100%;
-  display:       flex;
-  flex-direction: column;
+  padding:       20px;
+  transition:    transform 0.15s, box-shadow 0.15s;
 }
 
-.tile-header {
-  padding:        10px 14px;
-  border-bottom:  1px solid var(--color-border);
-  font-size:      0.75rem;
-  font-weight:    600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.card:hover {
+  transform:  translateY(-1px);
+  box-shadow: var(--tile-shadow), 0 0 0 1px var(--color-accent);
+}
+
+/* Slide-up enter animation for new confessions */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.confession-enter {
+  animation: slideUp 0.3s ease forwards;
+}
+
+/* ============================================================
+   SUBMIT DRAWER
+   ============================================================ */
+
+.drawer-backdrop {
+  position:         fixed;
+  inset:            0;
+  background:       rgba(0, 0, 0, 0.65);
+  backdrop-filter:  blur(4px);
+  z-index:          40;
+  animation:        fadeIn 0.2s ease;
+}
+
+.drawer {
+  position:      fixed;
+  bottom:        0;
+  left:          0;
+  right:         0;
+  background:    var(--color-surface);
+  border-top:    1px solid var(--color-border);
+  border-radius: var(--tile-radius) var(--tile-radius) 0 0;
+  padding:       24px;
+  z-index:       50;
+  max-width:     640px;
+  margin:        0 auto;
+  animation:     slideUp 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   REACTION BUTTON
+   ============================================================ */
+
+.reaction-btn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            4px;
+  padding:        4px 10px;
+  border-radius:  999px;
+  font-size:      0.8rem;
+  border:         1px solid var(--color-border);
+  background:     var(--color-surface-2);
   color:          var(--color-text-muted);
+  cursor:         pointer;
+  transition:     all 0.15s;
+  user-select:    none;
 }
 
-.tile-body {
-  padding:  14px;
-  flex:     1;
-  overflow: auto;
+.reaction-btn:hover {
+  border-color: var(--color-accent);
+  color:        var(--color-text);
 }
 
-/* -- react-grid-layout drag handle -------------------------- */
-.react-grid-item.react-draggable-dragging {
-  opacity: 0.85;
-  z-index: 100;
-}
-
-.react-resizable-handle {
-  opacity: 0.4;
-}
-
-.react-resizable-handle:hover {
-  opacity: 1;
+.reaction-btn.reacted {
+  background:   rgba(124, 58, 237, 0.18);
+  border-color: var(--color-accent);
+  color:        var(--color-accent);
 }
