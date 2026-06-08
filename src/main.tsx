@@ -25,7 +25,7 @@ const CARD_DROP={
   hard:  {common:38,uncommon:30,rare:22,legendary:10},
   pro:   {common:22,uncommon:30,rare:30,legendary:18},
 };
-const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",nyc:"transit",chi:"transit",bos:"transit",atl:"transit",states:"geography",nfl:"sports"};
+const CARD_GAME_TYPE={dc:"transit",pdx:"transit",balt:"transit",la:"transit",nyc:"transit",chi:"transit",bos:"transit",atl:"transit",states:"geography",nfl:"sports",nba:"sports"};
 const CARD_TYPE_ADV={transit:{beats:"geography",bonus:1.18},geography:{beats:"sports",bonus:1.18},sports:{beats:"transit",bonus:1.18}};
 
 const DC_UNIQUE_CARDS={
@@ -56,6 +56,14 @@ const NFL_UNIQUE_CARDS={
   "Baltimore Ravens":{rarity:"rare",ability:{name:"Nevermore",icon:"🦅",description:"Win margin from each round is doubled into the next.",type:"battle",cooldownHours:36,battleEffect:{type:"counter_double",value:0,desc:"Win margin doubled forward"}}},
   "Philadelphia Eagles":{rarity:"rare",ability:{name:"Underdog",icon:"🦅",description:"+25 comeback power when losing by 2+ rounds.",type:"battle",cooldownHours:36,battleEffect:{type:"comeback_bonus",threshold:2,value:25,desc:"+25 if losing by 2+"}}},
   "Pittsburgh Steelers":{rarity:"rare",ability:{name:"Steel Curtain",icon:"🛡️",description:"Blocks ALL opponent ability effects for the entire battle.",type:"battle",cooldownHours:48,battleEffect:{type:"freeze_ability",value:0,desc:"Blocks all opponent abilities"}}},
+};
+const NBA_UNIQUE_CARDS={
+  "Boston Celtics":{rarity:"legendary",ability:{name:"Banner 18",icon:"🍀",description:"All your cards get +12 power for the entire battle — dynasty dominance.",type:"battle",cooldownHours:72,battleEffect:{type:"power_bonus_all",value:12,desc:"+12 all cards"}}},
+  "Los Angeles Lakers":{rarity:"legendary",ability:{name:"Showtime",icon:"💛",description:"Auto-wins Round 1 and Round 3. Hollywood never loses.",type:"battle",cooldownHours:72,battleEffect:{type:"auto_win_rounds",rounds:[0,2],desc:"Auto-wins Rounds 1 & 3"}}},
+  "Chicago Bulls":{rarity:"legendary",ability:{name:"Six Rings",icon:"🐂",description:"Win 3+ rounds this battle to earn +30 bonus score. The dynasty demands it.",type:"battle",cooldownHours:72,battleEffect:{type:"dynasty_bonus",threshold:3,value:30,desc:"+30 if 3+ round wins"}}},
+  "Golden State Warriors":{rarity:"rare",ability:{name:"Splash Zone",icon:"🌊",description:"+20 power in Rounds 1, 2, and 3. The Death Lineup strikes early.",type:"battle",cooldownHours:48,battleEffect:{type:"early_boost",rounds:[0,1,2],value:20,desc:"+20 Rounds 1-3"}}},
+  "San Antonio Spurs":{rarity:"rare",ability:{name:"The System",icon:"🤖",description:"Blocks ALL opponent ability effects for the entire battle. Fundamental basketball.",type:"battle",cooldownHours:48,battleEffect:{type:"freeze_ability",value:0,desc:"Blocks all opponent abilities"}}},
+  "Miami Heat":{rarity:"rare",ability:{name:"Heat Culture",icon:"🔥",description:"+28 comeback power when losing by 2+ rounds. No one out-works Miami.",type:"battle",cooldownHours:36,battleEffect:{type:"comeback_bonus",threshold:2,value:28,desc:"+28 if losing by 2+"}}},
 };
 
 // Transit (BALT/PDX specific unique cards)
@@ -135,6 +143,7 @@ function getCardUnique(name, gameType){
   if(gameType==="dc") return DC_UNIQUE_CARDS[name]||null;
   if(gameType==="states") return STATE_UNIQUE_CARDS[name]||null;
   if(gameType==="nfl") return NFL_UNIQUE_CARDS[name]||null;
+  if(gameType==="nba") return NBA_UNIQUE_CARDS[name]||null;
   if(gameType==="la") return LA_UNIQUE_CARDS[name]||null;
   if(gameType==="balt"||gameType==="pdx") return TRANSIT_UNIQUE_CARDS[name]||null;
   return null;
@@ -249,7 +258,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
     }go();
   },[]);
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.95)",display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace"}}>
+    <div style={{position:"fixed",top:0,right:0,bottom:0,left:0,width:"100vw",height:"100dvh",background:"rgba(0,0,0,.95)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace",overflowY:"auto"}}>
       <style>{`
         @keyframes dailyCardIntroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes dailyCardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
@@ -869,6 +878,25 @@ function cmpNFLRegion(g:string,t:string){if(g===t)return"green";if(NFL_REGION_AD
 function cmpSB(g:number,t:number){if(g===t)return{color:"green",arrow:""};return{color:Math.abs(g-t)===1?"yellow":"red",arrow:t>g?"▲":"▼"};}
 const sbLabel=(n:number)=>n===0?"🏆 Zero":n===1?"🏆 One":n<=3?`🏆 ${["","One","Two","Three"][n]}`:n<=5?`🏆 ${["","","","","Four","Five"][n]}`:`🏆 ${n}`;
 
+// ── NBA REGION HELPERS ────────────────────────────────────────────────────────
+const NBA_REGION_DIST:{[k:string]:number}={"Northeast":0,"Mid-Atlantic":1,"Southeast":2,"Midwest":2,"South":3,"Mountain/SW":4,"Pacific":5};
+const NBA_REGION_COORDS:{[k:string]:[number,number]}={"Northeast":[4,4],"Mid-Atlantic":[4,3],"Southeast":[3,1],"Midwest":[2,3],"South":[2,1],"Mountain/SW":[0,2],"Pacific":[-1,2]};
+const NBA_REGION_ADJ:{[k:string]:string[]}={"Northeast":["Mid-Atlantic"],"Mid-Atlantic":["Northeast","Southeast","Midwest"],"Southeast":["Mid-Atlantic","Midwest","South"],"Midwest":["Northeast","Mid-Atlantic","Southeast","South","Mountain/SW"],"South":["Southeast","Midwest","Mountain/SW"],"Mountain/SW":["South","Midwest","Pacific"],"Pacific":["Mountain/SW"]};
+function getNBADir(f:string,t:string){
+  if(f===t)return{label:"✓ SAME REGION",sub:""};
+  const fd=NBA_REGION_DIST[f]??2,td=NBA_REGION_DIST[t]??2;
+  const[fx,fy]=NBA_REGION_COORDS[f]||[2,2];const[tx,ty]=NBA_REGION_COORDS[t]||[2,2];
+  const r=dirFromCoords(fx,fy,tx,ty,fd,td);
+  if(r.label==="→ Closer In")return{label:"→ Toward East",sub:"Closer to coast"};
+  if(r.label==="← Further Out")return{label:"← Toward West",sub:"Further west"};
+  return r;
+}
+function cmpNBAConf(g:string,t:string){return g===t?"green":"red";}
+function cmpNBADiv(gConf:string,gDiv:string,tConf:string,tDiv:string){if(gConf===tConf&&gDiv===tDiv)return"green";if(gConf===tConf)return"yellow";return"red";}
+function cmpNBARegion(g:string,t:string){if(g===t)return"green";if(NBA_REGION_ADJ[g]?.includes(t))return"yellow";return"red";}
+function cmpChamp(g:number,t:number){if(g===t)return{color:"green",arrow:""};return{color:Math.abs(g-t)===1?"yellow":"red",arrow:t>g?"▲":"▼"};}
+const champLabel=(n:number)=>n===0?"🏆 Zero":n===1?"🏆 One":n===2?"🏆 Two":n===3?"🏆 Three":n===4?"🏆 Four":n===5?"🏆 Five":n===6?"🏆 Six":n===7?"🏆 Seven":`🏆 ${n}`;
+
 // ── DIFFICULTY CONFIGS ────────────────────────────────────────────────────────
 const TRANSIT_DIFF:{[k:string]:any}={
   easy:  {label:"Easy",  emoji:"🟢",hints:2,clues:["year"],maxGuesses:6,hardLocks:false,cols:["lines","zone","busy"],grid:"2.2fr 1.3fr 1fr 1fr .45fr",headers:["STATION","LINES","ZONE","BUSY","✓"],desc:"2 hints · Year clue · 6 guesses"},
@@ -888,6 +916,12 @@ const NFL_DIFF:{[k:string]:any}={
   hard:  {label:"Hard",  emoji:"🔴",hints:1,clues:[],maxGuesses:5,hardLocks:true,cols:["conf","div","region","sb","year"],grid:"1.9fr .8fr .85fr 1.1fr .85fr .65fr .45fr",headers:["TEAM","CONF","DIV","REGION","SB","YEAR","✓"],desc:"1 hint · No clues · Hard locks · 5 guesses"},
   pro:   {label:"Pro",   emoji:"⚫",hints:0,clues:[],maxGuesses:4,hardLocks:true,cols:["conf","div","region","sb","year"],grid:"1.9fr .8fr .85fr 1.1fr .85fr .65fr .45fr",headers:["TEAM","CONF","DIV","REGION","SB","YEAR","✓"],desc:"No hints · No clues · 4 guesses"},
 };
+const NBA_DIFF:{[k:string]:any}={
+  easy:  {label:"Easy",  emoji:"🟢",hints:2,clues:["year"],maxGuesses:6,hardLocks:false,cols:["conf","div","region"],grid:"2.2fr .9fr 1fr 1.4fr .45fr",headers:["TEAM","CONF","DIV","REGION","✓"],desc:"2 hints · Year clue · 6 guesses"},
+  medium:{label:"Medium",emoji:"🟡",hints:1,clues:[],maxGuesses:6,hardLocks:false,cols:["conf","div","region","champ"],grid:"2fr .85fr .9fr 1.2fr .9fr .45fr",headers:["TEAM","CONF","DIV","REGION","CHAMP","✓"],desc:"1 hint · No clues · 6 guesses"},
+  hard:  {label:"Hard",  emoji:"🔴",hints:1,clues:[],maxGuesses:5,hardLocks:true,cols:["conf","div","region","champ","year"],grid:"1.9fr .8fr .85fr 1.1fr .85fr .65fr .45fr",headers:["TEAM","CONF","DIV","REGION","CHAMP","YEAR","✓"],desc:"1 hint · No clues · Hard locks · 5 guesses"},
+  pro:   {label:"Pro",   emoji:"⚫",hints:0,clues:[],maxGuesses:4,hardLocks:true,cols:["conf","div","region","champ","year"],grid:"1.9fr .8fr .85fr 1.1fr .85fr .65fr .45fr",headers:["TEAM","CONF","DIV","REGION","CHAMP","YEAR","✓"],desc:"No hints · No clues · 4 guesses"},
+};
 
 // ── GAME CONFIG ───────────────────────────────────────────────────────────────
 const GAMES:{[k:string]:any}={
@@ -895,6 +929,7 @@ const GAMES:{[k:string]:any}={
   dc: {key:"dc", name:"DC Metro",    short:"DC", emoji:"🌸",sub:"WMATA · Washington, D.C.",accent:"#BF0000",accentDark:"#e03030",bgDark:"#030610",bgLight:"#f8faff",winText:"Doors Opening!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:DC_LINES,adj:DC_ADJ,zDist:DC_ZONE_DIST,zCoords:DC_ZONE_COORDS,getDir:getDCDir,type:"transit"},
   states:{key:"states",name:"US States",short:"STATES",emoji:"🦅",sub:"50 States · Geography Puzzle",accent:"#1a3a8f",accentDark:"#4a8aff",bgDark:"#020414",bgLight:"#ffffff",winText:"Liberty!",itemLabel:"state",itemEmoji:"🗺️",diffConfig:STATES_DIFF,lineColors:null,adj:REGION_ADJ,getDir:getStateDir,type:"states"},
   nfl: {key:"nfl", name:"NFL Teams",  short:"NFL", emoji:"🏈",sub:"All 32 Franchises · Football Puzzle",accent:"#013369",accentDark:"#4a7aff",bgDark:"#010614",bgLight:"#f0f4f8",winText:"Touchdown!",itemLabel:"team",itemEmoji:"🏈",diffConfig:NFL_DIFF,lineColors:null,adj:NFL_REGION_ADJ,getDir:getNFLDir,type:"nfl"},
+  nba: {key:"nba", name:"NBA Teams",  short:"NBA", emoji:"🏀",sub:"All 30 Franchises · Basketball Puzzle",accent:"#17408B",accentDark:"#4a90e2",bgDark:"#010a18",bgLight:"#f0f4fa",winText:"Nothing But Net!",itemLabel:"team",itemEmoji:"🏀",diffConfig:NBA_DIFF,lineColors:null,adj:NBA_REGION_ADJ,getDir:getNBADir,type:"nba"},
   balt:{key:"balt",name:"Baltimore MTA",short:"BALT",emoji:"🦀",sub:"MTA Maryland · Baltimore, MD",accent:"#003087",accentDark:"#4a7aff",bgDark:"#01030f",bgLight:"#f5f7ff",winText:"Next Train!",itemLabel:"station",itemEmoji:"🚉",diffConfig:TRANSIT_DIFF,lineColors:BALT_LINES,adj:BALT_ADJ,zDist:BALT_ZONE_DIST,zCoords:BALT_ZONE_COORDS,getDir:getBALTDir,type:"transit"},
   la:{key:"la",name:"LA Metro",short:"LA",emoji:"🌴",sub:"Metro Rail · Los Angeles, CA",accent:"#0072bc",accentDark:"#2aa8ff",bgDark:"#01061a",bgLight:"#f0f7ff",winText:"Doors are closing!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:LA_LINES,adj:LA_ADJ,zDist:LA_ZONE_DIST,zCoords:LA_ZONE_COORDS,getDir:getLADir,type:"transit"},
   nyc:{key:"nyc",name:"NYC Subway",short:"NYC",emoji:"🗽",sub:"MTA · New York City, NY",accent:"#EE352E",accentDark:"#ff6666",bgDark:"#0a0002",bgLight:"#fff5f5",winText:"Stand clear of the closing doors!",itemLabel:"station",itemEmoji:"🚇",diffConfig:TRANSIT_DIFF,lineColors:NYC_LINES,adj:NYC_ADJ,zDist:NYC_ZONE_DIST,zCoords:NYC_ZONE_COORDS,getDir:getNYCDir,type:"transit"},
@@ -919,6 +954,7 @@ function cmpPop(g:number,t:number){if(g===t)return{color:"green",arrow:""};retur
 function cmpSize(g:number,t:number){if(g===t)return{color:"green",arrow:""};return{color:Math.abs(g-t)===1?"yellow":"red",arrow:t>g?"▲":"▼"};}
 function buildGuess(item:any,target:any,gameKey:string){
   if(gameKey==="nfl"){return{item,confColor:cmpNFLConf(item.conf,target.conf),divColor:cmpNFLDiv(item.conf,item.div,target.conf,target.div),regionColor:cmpNFLRegion(item.region,target.region),sbResult:cmpSB(item.sb,target.sb),dirInfo:getNFLDir(item.region,target.region),yearResult:cmpYear(item.year,target.year,10)};}
+  if(gameKey==="nba"){return{item,confColor:cmpNBAConf(item.conf,target.conf),divColor:cmpNBADiv(item.conf,item.div,target.conf,target.div),regionColor:cmpNBARegion(item.region,target.region),champResult:cmpChamp(item.champ,target.champ),dirInfo:getNBADir(item.region,target.region),yearResult:cmpYear(item.year,target.year,10)};}
   if(gameKey==="states"){return{item,regionColor:cmpRegion(item.region,target.region),coastColor:cmpCoast(item.coast,target.coast),popResult:cmpPop(item.pop,target.pop),dirInfo:getStateDir(item.region,target.region),yearResult:cmpYear(item.year,target.year,15),sizeResult:cmpSize(item.size,target.size)};}
   const adj=gameKey==="pdx"?PDX_ADJ:gameKey==="balt"?BALT_ADJ:gameKey==="la"?LA_ADJ:gameKey==="nyc"?NYC_ADJ:gameKey==="chi"?CHI_ADJ:gameKey==="bos"?BOS_ADJ:gameKey==="atl"?ATL_ADJ:DC_ADJ;
   const dirFn=gameKey==="pdx"?getPDXDir:gameKey==="balt"?getBALTDir:gameKey==="la"?getLADir:gameKey==="nyc"?getNYCDir:gameKey==="chi"?getCHIDir:gameKey==="bos"?getBOSDir:gameKey==="atl"?getATLDir:getDCDir;
@@ -930,6 +966,13 @@ function getFocusHint(guesses:any[],gameKey:string){
   if(gameKey==="nfl"){
     if(g.yearResult?.color==="yellow")return`💡 YEAR close — go ${g.yearResult.arrow==="▲"?"later":"earlier"} ${g.yearResult.arrow}`;
     if(g.sbResult?.color==="yellow")return`💡 SUPER BOWLS one off ${g.sbResult.arrow}`;
+    if(g.divColor==="yellow")return"💡 Same conference — different division";
+    if(g.regionColor==="yellow")return"💡 REGION adjacent — check direction";
+    return null;
+  }
+  if(gameKey==="nba"){
+    if(g.yearResult?.color==="yellow")return`💡 YEAR close — go ${g.yearResult.arrow==="▲"?"later":"earlier"} ${g.yearResult.arrow}`;
+    if(g.champResult?.color==="yellow")return`💡 CHAMPIONSHIPS one off ${g.champResult.arrow}`;
     if(g.divColor==="yellow")return"💡 Same conference — different division";
     if(g.regionColor==="yellow")return"💡 REGION adjacent — check direction";
     return null;
@@ -950,7 +993,7 @@ function getFocusHint(guesses:any[],gameKey:string){
 function buildShare(guesses:any[],won:boolean,dayNum:number,gameKey:string,diff:string,targetName?:string){
   const G=GAMES[gameKey];const D=G.diffConfig[diff];
   const rows=guesses.map((g:any)=>{
-    if(gameKey==="nfl")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
+    if(gameKey==="nfl"||gameKey==="nba")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
     if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult.color]].join("");
     return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult.color]].join("");
   });
@@ -966,7 +1009,7 @@ function buildAllRoundsShare(rounds:any[],gameKey:string,diff:string,dayNum:numb
   rounds.forEach((r:any,i:number)=>{
     if(!r.alreadyPlayed)return;
     const grid=r.guesses.map((g:any)=>{
-      if(gameKey==="nfl")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
+      if(gameKey==="nfl"||gameKey==="nba")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
       if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult.color]].join("");
       return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult.color]].join("");
     }).join(" ");
@@ -1237,6 +1280,12 @@ function generateHints(target:any,gameKey:string):[string,string]{
     const cultural=(NFL_HINTS[target.name]||["",""])[0]||`${target.conf} Conference · ${target.div} Division`;
     const sb=target.sb===0?"0 Super Bowl wins":target.sb===1?"1 Super Bowl win":`${target.sb} Super Bowl wins`;
     const structural=`${target.conf} Conference · ${target.div} Division · ${target.region} region · ${sb} · Est. ${target.year}`;
+    return[cultural,structural];
+  }
+  if(gameKey==="nba"){
+    const cultural=(NBA_HINTS[target.name]||["",""])[0]||`${target.conf} Conference · ${target.div} Division`;
+    const ch=target.champ===0?"0 championships":target.champ===1?"1 championship":`${target.champ} championships`;
+    const structural=`${target.conf} Conference · ${target.div} Division · ${target.region} region · ${ch} · Est. ${target.year}`;
     return[cultural,structural];
   }
   if(gameKey==="states"){
@@ -1598,7 +1647,7 @@ const NEIGHBORHOOD_CARDS:{[city:string]:{[station:string]:{neighborhood:string,v
 };
 function getStationOfWeek(gameKey:string):string{const stations=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:[];if(!stations.length)return"";const week=Math.floor(getDayNum()/7);return(stations[_h(week*7919+stations.length)%stations.length]?.name)||"";}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
-function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gk=gameKey==="pdx"?1:gameKey==="dc"?2:gameKey==="nfl"?4:gameKey==="balt"?5:gameKey==="bos"?6:gameKey==="atl"?7:3;const base=_h(_h(day*48271)^_h(gk*22695477));const used=new Set<number>();const out:number[]=[];for(let a=0;out.length<Math.min(3,items.length)&&a<items.length*4;a++){const idx=(_h(base^_h(a+1)))%items.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out;}
+function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gkMap:Record<string,number>={pdx:1,dc:2,la:3,nyc:4,chi:5,balt:6,bos:7,atl:8,nfl:9,states:10,nba:12};const gk=gkMap[gameKey]||11;const N=items.length;const indices=Array.from({length:N},(_,i)=>i);let seed=_h(_h(day*48271)^_h(gk*22695477));function next(){seed=_h(seed+0x9e3779b9);return seed;}for(let i=N-1;i>0;i--){const j=next()%(i+1);[indices[i],indices[j]]=[indices[j],indices[i]];}return indices.slice(0,Math.min(3,N));}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
 function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
 function getDailyChallengeGames():string[]{const T=["pdx","dc","balt","la","nyc","chi","bos","atl"];const day=getDayNum();const used=new Set<number>();const out:number[]=[];const base=_h(_h(day*31337)^_h(88799));for(let a=0;out.length<3&&a<T.length*4;a++){const idx=_h(base^_h(a+1))%T.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out.map(i=>T[i]);}
@@ -1619,12 +1668,12 @@ function getTheme(gameKey:string,settings:any={}){
   const sz=settings.textSize||"medium",sm=sz==="small"?.88:sz==="large"?1.14:1;
   const accent=G.accent,accentB=dark?G.accentDark:G.accent;
   const bg=dark?G.bgDark:G.bgLight;
-  const surface=dark?(gameKey==="pdx"?"#030d03":gameKey==="dc"?"#040916":gameKey==="nfl"?"#020814":gameKey==="balt"?"#01030f":"#040824"):(gameKey==="states"?"#f2f4fa":gameKey==="nfl"?"#eef2f8":gameKey==="balt"?"#eef1fa":"#f4f4f4");
-  const card=dark?(gameKey==="pdx"?"#051a0f":gameKey==="dc"?"#060d20":gameKey==="nfl"?"#060c1a":gameKey==="balt"?"#050a20":"#060d20"):(gameKey==="states"?"#e8edf8":gameKey==="nfl"?"#dde6f2":gameKey==="balt"?"#dde4f5":"#ebebeb");
-  const border=dark?(gameKey==="pdx"?"#0d1e0d":gameKey==="dc"?"#0a1428":gameKey==="nfl"?"#091430":gameKey==="balt"?"#0a1440":"#0a1840"):(gameKey==="states"?"#c8d0e0":gameKey==="nfl"?"#b8c8dc":gameKey==="balt"?"#b8c8e8":"#d0d0d0");
+  const surface=dark?(gameKey==="pdx"?"#030d03":gameKey==="dc"?"#040916":gameKey==="nfl"?"#020814":gameKey==="nba"?"#020a18":gameKey==="balt"?"#01030f":"#040824"):(gameKey==="states"?"#f2f4fa":gameKey==="nfl"?"#eef2f8":gameKey==="nba"?"#edf2f8":gameKey==="balt"?"#eef1fa":"#f4f4f4");
+  const card=dark?(gameKey==="pdx"?"#051a0f":gameKey==="dc"?"#060d20":gameKey==="nfl"?"#060c1a":gameKey==="nba"?"#060e22":gameKey==="balt"?"#050a20":"#060d20"):(gameKey==="states"?"#e8edf8":gameKey==="nfl"?"#dde6f2":gameKey==="nba"?"#dce8f2":gameKey==="balt"?"#dde4f5":"#ebebeb");
+  const border=dark?(gameKey==="pdx"?"#0d1e0d":gameKey==="dc"?"#0a1428":gameKey==="nfl"?"#091430":gameKey==="nba"?"#091830":gameKey==="balt"?"#0a1440":"#0a1840"):(gameKey==="states"?"#c8d0e0":gameKey==="nfl"?"#b8c8dc":gameKey==="nba"?"#b0c8e0":gameKey==="balt"?"#b8c8e8":"#d0d0d0");
   const text=dark?(hc?"#fff":"#e0e8e0"):(hc?"#000":"#0a0a0a");
-  const textSub=dark?(gameKey==="pdx"?"#6aaa7a":gameKey==="dc"?"#5a7aaa":gameKey==="nfl"?"#4a6aaa":gameKey==="balt"?"#5a7acc":"#5a7aaa"):(gameKey==="pdx"?"#1a4a2a":gameKey==="dc"?"#1a2a6a":gameKey==="nfl"?"#0a1a5a":gameKey==="balt"?"#1a2a7a":"#1a2a6a");
-  const textMuted=dark?(gameKey==="pdx"?"#2a4a2a":gameKey==="dc"?"#1a2a4a":gameKey==="nfl"?"#1a2a50":gameKey==="balt"?"#1a2a55":"#1a2a5a"):(gameKey==="pdx"?"#666":gameKey==="nfl"?"#446":gameKey==="balt"?"#446":"#556");
+  const textSub=dark?(gameKey==="pdx"?"#6aaa7a":gameKey==="dc"?"#5a7aaa":gameKey==="nfl"?"#4a6aaa":gameKey==="nba"?"#4a7acc":gameKey==="balt"?"#5a7acc":"#5a7aaa"):(gameKey==="pdx"?"#1a4a2a":gameKey==="dc"?"#1a2a6a":gameKey==="nfl"?"#0a1a5a":gameKey==="nba"?"#0a1a5a":gameKey==="balt"?"#1a2a7a":"#1a2a6a");
+  const textMuted=dark?(gameKey==="pdx"?"#2a4a2a":gameKey==="dc"?"#1a2a4a":gameKey==="nfl"?"#1a2a50":gameKey==="nba"?"#1a2a55":gameKey==="balt"?"#1a2a55":"#1a2a5a"):(gameKey==="pdx"?"#666":gameKey==="nfl"?"#446":gameKey==="nba"?"#446":gameKey==="balt"?"#446":"#556");
   const cellBg:{[k:string]:string}={green:dark?"#041508":"#d4f5e0",yellow:dark?"#1a1400":"#fffacc",red:dark?"#180404":"#fdd0d0"};
   const cellBorder:{[k:string]:string}={green:"#28b050",yellow:"#c8a800",red:hc?"#cc0000":"#c43030"};
   const cellText:{[k:string]:string}={green:dark?"#ffffff":"#005020",yellow:dark?"#ffffff":"#5a3800",red:dark?"#ffffff":"#5a0000"};
@@ -3571,6 +3620,146 @@ const NFL_TRIVIA=[
   {q:"The Pittsburgh Steelers have won how many Super Bowls?",opts:["4","5","6","7"],ans:2},
 ];
 
+// ── NBA DATA ──────────────────────────────────────────────────────────────────
+const NBA_RAW:any[]=[
+  ["Boston Celtics","Eastern","Atlantic","Northeast",18,1946,"Boston, MA","Eastern Atlantic · The most decorated franchise in NBA history — 18 championships across multiple eras","The Celtics won 8 consecutive championships from 1959–1966 under coach Red Auerbach. Bill Russell, Larry Bird, and now Jayson Tatum have kept Boston at the pinnacle of basketball."],
+  ["Brooklyn Nets","Eastern","Atlantic","Northeast",0,1967,"Brooklyn, NY","Eastern Atlantic · Founded as the New Jersey Americans — now the anchor of the most culturally electric basketball market in the world","The Nets have never won an NBA title despite decades in the New York market. Their Big Three era with Durant, Harden, and Irving burned bright and collapsed in a single season."],
+  ["New York Knicks","Eastern","Atlantic","Northeast",2,1946,"New York, NY","Eastern Atlantic · Madison Square Garden is the world's most famous arena — and the Knicks have the longest drought in their market","The Knicks won championships in 1970 and 1973 with Willis Reed, Walt Frazier, and the greatest Knicks team ever assembled. They haven't won since."],
+  ["Philadelphia 76ers","Eastern","Atlantic","Mid-Atlantic",3,1946,"Philadelphia, PA","Eastern Atlantic · Trust the Process — one of NBA history's most iconic rebuilds produced three championships across two eras","The 76ers won titles in 1955 (as Syracuse Nationals), 1967, and 1983 (Moses Malone's 'Fo, Fo, Fo' sweep). Joel Embiid's era raised expectations without a title."],
+  ["Toronto Raptors","Eastern","Atlantic","Mid-Atlantic",1,1995,"Toronto, ON","Eastern Atlantic · Canada's only NBA franchise — their 2019 championship is the most stunning single-season rise in modern NBA history","The Raptors were founded in 1995 as an expansion team. In 2019, with Kawhi Leonard, they defeated the Golden State Warriors to win their first and only championship."],
+  ["Chicago Bulls","Eastern","Central","Midwest",6,1966,"Chicago, IL","Eastern Central · Michael Jordan's dynasty — six championships in eight years, the greatest sustained run of individual dominance in NBA history","Michael Jordan won 6 championships with the Bulls, all without going to a Game 7. Phil Jackson's triangle offense and Scottie Pippen's brilliance made Chicago unstoppable in the 1990s."],
+  ["Cleveland Cavaliers","Eastern","Central","Midwest",1,1970,"Cleveland, OH","Eastern Central · LeBron James brought Cleveland its first major sports championship in 52 years — the 2016 comeback from 3-1 down is the greatest in Finals history","LeBron James returned to Cleveland in 2014 and delivered the impossible in 2016 — becoming the first team to ever win the Finals after trailing 3 games to 1."],
+  ["Detroit Pistons","Eastern","Central","Midwest",3,1941,"Detroit, MI","Eastern Central · The Bad Boys — two championships in the late 1980s built on defense and physicality that literally changed the rules of basketball","The Pistons' 1989 and 1990 championships were won with a physical, bruising style that the NBA eventually legislated away. Isiah Thomas and Bill Laimbeer made Detroit the most hated champion of the era."],
+  ["Indiana Pacers","Eastern","Central","Midwest",0,1967,"Indianapolis, IN","Eastern Central · Three consecutive Finals appearances in the early 2000s — Reggie Miller's rivalry with the Knicks is one of basketball's most iconic storylines","Reggie Miller's trash-talk war with Spike Lee and the Knicks defined an era. The Pacers have come close multiple times without a title."],
+  ["Milwaukee Bucks","Eastern","Central","Midwest",2,1968,"Milwaukee, WI","Eastern Central · Kareem Abdul-Jabbar and Oscar Robertson won in 1971 — then Giannis Antetokounmpo ended 50 years of drought in 2021","The Bucks won their first title in just their third year of existence in 1971. They waited until Giannis's dominant two-way performance in the 2021 Finals to win again."],
+  ["Atlanta Hawks","Eastern","Southeast","Southeast",1,1946,"Atlanta, GA","Eastern Southeast · One of the NBA's oldest franchises — won their only title in 1958 as the St. Louis Hawks before Wilt Chamberlain changed everything","The Hawks won the 1958 NBA Championship as the St. Louis Hawks, with Bob Pettit's legendary 50-point performance in Game 6. They've never returned to the Finals since."],
+  ["Charlotte Hornets","Eastern","Southeast","Southeast",0,1988,"Charlotte, NC","Eastern Southeast · The expansion team that gave a city its identity — inspired a generation with Muggsy Bogues and Alonzo Mourning","The Hornets were founded in 1988 and quickly became a cultural phenomenon. Their teal and purple colors were the bestselling jerseys in the league for years."],
+  ["Miami Heat","Eastern","Southeast","Southeast",3,1988,"Miami, FL","Eastern Southeast · LeBron James, Dwyane Wade, and Chris Bosh made South Beach the center of the basketball universe — three Finals in four years","The Heat won in 2006 with Dwyane Wade, then again in 2012 and 2013 with LeBron James. Pat Riley and Spoelstra's Heat Culture has produced one of the game's most respected organizations."],
+  ["Orlando Magic","Eastern","Southeast","Southeast",0,1989,"Orlando, FL","Eastern Southeast · Shaquille O'Neal and Penny Hardaway made Orlando a powerhouse — three Finals appearances, zero rings","The Magic reached the Finals in 1995 and 2009. Shaq and Penny were one of basketball's most electrifying duos before Shaq left for Los Angeles in 1996."],
+  ["Washington Wizards","Eastern","Southeast","Mid-Atlantic",1,1961,"Washington, DC","Eastern Southeast · One championship in 1978 under Elvin Hayes and Wes Unseld — the franchise has been searching ever since","The Bullets (now Wizards) won the 1978 championship against Seattle. The team changed its name to Wizards in 1997. Michael Jordan's comeback era couldn't replicate it."],
+  ["Denver Nuggets","Western","Northwest","Mountain/SW",1,1967,"Denver, CO","Western Northwest · Nikola Jokic's back-to-back MVPs and the 2023 championship ended decades of near-misses for the Rocky Mountain franchise","The Nuggets finally broke through in 2023 with Nikola Jokic winning Finals MVP. Jokic's unique passing-big style won consecutive regular-season MVPs before the title."],
+  ["Minnesota Timberwolves","Western","Northwest","Midwest",0,1989,"Minneapolis, MN","Western Northwest · Kevin Garnett was the face of a franchise that reached one conference finals — the Wolves have never made the Finals","KG's 2004 regular-season MVP and the Wolves' conference finals run remains the franchise high point. Minnesota traded KG away in 2007 in one of the most lopsided deals in NBA history."],
+  ["Oklahoma City Thunder","Western","Northwest","Mountain/SW",1,1967,"Oklahoma City, OK","Western Northwest · Won one championship as the Seattle SuperSonics in 1979 — then relocated in 2008, becoming OKC's first major pro sports team","The Seattle SuperSonics won the 1979 championship with Jack Sikma and Gus Williams. The franchise relocated to Oklahoma City in 2008, leaving Seattle without basketball."],
+  ["Portland Trail Blazers","Western","Northwest","Pacific",1,1970,"Portland, OR","Western Northwest · Bill Walton's 1977 championship is the only title in franchise history — a season so dominant it shocked the sports world","The Trail Blazers won the 1977 championship in their seventh year of existence. Bill Walton played at a legendary level for a single healthy season before injuries derailed his career."],
+  ["Utah Jazz","Western","Northwest","Mountain/SW",0,1974,"Salt Lake City, UT","Western Northwest · Karl Malone and John Stockton led the Jazz to two consecutive Finals — and lost both times to Michael Jordan's Bulls","The Jazz reached back-to-back Finals in 1997 and 1998, losing both to Chicago. Malone and Stockton's pick-and-roll became the most studied play in basketball history."],
+  ["Golden State Warriors","Western","Pacific","Pacific",7,1946,"San Francisco, CA","Western Pacific · Four championships in eight years — Stephen Curry's three-point revolution redefined how basketball is played","The Warriors won in 2015, 2017, 2018, and 2022. Stephen Curry's three-point revolution made Golden State the most analytically influential team in modern sports."],
+  ["Los Angeles Lakers","Western","Pacific","Pacific",17,1947,"Los Angeles, CA","Western Pacific · The most glamorous franchise in NBA history — 17 championships from Minneapolis through Shaq, Kobe, and LeBron","The Lakers have won the most championships of any Western Conference team. Magic Johnson's Showtime, Shaq and Kobe's three-peat, and LeBron's 2020 bubble title span eight decades of dominance."],
+  ["Los Angeles Clippers","Western","Pacific","Pacific",0,1970,"Los Angeles, CA","Western Pacific · The other LA team — decades of futility, but the Clippers have never reached the Finals","The Clippers spent decades as one of basketball's punchlines. Now with a new arena and young talent, they're still searching for their first conference championship appearance."],
+  ["Phoenix Suns","Western","Pacific","Mountain/SW",0,1968,"Phoenix, AZ","Western Pacific · Three Finals appearances — Charles Barkley's 1993 MVP run, Steve Nash's seven-second offense, Devin Booker's 2021 run — zero rings","The Suns have reached the Finals three times (1976, 1993, 2021) without winning. Charles Barkley's MVP season in Phoenix remains one of the greatest individual years in NBA history."],
+  ["Sacramento Kings","Western","Pacific","Pacific",1,1945,"Sacramento, CA","Western Pacific · Won one title in 1951 as the Rochester Royals — then moved four times before settling in Sacramento","The Royals/Kings won the 1951 NBA championship as the Rochester Royals. They moved to Cincinnati, Kansas City, then Sacramento — where fans have waited since 1985 for a contender."],
+  ["Dallas Mavericks","Western","Southwest","South",1,1980,"Dallas, TX","Western Southwest · Dirk Nowitzki's 2011 championship is one of sport's most improbable — beating LeBron's Heat in a series defined by Dirk's fadeaway","Dirk Nowitzki played 21 seasons for the Mavericks and won one championship in 2011. His one-legged fadeaway jumper became one of basketball's most iconic and unguardable shots."],
+  ["Houston Rockets","Western","Southwest","South",2,1967,"Houston, TX","Western Southwest · Hakeem Olajuwon's back-to-back championships in 1994 and 1995 are among the most dominant center performances in Finals history","Hakeem 'The Dream' Olajuwon won consecutive Finals MVPs in 1994 and 1995. His Dream Shake post move was so effective the NBA considered outlawing it."],
+  ["Memphis Grizzlies","Western","Southwest","Southeast",0,1995,"Memphis, TN","Western Southwest · Grit and Grind — the toughest brand of basketball in the modern era, but the Grizzlies have never reached the Finals","Marc Gasol, Mike Conley, Zach Randolph, and Tony Allen built one of the NBA's most respected cultures without winning a title."],
+  ["New Orleans Pelicans","Western","Southwest","South",0,2002,"New Orleans, LA","Western Southwest · A franchise born from the Hornets' relocation — still waiting for their first Finals appearance","The Pelicans were originally the Charlotte Hornets before moving to New Orleans in 2002. Hurricane Katrina temporarily displaced them to Oklahoma City. Zion Williamson's arrival sparked new hope."],
+  ["San Antonio Spurs","Western","Southwest","South",5,1967,"San Antonio, TX","Western Southwest · Five championships across three decades — Tim Duncan, Tony Parker, Manu Ginobili, and Gregg Popovich built the most consistent winning organization in NBA history","The Spurs won in 1999, 2003, 2005, 2007, and 2014. No franchise has won more championships in fewer years during their dynasty window. Pop's system produced Hall of Famers from every roster."],
+];
+const NBA_IMG:Record<string,string>={
+  "Boston Celtics":"https://en.wikipedia.org/wiki/Special:FilePath/TD_Garden_aerial.jpg",
+  "Brooklyn Nets":"https://en.wikipedia.org/wiki/Special:FilePath/Barclays_Center,_Brooklyn,_New_York_City.jpg",
+  "New York Knicks":"https://en.wikipedia.org/wiki/Special:FilePath/Madison_Square_Garden_(MSG)_in_Midtown_Manhattan.jpg",
+  "Philadelphia 76ers":"https://en.wikipedia.org/wiki/Special:FilePath/Wells_Fargo_Center_Philadelphia.jpg",
+  "Toronto Raptors":"https://en.wikipedia.org/wiki/Special:FilePath/Scotiabank_Arena,_Toronto.jpg",
+  "Chicago Bulls":"https://en.wikipedia.org/wiki/Special:FilePath/United_Center_exterior.jpg",
+  "Cleveland Cavaliers":"https://en.wikipedia.org/wiki/Special:FilePath/Rocket_Mortgage_FieldHouse.jpg",
+  "Detroit Pistons":"https://en.wikipedia.org/wiki/Special:FilePath/Little_Caesars_Arena.jpg",
+  "Indiana Pacers":"https://en.wikipedia.org/wiki/Special:FilePath/Gainbridge_Fieldhouse.jpg",
+  "Milwaukee Bucks":"https://en.wikipedia.org/wiki/Special:FilePath/Fiserv_Forum.jpg",
+  "Atlanta Hawks":"https://en.wikipedia.org/wiki/Special:FilePath/State_Farm_Arena_Atlanta.jpg",
+  "Charlotte Hornets":"https://en.wikipedia.org/wiki/Special:FilePath/Spectrum_Center_(Charlotte).jpg",
+  "Miami Heat":"https://en.wikipedia.org/wiki/Special:FilePath/Kaseya_Center.jpg",
+  "Orlando Magic":"https://en.wikipedia.org/wiki/Special:FilePath/Kia_Center.jpg",
+  "Washington Wizards":"https://en.wikipedia.org/wiki/Special:FilePath/Capital_One_Arena.jpg",
+  "Denver Nuggets":"https://en.wikipedia.org/wiki/Special:FilePath/Ball_Arena.jpg",
+  "Minnesota Timberwolves":"https://en.wikipedia.org/wiki/Special:FilePath/Target_Center.jpg",
+  "Oklahoma City Thunder":"https://en.wikipedia.org/wiki/Special:FilePath/Paycom_Center.jpg",
+  "Portland Trail Blazers":"https://en.wikipedia.org/wiki/Special:FilePath/Moda_Center.jpg",
+  "Utah Jazz":"https://en.wikipedia.org/wiki/Special:FilePath/Delta_Center.jpg",
+  "Golden State Warriors":"https://en.wikipedia.org/wiki/Special:FilePath/Chase_Center,_San_Francisco.jpg",
+  "Los Angeles Lakers":"https://en.wikipedia.org/wiki/Special:FilePath/Crypto.com_Arena.jpg",
+  "Los Angeles Clippers":"https://en.wikipedia.org/wiki/Special:FilePath/Intuit_Dome.jpg",
+  "Phoenix Suns":"https://en.wikipedia.org/wiki/Special:FilePath/Footprint_Center.jpg",
+  "Sacramento Kings":"https://en.wikipedia.org/wiki/Special:FilePath/Golden_1_Center.jpg",
+  "Dallas Mavericks":"https://en.wikipedia.org/wiki/Special:FilePath/American_Airlines_Center.jpg",
+  "Houston Rockets":"https://en.wikipedia.org/wiki/Special:FilePath/Toyota_Center.jpg",
+  "Memphis Grizzlies":"https://en.wikipedia.org/wiki/Special:FilePath/FedExForum.jpg",
+  "New Orleans Pelicans":"https://en.wikipedia.org/wiki/Special:FilePath/Smoothie_King_Center.jpg",
+  "San Antonio Spurs":"https://en.wikipedia.org/wiki/Special:FilePath/AT%26T_Center.jpg",
+};
+const NBA_TEAMS=NBA_RAW.map(([name,conf,div,region,champ,year,city,desc,fact]:any[])=>({name,conf,div,region,champ,year,city,desc,fact,img:NBA_IMG[name]||""}));
+const NBA_HINTS:Record<string,[string,string]>={
+  "Boston Celtics":["The most decorated franchise in NBA history — 18 championships built on decades of Celtic pride","Eastern Conference · Atlantic Division · Northeast region · 18 championships · Est. 1946"],
+  "Brooklyn Nets":["Relocated from New Jersey to Brooklyn's Barclays Center — playing in the most culturally electric basketball market","Eastern Conference · Atlantic Division · Northeast region · 0 championships · Est. 1967"],
+  "New York Knicks":["Madison Square Garden is the most famous arena in sports — but this team hasn't won a title since the early 1970s","Eastern Conference · Atlantic Division · Northeast region · 2 championships · Est. 1946"],
+  "Philadelphia 76ers":["Trust the Process — this franchise deliberately tanked for years to draft a superstar core","Eastern Conference · Atlantic Division · Mid-Atlantic region · 3 championships · Est. 1946"],
+  "Toronto Raptors":["Canada's only NBA team won its first championship in 2019 on the back of a single transcendent season from a borrowed superstar","Eastern Conference · Atlantic Division · Mid-Atlantic region · 1 championship · Est. 1995"],
+  "Chicago Bulls":["Six championships in eight years with a player widely considered the greatest of all time — 'The Last Dance' documented the final title run","Eastern Conference · Central Division · Midwest region · 6 championships · Est. 1966"],
+  "Cleveland Cavaliers":["LeBron James left, won titles elsewhere, returned — and delivered the greatest comeback in Finals history from 3 games down","Eastern Conference · Central Division · Midwest region · 1 championship · Est. 1970"],
+  "Detroit Pistons":["The Bad Boys won back-to-back titles with physical defense so brutal the league changed its rules because of them","Eastern Conference · Central Division · Midwest region · 3 championships · Est. 1941"],
+  "Indiana Pacers":["Reggie Miller's rivalry with the Knicks is one of basketball's most storied feuds — this Midwest franchise has never won a title","Eastern Conference · Central Division · Midwest region · 0 championships · Est. 1967"],
+  "Milwaukee Bucks":["The Greek Freak ended 50 years of drought in 2021 — this franchise's first title came in just their third year in 1971","Eastern Conference · Central Division · Midwest region · 2 championships · Est. 1968"],
+  "Atlanta Hawks":["Won their only title in 1958 as the St. Louis Hawks — Bob Pettit scored 50 points in the clinching game","Eastern Conference · Southeast Division · Southeast region · 1 championship · Est. 1946"],
+  "Charlotte Hornets":["The teal and purple expansion team whose jerseys outsold everyone in the 1990s — Muggsy Bogues was the shortest player in NBA history","Eastern Conference · Southeast Division · Southeast region · 0 championships · Est. 1988"],
+  "Miami Heat":["Heat Culture — three championships in a decade, with Dwyane Wade's iconic 2006 run and LeBron James's two-year Super Team","Eastern Conference · Southeast Division · Southeast region · 3 championships · Est. 1988"],
+  "Orlando Magic":["Shaquille O'Neal and Penny Hardaway made this Florida franchise a powerhouse — two Finals appearances, zero rings","Eastern Conference · Southeast Division · Southeast region · 0 championships · Est. 1989"],
+  "Washington Wizards":["One championship in 1978 as the Bullets — this DC franchise changed its name in 1997 and Michael Jordan's comeback didn't bring another","Eastern Conference · Southeast Division · Mid-Atlantic region · 1 championship · Est. 1961"],
+  "Denver Nuggets":["Nikola Jokic's two MVP seasons and the 2023 championship ended decades of heartbreak for this mile-high franchise","Western Conference · Northwest Division · Mountain/SW region · 1 championship · Est. 1967"],
+  "Minnesota Timberwolves":["Kevin Garnett's 2004 MVP season remains the franchise's greatest achievement — they've never reached the Finals","Western Conference · Northwest Division · Midwest region · 0 championships · Est. 1989"],
+  "Oklahoma City Thunder":["This franchise won one championship as the Seattle SuperSonics in 1979 — then relocated to Oklahoma City in 2008","Western Conference · Northwest Division · Mountain/SW region · 1 championship (as SEA) · Est. 1967"],
+  "Portland Trail Blazers":["Bill Walton won the only championship in franchise history in 1977 — injuries derailed what could have been a dynasty","Western Conference · Northwest Division · Pacific region · 1 championship · Est. 1970"],
+  "Utah Jazz":["Karl Malone and John Stockton's pick-and-roll reached two consecutive Finals — and lost both to Michael Jordan","Western Conference · Northwest Division · Mountain/SW region · 0 championships · Est. 1974"],
+  "Golden State Warriors":["Stephen Curry's three-point revolution led to four championships in eight years — Curry holds the all-time three-point record by a massive margin","Western Conference · Pacific Division · Pacific region · 7 championships · Est. 1946"],
+  "Los Angeles Lakers":["17 championships from Minneapolis to LeBron — Magic Johnson's Showtime, Shaq and Kobe's three-peat, and the 2020 bubble title define their dynasty","Western Conference · Pacific Division · Pacific region · 17 championships · Est. 1947"],
+  "Los Angeles Clippers":["The other LA team spent decades as a punchline — they've never reached a conference championship game","Western Conference · Pacific Division · Pacific region · 0 championships · Est. 1970"],
+  "Phoenix Suns":["Charles Barkley's 1993 MVP season, Steve Nash's seven-second offense, Devin Booker's 2021 run — three Finals trips, zero rings","Western Conference · Pacific Division · Mountain/SW region · 0 championships · Est. 1968"],
+  "Sacramento Kings":["Won one title in 1951 as the Rochester Royals — moved four times before landing in Sacramento where fans have waited since 1985","Western Conference · Pacific Division · Pacific region · 1 championship · Est. 1945"],
+  "Dallas Mavericks":["Dirk Nowitzki's fadeaway is one of basketball's most unguardable shots — it carried this Texas franchise to its only title in 2011","Western Conference · Southwest Division · South region · 1 championship · Est. 1980"],
+  "Houston Rockets":["Hakeem Olajuwon's back-to-back Finals MVPs in 1994 and 1995 are the greatest center performances in championship history","Western Conference · Southwest Division · South region · 2 championships · Est. 1967"],
+  "Memphis Grizzlies":["Grit and Grind — Marc Gasol, Mike Conley, and Zach Randolph built one of basketball's most respected cultures without reaching the Finals","Western Conference · Southwest Division · South region · 0 championships · Est. 1995"],
+  "New Orleans Pelicans":["A franchise shaped by Hurricane Katrina — temporarily displaced to Oklahoma City before returning to the Gulf Coast","Western Conference · Southwest Division · South region · 0 championships · Est. 2002"],
+  "San Antonio Spurs":["Five championships across three decades — Tim Duncan, Tony Parker, Manu Ginobili, and Pop's system made the Spurs the model franchise in American sports","Western Conference · Southwest Division · South region · 5 championships · Est. 1967"],
+};
+const NBA_DYK:string[]=[
+  "The NBA has 30 teams split into two conferences (Eastern and Western) with 3 divisions of 5 teams each.",
+  "The Boston Celtics have the most championships in NBA history with 18 titles — one more than the Los Angeles Lakers' 17.",
+  "Stephen Curry holds the all-time NBA record for three-pointers made by an enormous margin — he more than doubled the previous record holder.",
+  "The 2016 Cleveland Cavaliers are the only team in NBA Finals history to come back from a 3-1 deficit to win the championship.",
+  "Kareem Abdul-Jabbar scored 38,387 career points — the all-time NBA scoring record he held for 39 years until LeBron James surpassed it in 2023.",
+  "The San Antonio Spurs' 22-year playoff streak (1998–2019) is the longest in North American major professional sports history.",
+  "Michael Jordan never lost in the NBA Finals — going 6-0 with the Chicago Bulls across two three-peats in 1991–93 and 1996–98.",
+  "The NBA's three-point line was adopted for the 1979–80 season — the same year Magic Johnson and Larry Bird entered the league.",
+  "Wilt Chamberlain scored 100 points in a single game on March 2, 1962 — a record that has never been seriously approached.",
+  "The Toronto Raptors are the only non-US franchise in the NBA — and they won their only championship in 2019.",
+  "The Los Angeles Lakers and Celtics have met in the NBA Finals 12 times — the most contested rivalry in championship history.",
+  "Nikola Jokic won back-to-back regular season MVPs before leading the Denver Nuggets to their first championship in 2023.",
+];
+const NBA_TRIVIA=[
+  {q:"How many teams are in the NBA?",opts:["28","29","30","32"],ans:2},
+  {q:"Which team has the most NBA championships?",opts:["Los Angeles Lakers","Chicago Bulls","Boston Celtics","Golden State Warriors"],ans:2},
+  {q:"How many championships did Michael Jordan win with the Chicago Bulls?",opts:["4","5","6","7"],ans:2},
+  {q:"What year was the three-point line introduced to the NBA?",opts:["1976","1979","1982","1985"],ans:1},
+  {q:"Which player holds the NBA all-time scoring record?",opts:["Kareem Abdul-Jabbar","Wilt Chamberlain","LeBron James","Kobe Bryant"],ans:2},
+  {q:"Which team completed the 3-1 Finals comeback in 2016?",opts:["Golden State Warriors","San Antonio Spurs","Cleveland Cavaliers","Miami Heat"],ans:2},
+  {q:"How many points did Wilt Chamberlain score in his 100-point game in 1962?",opts:["88","92","100","111"],ans:2},
+  {q:"Which franchise has won the most championships in NBA history?",opts:["Los Angeles Lakers","Chicago Bulls","Boston Celtics","Golden State Warriors"],ans:2},
+  {q:"Stephen Curry plays for which team?",opts:["Los Angeles Lakers","Phoenix Suns","Golden State Warriors","Houston Rockets"],ans:2},
+  {q:"How many conferences does the NBA have?",opts:["1","2","3","4"],ans:1},
+  {q:"Which NBA franchise relocated from Seattle to Oklahoma City in 2008?",opts:["Utah Jazz","Portland Trail Blazers","Sacramento Kings","Seattle SuperSonics"],ans:3},
+  {q:"Which team is Canada's only NBA franchise?",opts:["Vancouver Grizzlies","Toronto Raptors","Montreal Express","Ottawa Fury"],ans:1},
+  {q:"How many NBA championships did the San Antonio Spurs win under coach Gregg Popovich?",opts:["3","4","5","6"],ans:2},
+  {q:"Hakeem Olajuwon won back-to-back championships with which team?",opts:["San Antonio Spurs","Dallas Mavericks","Houston Rockets","Utah Jazz"],ans:2},
+  {q:"Which player's 'Dream Shake' post move is one of basketball's most iconic?",opts:["Kareem Abdul-Jabbar","Hakeem Olajuwon","Shaquille O'Neal","David Robinson"],ans:1},
+  {q:"The 2023 NBA championship was won by which team?",opts:["Boston Celtics","Golden State Warriors","Denver Nuggets","Phoenix Suns"],ans:2},
+  {q:"How many players are on the court per team in an NBA game?",opts:["4","5","6","7"],ans:1},
+  {q:"Which division do the Boston Celtics play in?",opts:["Central","Atlantic","Southeast","Northwest"],ans:1},
+  {q:"Karl Malone and John Stockton played their entire careers with which franchise?",opts:["Phoenix Suns","Denver Nuggets","Utah Jazz","Oklahoma City Thunder"],ans:2},
+  {q:"Which player is nicknamed 'The Greek Freak'?",opts:["Luka Doncic","Nikola Jokic","Giannis Antetokounmpo","Kristaps Porzingis"],ans:2},
+  {q:"How many periods are in a regulation NBA game?",opts:["2","3","4","5"],ans:2},
+  {q:"The Los Angeles Lakers have won how many NBA championships?",opts:["14","15","16","17"],ans:3},
+  {q:"Which team plays home games at Madison Square Garden?",opts:["Brooklyn Nets","Philadelphia 76ers","New York Knicks","Boston Celtics"],ans:2},
+  {q:"Which NBA conference do the Miami Heat play in?",opts:["Western","Eastern","Southern","Northern"],ans:1},
+  {q:"Dirk Nowitzki played his entire career with which franchise?",opts:["San Antonio Spurs","Houston Rockets","Dallas Mavericks","Oklahoma City Thunder"],ans:2},
+];
+
 // ── TRIVIA DATA ───────────────────────────────────────────────────────────────
 const PDX_TRIVIA=[
   {q:"What year did Portland MAX first open?",opts:["1982","1984","1986","1990"],ans:2},
@@ -3702,7 +3891,7 @@ function Confetti(){
 }
 function Particles({gameKey}:{gameKey:string}){
   const[pts]=useState(()=>Array.from({length:22},(_,i)=>({id:i,x:Math.random()*110-5,delay:Math.random()*8,dur:5+Math.random()*5,size:5+Math.random()*8,drift:Math.random()*70-35,op:0.08+Math.random()*0.18})));
-  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨",bos:"🦞",atl:"🍑"};
+  const shapes:{[k:string]:string}={pdx:"🌹",dc:"🌸",states:"⭐",nfl:"🏈",nba:"🏀",balt:"🦀",la:"🌴",nyc:"🗽",chi:"💨",bos:"🦞",atl:"🍑"};
   const shape=shapes[gameKey]||"✨";
   return(<div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0}}>{pts.map(p=>(<div key={p.id} style={{position:"absolute",left:`${p.x}%`,top:0,fontSize:`${p.size}px`,animation:`tpPetal ${p.dur}s ${p.delay}s ease-in infinite`,"--drift":`${p.drift}px`,"--op":p.op,opacity:0} as any}>{shape}</div>))}</div>);
 }
@@ -4078,7 +4267,7 @@ function SupporterModal({onClose,isSupporter,supporterEmail}:{onClose:()=>void,i
 
 // ── CARD PROGRESS WIDGET ──────────────────────────────────────────────────────
 function CardProgressWidget({dark,onOpenCards}:{dark:boolean,onOpenCards?:()=>void}){
-  const GAMES_KEYS=["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"];
+  const GAMES_KEYS=["pdx","dc","states","nfl","nba","balt","la","nyc","chi","bos","atl"];
   const today=new Date().toISOString().slice(0,10);
   // Count today's wins across all games (max 15 total: 5 games × 3 rounds each)
   const [todayWins,setTodayWins]=useState(0);
@@ -5076,6 +5265,14 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showBuddyStreaks,setShowBuddyStreaks]=useState(false);
   const [showPartnerMap,setShowPartnerMap]=useState(false);
   const [showLineChallenge,setShowLineChallenge]=useState(false);
+  const [showCardRedemption,setShowCardRedemption]=useState(false);
+  const [showCollection,setShowCollection]=useState(false);
+  const [pendingCardCode,setPendingCardCode]=useState<string|null>(()=>{
+    const p=new URLSearchParams(window.location.search);
+    const c=p.get("code");
+    if(c){window.history.replaceState({},"",window.location.pathname);return c.toUpperCase();}
+    return null;
+  });
   const [challengeData,setChallengeData]=useState<{streak:number,xp:number,played:number}|null>(()=>{
     try{const p=new URLSearchParams(window.location.search);const c=p.get("challenge");return c?JSON.parse(atob(c)):null;}catch{return null;}
   });
@@ -5101,7 +5298,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [heroImgFailed,setHeroImgFailed]=useState(false);
   useEffect(()=>{
     setHeroImgUrl(null);setHeroImgFailed(false);
-    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",bos:"Massachusetts Bay Transportation Authority",atl:"Atlanta MARTA",states:"United States Capitol",nfl:"National Football League",minigames:"Arcade game"};
+    const wikiTerms:{[k:string]:string}={pdx:"Portland, Oregon",dc:"Washington Metro",balt:"Baltimore",la:"Los Angeles",nyc:"New York City Subway",chi:"Chicago L",bos:"Massachusetts Bay Transportation Authority",atl:"Atlanta MARTA",states:"United States Capitol",nfl:"National Football League",nba:"National Basketball Association",minigames:"Arcade game"};
     const term=wikiTerms[hotGameKey]||hotCard.name;
     getWikiImage(term).then(url=>{if(url)setHeroImgUrl(url);else setHeroImgFailed(true);});
   },[hotGameKey]);
@@ -5177,6 +5374,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     {key:"atl",  emoji:"🍑",name:"Atlanta MARTA", tag:"TRANSIT",    sub:"MARTA · Atlanta, GA",         color:"#CE1141",grad:"linear-gradient(135deg,#CE1141,#8a0028)",photo:"/photo-atl.jpg"},
     {key:"states",emoji:"🗺️",name:"US States",   tag:"GEOGRAPHY",  sub:"50 states · Regions",        color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",photo:"/photo-states.jpg"},
     {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"/photo-nfl.jpg"},
+    {key:"nba",  emoji:"🏀",name:"NBA Teams",      tag:"SPORTS",     sub:"30 franchises · History",    color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",photo:"/photo-nba.jpg"},
     {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"/photo-arcade.jpg"},
   ];
   const dateStr=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
@@ -5224,6 +5422,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     window.addEventListener("storage",onStorage);
     return()=>window.removeEventListener("storage",onStorage);
   },[topStreak]);
+  useEffect(()=>{if(pendingCardCode)setShowCardRedemption(true);},[pendingCardCode]);
 
   const modals=(
     <>
@@ -5250,6 +5449,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showCityShowdown_sp&&<CityShowdownMode T={getTheme("dc")} fs={getTheme("dc").fs} onClose={()=>setShowCityShowdown_sp(false)}/>}
       {showBingo_sp&&<TransitBingoModal T={getTheme("dc")} onClose={()=>setShowBingo_sp(false)}/>}
       {showGhosts_sp&&<GhostStationsModal T={getTheme("dc")} onClose={()=>setShowGhosts_sp(false)}/>}
+      {showCardRedemption&&pendingCardCode&&<CardRedemptionModal code={pendingCardCode} onClose={()=>{setShowCardRedemption(false);setPendingCardCode(null);}}/>}
+      {showCollection&&<CollectionView onClose={()=>setShowCollection(false)}/>}
     </>
   );
 
@@ -5444,7 +5645,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <CardProgressWidget dark={true} onOpenCards={()=>onSelectGame("cards")}/>
 
         {/* Yesterday's Answer Teaser — dark mode */}
-        {(()=>{const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;const yest=getYesterday(yItems,hotGameKey);const G2=GAMES[hotGameKey];if(!yest)return null;return(
+        {(()=>{const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="nba"?NBA_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;const yest=getYesterday(yItems,hotGameKey);const G2=GAMES[hotGameKey];if(!yest)return null;return(
           <div style={{maxWidth:680,margin:"0 auto",padding:"0 48px 8px",boxSizing:"border-box",animation:"spFadeIn .2s ease both"}}>
             <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:32,height:32,borderRadius:8,background:G2.accent,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",flexShrink:0}}>{G2.emoji}</div>
@@ -5532,6 +5733,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
                   {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
+                  {emoji:"🃏",label:"My Cards",action:()=>{setShowNavMenu(false);setShowCollection(true);}},
                   {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
                   {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},
                   ...(!installed?[{emoji:"📲",label:"Install App",action:()=>{setShowNavMenu(false);setShowInstall(true);}}]:[]),
@@ -5793,7 +5995,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 
       {/* YESTERDAY */}
       {(()=>{
-        const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;
+        const yItems=hotGameKey==="pdx"?PDX_STATIONS:hotGameKey==="dc"?DC_STATIONS:hotGameKey==="balt"?BALT_STATIONS:hotGameKey==="nfl"?NFL_TEAMS:hotGameKey==="nba"?NBA_TEAMS:hotGameKey==="la"?LA_STATIONS:hotGameKey==="nyc"?NYC_STATIONS:hotGameKey==="chi"?CHI_STATIONS:hotGameKey==="bos"?BOS_STATIONS:hotGameKey==="atl"?ATL_STATIONS:STATES;
         const yest=getYesterday(yItems,hotGameKey);
         const G2=GAMES[hotGameKey];
         if(!yest)return null;
@@ -6832,7 +7034,7 @@ function HelpTab({T,fs,G,DIFF,gameKey,onPlay}:{T:any,fs:any,G:any,DIFF:any,gameK
   const[helpStep,setHelpStep]=useState(0);
   const[demoLit,setDemoLit]=useState(-1);
   const cols=DIFF.cols;
-  const isTransit=gameKey!=="states"&&gameKey!=="nfl";
+  const isTransit=gameKey!=="states"&&gameKey!=="nfl"&&gameKey!=="nba";
   const HELP_SECTIONS=[
     {id:"goal",icon:"🎯",title:"The Goal"},
     {id:"clues",icon:"🔍",title:"Clues"},
@@ -6851,12 +7053,13 @@ function HelpTab({T,fs,G,DIFF,gameKey,onPlay}:{T:any,fs:any,G:any,DIFF:any,gameK
     coast:{label:"COAST",desc:"East/West/Interior coast. Green = exact.",ex:"Pacific"},
     pop:{label:"POP",desc:"State population size. ▲▼ arrows show direction.",ex:"🌕 Massive"},
     size:{label:"SIZE",desc:"Geographic size of state. ▲▼ arrows show direction.",ex:"💠 Huge"},
-    conf:{label:"CONF",desc:"NFL conference (AFC/NFC). Green = exact.",ex:"AFC"},
-    div:{label:"DIV",desc:"Division within conference. Green = exact.",ex:"West"},
+    conf:{label:"CONF",desc:gameKey==="nba"?"NBA conference (Eastern/Western). Green = exact.":"NFL conference (AFC/NFC). Green = exact.",ex:gameKey==="nba"?"Eastern":"AFC"},
+    div:{label:"DIV",desc:"Division within conference. Green = exact.",ex:gameKey==="nba"?"Atlantic":"West"},
     sb:{label:"SB",desc:"Super Bowl wins. ▲▼ arrows show direction.",ex:"4🏆"},
+    champ:{label:"CHAMP",desc:"NBA championships won. ▲▼ arrows show direction.",ex:"5🏆"},
   };
   const demoColors=["green","yellow","red","yellow","green","red"];
-  const demoVals:any=isTransit?{lines:"🔵🔴",zone:"DWNTN",busy:"🌕 Packed",direction:"→ City",year:"1986"}:gameKey==="nfl"?{conf:"AFC",div:"West",region:"Midwest",sb:"4🏆",year:"1960"}:{region:"Pacific",coast:"Pacific",pop:"🌕 Massive",direction:"→ East",year:"1850",size:"💠 Massive"};
+  const demoVals:any=isTransit?{lines:"🔵🔴",zone:"DWNTN",busy:"🌕 Packed",direction:"→ City",year:"1986"}:gameKey==="nfl"?{conf:"AFC",div:"West",region:"Midwest",sb:"4🏆",year:"1960"}:gameKey==="nba"?{conf:"Western",div:"Southwest",region:"South",champ:"5🏆",year:"1967"}:{region:"Pacific",coast:"Pacific",pop:"🌕 Massive",direction:"→ East",year:"1850",size:"💠 Massive"};
   useEffect(()=>{
     if(helpStep!==1)return;
     setDemoLit(-1);
@@ -6911,7 +7114,7 @@ function HelpTab({T,fs,G,DIFF,gameKey,onPlay}:{T:any,fs:any,G:any,DIFF:any,gameK
         <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:14,padding:"16px",marginBottom:12}}>
           <div style={{fontSize:fs(9),letterSpacing:2,color:T.textMuted,marginBottom:10,textAlign:"center"}}>LIVE DEMO — WATCH CELLS LIGHT UP</div>
           <div style={{background:T.bg,border:`1px solid ${T.border}`,borderRadius:8,padding:"9px 12px",marginBottom:10,fontSize:fs(12),fontWeight:700,color:T.text,textAlign:"center"}}>
-            {gameKey==="pdx"?"Pioneer Courthouse/SW 6th":gameKey==="dc"?"Metro Center":gameKey==="nfl"?"Kansas City Chiefs":gameKey==="balt"?"Lexington Market":"California"}
+            {gameKey==="pdx"?"Pioneer Courthouse/SW 6th":gameKey==="dc"?"Metro Center":gameKey==="nfl"?"Kansas City Chiefs":gameKey==="nba"?"Los Angeles Lakers":gameKey==="balt"?"Lexington Market":"California"}
           </div>
           <div style={{display:"flex",gap:4,marginBottom:10}}>
             {cols.map((col:string,idx:number)=>{
@@ -7035,11 +7238,12 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
   const[step,setStep]=useState(0);
   const[cellsLit,setCellsLit]=useState(-1);
   const G=GAMES[gameKey];
-  const isTransit=gameKey!=="states"&&gameKey!=="nfl";
+  const isTransit=gameKey!=="states"&&gameKey!=="nfl"&&gameKey!=="nba";
   const demoItem=gameKey==="pdx"
     ?{name:"Pioneer Courthouse/SW 6th"}
     :gameKey==="dc"?{name:"Metro Center"}
     :gameKey==="nfl"?{name:"Kansas City Chiefs"}
+    :gameKey==="nba"?{name:"Los Angeles Lakers"}
     :gameKey==="balt"?{name:"Lexington Market"}
     :{name:"California"};
   const STEPS=[
@@ -7055,7 +7259,7 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
     return()=>clearTimeout(t);
   },[step]);
   const cols=DIFF.cols;
-  const colLabels:any=gameKey==="nfl"?{conf:"CONF",div:"DIV",region:"REGION",sb:"SB",year:"YEAR"}:isTransit?{lines:"LINES",zone:"ZONE",busy:"BUSY",direction:"DIR",year:"YEAR"}:{region:"REGION",coast:"COAST",pop:"POP",direction:"DIR",year:"YEAR",size:"SIZE"};
+  const colLabels:any=gameKey==="nfl"?{conf:"CONF",div:"DIV",region:"REGION",sb:"SB",year:"YEAR"}:gameKey==="nba"?{conf:"CONF",div:"DIV",region:"REGION",champ:"CHAMP",year:"YEAR"}:isTransit?{lines:"LINES",zone:"ZONE",busy:"BUSY",direction:"DIR",year:"YEAR"}:{region:"REGION",coast:"COAST",pop:"POP",direction:"DIR",year:"YEAR",size:"SIZE"};
   const s=STEPS[step];
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:400,display:"flex",alignItems:"flex-start",justifyContent:"center",padding:16,overflowY:"auto",fontFamily:"'Inter','Helvetica Neue',sans-serif",animation:"obFadeIn .25s ease both"}}>
@@ -7074,7 +7278,7 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
             <div style={{display:"flex",gap:4}}>
               {cols.map((col:string,idx:number)=>{
                 const colors=["green","yellow","red","yellow","green","red"];
-                const vals:any=gameKey==="nfl"?{conf:"AFC",div:"West",region:"Midwest",sb:"4🏆",year:"1960"}:isTransit?{lines:"🔵🔴",zone:"DWNTN",busy:"🌕 Packed",direction:"→ City",year:"1986"}:{region:"Pacific",coast:"Pacific",pop:"🌕 Massive",direction:"→ East",year:"1850",size:"💠 Massive"};
+                const vals:any=gameKey==="nfl"?{conf:"AFC",div:"West",region:"Midwest",sb:"4🏆",year:"1960"}:gameKey==="nba"?{conf:"Western",div:"Southwest",region:"South",champ:"5🏆",year:"1967"}:isTransit?{lines:"🔵🔴",zone:"DWNTN",busy:"🌕 Packed",direction:"→ City",year:"1986"}:{region:"Pacific",coast:"Pacific",pop:"🌕 Massive",direction:"→ East",year:"1850",size:"💠 Massive"};
                 return(<DemoCell key={col} idx={idx} color={colors[idx%colors.length]} label={colLabels[col]||col} value={vals[col]||"—"} cellsLit={cellsLit}/>);
               })}
               <div style={{background:cellsLit>=cols.length?"#d4edda":"#f5f5f5",border:`1.5px solid ${cellsLit>=cols.length?"#2ecc71":"#e0e0e0"}`,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",minWidth:28,transition:"all .35s"}}>
@@ -7253,10 +7457,10 @@ function BlitzMode({T,fs,items,lineColors,gameKey,blitzBest,onNewBest,onClose}:{
       const letters=[...new Set(items.map(s=>s.name[0]))].filter(l=>items.filter(s=>s.name.startsWith(l)).length>=3);
       const letter=letters[Math.floor(Math.random()*letters.length)];
       const targets=items.filter(s=>s.name.startsWith(letter));
-      const itemWord=gameKey==="states"?"state":gameKey==="nfl"?"team":"station";
+      const itemWord=gameKey==="states"?"state":(gameKey==="nfl"||gameKey==="nba")?"team":"station";
       return{label:`Name every ${itemWord} starting with "${letter}"`,targets,hint:`${targets.length} total`};
     }
-    if(gameKey==="nfl"){
+    if(gameKey==="nfl"||gameKey==="nba"){
       const groups=["conf","div","region"];
       const g=groups[Math.floor(Math.random()*groups.length)];
       const vals=[...new Set(items.map(s=>s[g]))];
@@ -7424,6 +7628,12 @@ function ItemOfWeek({T,fs,items,lineColors,gameKey,onClose}:{T:any,fs:any,items:
       const allDiv=["East","West","North","South"].filter(d=>d!==item.div).sort(()=>Math.random()-.5).slice(0,3) as string[];
       const sbWrong=[item.sb+1,item.sb+3,Math.max(0,item.sb-2)].filter(v=>v!==item.sb).slice(0,3).map(String);
       return[makeQ(`What conference is the ${item.name} in?`,item.conf,allConf),makeQ(`What division are the ${item.name} in?`,item.div,allDiv),makeQ(`How many Super Bowls have the ${item.name} won?`,String(item.sb),sbWrong)];
+    }
+    if(gameKey==="nba"){
+      const allConf=["Eastern","Western"].filter(c=>c!==item.conf);
+      const allDiv=["Atlantic","Central","Southeast","Northwest","Pacific","Southwest"].filter(d=>d!==item.div).sort(()=>Math.random()-.5).slice(0,3) as string[];
+      const chWrong=[item.champ+1,item.champ+4,Math.max(0,item.champ-1)].filter(v=>v!==item.champ).slice(0,3).map(String);
+      return[makeQ(`What conference is the ${item.name} in?`,item.conf,allConf),makeQ(`What division are the ${item.name} in?`,item.div,allDiv),makeQ(`How many NBA championships have the ${item.name} won?`,String(item.champ),chWrong)];
     }
     if(gameKey==="states"){
       const allR=[...new Set(items.map(s=>s.region))].filter(r=>r!==item.region).sort(()=>Math.random()-.5).slice(0,3) as string[];
@@ -8189,6 +8399,148 @@ async function getStationPhoto(station:any):Promise<string|null>{
   }catch{}
   return null;
 }
+// ── CARD REDEMPTION MODAL ────────────────────────────────────────────────────
+function CardRedemptionModal({code,onClose}:{code:string,onClose:()=>void}){
+  const[phase,setPhase]=useState<"loading"|"flip"|"success"|"error">("loading");
+  const[card,setCard]=useState<any>(null);
+  const[errMsg,setErrMsg]=useState("");
+  const[flipped,setFlipped]=useState(false);
+  const deviceId=useMemo(()=>{let d=localStorage.getItem("tgg:device");if(!d){d=Math.random().toString(36).slice(2);localStorage.setItem("tgg:device",d);}return d;},[]);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch("/api/redeem-card",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code,deviceId})});
+        const data=await r.json();
+        if(!r.ok){setErrMsg(data.error||"Redemption failed.");setPhase("error");return;}
+        setCard(data.card);
+        // add to collection
+        const existing:any[]=JSON.parse(localStorage.getItem("tgg:cards")||"[]");
+        if(!existing.find((c:any)=>c.code===code)){
+          existing.push({code,...data.card,ts:Date.now()});
+          localStorage.setItem("tgg:cards",JSON.stringify(existing));
+          addXP(50);
+          window.dispatchEvent(new StorageEvent("storage",{key:"tgg:xp"}));
+        }
+        setPhase("flip");
+        setTimeout(()=>setFlipped(true),400);
+        setTimeout(()=>setPhase("success"),1400);
+      }catch{setErrMsg("Network error — try again.");setPhase("error");}
+    })();
+  },[code,deviceId]);
+  const RARITY_COLORS:Record<string,string>={Common:"#6b7280",Uncommon:"#2563eb",Rare:"#7c3aed",Legendary:"#d97706"};
+  const col=card?RARITY_COLORS[card.rarity]||"#6b7280":"#6b7280";
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.85)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",animation:"lmFadeIn .2s ease both"}}>
+      <style>{`
+        @keyframes cardFlip{0%{transform:perspective(600px) rotateY(0deg)}100%{transform:perspective(600px) rotateY(180deg)}}
+        @keyframes cardReveal{0%{transform:perspective(600px) rotateY(-180deg)}100%{transform:perspective(600px) rotateY(0deg)}}
+        @keyframes cardGlow{0%,100%{box-shadow:0 0 20px ${col}66}50%{box-shadow:0 0 40px ${col}cc}}
+        .card-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+      `}</style>
+      <div style={{background:"#111",borderRadius:20,padding:"28px 24px",maxWidth:340,width:"90%",textAlign:"center",position:"relative"}}>
+        <button onClick={onClose} style={{position:"absolute",top:14,right:14,background:"rgba(255,255,255,0.08)",border:"none",borderRadius:50,width:28,height:28,color:"#fff",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+        {phase==="loading"&&(
+          <div style={{padding:"40px 0",color:"rgba(255,255,255,0.7)"}}>
+            <div style={{fontSize:32,marginBottom:12,animation:"spHotPulse 1.2s ease infinite"}}>📡</div>
+            <div style={{fontSize:13,letterSpacing:2}}>VALIDATING CODE…</div>
+          </div>
+        )}
+        {(phase==="flip"||phase==="success")&&card&&(
+          <>
+            <div style={{fontSize:11,letterSpacing:3,color:"rgba(255,255,255,0.4)",marginBottom:16}}>CARD UNLOCKED</div>
+            <div style={{position:"relative",height:220,margin:"0 auto",width:160,transformStyle:"preserve-3d",animation:flipped?"cardReveal .8s ease both":"none"}}>
+              <div style={{position:"absolute",inset:0,borderRadius:14,background:`linear-gradient(135deg,${col}22,${col}55)`,border:`2px solid ${col}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:12,animation:phase==="success"?"cardGlow 2s ease infinite":"none"}}>
+                <div style={{fontSize:28,marginBottom:4}}>🚉</div>
+                <div style={{fontSize:11,fontWeight:900,letterSpacing:2,color:col,marginBottom:6}}>{card.rarity?.toUpperCase()}</div>
+                <div style={{fontSize:15,fontWeight:800,color:"#fff",lineHeight:1.2,marginBottom:8}}>{card.stationName}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginBottom:8}}>{card.city}</div>
+                <div style={{background:"rgba(255,255,255,0.08)",borderRadius:8,padding:"6px 10px",width:"100%"}}>
+                  <div style={{fontSize:9,letterSpacing:1.5,color:"rgba(255,255,255,0.4)"}}>ABILITY</div>
+                  <div style={{fontSize:11,fontWeight:700,color:col}}>{card.ability}</div>
+                </div>
+                <div style={{marginTop:8,fontSize:28,fontWeight:900,color:"#fff"}}>{card.power}</div>
+              </div>
+            </div>
+            {phase==="success"&&(
+              <div style={{marginTop:20}}>
+                <div style={{fontSize:13,color:"rgba(255,255,255,0.7)",lineHeight:1.5,marginBottom:12,fontStyle:"italic"}}>"{card.fact}"</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,215,0,0.15)",border:"1px solid rgba(255,215,0,0.3)",borderRadius:20,padding:"6px 16px"}}>
+                  <span style={{fontSize:14}}>⚡</span>
+                  <span style={{fontSize:12,fontWeight:700,color:"#ffd700"}}>+50 XP EARNED</span>
+                </div>
+                <div style={{marginTop:10,fontSize:10,letterSpacing:2,color:"rgba(255,255,255,0.4)"}}>ADDED TO COLLECTION</div>
+              </div>
+            )}
+          </>
+        )}
+        {phase==="error"&&(
+          <div style={{padding:"32px 0"}}>
+            <div style={{fontSize:32,marginBottom:12}}>❌</div>
+            <div style={{fontSize:14,color:"#f87171",marginBottom:16}}>{errMsg}</div>
+            <button onClick={onClose} style={{background:"#fff",color:"#000",border:"none",borderRadius:10,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>CLOSE</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── COLLECTION VIEW ──────────────────────────────────────────────────────────
+function CollectionView({onClose}:{onClose:()=>void}){
+  const[cards,setCards]=useState<any[]>(()=>JSON.parse(localStorage.getItem("tgg:cards")||"[]"));
+  const[filter,setFilter]=useState<"all"|"rarity"|"city">("all");
+  const[flippedIdx,setFlippedIdx]=useState<number|null>(null);
+  const RARITY_ORDER=["Legendary","Rare","Uncommon","Common"];
+  const RARITY_COLORS:Record<string,string>={Common:"#6b7280",Uncommon:"#2563eb",Rare:"#7c3aed",Legendary:"#d97706"};
+  const sorted=[...cards].sort((a,b)=>RARITY_ORDER.indexOf(a.rarity)-RARITY_ORDER.indexOf(b.rarity));
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:2000,background:"#0a0a0a",display:"flex",flexDirection:"column",animation:"lmFadeIn .2s ease both"}}>
+      <div style={{padding:"18px 20px 12px",display:"flex",alignItems:"center",gap:14,borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+        <button onClick={onClose} style={{background:"rgba(255,255,255,0.08)",border:"none",borderRadius:50,width:34,height:34,color:"#fff",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <div>
+          <div style={{fontSize:14,fontWeight:900,letterSpacing:3,color:"#fff"}}>MY CARDS</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",letterSpacing:1}}>{cards.length} COLLECTED</div>
+        </div>
+      </div>
+      <div style={{padding:"12px 16px",display:"flex",gap:8}}>
+        {(["all","rarity","city"] as const).map(f=>(
+          <button key={f} onClick={()=>setFilter(f)} style={{fontSize:10,letterSpacing:2,padding:"5px 14px",borderRadius:20,border:`1px solid ${filter===f?"rgba(255,255,255,0.4)":"rgba(255,255,255,0.12)"}`,background:filter===f?"rgba(255,255,255,0.12)":"transparent",color:filter===f?"#fff":"rgba(255,255,255,0.4)",cursor:"pointer",fontFamily:"'Outfit',sans-serif",fontWeight:700}}>
+            {f.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"8px 16px 32px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12,alignContent:"start"}}>
+        {sorted.map((card,i)=>{
+          const col=RARITY_COLORS[card.rarity]||"#6b7280";
+          const isFlipped=flippedIdx===i;
+          return(
+            <div key={card.code||i} onClick={()=>setFlippedIdx(isFlipped?null:i)} style={{borderRadius:12,background:`linear-gradient(135deg,${col}22,${col}44)`,border:`1.5px solid ${col}66`,padding:12,cursor:"pointer",transition:"transform .15s,box-shadow .15s",transform:isFlipped?"scale(1.02)":"scale(1)",boxShadow:isFlipped?`0 0 20px ${col}66`:"none",minHeight:160}}>
+              <div style={{fontSize:9,letterSpacing:2,color:col,fontWeight:700,marginBottom:4}}>{card.rarity?.toUpperCase()}</div>
+              <div style={{fontSize:12,fontWeight:800,color:"#fff",lineHeight:1.3,marginBottom:6}}>{card.stationName}</div>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.45)",marginBottom:8}}>{card.city}</div>
+              {isFlipped&&(
+                <>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.4)",marginBottom:2}}>ABILITY</div>
+                  <div style={{fontSize:10,fontWeight:700,color:col,marginBottom:8}}>{card.ability}</div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",lineHeight:1.4,fontStyle:"italic"}}>"{card.fact}"</div>
+                </>
+              )}
+              {!isFlipped&&<div style={{fontSize:24,fontWeight:900,color:"rgba(255,255,255,0.2)",textAlign:"right",marginTop:"auto"}}>{card.power}</div>}
+            </div>
+          );
+        })}
+        {cards.length===0&&(
+          <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.25)"}}>
+            <div style={{fontSize:40,marginBottom:12}}>🃏</div>
+            <div style={{fontSize:12,letterSpacing:2}}>NO CARDS YET</div>
+            <div style={{fontSize:10,marginTop:8,lineHeight:1.5}}>Scan a QR code from a physical card to add it to your collection</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StreetLevelMode({onClose}:{onClose:()=>void}){
   const allWithImg=useMemo(()=>[...DC_STATIONS,...NYC_STATIONS,...PDX_STATIONS,...LA_STATIONS,...CHI_STATIONS,...BOS_STATIONS].filter(s=>s.img).sort(()=>Math.random()-0.5),[]);
   const ROUNDS=3;
@@ -9183,9 +9535,9 @@ function BonusGamesSection({T,fs,gameKey,G,setShowBlitz,setShowItemOfWeek,setSho
   const[bonusOpen,setBonusOpen]=useState(false);
   type CardItem={emoji:string,title:string,body:string,color?:string,stub?:boolean,stubDesc?:string,onClick?:()=>void};
   const cards:CardItem[]=[
-    {emoji:"⚡",title:"Blitz Mode",body:gameKey==="nfl"?"Name all AFC East teams. Every NFC team. All Midwest region teams. 60 seconds.":gameKey==="states"?"Name every Midwest state. Every state starting with 'N'. Pure memory test.":"Name all stations starting with 'P'. Every Red Line station. No dropdown.",onClick:()=>setShowBlitz(true)},
-    {emoji:G.emoji,title:`${gameKey==="states"?"State":gameKey==="nfl"?"Team":"Station"} of the Week`,body:`Deep dive on one ${G.itemLabel} — history, facts, and 3 quiz questions. Changes every Monday.`,onClick:()=>setShowItemOfWeek(true)},
-    {emoji:"🧠",title:gameKey==="nfl"?"Daily NFL Trivia":gameKey==="states"?"Daily Civics Quiz":"Daily Transit Trivia",body:"5 questions. New set every day. How deep does your knowledge go?",onClick:()=>setShowTrivia(true)},
+    {emoji:"⚡",title:"Blitz Mode",body:gameKey==="nba"?"Name all Eastern Conference teams. Every Western team. All South region teams. 60 seconds.":gameKey==="nfl"?"Name all AFC East teams. Every NFC team. All Midwest region teams. 60 seconds.":gameKey==="states"?"Name every Midwest state. Every state starting with 'N'. Pure memory test.":"Name all stations starting with 'P'. Every Red Line station. No dropdown.",onClick:()=>setShowBlitz(true)},
+    {emoji:G.emoji,title:`${gameKey==="states"?"State":(gameKey==="nfl"||gameKey==="nba")?"Team":"Station"} of the Week`,body:`Deep dive on one ${G.itemLabel} — history, facts, and 3 quiz questions. Changes every Monday.`,onClick:()=>setShowItemOfWeek(true)},
+    {emoji:"🧠",title:gameKey==="nba"?"Daily NBA Trivia":gameKey==="nfl"?"Daily NFL Trivia":gameKey==="states"?"Daily Civics Quiz":"Daily Transit Trivia",body:"5 questions. New set every day. How deep does your knowledge go?",onClick:()=>setShowTrivia(true)},
     {emoji:"🚊",title:"Line Challenges",body:"Work through every station on a specific transit line. Progress saved. Complete a full line for +200 XP bonus.",onClick:()=>setShowLineChallenge(true)},
     {emoji:"📸",title:"Photo Mode",body:"A photo of a station appears. Can you name it? 5 rounds, 3 guesses each. Tests your visual transit knowledge.",onClick:()=>setShowPhotoMode(true)},
     {emoji:"🕵️",title:"Fake Station",body:"Spot the station that doesn't exist",color:"#7B2FBE",onClick:()=>setShowFakeStation(true)},
@@ -9260,18 +9612,19 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const[profileCopied,setProfileCopied]=useState(false);
   const ER={guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};
   const ES={streak:0,played:0,wins:0,totalGuesses:0,dist:{1:0,2:0,3:0,4:0,5:0,6:0},hardWins:0,proWins:0};
-  const[allStats,setAllStats]=useState<any>({pdx:ES,dc:ES,states:ES,nfl:ES,balt:ES,la:ES,nyc:ES,chi:ES,bos:ES,atl:ES});
-  const[allUnlocked,setAllUnlocked]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
-  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
-  const[playHistory,setPlayHistory]=useState<any>({pdx:[],dc:[],states:[],nfl:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
+  const[allStats,setAllStats]=useState<any>({pdx:ES,dc:ES,states:ES,nfl:ES,nba:ES,balt:ES,la:ES,nyc:ES,chi:ES,bos:ES,atl:ES});
+  const[allUnlocked,setAllUnlocked]=useState<any>({pdx:[],dc:[],states:[],nfl:[],nba:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
+  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,nba:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
+  const[playHistory,setPlayHistory]=useState<any>({pdx:[],dc:[],states:[],nfl:[],nba:[],balt:[],la:[],nyc:[],chi:[],bos:[],atl:[]});
   const[newAchieves,setNewAchieves]=useState<any[]>([]);
   const[round,setRound]=useState(0);
-  const[dailyPoints,setDailyPoints]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
+  const[dailyPoints,setDailyPoints]=useState<any>({pdx:0,dc:0,states:0,nfl:0,nba:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
   const[roundData,setRoundData]=useState<any>({
     pdx:[{...ER},{...ER},{...ER}],
     dc:[{...ER},{...ER},{...ER}],
     states:[{...ER},{...ER},{...ER}],
     nfl:[{...ER},{...ER},{...ER}],
+    nba:[{...ER},{...ER},{...ER}],
     balt:[{...ER},{...ER},{...ER}],
     la:[{...ER},{...ER},{...ER}],
     nyc:[{...ER},{...ER},{...ER}],
@@ -9341,7 +9694,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};}
   const G=GAMES[gameKey];
   const DIFF=(()=>{const d=G.diffConfig[diff];const tw=getDailyTwist();return tw?.key==="nohints"?{...d,hints:0}:d;})();
-  const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:STATES;
+  const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="nba"?NBA_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:STATES;
   const target=useMemo(()=>getTarget(items,gameKey,round),[gameKey,round]);
   const yesterday=useMemo(()=>getYesterday(items,gameKey),[gameKey]);
   const stats=allStats[gameKey];
@@ -9351,10 +9704,10 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const T=useMemo(()=>getTheme(gameKey,settings),[gameKey,settings]);
   const fs=T.fs;
   const lineColors=G.lineColors||{};
-  const didYouKnow=useMemo(()=>{const pool=gameKey==="pdx"?PDX_DYK:gameKey==="dc"?DC_DYK:gameKey==="nfl"?NFL_DYK:gameKey==="balt"?BALT_DYK:gameKey==="la"?LA_DYK:gameKey==="nyc"?NYC_DYK:gameKey==="chi"?CHI_DYK:gameKey==="bos"?BOS_DYK:gameKey==="atl"?ATL_DYK:STATES.map(s=>s.fact);return pool[dayNum%pool.length];},[gameKey,dayNum]);
+  const didYouKnow=useMemo(()=>{const pool=gameKey==="pdx"?PDX_DYK:gameKey==="dc"?DC_DYK:gameKey==="nfl"?NFL_DYK:gameKey==="nba"?NBA_DYK:gameKey==="balt"?BALT_DYK:gameKey==="la"?LA_DYK:gameKey==="nyc"?NYC_DYK:gameKey==="chi"?CHI_DYK:gameKey==="bos"?BOS_DYK:gameKey==="atl"?ATL_DYK:STATES.map(s=>s.fact);return pool[dayNum%pool.length];},[gameKey,dayNum]);
   const openingClues=useMemo(()=>{
     const clues:string[]=[];
-    if(DIFF.clues.includes("year"))clues.push(gameKey==="nfl"?`📅 Founded in ${target.year}`:`📅 Opened/Admitted in ${target.year}`);
+    if(DIFF.clues.includes("year"))clues.push((gameKey==="nfl"||gameKey==="nba")?`📅 Founded in ${target.year}`:`📅 Opened/Admitted in ${target.year}`);
     if(DIFF.clues.includes("conf"))clues.push(`🏈 Conference: ${target.conf}`);
     if(DIFF.clues.includes("line")&&target.lines){const lineStr=target.lines.slice(0,2).join(" & ")+(target.lines.length>2?" (+"+(target.lines.length-2)+" more)":"");clues.push(`🚊 Serves the ${lineStr} line${target.lines.length>1?"s":""}`);}
     if(DIFF.clues.includes("region"))clues.push(`🗺️ Region: ${target.region}`);
@@ -9385,16 +9738,17 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
   useEffect(()=>{
     (async()=>{
-      const[prf,sett,pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxUnl,dcUnl,stUnl,nflUnl,baltUnl,laUnl,nycUnl,chiUnl,bosUnl,atlUnl,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,pdxHist,dcHist,stHist,nflHist,baltHist,laHist,nycHist,chiHist,bosHist,atlHist,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
+      const[prf,sett,pdxSt,dcSt,stSt,nflSt,nbaSt,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxUnl,dcUnl,stUnl,nflUnl,nbaUnl,baltUnl,laUnl,nycUnl,chiUnl,bosUnl,atlUnl,pdxBest,dcBest,stBest,nflBest,nbaBest,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,pdxHist,dcHist,stHist,nflHist,nbaHist,baltHist,laHist,nycHist,chiHist,bosHist,atlHist,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,nbaR0,nbaR1,nbaR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
         getProfile(),getSettings(),
-        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
-        getUnlocked("pdx"),getUnlocked("dc"),getUnlocked("states"),getUnlocked("nfl"),getUnlocked("balt"),getUnlocked("la"),getUnlocked("nyc"),getUnlocked("chi"),getUnlocked("bos"),getUnlocked("atl"),
-        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
-        getPlayHistory("pdx"),getPlayHistory("dc"),getPlayHistory("states"),getPlayHistory("nfl"),getPlayHistory("balt"),getPlayHistory("la"),getPlayHistory("nyc"),getPlayHistory("chi"),getPlayHistory("bos"),getPlayHistory("atl"),
+        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("nba"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
+        getUnlocked("pdx"),getUnlocked("dc"),getUnlocked("states"),getUnlocked("nfl"),getUnlocked("nba"),getUnlocked("balt"),getUnlocked("la"),getUnlocked("nyc"),getUnlocked("chi"),getUnlocked("bos"),getUnlocked("atl"),
+        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("nba"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
+        getPlayHistory("pdx"),getPlayHistory("dc"),getPlayHistory("states"),getPlayHistory("nfl"),getPlayHistory("nba"),getPlayHistory("balt"),getPlayHistory("la"),getPlayHistory("nyc"),getPlayHistory("chi"),getPlayHistory("bos"),getPlayHistory("atl"),
         getTodayData("pdx",today+"r0"),getTodayData("pdx",today+"r1"),getTodayData("pdx",today+"r2"),
         getTodayData("dc",today+"r0"),getTodayData("dc",today+"r1"),getTodayData("dc",today+"r2"),
         getTodayData("states",today+"r0"),getTodayData("states",today+"r1"),getTodayData("states",today+"r2"),
         getTodayData("nfl",today+"r0"),getTodayData("nfl",today+"r1"),getTodayData("nfl",today+"r2"),
+        getTodayData("nba",today+"r0"),getTodayData("nba",today+"r1"),getTodayData("nba",today+"r2"),
         getTodayData("balt",today+"r0"),getTodayData("balt",today+"r1"),getTodayData("balt",today+"r2"),
         getTodayData("la",today+"r0"),getTodayData("la",today+"r1"),getTodayData("la",today+"r2"),
         getTodayData("nyc",today+"r0"),getTodayData("nyc",today+"r1"),getTodayData("nyc",today+"r2"),
@@ -9403,10 +9757,10 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         getTodayData("atl",today+"r0"),getTodayData("atl",today+"r1"),getTodayData("atl",today+"r2"),
       ]);
       setProfile(prf);setSettings(sett);SoundEngine.setEnabled(sett?.sounds!==false);
-      setAllStats({pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt});
-      setAllUnlocked({pdx:pdxUnl,dc:dcUnl,states:stUnl,nfl:nflUnl,balt:baltUnl,la:laUnl,nyc:nycUnl,chi:chiUnl,bos:bosUnl,atl:atlUnl});
-      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
-      setPlayHistory({pdx:pdxHist||[],dc:dcHist||[],states:stHist||[],nfl:nflHist||[],balt:baltHist||[],la:laHist||[],nyc:nycHist||[],chi:chiHist||[],bos:bosHist||[],atl:atlHist||[]});
+      setAllStats({pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,nba:nbaSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt});
+      setAllUnlocked({pdx:pdxUnl,dc:dcUnl,states:stUnl,nfl:nflUnl,nba:nbaUnl,balt:baltUnl,la:laUnl,nyc:nycUnl,chi:chiUnl,bos:bosUnl,atl:atlUnl});
+      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,nba:nbaBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
+      setPlayHistory({pdx:pdxHist||[],dc:dcHist||[],states:stHist||[],nfl:nflHist||[],nba:nbaHist||[],balt:baltHist||[],la:laHist||[],nyc:nycHist||[],chi:chiHist||[],bos:bosHist||[],atl:atlHist||[]});
       function buildRound(td:any,its:any[],gk:string,roundIdx:number){
         if(!td?.guesses)return emptyRound();
         const storedTgt=td.targetName?its.find((s:any)=>s.name===td.targetName):null;
@@ -9419,6 +9773,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         dc:[buildRound(dcR0,DC_STATIONS,"dc",0),buildRound(dcR1,DC_STATIONS,"dc",1),buildRound(dcR2,DC_STATIONS,"dc",2)],
         states:[buildRound(stR0,STATES,"states",0),buildRound(stR1,STATES,"states",1),buildRound(stR2,STATES,"states",2)],
         nfl:[buildRound(nflR0,NFL_TEAMS,"nfl",0),buildRound(nflR1,NFL_TEAMS,"nfl",1),buildRound(nflR2,NFL_TEAMS,"nfl",2)],
+        nba:[buildRound(nbaR0,NBA_TEAMS,"nba",0),buildRound(nbaR1,NBA_TEAMS,"nba",1),buildRound(nbaR2,NBA_TEAMS,"nba",2)],
         balt:[buildRound(baltR0,BALT_STATIONS,"balt",0),buildRound(baltR1,BALT_STATIONS,"balt",1),buildRound(baltR2,BALT_STATIONS,"balt",2)],
         la:[buildRound(laR0,LA_STATIONS,"la",0),buildRound(laR1,LA_STATIONS,"la",1),buildRound(laR2,LA_STATIONS,"la",2)],
         nyc:[buildRound(nycR0,NYC_STATIONS,"nyc",0),buildRound(nycR1,NYC_STATIONS,"nyc",1),buildRound(nycR2,NYC_STATIONS,"nyc",2)],
@@ -9427,7 +9782,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         atl:[buildRound(atlR0,ATL_STATIONS,"atl",0),buildRound(atlR1,ATL_STATIONS,"atl",1),buildRound(atlR2,ATL_STATIONS,"atl",2)],
       };
       setRoundData(newRoundData);
-      setDailyPoints({pdx:newRoundData.pdx.filter((r:any)=>r.won).length,dc:newRoundData.dc.filter((r:any)=>r.won).length,states:newRoundData.states.filter((r:any)=>r.won).length,nfl:newRoundData.nfl.filter((r:any)=>r.won).length,balt:newRoundData.balt.filter((r:any)=>r.won).length,la:newRoundData.la.filter((r:any)=>r.won).length,nyc:newRoundData.nyc.filter((r:any)=>r.won).length,chi:newRoundData.chi.filter((r:any)=>r.won).length,bos:newRoundData.bos.filter((r:any)=>r.won).length,atl:newRoundData.atl.filter((r:any)=>r.won).length});
+      setDailyPoints({pdx:newRoundData.pdx.filter((r:any)=>r.won).length,dc:newRoundData.dc.filter((r:any)=>r.won).length,states:newRoundData.states.filter((r:any)=>r.won).length,nfl:newRoundData.nfl.filter((r:any)=>r.won).length,nba:newRoundData.nba.filter((r:any)=>r.won).length,balt:newRoundData.balt.filter((r:any)=>r.won).length,la:newRoundData.la.filter((r:any)=>r.won).length,nyc:newRoundData.nyc.filter((r:any)=>r.won).length,chi:newRoundData.chi.filter((r:any)=>r.won).length,bos:newRoundData.bos.filter((r:any)=>r.won).length,atl:newRoundData.atl.filter((r:any)=>r.won).length});
       const firstInc=newRoundData[gameKey as keyof typeof newRoundData].findIndex((r:any)=>!r.alreadyPlayed);
       if(firstInc>0)setRound(firstInc);
     })();
@@ -9447,6 +9802,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             if(locks.div!==undefined&&s.div!==locks.div)return false;
             if(locks.region!==undefined&&s.region!==locks.region)return false;
             if(locks.sb!==undefined&&s.sb!==locks.sb)return false;
+            if(locks.year!==undefined&&s.year!==locks.year)return false;
+          } else if(gameKey==="nba"){
+            if(locks.conf!==undefined&&s.conf!==locks.conf)return false;
+            if(locks.div!==undefined&&s.div!==locks.div)return false;
+            if(locks.region!==undefined&&s.region!==locks.region)return false;
+            if(locks.champ!==undefined&&s.champ!==locks.champ)return false;
             if(locks.year!==undefined&&s.year!==locks.year)return false;
           } else if(gameKey==="states"){
             if(locks.region!==undefined&&s.region!==locks.region)return false;
@@ -9527,6 +9888,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         if(guess.divColor==="green")newLocks.div=item.div;
         if(guess.regionColor==="green")newLocks.region=item.region;
         if(guess.sbResult?.color==="green")newLocks.sb=item.sb;
+        if(guess.yearResult?.color==="green")newLocks.year=item.year;
+      } else if(gameKey==="nba"){
+        if(guess.confColor==="green")newLocks.conf=item.conf;
+        if(guess.divColor==="green")newLocks.div=item.div;
+        if(guess.regionColor==="green")newLocks.region=item.region;
+        if(guess.champResult?.color==="green")newLocks.champ=item.champ;
         if(guess.yearResult?.color==="green")newLocks.year=item.year;
       } else if(gameKey==="states"){
         if(guess.regionColor==="green")newLocks.region=item.region;
@@ -9718,7 +10085,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           </button>
           {showGameDrop&&(
             <div style={{position:"absolute",top:"calc(100% + 5px)",left:0,right:0,background:T.card,border:`1px solid ${T.border}`,borderRadius:12,zIndex:9001,boxShadow:"0 8px 28px rgba(0,0,0,0.22)",overflow:"hidden",minWidth:200}}>
-              {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi","bos","atl"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
+              {([{label:"🚊 TRANSIT",keys:["pdx","dc","balt","la","nyc","chi","bos","atl"]},{label:"🗺️ GEOGRAPHY",keys:["states"]},{label:"🏈 SPORTS",keys:["nfl","nba"]}] as {label:string,keys:string[]}[]).map(({label,keys})=>(
                 <div key={label}>
                   <div style={{fontSize:fs(7),letterSpacing:2,color:T.textMuted,padding:"8px 12px 3px",fontWeight:700,borderTop:`1px solid ${T.border}`,marginTop:label.includes("TRANSIT")?0:0}}>{label}</div>
                   {keys.map(k=>{const g=GAMES[k];if(!g)return null;const em=g.emoji;return(
@@ -9748,7 +10115,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         <div style={{fontSize:fs(7),letterSpacing:4,color:T.textMuted,marginBottom:4}}>{G.sub}</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:fs(34),fontWeight:900,letterSpacing:3,lineHeight:1,marginBottom:4}}>
           <span style={{color:"transparent",backgroundImage:`linear-gradient(90deg,${G.accent},${T.accentB},${G.accent})`,backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",animation:"shimmer 4s linear infinite"}}>Daily</span>{" "}
-          <span style={{color:T.text}}>{gameKey==="pdx"?"MAX":gameKey==="dc"?"METRO":gameKey==="nfl"?"TEAMS":gameKey==="balt"?"MTA":gameKey==="la"?"METRO":gameKey==="nyc"?"SUBWAY":gameKey==="chi"?"L":gameKey==="bos"?"T":gameKey==="atl"?"MARTA":"STATE"}</span>
+          <span style={{color:T.text}}>{gameKey==="pdx"?"MAX":gameKey==="dc"?"METRO":gameKey==="nfl"?"TEAMS":gameKey==="nba"?"TEAMS":gameKey==="balt"?"MTA":gameKey==="la"?"METRO":gameKey==="nyc"?"SUBWAY":gameKey==="chi"?"L":gameKey==="bos"?"T":gameKey==="atl"?"MARTA":"STATE"}</span>
           {gameKey!=="states"&&<span style={{color:G.accent,fontSize:fs(26)}}> {G.short}</span>}
         </div>
         <div style={{fontSize:fs(7),letterSpacing:3,color:T.textMuted,marginBottom:6}}>PUZZLE · DAY #{dayNum}</div>
@@ -9756,6 +10123,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         {G.lineColors&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{Object.entries(G.lineColors as any).map(([n,c]:any)=>(<div key={n} style={{background:c.bg,color:c.text,fontSize:fs(7),padding:"3px 7px",borderRadius:3,fontWeight:700}}>{n.toUpperCase()}</div>))}</div>)}
         {gameKey==="states"&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{["Northeast","Mid-Atlantic","Southeast","Midwest","Southwest","Mountain West","Pacific"].map((r,i)=>{const cols=["#1a3a8f","#2a5ab0","#B22234","#2a7a2a","#c86010","#8a4a8a","#1a8a8a"];return(<div key={r} style={{background:cols[i],color:"#fff",fontSize:fs(7),padding:"3px 7px",borderRadius:3,fontWeight:700}}>{r.replace(" West","W.").replace("-Atlantic","")}</div>);})}</div>)}
         {gameKey==="nfl"&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{[["AFC","#c8102e"],["NFC","#013369"]].map(([conf,color])=>(<div key={conf} style={{background:color,color:"#fff",fontSize:fs(7),padding:"3px 10px",borderRadius:3,fontWeight:700}}>{conf}</div>))}</div>)}
+        {gameKey==="nba"&&(<div style={{display:"flex",justifyContent:"center",gap:4,flexWrap:"wrap",marginBottom:10}}>{[["Eastern","#006BB6"],["Western","#CE1141"]].map(([conf,color])=>(<div key={conf} style={{background:color,color:"#fff",fontSize:fs(7),padding:"3px 10px",borderRadius:3,fontWeight:700}}>{conf}</div>))}</div>)}
         <div style={{display:"flex",gap:5,maxWidth:360,margin:"0 auto 6px"}}>
           {[{l:"STREAK",v:stats.streak,extra:isSupporter&&shieldAvail?"🛡️":null,isStreak:true},{l:"PLAYED",v:stats.played,extra:null,isStreak:false},{l:"WIN %",v:`${winRate}%`,extra:null,isStreak:false},{l:"AVG",v:stats.played>0?(stats.totalGuesses/stats.played).toFixed(1):"—",extra:null,isStreak:false}].map(s=>(
             <div key={s.l} style={{flex:1,background:T.surface,border:`1px solid ${s.isStreak&&stats.streak>0?T.accent:T.border}`,borderRadius:7,padding:"8px 4px",textAlign:"center"}}>
@@ -9897,12 +10265,13 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 {DIFF.cols.includes("busy")&&<IllumCell T={T} lit={lit} colIdx={2} color={g.trafficResult?.color||"red"} extra={g.trafficResult?.arrow}><div style={{fontSize:fs(8),fontWeight:700,color:T.cellText[g.trafficResult?.color||"red"],textAlign:"center"}}>{busyLabel(item.traffic)}</div></IllumCell>}
                 {DIFF.cols.includes("conf")&&<IllumCell T={T} lit={lit} colIdx={0} color={g.confColor||"red"}><div style={{fontSize:fs(8),fontWeight:800,color:T.cellText[g.confColor||"red"],textAlign:"center"}}>{item.conf}</div></IllumCell>}
                 {DIFF.cols.includes("div")&&<IllumCell T={T} lit={lit} colIdx={1} color={g.divColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.divColor||"red"],textAlign:"center"}}>{item.div}</div></IllumCell>}
-                {DIFF.cols.includes("region")&&<IllumCell T={T} lit={lit} colIdx={gameKey==="nfl"?2:0} color={g.regionColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.regionColor||"red"],textAlign:"center",lineHeight:1.3}}>{item.region?.replace("/SW","")}</div></IllumCell>}
+                {DIFF.cols.includes("region")&&<IllumCell T={T} lit={lit} colIdx={(gameKey==="nfl"||gameKey==="nba")?2:0} color={g.regionColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.regionColor||"red"],textAlign:"center",lineHeight:1.3}}>{item.region?.replace("/SW","")}</div></IllumCell>}
                 {DIFF.cols.includes("coast")&&<IllumCell T={T} lit={lit} colIdx={1} color={g.coastColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.coastColor||"red"],textAlign:"center"}}>{item.coast}</div></IllumCell>}
                 {DIFF.cols.includes("pop")&&<IllumCell T={T} lit={lit} colIdx={2} color={g.popResult?.color||"red"} extra={g.popResult?.arrow}><div style={{fontSize:fs(8),fontWeight:700,color:T.cellText[g.popResult?.color||"red"],textAlign:"center"}}>{popLabel(item.pop)}</div></IllumCell>}
                 {DIFF.cols.includes("sb")&&<IllumCell T={T} lit={lit} colIdx={3} color={g.sbResult?.color||"red"} extra={g.sbResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.sbResult?.color||"red"],textAlign:"center"}}>{item.sb}🏆</div></IllumCell>}
+                {DIFF.cols.includes("champ")&&<IllumCell T={T} lit={lit} colIdx={3} color={g.champResult?.color||"red"} extra={g.champResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.champResult?.color||"red"],textAlign:"center"}}>{item.champ}🏆</div></IllumCell>}
                 {DIFF.cols.includes("direction")&&<IllumCell T={T} lit={lit} colIdx={3} color={gameKey==="states"?g.regionColor||"red":g.zoneColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[gameKey==="states"?g.regionColor||"red":g.zoneColor||"red"],textAlign:"center",lineHeight:1.3}}>{g.dirInfo?.label||"—"}</div></IllumCell>}
-                {DIFF.cols.includes("year")&&<IllumCell T={T} lit={lit} colIdx={gameKey==="nfl"?4:4} color={g.yearResult?.color||"red"} extra={g.yearResult?.arrow}><div style={{fontSize:fs(9),fontWeight:800,color:T.cellText[g.yearResult?.color||"red"]}}>{item.year}</div></IllumCell>}
+                {DIFF.cols.includes("year")&&<IllumCell T={T} lit={lit} colIdx={(gameKey==="nfl"||gameKey==="nba")?4:4} color={g.yearResult?.color||"red"} extra={g.yearResult?.arrow}><div style={{fontSize:fs(9),fontWeight:800,color:T.cellText[g.yearResult?.color||"red"]}}>{item.year}</div></IllumCell>}
                 {DIFF.cols.includes("size")&&<IllumCell T={T} lit={lit} colIdx={5} color={g.sizeResult?.color||"red"} extra={g.sizeResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.sizeResult?.color||"red"],textAlign:"center"}}>{sizeLabel(item.size)}</div></IllumCell>}
                 <div style={{background:lit>DIFF.cols.length?(isWin?T.cellBg.green:T.cellBg.red):"#0d0d0d",border:`1.5px solid ${lit>DIFF.cols.length?(isWin?T.cellBorder.green:T.cellBorder.red):"#252525"}`,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",transition:"background .4s,border-color .4s",minHeight:36,boxShadow:lit>DIFF.cols.length?`0 0 12px ${isWin?T.cellBorder.green:T.cellBorder.red}55`:"none"}}>
                   {lit>DIFF.cols.length?<div style={{fontSize:fs(13),color:isWin?T.cellText.green:T.cellText.red,fontWeight:700}}>{isWin?"✓":"✗"}</div>:<div style={{height:16}}/>}
@@ -9956,7 +10325,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               {/* Close call warning */}
               {(rd.guesses.length+(rd.peekPenalty||0))===(DIFF.maxGuesses+(rd.extraGuesses||0))-1&&(
                 <div style={{background:T.cellBg.red,border:`1px solid ${T.cellBorder.red}`,borderRadius:7,padding:"7px 12px",marginBottom:8,fontSize:fs(10),color:T.cellText.red,fontWeight:700,textAlign:"center",animation:"popIn .25s ease"}}>
-                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="la"?"🚨 Last guess — last train to LA!":gameKey==="nyc"?"🚨 Last guess — stand clear of the closing doors!":gameKey==="chi"?"🚨 Last guess — doors closing!":gameKey==="bos"?"🚨 Last guess — last stop!":gameKey==="atl"?"🚨 Last guess — doors closing, please!":gameKey==="nfl"?"🏈 4th and long — make it count!":"🗺️ Last guess — which state is it?"}
+                  {gameKey==="dc"?"🚨 Last guess — doors are almost closing!":gameKey==="pdx"?"🚨 Last guess — last train leaving!":gameKey==="balt"?"🚨 Final stop — last chance!":gameKey==="la"?"🚨 Last guess — last train to LA!":gameKey==="nyc"?"🚨 Last guess — stand clear of the closing doors!":gameKey==="chi"?"🚨 Last guess — doors closing!":gameKey==="bos"?"🚨 Last guess — last stop!":gameKey==="atl"?"🚨 Last guess — doors closing, please!":gameKey==="nfl"?"🏈 4th and long — make it count!":gameKey==="nba"?"🏀 Last shot — make it count!":"🗺️ Last guess — which state is it?"}
                 </div>
               )}
               <div style={{position:"relative",marginBottom:12}}>
@@ -10032,7 +10401,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
               <div style={{fontSize:fs(14),color:T.text,fontWeight:800,marginBottom:4}}>{target.name}{target.abbr?` (${target.abbr})`:""}</div>
               {target.lines&&<div style={{display:"flex",justifyContent:"center",gap:4,marginBottom:8}}>{target.lines.map((l:string)=>(<div key={l} style={{background:lineColors[l]?.bg,color:lineColors[l]?.text,fontSize:fs(9),padding:"3px 8px",borderRadius:3,fontWeight:700}}>{l}</div>))}</div>}
               {gameKey==="nfl"&&target.conf&&<div style={{fontSize:fs(10),color:T.textSub,marginBottom:8}}>{target.conf} {target.div} · {target.region} · {target.sb>0?`${target.sb}× SB 🏆`:"No SB wins"}</div>}
-              {gameKey!=="nfl"&&target.region&&<div style={{fontSize:fs(10),color:T.textSub,marginBottom:8}}>{target.region}{target.coast?` · ${target.coast}`:""}</div>}
+              {gameKey==="nba"&&target.conf&&<div style={{fontSize:fs(10),color:T.textSub,marginBottom:8}}>{target.conf} · {target.div} · {target.region} · {target.champ>0?`${target.champ}× Champ 🏆`:"No titles"}</div>}
+              {gameKey!=="nfl"&&gameKey!=="nba"&&target.region&&<div style={{fontSize:fs(10),color:T.textSub,marginBottom:8}}>{target.region}{target.coast?` · ${target.coast}`:""}</div>}
               {target.fact&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:7,padding:"8px 12px",marginBottom:12,fontSize:fs(10),color:T.textSub,fontStyle:"italic",lineHeight:1.7}}>📖 {target.fact}</div>}
               <div style={{fontSize:fs(9),color:T.textMuted,marginBottom:12,letterSpacing:2}}>NEXT IN {countdown}</div>
               <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
@@ -10078,7 +10448,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
-          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
+          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="nba"?NBA_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
           {showLineChallenge&&<LineChallengeMode T={T} fs={fs} gameKey={gameKey} items={items} lineColors={lineColors} onClose={()=>setShowLineChallenge(false)}/>}
           {showPhotoMode&&<PhotoMode T={T} fs={fs} gameKey={gameKey} items={items} onClose={()=>setShowPhotoMode(false)}/>}
           {showFakeStation&&<FakeStationMode gameKey={gameKey} T={T} fs={fs} onClose={()=>setShowFakeStation(false)}/>}
@@ -10189,7 +10559,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         </div>
       )}
 
-      {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
       {tab==="maps"&&(
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"48px 20px",gap:14}}>
           <div style={{fontSize:36}}>🗺️</div>
@@ -10206,6 +10575,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         <HelpTab T={T} fs={fs} G={G} DIFF={DIFF} gameKey={gameKey} onPlay={()=>setTab("play")}/>
       )}
     </div>
+    {pendingCard&&<PackOpening card={pendingCard} onDone={()=>{const _c=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._c,pendingCard]));setPendingCard(null);setTab("cards");}}/>}
     {showFeedback&&<BetaModal code={feedbackCode} onClose={()=>setShowFeedback(false)}/>}
     {showSupportModal&&<SupporterModal isSupporter={isSupporter} supporterEmail={supporterEmail} onClose={()=>{setShowSupportModal(false);setShieldAvail(shieldAvailableForSupporter());}}/>}
     {showPeek&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(()=>{
@@ -10248,6 +10618,7 @@ function MiniGamesScreen({blitzBests,onSelect,onBack}:{blitzBests:any,onSelect:(
     {key:"dc",name:"DC Metro",emoji:"🚇",color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",sub:"Subway • Nation's Capital",items:98},
     {key:"states",name:"US States",emoji:"🗺️",color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",sub:"Geography • 50 states",items:50},
     {key:"nfl",name:"NFL Teams",emoji:"🏈",color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",sub:"Sports • 32 franchises",items:32},
+    {key:"nba",name:"NBA Teams",emoji:"🏀",color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",sub:"Basketball • 30 franchises",items:30},
   ];
   const MODE_DEFS=[
     {id:"blitz",emoji:"⚡",label:"BLITZ",color:"#e8a000",desc:"Race the clock — type as many as you can in 90 seconds. Use 2 hints wisely.",badge:"90 SEC",detail:"Fast-fire mode that tests your memory under pressure. Score as many as possible before time runs out. Two hints available.",icon:"🏁"},
@@ -10748,9 +11119,9 @@ function Root(){
   });
   const RER={guesses:[],won:false,lost:false,alreadyPlayed:false};
   const RES={streak:0,played:0,wins:0,totalGuesses:0,dist:{1:0,2:0,3:0,4:0,5:0,6:0}};
-  const[allStats,setAllStats]=useState<any>({pdx:RES,dc:RES,states:RES,nfl:RES,balt:RES,la:RES,nyc:RES,chi:RES,bos:RES,atl:RES});
-  const[roundData,setRoundData]=useState<any>({pdx:[{...RER},{...RER},{...RER}],dc:[{...RER},{...RER},{...RER}],states:[{...RER},{...RER},{...RER}],nfl:[{...RER},{...RER},{...RER}],balt:[{...RER},{...RER},{...RER}],la:[{...RER},{...RER},{...RER}],nyc:[{...RER},{...RER},{...RER}],chi:[{...RER},{...RER},{...RER}],bos:[{...RER},{...RER},{...RER}],atl:[{...RER},{...RER},{...RER}]});
-  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
+  const[allStats,setAllStats]=useState<any>({pdx:RES,dc:RES,states:RES,nfl:RES,nba:RES,balt:RES,la:RES,nyc:RES,chi:RES,bos:RES,atl:RES});
+  const[roundData,setRoundData]=useState<any>({pdx:[{...RER},{...RER},{...RER}],dc:[{...RER},{...RER},{...RER}],states:[{...RER},{...RER},{...RER}],nfl:[{...RER},{...RER},{...RER}],nba:[{...RER},{...RER},{...RER}],balt:[{...RER},{...RER},{...RER}],la:[{...RER},{...RER},{...RER}],nyc:[{...RER},{...RER},{...RER}],chi:[{...RER},{...RER},{...RER}],bos:[{...RER},{...RER},{...RER}],atl:[{...RER},{...RER},{...RER}]});
+  const[blitzBests,setBlitzBests]=useState<any>({pdx:0,dc:0,states:0,nfl:0,nba:0,balt:0,la:0,nyc:0,chi:0,bos:0,atl:0});
   const[settings,setSettings]=useState<any>({dark:false,colorblind:false,textSize:"medium",highContrast:false,sounds:true});
   const[loaded,setLoaded]=useState(false);
   const[showDiffPicker,setShowDiffPicker]=useState(false);
@@ -10761,14 +11132,15 @@ function Root(){
   useEffect(()=>{
     (async()=>{
       const today=getToday();
-      const[pdxSt,dcSt,stSt,nflSt,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxBest,dcBest,stBest,nflBest,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,sett,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
-        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
-        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
+      const[pdxSt,dcSt,stSt,nflSt,nbaSt2,baltSt,laSt,nycSt,chiSt,bosSt,atlSt,pdxBest,dcBest,stBest,nflBest,nbaBest2,baltBest,laBest,nycBest,chiBest,bosBest,atlBest,sett,pdxR0,pdxR1,pdxR2,dcR0,dcR1,dcR2,stR0,stR1,stR2,nflR0,nflR1,nflR2,nbaR0_2,nbaR1_2,nbaR2_2,baltR0,baltR1,baltR2,laR0,laR1,laR2,nycR0,nycR1,nycR2,chiR0,chiR1,chiR2,bosR0,bosR1,bosR2,atlR0,atlR1,atlR2]=await Promise.all([
+        getStats("pdx"),getStats("dc"),getStats("states"),getStats("nfl"),getStats("nba"),getStats("balt"),getStats("la"),getStats("nyc"),getStats("chi"),getStats("bos"),getStats("atl"),
+        getBlitzBest("pdx"),getBlitzBest("dc"),getBlitzBest("states"),getBlitzBest("nfl"),getBlitzBest("nba"),getBlitzBest("balt"),getBlitzBest("la"),getBlitzBest("nyc"),getBlitzBest("chi"),getBlitzBest("bos"),getBlitzBest("atl"),
         getSettings(),
         getTodayData("pdx",today+"r0"),getTodayData("pdx",today+"r1"),getTodayData("pdx",today+"r2"),
         getTodayData("dc",today+"r0"),getTodayData("dc",today+"r1"),getTodayData("dc",today+"r2"),
         getTodayData("states",today+"r0"),getTodayData("states",today+"r1"),getTodayData("states",today+"r2"),
         getTodayData("nfl",today+"r0"),getTodayData("nfl",today+"r1"),getTodayData("nfl",today+"r2"),
+        getTodayData("nba",today+"r0"),getTodayData("nba",today+"r1"),getTodayData("nba",today+"r2"),
         getTodayData("balt",today+"r0"),getTodayData("balt",today+"r1"),getTodayData("balt",today+"r2"),
         getTodayData("la",today+"r0"),getTodayData("la",today+"r1"),getTodayData("la",today+"r2"),
         getTodayData("nyc",today+"r0"),getTodayData("nyc",today+"r1"),getTodayData("nyc",today+"r2"),
@@ -10778,9 +11150,9 @@ function Root(){
       ]);
       const shieldAvail=shieldAvailableForSupporter();
       let shieldFired=false;
-      const statsMut:{[k:string]:any}={pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt};
+      const statsMut:{[k:string]:any}={pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,nba:nbaSt2,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt};
       const today2=getToday();
-      for(const gk2 of["pdx","dc","states","nfl","balt","la","nyc","chi","bos","atl"]){
+      for(const gk2 of["pdx","dc","states","nfl","nba","balt","la","nyc","chi","bos","atl"]){
         const s=statsMut[gk2];
         if(!s.lastPlayed||s.streak===0)continue;
         const dayDiff=daysSinceDate(s.lastPlayed);
@@ -10801,16 +11173,16 @@ function Root(){
       if(shieldFired){markShieldUsed();setStreakShieldFired(true);}
       // ────────────────────────────────────────────────────────────────────────
       setAllStats(statsMut);
-      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
+      setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,nba:nbaBest2||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
       setSettings(sett);SoundEngine.setEnabled(sett?.sounds!==false);
       function quickRound(td:any){if(!td?.guesses)return{guesses:[],won:false,lost:false,alreadyPlayed:false};return{guesses:td.guesses,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost};}
-      const rd={pdx:[quickRound(pdxR0),quickRound(pdxR1),quickRound(pdxR2)],dc:[quickRound(dcR0),quickRound(dcR1),quickRound(dcR2)],states:[quickRound(stR0),quickRound(stR1),quickRound(stR2)],nfl:[quickRound(nflR0),quickRound(nflR1),quickRound(nflR2)],balt:[quickRound(baltR0),quickRound(baltR1),quickRound(baltR2)],la:[quickRound(laR0),quickRound(laR1),quickRound(laR2)],nyc:[quickRound(nycR0),quickRound(nycR1),quickRound(nycR2)],chi:[quickRound(chiR0),quickRound(chiR1),quickRound(chiR2)],bos:[quickRound(bosR0),quickRound(bosR1),quickRound(bosR2)],atl:[quickRound(atlR0),quickRound(atlR1),quickRound(atlR2)]};
+      const rd={pdx:[quickRound(pdxR0),quickRound(pdxR1),quickRound(pdxR2)],dc:[quickRound(dcR0),quickRound(dcR1),quickRound(dcR2)],states:[quickRound(stR0),quickRound(stR1),quickRound(stR2)],nfl:[quickRound(nflR0),quickRound(nflR1),quickRound(nflR2)],nba:[quickRound(nbaR0_2),quickRound(nbaR1_2),quickRound(nbaR2_2)],balt:[quickRound(baltR0),quickRound(baltR1),quickRound(baltR2)],la:[quickRound(laR0),quickRound(laR1),quickRound(laR2)],nyc:[quickRound(nycR0),quickRound(nycR1),quickRound(nycR2)],chi:[quickRound(chiR0),quickRound(chiR1),quickRound(chiR2)],bos:[quickRound(bosR0),quickRound(bosR1),quickRound(bosR2)],atl:[quickRound(atlR0),quickRound(atlR1),quickRound(atlR2)]};
       setRoundData(rd);
       const anyPlayed=Object.values(rd).some((rounds:any)=>rounds.some((r:any)=>r.alreadyPlayed));
       if(anyPlayed)markActivityDay(getDayNum());
       // Daily visit card
       const dvToday=getToday();const dvLast=localStorage.getItem("tgg:daily-cards:date");
-      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","bos","atl","states","nfl"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="bos"?BOS_STATIONS:dvGk==="atl"?ATL_STATIONS:dvGk==="nfl"?NFL_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
+      if(dvLast!==dvToday){localStorage.setItem("tgg:daily-cards:date",dvToday);const dvGames=["pdx","dc","balt","la","bos","atl","states","nfl","nba"];const dvGk=dvGames[getDayNum()%dvGames.length];const dvPool:any[]=dvGk==="pdx"?PDX_STATIONS:dvGk==="dc"?DC_STATIONS:dvGk==="balt"?BALT_STATIONS:dvGk==="la"?LA_STATIONS:dvGk==="bos"?BOS_STATIONS:dvGk==="atl"?ATL_STATIONS:dvGk==="nfl"?NFL_TEAMS:dvGk==="nba"?NBA_TEAMS:STATES;const dvItem=dvPool[getDayNum()%dvPool.length];const dvCard=generateCard(dvItem.name,dvGk,"medium",{zone:(dvItem as any).zone||(dvItem as any).region,year:(dvItem as any).year});setPendingDailyCards([dvCard]);}
       setLoaded(true);
     })();
   },[]);
@@ -10918,6 +11290,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
     {key:"atl",   label:"Atlanta MARTA", emoji:"🍑", sub:"MARTA · Atlanta",            cat:"TRANSIT"},
     {key:"states",label:"US States",     emoji:"🗺️",sub:"Geography puzzle",           cat:"GEOGRAPHY"},
     {key:"nfl",   label:"NFL Teams",     emoji:"🏈", sub:"Football puzzle",             cat:"SPORTS"},
+    {key:"nba",   label:"NBA Teams",     emoji:"🏀", sub:"Basketball puzzle",           cat:"SPORTS"},
     {key:"minigames",label:"Mini Games", emoji:"🎮", sub:"Blitz · Trivia · Challenges", cat:"ARCADE"},
   ];
   function skipToHome(){localStorage.setItem("has_boarded","1");onDone();}
