@@ -69,32 +69,38 @@ app.use(express.static(path.join(__dirname, "dist"), {
   }
 }));
 
-// Replit DB with in-memory fallback
-let db = null;
+// Persistent KV store backed by Supabase (kv_store table), in-memory fallback
 const mem = {};
-try {
-  const DB = require("@replit/database");
-  db = new DB();
-  console.log("[battle] Replit DB connected");
-} catch(e) {
-  console.log("[battle] Using in-memory store (Replit DB unavailable)");
-}
-
 const store = {
   async get(k) {
-    try { return db ? await db.get(k) : (mem[k] ?? null); } catch { return null; }
+    if (supabase) {
+      try {
+        const { data } = await supabase.from("kv_store").select("value").eq("key", k).maybeSingle();
+        return data ? data.value : null;
+      } catch { return null; }
+    }
+    return mem[k] ?? null;
   },
   async set(k, v) {
-    try { if (db) await db.set(k, v); else mem[k] = v; } catch {}
+    if (supabase) {
+      try { await supabase.from("kv_store").upsert({ key: k, value: v, updated_at: new Date().toISOString() }); return; } catch {}
+    }
+    mem[k] = v;
   },
   async del(k) {
-    try { if (db) await db.delete(k); else delete mem[k]; } catch {}
+    if (supabase) {
+      try { await supabase.from("kv_store").delete().eq("key", k); return; } catch {}
+    }
+    delete mem[k];
   },
   async list(prefix) {
-    try {
-      if (db) return await db.list(prefix);
-      return Object.keys(mem).filter(k => k.startsWith(prefix));
-    } catch { return []; }
+    if (supabase) {
+      try {
+        const { data } = await supabase.from("kv_store").select("key").like("key", prefix + "%");
+        return data ? data.map(r => r.key) : [];
+      } catch { return []; }
+    }
+    return Object.keys(mem).filter(k => k.startsWith(prefix));
   }
 };
 
