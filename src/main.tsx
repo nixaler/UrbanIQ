@@ -258,11 +258,11 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
     }go();
   },[]);
   return(
-    <div style={{position:"fixed",top:0,right:0,bottom:0,left:0,width:"100vw",height:"100dvh",background:"rgba(0,0,0,.95)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace",overflowY:"auto"}}>
+    <div style={{position:"fixed",top:0,right:0,bottom:0,left:0,width:"100vw",height:"100dvh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,gap:24,fontFamily:"'JetBrains Mono',monospace"}}>
       <style>{`
         @keyframes dailyCardIntroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes dailyCardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-        @keyframes dailyCardFadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-16px)}}
+        @keyframes packCardReveal{from{opacity:0;transform:scale(0.7) rotateY(-25deg)}to{opacity:1;transform:scale(1) rotateY(0deg)}}
       `}</style>
       {phase==="intro"&&(
         <div style={{textAlign:"center",animation:"dailyCardIntroIn .6s ease both"}}>
@@ -276,7 +276,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
         </div>
       )}
       {phase!=="intro"&&phase!=="reveal"&&<div style={{width:120,height:160,borderRadius:14,background:"linear-gradient(135deg,#1a1a2e,#16213e)",border:`2px solid ${r.color}`,boxShadow:`0 0 40px ${r.glow}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:60,animation:phase==="shaking"?"cardShake .18s infinite":"none"}}>🃏</div>}
-      {phase==="reveal"&&<div style={{animation:"cardReveal .55s ease both"}}><CardVisual card={card} size="lg"/></div>}
+      {phase==="reveal"&&<div style={{display:"flex",justifyContent:"center",animation:"packCardReveal .55s ease both"}}><CardVisual card={card} size="lg"/></div>}
       <div style={{textAlign:"center"}}>
         {phase==="reveal"&&<div style={{textAlign:"center"}}>
           <div style={{fontSize:16,fontWeight:700,color:r.color,marginBottom:4}}>{card.name}</div>
