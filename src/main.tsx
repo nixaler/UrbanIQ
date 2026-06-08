@@ -5293,16 +5293,16 @@ function DkCard({g,featured,delay,darkHov,setDarkHov,onSelectGame}:{g:any,featur
         background:"rgba(255,255,255,0.015)",
         position:"relative",overflow:"hidden",transition:"border-color .2s,background .2s",
         animation:"spFadeIn .2s ease both",boxShadow:hov?`0 0 20px ${g.color}1a`:"none"}}>
-      {g.photo&&<div style={{height:90,overflow:"hidden",position:"relative"}}>
+      {g.photo?<div style={{height:90,overflow:"hidden",position:"relative"}}>
         <img src={g.photo} alt="" onError={(e)=>{(e.target as HTMLElement).style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",opacity:hov?0.7:0.5,transition:"opacity .3s,transform .3s",transform:hov?"scale(1.04)":"scale(1)",filter:"brightness(0.75) saturate(1.2)"}}/>
         <div style={{position:"absolute",inset:0,background:`linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.85) 100%)`}}/>
         <div style={{position:"absolute",bottom:6,left:10,fontSize:"8px",letterSpacing:2,color:"rgba(255,255,255,0.5)",fontWeight:700}}>{g.tag}</div>
+      </div>:<div style={{height:90,overflow:"hidden",position:"relative",background:g.grad,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.25)"}}/>
+        <span style={{fontSize:38,position:"relative",zIndex:1,filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.4))"}}>{g.emoji}</span>
+        <div style={{position:"absolute",bottom:6,left:10,fontSize:"8px",letterSpacing:2,color:"rgba(255,255,255,0.55)",fontWeight:700}}>{g.tag}</div>
       </div>}
       <div style={{padding:"12px 14px",position:"relative",zIndex:1}}>
-        {!g.photo&&<div style={{display:"flex",alignItems:"center",gap:3,marginBottom:8}}>
-          <div style={{width:5,height:5,borderRadius:"50%",background:g.color,animation:"spHotPulse 2s ease infinite"}}/>
-          <span style={{fontSize:"9px",letterSpacing:2,color:"rgba(255,255,255,0.3)",marginLeft:4}}>{g.tag}</span>
-        </div>}
         <div style={{fontSize:"20px",marginBottom:6}}>{g.emoji}</div>
         <div style={{fontSize:"13px",fontWeight:600,color:"#fff",letterSpacing:.3,marginBottom:3}}>{g.name}</div>
         <div style={{fontSize:"10px",letterSpacing:1,color:"rgba(255,255,255,0.28)"}}>{g.sub.toUpperCase()}</div>
@@ -7514,8 +7514,9 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
 // ── LEADERBOARD TAB ───────────────────────────────────────────────────────────
 function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
   const[lbGameKey,setLbGameKey]=useState(gameKey);
-  const[submitName,setSubmitName]=useState(profile?.name||"");
+  const[submitName,setSubmitName]=useState(()=>localStorage.getItem("tgg:lb-name")||profile?.name||"");
   const[submitRound,setSubmitRound]=useState(null);
+  useEffect(()=>{if(profile?.name&&!localStorage.getItem("tgg:lb-name"))setSubmitName(profile.name);},[profile?.name]);
   const[entries,setEntries]=useState(()=>{try{return JSON.parse(localStorage.getItem('tgg:lb')||'[]');}catch{return [];}});
   const[justSubmitted,setJustSubmitted]=useState({});
   const[liveLb,setLiveLb]=useState<any[]>([]);
@@ -7528,6 +7529,7 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
   },[lbGameKey]);
   function handleSubmit(roundIdx){
     const name=submitName.trim();if(!name)return;
+    localStorage.setItem("tgg:lb-name",name);
     const rd=roundData[gameKey][roundIdx];
     const entry={id:Date.now(),playerName:name,gameKey,difficulty:diff,guessCount:rd.guesses.length,won:rd.won,dayNum,ts:new Date().toISOString()};
     const updated=[entry,...entries].slice(0,100);
@@ -7538,6 +7540,7 @@ function LeaderboardTab({T,fs,gameKey,diff,dayNum,roundData,profile}){
   }
   async function handleSubmitAll(){
     const name=submitName.trim();if(!name)return;
+    localStorage.setItem("tgg:lb-name",name);
     let updated=[...entries];
     completedRounds.forEach(r=>{
       const entry={id:Date.now()+r.idx,playerName:name,gameKey,difficulty:diff,guessCount:r.guesses.length,won:r.won,dayNum,ts:new Date().toISOString()};
@@ -11492,9 +11495,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   function finish(){
     localStorage.setItem("has_boarded","1");
     localStorage.setItem("tgg:cityPref",cityPref);
-    if(profileName.trim()||profileEmoji!=="🎯"){
-      saveProfile({name:profileName.trim(),emoji:profileEmoji,bio:"",optIn:false});
-    }
+    saveProfile({name:profileName.trim(),emoji:profileEmoji,bio:"",optIn:false});
     onDone();
   }
   const screens=[
