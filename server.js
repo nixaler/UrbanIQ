@@ -378,19 +378,30 @@ app.post("/api/claims", claimsLimiter, async (req, res) => {
 });
 
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
+const ADMIN_LOGIN_HTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UrbanIQ Admin</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:system-ui,sans-serif;background:#f4f4f4;display:flex;align-items:center;justify-content:center;min-height:100vh;}.box{background:#fff;border-radius:14px;padding:36px 32px;width:100%;max-width:340px;box-shadow:0 4px 24px rgba(0,0,0,.08);border:1px solid #e5e5e5;}h1{font-size:20px;font-weight:800;margin-bottom:4px;}p{font-size:12px;color:#888;margin-bottom:24px;}input{width:100%;padding:11px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;font-family:inherit;outline:none;}input:focus{border-color:#111;}button{width:100%;padding:12px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px;font-family:inherit;}.err{color:#c00;font-size:12px;margin-top:8px;text-align:center;}</style></head>
+<body><div class="box"><h1>UrbanIQ Admin</h1><p>Enter your admin password to continue.</p>
+<form method="POST" action="/admin/login"><input type="password" name="password" placeholder="Password" autofocus autocomplete="current-password"/><button type="submit">SIGN IN →</button></form>
+<div class="err" id="e"></div></div>
+<script>const p=new URLSearchParams(location.search);if(p.get('err'))document.getElementById('e').textContent='Incorrect password — try again.';</script>
+</body></html>`;
+
 function adminAuth(req, res, next) {
   const pw = process.env.ADMIN_PASSWORD || process.env.ADMIN_PASS;
-  if (!pw) return res.status(503).send("Admin access not configured. Set ADMIN_PASSWORD env var.");
-  const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith("Basic ")) {
-    res.setHeader("WWW-Authenticate", 'Basic realm="UrbanIQ Admin"');
-    return res.status(401).send("Authentication required");
-  }
-  const decoded = Buffer.from(auth.slice(6), "base64").toString();
-  const pass = decoded.slice(decoded.indexOf(":") + 1);
-  if (pass !== pw) { res.setHeader("WWW-Authenticate", 'Basic realm="UrbanIQ Admin"'); return res.status(401).send("Invalid password"); }
-  next();
+  if (!pw) return res.status(503).send("Admin not configured. Set ADMIN_PASSWORD in Railway.");
+  const cookie = req.headers.cookie || "";
+  const token = cookie.split(";").map(c => c.trim()).find(c => c.startsWith("admin_token="))?.split("=")[1];
+  if (token === pw) return next();
+  res.redirect("/admin/login");
 }
+
+app.get("/admin/login", (_req, res) => res.send(ADMIN_LOGIN_HTML));
+app.post("/admin/login", express.urlencoded({ extended: false }), (req, res) => {
+  const pw = process.env.ADMIN_PASSWORD || process.env.ADMIN_PASS;
+  if (!pw || req.body.password !== pw) return res.redirect("/admin/login?err=1");
+  res.setHeader("Set-Cookie", `admin_token=${pw}; Path=/; HttpOnly; SameSite=Strict; Max-Age=86400`);
+  res.redirect("/admin");
+});
 
 const ADMIN_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UrbanIQ Admin</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:system-ui,sans-serif;background:#f4f4f4;color:#111;padding:24px;max-width:900px;margin:0 auto;}h1{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-0.5px;}p.sub{font-size:12px;color:#888;margin-bottom:20px;}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}.stat{background:#fff;border-radius:10px;padding:14px 18px;border:1px solid #e5e5e5;}.stat-val{font-size:28px;font-weight:800;color:#0a0a0a;}.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:#888;margin-top:3px;}.section{background:#fff;border-radius:10px;border:1px solid #e5e5e5;margin-bottom:20px;overflow:hidden;}.section-hdr{padding:14px 18px;border-bottom:1px solid #e5e5e5;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#555;display:flex;justify-content:space-between;align-items:center;}table{width:100%;border-collapse:collapse;}th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;border-bottom:1px solid #f0f0f0;}td{padding:10px 14px;border-bottom:1px solid #f5f5f5;font-size:13px;vertical-align:middle;word-break:break-all;}tr:last-child td{border-bottom:none;}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}.pend{background:#fef3c7;color:#92400e;}.done{background:#d1fae5;color:#065f46;}.btn{padding:5px 12px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:inherit;}.btn-do{background:#111;color:#fff;}.btn-do:disabled{background:#ccc;cursor:default;}.refresh{background:none;border:1px solid #ddd;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:inherit;}</style></head>
