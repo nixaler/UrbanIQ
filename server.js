@@ -245,7 +245,7 @@ app.get("/api/battle/leaderboard", async (req, res) => {
 });
 
 // GET /api/health — lets frontend detect if PvP API is available
-app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!db }));
+app.get("/api/health", (_req, res) => res.json({ pvp: true, db: !!supabase }));
 
 // ── WMATA PROXY ──────────────────────────────────────────────────────────────
 const WMATA_KEY = process.env.WMATA_API_KEY || null;
@@ -814,14 +814,15 @@ app.get("/api/stripe/products", stripeRequired, async (req, res) => {
 // Create a Checkout Session → returns hosted Stripe URL
 app.post("/api/stripe/checkout", stripeRequired, async (req, res) => {
   const { email, priceId, origin } = req.body || {};
-  if (!email || !priceId || !origin) return res.status(400).json({ error: "Missing fields." });
+  const safeOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : (process.env.SITE_URL || "https://urbaniq.quest");
+  if (!email || !priceId || !safeOrigin) return res.status(400).json({ error: "Missing fields." });
   try {
     const session = await stripe.checkout.sessions.create({
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
-      success_url: `${origin}/?supporter=1`,
-      cancel_url: `${origin}/`,
+      success_url: `${safeOrigin}/?supporter=1`,
+      cancel_url: `${safeOrigin}/`,
       allow_promotion_codes: true,
     });
     return res.json({ url: session.url });
@@ -834,13 +835,14 @@ app.post("/api/stripe/checkout", stripeRequired, async (req, res) => {
 // Create a Customer Portal session so subscriber can manage/cancel
 app.post("/api/stripe/portal", stripeRequired, async (req, res) => {
   const { email, origin } = req.body || {};
-  if (!email || !origin) return res.status(400).json({ error: "Missing fields." });
+  const safePortalOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : (process.env.SITE_URL || "https://urbaniq.quest");
+  if (!email) return res.status(400).json({ error: "Missing fields." });
   try {
     const customers = await stripe.customers.list({ email, limit: 1 });
     if (!customers.data.length) return res.status(404).json({ error: "Subscription not found." });
     const session = await stripe.billingPortal.sessions.create({
       customer: customers.data[0].id,
-      return_url: origin,
+      return_url: safePortalOrigin,
     });
     return res.json({ url: session.url });
   } catch (e) {
@@ -999,4 +1001,7 @@ app.get("/api/card/:code", (req, res) => {
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
+  if (!process.env.JWT_SECRET) console.warn("[WARN] JWT_SECRET not set — using insecure default. Set this in Railway env vars.");
+  if (!process.env.SUPABASE_URL) console.warn("[WARN] SUPABASE_URL not set — accounts and progress sync will not work.");
+  if (!process.env.RESEND_API_KEY) console.warn("[WARN] RESEND_API_KEY not set — OTP codes will be logged to console only.");
 });
