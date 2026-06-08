@@ -4845,7 +4845,7 @@ function MapsGuideModal({onClose,onSelectGame,defaultCity}:{onClose:()=>void,onS
   );
 }
 
-function AccountModal({onClose}:{onClose:()=>void}){
+function AccountModal({onClose,onOpenFriends}:{onClose:()=>void,onOpenFriends?:()=>void}){
   const[phase,setPhase]=useState<"idle"|"sent"|"done">(()=>getAuthToken()?"done":"idle");
   const[email,setEmail]=useState(()=>getServerProfile()?.email||"");
   const[code,setCode]=useState("");
@@ -4854,6 +4854,9 @@ function AccountModal({onClose}:{onClose:()=>void}){
   const[syncing,setSyncing]=useState(false);
   const[syncMsg,setSyncMsg]=useState("");
   const[profile,setProfile]=useState(()=>getServerProfile());
+  const[editingUsername,setEditingUsername]=useState(false);
+  const[newUsername,setNewUsername]=useState("");
+  const[usernameMsg,setUsernameMsg]=useState("");
 
   async function sendCode(){
     if(!/\S+@\S+\.\S+/.test(email)){setErrMsg("Enter a valid email address.");return;}
@@ -4905,7 +4908,21 @@ function AccountModal({onClose}:{onClose:()=>void}){
     setSyncing(false);
   }
 
-  function signOut(){clearAuthToken();setProfile(null);setEmail("");setCode("");setPhase("idle");setSyncMsg("");}
+  function signOut(){clearAuthToken();setProfile(null);setEmail("");setCode("");setPhase("idle");setSyncMsg("");setEditingUsername(false);}
+
+  async function saveUsername(){
+    if(!/^[a-zA-Z0-9_]{3,20}$/.test(newUsername)){setUsernameMsg("3–20 chars, letters/numbers/underscores only.");return;}
+    setLoading(true);setUsernameMsg("");
+    try{
+      const r=await fetch("/api/me/username",{method:"POST",headers:{"Authorization":`Bearer ${getAuthToken()}`,"Content-Type":"application/json"},body:JSON.stringify({username:newUsername.toLowerCase()})});
+      const d=await r.json();
+      if(!r.ok){setUsernameMsg(d.error||"Failed.");setLoading(false);return;}
+      const updated={...profile,username:d.username};
+      localStorage.setItem("tgg:server-profile",JSON.stringify(updated));
+      setProfile(updated);setEditingUsername(false);setUsernameMsg("✓ Saved");
+    }catch{setUsernameMsg("Network error.");}
+    setLoading(false);
+  }
 
   const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
 
@@ -4923,14 +4940,34 @@ function AccountModal({onClose}:{onClose:()=>void}){
         {phase==="done"&&profile?(
           <>
             <div style={{background:surf,borderRadius:12,padding:"16px",marginBottom:16}}>
-              <div style={{fontSize:12,fontWeight:700,color:txt,marginBottom:4}}>👤 {profile.email}</div>
-              <div style={{display:"flex",gap:16,marginTop:8}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+                <div style={{fontSize:12,fontWeight:700,color:txt}}>👤 {profile.email}</div>
+              </div>
+              {/* Username row */}
+              {editingUsername?(
+                <div style={{marginBottom:10}}>
+                  <div style={{display:"flex",gap:6}}>
+                    <input value={newUsername} onChange={e=>setNewUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g,"").slice(0,20))} placeholder="pick_a_username" autoFocus
+                      style={{flex:1,padding:"8px 10px",border:`1.5px solid ${bdr}`,borderRadius:7,fontSize:13,fontFamily:"'Outfit',sans-serif",outline:"none"}}/>
+                    <button onClick={saveUsername} disabled={loading} style={{padding:"8px 12px",background:"#4169E1",color:"#fff",border:"none",borderRadius:7,fontSize:12,fontWeight:700,cursor:"pointer",opacity:loading?.6:1}}>Save</button>
+                    <button onClick={()=>{setEditingUsername(false);setUsernameMsg("");}} style={{padding:"8px 10px",background:surf,border:`1px solid ${bdr}`,borderRadius:7,fontSize:12,cursor:"pointer",color:mut}}>✕</button>
+                  </div>
+                  {usernameMsg&&<div style={{fontSize:11,marginTop:5,color:usernameMsg.includes("✓")?"#22C55E":"#E8294A"}}>{usernameMsg}</div>}
+                </div>
+              ):(
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                  <span style={{fontSize:13,fontWeight:700,color:"#4169E1"}}>@{profile.username||"(no username)"}</span>
+                  <button onClick={()=>{setNewUsername(profile.username||"");setEditingUsername(true);setUsernameMsg("");}} style={{fontSize:10,padding:"3px 8px",background:"transparent",border:`1px solid ${bdr}`,borderRadius:5,cursor:"pointer",color:mut,fontFamily:"'Outfit',sans-serif"}}>Edit</button>
+                </div>
+              )}
+              <div style={{display:"flex",gap:16}}>
                 <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getXP(),profile.xp)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>XP</div></div>
                 <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getGlobalData().streak,profile.streak)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>STREAK</div></div>
                 <div><div style={{fontSize:20,fontWeight:800,color:txt}}>{Math.max(getShieldCount(),profile.shields)}</div><div style={{fontSize:9,color:mut,letterSpacing:1}}>SHIELDS</div></div>
               </div>
             </div>
             {syncMsg&&<div style={{fontSize:12,color:syncMsg.includes("✓")?"#22C55E":"#E8294A",fontWeight:600,marginBottom:12,textAlign:"center"}}>{syncMsg}</div>}
+            <button onClick={()=>{onClose();onOpenFriends?.();}} style={{width:"100%",background:"linear-gradient(135deg,#4169E1,#A855F7)",color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",marginBottom:10}}>👥 FRIENDS LEADERBOARD →</button>
             <button onClick={handleSync} disabled={syncing} style={{width:"100%",background:"#4169E1",color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",marginBottom:10,opacity:syncing?.6:1}}>{syncing?"Syncing...":"↑↓ SYNC NOW"}</button>
             <button onClick={signOut} style={{width:"100%",background:surf,color:mut,border:`1px solid ${bdr}`,borderRadius:8,padding:"11px",fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Sign Out</button>
           </>
@@ -4956,6 +4993,154 @@ function AccountModal({onClose}:{onClose:()=>void}){
             <button onClick={sendCode} disabled={loading} style={{width:"100%",background:txt,color:"#fff",border:"none",borderRadius:8,padding:"13px",fontSize:12,fontWeight:700,letterSpacing:"1.5px",cursor:"pointer",fontFamily:"'Outfit',sans-serif",opacity:loading?.6:1}}>SEND CODE →</button>
             <div style={{fontSize:10,color:mut,textAlign:"center",marginTop:12,letterSpacing:1}}>XP & streaks are synced server-side · No spam ever</div>
           </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FriendsModal({onClose}:{onClose:()=>void}){
+  const[tab,setTab]=useState<"leaderboard"|"add">("leaderboard");
+  const[leaderboard,setLeaderboard]=useState<any[]>([]);
+  const[friends,setFriends]=useState<any[]>([]);
+  const[addInput,setAddInput]=useState("");
+  const[searchResults,setSearchResults]=useState<any[]>([]);
+  const[addMsg,setAddMsg]=useState("");
+  const[loading,setLoading]=useState(false);
+  const[removing,setRemoving]=useState<string|null>(null);
+  const token=getAuthToken();
+  const profile=getServerProfile();
+
+  useEffect(()=>{
+    if(!token)return;
+    fetch("/api/friends/leaderboard",{headers:{Authorization:`Bearer ${token}`}})
+      .then(r=>r.json()).then(d=>{if(d.leaderboard)setLeaderboard(d.leaderboard);}).catch(()=>{});
+    fetch("/api/friends",{headers:{Authorization:`Bearer ${token}`}})
+      .then(r=>r.json()).then(d=>{if(d.friends)setFriends(d.friends.map((f:any)=>f.username));}).catch(()=>{});
+  },[token]);
+
+  async function doSearch(q:string){
+    setAddInput(q);setAddMsg("");
+    if(q.length<2){setSearchResults([]);return;}
+    try{
+      const r=await fetch(`/api/users/search?q=${encodeURIComponent(q)}`,{headers:{Authorization:`Bearer ${token||""}`}});
+      const d=await r.json();
+      setSearchResults(d.users||[]);
+    }catch{setSearchResults([]);}
+  }
+
+  async function addFriend(username:string){
+    setLoading(true);setAddMsg("");
+    try{
+      const r=await fetch("/api/friends/add",{method:"POST",headers:{Authorization:`Bearer ${token||""}`, "Content-Type":"application/json"},body:JSON.stringify({username})});
+      const d=await r.json();
+      if(!r.ok){setAddMsg(d.error||"Not found.");setLoading(false);return;}
+      setAddMsg(`✓ Now following @${username}`);
+      setAddInput("");setSearchResults([]);
+      setFriends(prev=>[...prev,username]);
+      // Refresh leaderboard
+      const lb=await fetch("/api/friends/leaderboard",{headers:{Authorization:`Bearer ${token||""}`}});
+      const lbd=await lb.json();
+      if(lbd.leaderboard)setLeaderboard(lbd.leaderboard);
+    }catch{setAddMsg("Network error.");}
+    setLoading(false);
+  }
+
+  async function removeFriend(username:string){
+    setRemoving(username);
+    try{
+      await fetch(`/api/friends/${encodeURIComponent(username)}`,{method:"DELETE",headers:{Authorization:`Bearer ${token||""}`}});
+      setFriends(prev=>prev.filter(u=>u!==username));
+      setLeaderboard(prev=>prev.filter(p=>p.username!==username||p.isMe));
+    }catch{}
+    setRemoving(null);
+  }
+
+  const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
+  const accent="#4169E1";
+
+  if(!token){
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={onClose}>
+        <div style={{background:bg,borderRadius:16,padding:"32px 24px",maxWidth:400,width:"100%",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:40,marginBottom:12}}>👥</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:2,color:txt,marginBottom:8}}>FRIENDS LEADERBOARD</div>
+          <div style={{fontSize:13,color:mut,marginBottom:20}}>Sign in to add friends and compare scores.</div>
+          <button onClick={onClose} style={{background:accent,color:"#fff",border:"none",borderRadius:8,padding:"12px 24px",fontSize:13,fontWeight:700,cursor:"pointer",width:"100%"}}>Sign In First →</button>
+        </div>
+      </div>
+    );
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(8px)",zIndex:3000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"16px",paddingTop:"env(safe-area-inset-top,16px)"}} onClick={onClose}>
+      <div style={{background:bg,borderRadius:16,width:"100%",maxWidth:480,padding:"24px",boxSizing:"border-box",animation:"lmFadeIn .2s ease both"}} onClick={e=>e.stopPropagation()}>
+        {/* Header */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,backgroundImage:"linear-gradient(90deg,#4169E1,#A855F7)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>FRIENDS</div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:mut}}>✕</button>
+        </div>
+        {/* Your tag */}
+        {profile?.username&&<div style={{background:"linear-gradient(135deg,#4169E155,#A855F722)",border:"1px solid #4169E133",borderRadius:10,padding:"10px 14px",marginBottom:16,fontSize:12,fontWeight:700,color:accent}}>Your tag: <span style={{fontFamily:"'JetBrains Mono',monospace"}}>@{profile.username}</span> — share this so friends can add you</div>}
+        {/* Tabs */}
+        <div style={{display:"flex",gap:6,marginBottom:18}}>
+          {([["leaderboard","🏆 Leaderboard"],["add","➕ Add Friend"]] as [string,string][]).map(([k,label])=>(
+            <button key={k} onClick={()=>setTab(k as any)} style={{flex:1,padding:"9px",borderRadius:8,border:`1.5px solid ${tab===k?accent:bdr}`,background:tab===k?accent:"transparent",color:tab===k?"#fff":mut,fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"'Outfit',sans-serif"}}>{label}</button>
+          ))}
+        </div>
+
+        {tab==="leaderboard"?(
+          leaderboard.length===0?(
+            <div style={{textAlign:"center",padding:"32px 0",color:mut}}>
+              <div style={{fontSize:36,marginBottom:12}}>🤝</div>
+              <div style={{fontSize:13,fontWeight:600}}>No friends yet</div>
+              <div style={{fontSize:12,marginTop:6}}>Switch to "Add Friend" to get started</div>
+            </div>
+          ):(
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {leaderboard.map((p,i)=>(
+                <div key={p.username||i} style={{display:"flex",alignItems:"center",gap:12,background:p.isMe?"linear-gradient(135deg,#4169E108,#A855F708)":surf,border:`1.5px solid ${p.isMe?accent+"44":bdr}`,borderRadius:12,padding:"12px 14px"}}>
+                  <div style={{fontSize:18,fontWeight:800,color:i===0?"#FFB800":i===1?"#AAAAAA":i===2?"#CD7F32":"rgba(0,0,0,0.25)",minWidth:24,textAlign:"center"}}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}`}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:txt}}>@{p.username||"anonymous"}{p.isMe?" (you)":""}</div>
+                    <div style={{fontSize:10,color:mut,marginTop:1}}>{p.display_name||""}</div>
+                  </div>
+                  <div style={{display:"flex",gap:12,alignItems:"center"}}>
+                    <div style={{textAlign:"right"}}><div style={{fontSize:15,fontWeight:800,color:"#FFB800"}}>{p.xp}</div><div style={{fontSize:8,color:mut,letterSpacing:1}}>XP</div></div>
+                    <div style={{textAlign:"right"}}><div style={{fontSize:15,fontWeight:800,color:"#FF8C42"}}>🔥{p.streak}</div><div style={{fontSize:8,color:mut,letterSpacing:1}}>STREAK</div></div>
+                    {!p.isMe&&friends.includes(p.username)&&(
+                      <button onClick={()=>removeFriend(p.username)} disabled={removing===p.username} style={{fontSize:10,padding:"4px 8px",background:"transparent",border:`1px solid ${bdr}`,borderRadius:5,cursor:"pointer",color:mut,opacity:removing===p.username?.5:1}}>Unfollow</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ):(
+          <div>
+            <div style={{fontSize:12,color:mut,marginBottom:12}}>Enter a player's username to follow them. Their scores will show on your leaderboard.</div>
+            <div style={{position:"relative",marginBottom:8}}>
+              <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:14,color:mut}}>@</span>
+              <input value={addInput} onChange={e=>doSearch(e.target.value.replace(/[^a-zA-Z0-9_]/g,""))}
+                placeholder="username" autoFocus
+                style={{width:"100%",boxSizing:"border-box",padding:"12px 14px 12px 28px",border:`1.5px solid ${bdr}`,borderRadius:9,fontSize:14,fontFamily:"'Outfit',sans-serif",outline:"none"}}/>
+            </div>
+            {searchResults.length>0&&(
+              <div style={{border:`1px solid ${bdr}`,borderRadius:9,overflow:"hidden",marginBottom:8}}>
+                {searchResults.map((u,i)=>(
+                  <div key={u.username} style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",borderBottom:i<searchResults.length-1?`1px solid ${bdr}`:"none",background:"#fff"}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:700,color:txt}}>@{u.username}</div>
+                      <div style={{fontSize:10,color:mut}}>{u.xp} XP · 🔥{u.streak}</div>
+                    </div>
+                    <button onClick={()=>addFriend(u.username)} disabled={loading||friends.includes(u.username)} style={{padding:"7px 14px",background:friends.includes(u.username)?"#22C55E":accent,color:"#fff",border:"none",borderRadius:7,fontSize:11,fontWeight:700,cursor:"pointer",opacity:loading?.6:1}}>{friends.includes(u.username)?"✓ Following":"Follow"}</button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {addMsg&&<div style={{fontSize:12,marginBottom:10,color:addMsg.includes("✓")?"#22C55E":"#E8294A",fontWeight:600}}>{addMsg}</div>}
+            <div style={{fontSize:11,color:mut,textAlign:"center",padding:"8px 0"}}>Friends can see your XP and streak — nothing else.</div>
+          </div>
         )}
       </div>
     </div>
@@ -5254,6 +5439,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const [showMaps,setShowMaps]=useState(false);
   const [showRewards,setShowRewards]=useState(false);
   const [showAccount,setShowAccount]=useState(false);
+  const [showFriends,setShowFriends]=useState(false);
   const [showArcadeHub,setShowArcadeHub]=useState(false);
   const [showStreetLevel,setShowStreetLevel]=useState(false);
   const [showTransferOptimizer,setShowTransferOptimizer]=useState(false);
@@ -5432,7 +5618,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       {showMaps&&<MapsGuideModal onClose={()=>setShowMaps(false)} onSelectGame={onSelectGame}/>}
       {showRewards&&<RewardsModal onClose={()=>setShowRewards(false)}/>}
       {showDailyChallenge&&<DailyChallengeModal onClose={()=>setShowDailyChallenge(false)} onPlay={gk=>{setShowDailyChallenge(false);onSelectGame(gk);}}/>}
-      {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}}/>}
+      {showAccount&&<AccountModal onClose={()=>{setShowAccount(false);setIsLoggedIn(!!getAuthToken());}} onOpenFriends={()=>{setShowAccount(false);setShowFriends(true);}}/>}
+      {showFriends&&<FriendsModal onClose={()=>setShowFriends(false)}/>}
       {showArcadeHub&&<ArcadeHubModal onClose={()=>setShowArcadeHub(false)} setShowFakeStation={setShowFakeStation_sp} setShowStationAge={setShowStationAge_sp} setShowCityShowdown={setShowCityShowdown_sp} setShowBingo={setShowBingo_sp} setShowGhosts={setShowGhosts_sp} setShowStreetLevel={setShowStreetLevel} setShowTransferOptimizer={setShowTransferOptimizer} setShowRidershipRace={setShowRidershipRace} setShowSoundboard={setShowSoundboard} setShowSeasonalEvents={setShowSeasonalEvents} setShowRouteArchitect={setShowRouteArchitect} setShowOfflineManager={setShowOfflineManager} setShowBuddyStreaks={setShowBuddyStreaks} setShowPartnerMap={setShowPartnerMap} setShowLineChallenge={setShowLineChallenge}/>}
       {showStreetLevel&&<StreetLevelMode onClose={()=>setShowStreetLevel(false)}/>}
       {showTransferOptimizer&&<TransferOptimizerMode onClose={()=>setShowTransferOptimizer(false)}/>}
@@ -5733,6 +5920,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
                   {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
+                  {emoji:"👥",label:"Friends",action:()=>{setShowNavMenu(false);setShowFriends(true);}},
                   {emoji:"🃏",label:"My Cards",action:()=>{setShowNavMenu(false);setShowCollection(true);}},
                   {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
                   {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},

@@ -675,12 +675,14 @@ app.post("/api/auth/verify", authLimiter, async (req, res) => {
   let { data: users } = await supabase.from("users").select("*").eq("email", cleanEmail).limit(1);
   let user = users?.[0];
   if (!user) {
-    const { data: newUser, error: insErr } = await supabase.from("users").insert({ email: cleanEmail }).select().single();
+    const emailPrefix = cleanEmail.split("@")[0].replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 12) || "player";
+    const autoUsername = emailPrefix + String(Math.floor(1000 + Math.random() * 9000));
+    const { data: newUser, error: insErr } = await supabase.from("users").insert({ email: cleanEmail, username: autoUsername }).select().single();
     if (insErr) { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
     user = newUser;
   }
   const token = jwt.sign({ userId: user.id, email: cleanEmail }, process.env.JWT_SECRET || "urbaniq-dev-secret", { expiresIn: "90d" });
-  return res.json({ ok: true, token, user: { id: user.id, email: user.email, displayName: user.display_name, xp: user.xp, streak: user.streak, shields: user.shields, proStatus: user.pro_status } });
+  return res.json({ ok: true, token, user: { id: user.id, email: user.email, username: user.username, displayName: user.display_name, xp: user.xp, streak: user.streak, shields: user.shields, proStatus: user.pro_status } });
 });
 
 // GET /api/me — fetch own profile
@@ -688,14 +690,14 @@ app.get("/api/me", jwtRequired, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Not configured." });
   const { data, error } = await supabase.from("users").select("*").eq("id", req.user.userId).single();
   if (error || !data) return res.status(404).json({ error: "User not found." });
-  return res.json({ id: data.id, email: data.email, displayName: data.display_name, xp: data.xp, streak: data.streak, shields: data.shields, proStatus: data.pro_status });
+  return res.json({ id: data.id, email: data.email, username: data.username, displayName: data.display_name, xp: data.xp, streak: data.streak, shields: data.shields, proStatus: data.pro_status });
 });
 
 // POST /api/me/sync — push local progress to server (take-max for XP, server wins for streak if more recent)
 app.post("/api/me/sync", jwtRequired, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Not configured." });
-  const { xp, streak, lastWinDate, shields, displayName } = req.body || {};
-  const { data: cur } = await supabase.from("users").select("xp,streak,last_win_date,shields,display_name").eq("id", req.user.userId).single();
+  const { xp, streak, lastWinDate, shields, displayName, username } = req.body || {};
+  const { data: cur } = await supabase.from("users").select("xp,streak,last_win_date,shields,display_name,username").eq("id", req.user.userId).single();
   if (!cur) return res.status(404).json({ error: "User not found." });
   const updates = {
     xp: Math.max(cur.xp || 0, Number(xp) || 0),
@@ -705,8 +707,87 @@ app.post("/api/me/sync", jwtRequired, async (req, res) => {
     updated_at: new Date().toISOString(),
   };
   if (displayName) updates.display_name = String(displayName).trim().slice(0, 30);
+  if (username && /^[a-zA-Z0-9_]{3,20}$/.test(username)) updates.username = username.toLowerCase();
   await supabase.from("users").update(updates).eq("id", req.user.userId);
   return res.json({ ok: true, ...updates });
+});
+
+// ── FRIENDS ──────────────────────────────────────────────────────────────────
+// Required Supabase tables:
+//   ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
+//   CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+//   CREATE TABLE IF NOT EXISTS friendships (
+//     id BIGSERIAL PRIMARY KEY,
+//     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     friend_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     created_at TIMESTAMPTZ DEFAULT NOW(),
+//     UNIQUE(user_id, friend_id)
+//   );
+//   CREATE INDEX IF NOT EXISTS idx_friendships_user ON friendships(user_id);
+
+// POST /api/me/username — set or update username
+app.post("/api/me/username", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { username } = req.body || {};
+  if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    return res.status(400).json({ error: "Username must be 3–20 characters (letters, numbers, underscores)." });
+  }
+  const clean = username.toLowerCase();
+  const { error } = await supabase.from("users").update({ username: clean }).eq("id", req.user.userId);
+  if (error?.code === "23505") return res.status(409).json({ error: "Username already taken." });
+  if (error) return res.status(500).json({ error: error.message });
+  return res.json({ ok: true, username: clean });
+});
+
+// GET /api/users/search?q=xxx — find users by username prefix
+app.get("/api/users/search", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const q = String(req.query.q || "").toLowerCase().trim();
+  if (q.length < 2) return res.json({ users: [] });
+  const { data } = await supabase.from("users").select("username, display_name, xp, streak").ilike("username", `${q}%`).neq("id", req.user.userId).limit(8);
+  return res.json({ users: data || [] });
+});
+
+// POST /api/friends/add — follow a user by username
+app.post("/api/friends/add", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { username } = req.body || {};
+  if (!username) return res.status(400).json({ error: "Username required." });
+  const { data: friend } = await supabase.from("users").select("id, username, display_name").eq("username", username.toLowerCase()).maybeSingle();
+  if (!friend) return res.status(404).json({ error: "Player not found." });
+  if (friend.id === req.user.userId) return res.status(400).json({ error: "You can't follow yourself." });
+  const { error } = await supabase.from("friendships").upsert({ user_id: req.user.userId, friend_id: friend.id }, { onConflict: "user_id,friend_id" });
+  if (error) return res.status(500).json({ error: error.message });
+  return res.json({ ok: true, friend: { username: friend.username, displayName: friend.display_name } });
+});
+
+// GET /api/friends — list everyone I follow
+app.get("/api/friends", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { data: rows } = await supabase.from("friendships").select("friend_id").eq("user_id", req.user.userId);
+  if (!rows || rows.length === 0) return res.json({ friends: [] });
+  const ids = rows.map(r => r.friend_id);
+  const { data: profiles } = await supabase.from("users").select("username, display_name, xp, streak, shields").in("id", ids).order("xp", { ascending: false });
+  return res.json({ friends: profiles || [] });
+});
+
+// GET /api/friends/leaderboard — me + people I follow, ranked by XP
+app.get("/api/friends/leaderboard", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { data: rows } = await supabase.from("friendships").select("friend_id").eq("user_id", req.user.userId);
+  const friendIds = rows?.map(r => r.friend_id) || [];
+  const ids = [...friendIds, req.user.userId];
+  const { data: profiles } = await supabase.from("users").select("id, username, display_name, xp, streak, shields").in("id", ids).order("xp", { ascending: false });
+  return res.json({ leaderboard: (profiles || []).map(p => ({ ...p, isMe: p.id === req.user.userId })) });
+});
+
+// DELETE /api/friends/:username — unfollow
+app.delete("/api/friends/:username", jwtRequired, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: "Not configured." });
+  const { data: friend } = await supabase.from("users").select("id").eq("username", req.params.username.toLowerCase()).maybeSingle();
+  if (!friend) return res.status(404).json({ error: "Player not found." });
+  await supabase.from("friendships").delete().eq("user_id", req.user.userId).eq("friend_id", friend.id);
+  return res.json({ ok: true });
 });
 
 // ── STRIPE ────────────────────────────────────────────────────────────────────
