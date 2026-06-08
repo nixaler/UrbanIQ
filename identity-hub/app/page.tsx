@@ -51,7 +51,7 @@ export default function Home() {
         style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}
       >
         <div>
-          <h1 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>Confess</h1>
+          <h1 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>Blurt</h1>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>anonymous · no accounts</p>
         </div>
         <ThemeToggle />

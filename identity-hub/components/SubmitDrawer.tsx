@@ -52,7 +52,7 @@ export default function SubmitDrawer({ onClose }: Props) {
         ) : (
           <>
             <h2 className="text-base font-bold mb-4" style={{ color: 'var(--color-text)' }}>
-              Say something
+              Blurt it out
             </h2>
 
             {/* Category picker */}

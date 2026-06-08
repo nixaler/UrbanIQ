@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Confess — anonymous Q&A',
-  description: 'Say what you really think. Anonymously.',
+  title: 'Blurt — say it anonymously',
+  description: 'No accounts. No names. Just honesty.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
