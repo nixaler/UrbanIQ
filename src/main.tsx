@@ -5560,7 +5560,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
     {key:"atl",  emoji:"🍑",name:"Atlanta MARTA", tag:"TRANSIT",    sub:"MARTA · Atlanta, GA",         color:"#CE1141",grad:"linear-gradient(135deg,#CE1141,#8a0028)",photo:"/photo-atl.jpg"},
     {key:"states",emoji:"🗺️",name:"US States",   tag:"GEOGRAPHY",  sub:"50 states · Regions",        color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",photo:"/photo-states.jpg"},
     {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"/photo-nfl.jpg"},
-    {key:"nba",  emoji:"🏀",name:"NBA Teams",      tag:"SPORTS",     sub:"30 franchises · History",    color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",photo:""},
+    {key:"nba",  emoji:"🏀",name:"NBA Teams",      tag:"SPORTS",     sub:"30 franchises · History",    color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",photo:"https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&q=80&auto=format&fit=crop"},
     {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"/photo-arcade.jpg"},
   ];
   const dateStr=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
