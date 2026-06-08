@@ -379,7 +379,7 @@ app.post("/api/claims", claimsLimiter, async (req, res) => {
 
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
 function adminAuth(req, res, next) {
-  const pw = process.env.ADMIN_PASSWORD;
+  const pw = process.env.ADMIN_PASSWORD || process.env.ADMIN_PASS;
   if (!pw) return res.status(503).send("Admin access not configured. Set ADMIN_PASSWORD env var.");
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Basic ")) {
