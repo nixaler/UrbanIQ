@@ -11283,6 +11283,9 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   const [screen,setScreen]=useState(0);
   const [cityPref,setCityPref]=useState(localStorage.getItem("tgg:cityPref")||"");
   const [openCats,setOpenCats]=useState<Set<string>>(new Set());
+  const [profileName,setProfileName]=useState("");
+  const [profileEmoji,setProfileEmoji]=useState("🎯");
+  const AVATAR_OPTS=["🎯","🚊","🗽","🌆","🏙️","🚇","⚡","🔥","🌟","🏆","🎮","🦅","🐯","🌴","🎲","🏈","🏀","⚽","🎸","🌈"];
   const CITY_OPTS=[
     {key:"pdx",   label:"Portland MAX",  emoji:"🚊", sub:"TriMet light rail",           cat:"TRANSIT"},
     {key:"dc",    label:"DC Metro",      emoji:"🚇", sub:"WMATA subway",                cat:"TRANSIT"},
@@ -11301,6 +11304,9 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   function finish(){
     localStorage.setItem("has_boarded","1");
     localStorage.setItem("tgg:cityPref",cityPref);
+    if(profileName.trim()||profileEmoji!=="🎯"){
+      saveProfile({name:profileName.trim(),emoji:profileEmoji,bio:"",optIn:false});
+    }
     onDone();
   }
   const screens=[
@@ -11316,8 +11322,46 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
       </div>
       <button onClick={()=>setScreen(1)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%",maxWidth:280}}>LET'S GO →</button>
     </div>,
-    /* screen 1 — quick play */
-    <div key="s1">
+    /* screen 1 — create profile */
+    <div key="s1p">
+      <div style={{textAlign:"center",marginBottom:20}}>
+        <div style={{fontSize:40,marginBottom:8}}>{profileEmoji}</div>
+        <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:5}}>Create Your Profile</div>
+        <div style={{fontSize:"12px",color:"rgba(0,0,0,.45)",lineHeight:1.7}}>Pick a name and avatar. You can update these later.</div>
+      </div>
+      {/* Name input */}
+      <div style={{marginBottom:18}}>
+        <div style={{fontSize:"11px",letterSpacing:2,fontWeight:700,color:"rgba(0,0,0,0.4)",marginBottom:7}}>DISPLAY NAME</div>
+        <input
+          type="text"
+          value={profileName}
+          onChange={e=>setProfileName(e.target.value)}
+          placeholder="e.g. TransitKing"
+          maxLength={20}
+          style={{width:"100%",boxSizing:"border-box",border:"1.5px solid rgba(0,0,0,0.15)",borderRadius:10,padding:"12px 14px",fontSize:"15px",fontWeight:600,color:"#0a0a0a",background:"#fafafa",outline:"none",fontFamily:"'Inter',sans-serif"}}
+        />
+      </div>
+      {/* Avatar grid */}
+      <div style={{marginBottom:22}}>
+        <div style={{fontSize:"11px",letterSpacing:2,fontWeight:700,color:"rgba(0,0,0,0.4)",marginBottom:9}}>CHOOSE AVATAR</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
+          {AVATAR_OPTS.map(em=>(
+            <button key={em} onClick={()=>setProfileEmoji(em)}
+              style={{fontSize:22,height:48,borderRadius:10,border:`2px solid ${profileEmoji===em?"#0a0a0a":"rgba(0,0,0,0.1)"}`,background:profileEmoji===em?"rgba(0,0,0,0.06)":"#fafafa",cursor:"pointer",transition:"all .15s",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              {em}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        <button onClick={()=>setScreen(2)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>
+          {profileName.trim()?`READY, ${profileName.trim().split(" ")[0].toUpperCase()}! →`:"NEXT →"}
+        </button>
+        <button onClick={()=>setScreen(2)} style={{background:"transparent",color:"rgba(0,0,0,.38)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:10,padding:"11px",fontSize:"12px",fontWeight:600,letterSpacing:1,cursor:"pointer",width:"100%",fontFamily:"'Inter',sans-serif"}}>SKIP FOR NOW</button>
+      </div>
+    </div>,
+    /* screen 2 (was 1) — quick play */
+    <div key="s2qp">
       <div style={{textAlign:"center",marginBottom:18}}>
         <div style={{fontSize:32,marginBottom:8}}>⚡</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:5}}>Quick Play</div>
@@ -11355,12 +11399,12 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
         })}
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:8}}>
-        <button onClick={()=>setScreen(2)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → HOW IT WORKS</button>
+        <button onClick={()=>setScreen(3)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → HOW IT WORKS</button>
         <button onClick={skipToHome} style={{background:"transparent",color:"rgba(0,0,0,.38)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:10,padding:"11px",fontSize:"12px",fontWeight:600,letterSpacing:1,cursor:"pointer",width:"100%",fontFamily:"'Inter',sans-serif"}}>SKIP → GO TO HOME</button>
       </div>
     </div>,
-    /* screen 2 — how it works */
-    <div key="s2">
+    /* screen 3 (was 2) — how it works */
+    <div key="s3hiw">
       <div style={{textAlign:"center",marginBottom:20}}>
         <div style={{fontSize:32,marginBottom:10}}>🎯</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:6}}>How clues work</div>
@@ -11379,10 +11423,10 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
           </div>
         ))}
       </div>
-      <button onClick={()=>setScreen(3)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → EARN REWARDS</button>
+      <button onClick={()=>setScreen(4)} style={{background:"#0a0a0a",color:"#fff",border:"none",borderRadius:10,padding:"14px 40px",fontSize:"14px",fontWeight:700,letterSpacing:1.5,cursor:"pointer",width:"100%"}}>NEXT → EARN REWARDS</button>
     </div>,
-    /* screen 3 — earn rewards */
-    <div key="s3">
+    /* screen 4 (was 3) — earn rewards */
+    <div key="s4er">
       <div style={{textAlign:"center",marginBottom:18}}>
         <div style={{fontSize:32,marginBottom:8}}>🏆</div>
         <div style={{fontFamily:"'Cinzel',serif",fontSize:"20px",fontWeight:700,letterSpacing:1,color:"#0a0a0a",marginBottom:5}}>Earn Rewards</div>
@@ -11418,7 +11462,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
       <div style={{background:"#fff",borderRadius:18,padding:"28px 24px 24px",width:"100%",maxWidth:400,boxShadow:"0 24px 80px rgba(0,0,0,0.3)",animation:"obIn .3s ease both",position:"relative",maxHeight:"90dvh",overflowY:"auto"}}>
         {/* Step dots */}
         <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:24}}>
-          {[0,1,2,3].map(i=>(
+          {[0,1,2,3,4].map(i=>(
             <div key={i} style={{width:i===screen?22:7,height:7,borderRadius:4,background:i===screen?"#0a0a0a":"rgba(0,0,0,0.12)",transition:"all .25s"}}/>
           ))}
         </div>
