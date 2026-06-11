@@ -4916,12 +4916,12 @@ function AccountModal({onClose,onOpenFriends}:{onClose:()=>void,onOpenFriends?:(
     try{
       const r=await fetch("/api/me/username",{method:"POST",headers:{"Authorization":`Bearer ${getAuthToken()}`,"Content-Type":"application/json"},body:JSON.stringify({username:newUsername.toLowerCase()})});
       const d=await r.json();
-      if(!r.ok){setUsernameMsg(d.error||"Failed.");setLoading(false);return;}
+      if(!r.ok){setUsernameMsg(d.error||"Failed.");return;}
       const updated={...profile,username:d.username};
       localStorage.setItem("tgg:server-profile",JSON.stringify(updated));
       setProfile(updated);setEditingUsername(false);setUsernameMsg("✓ Saved");
     }catch{setUsernameMsg("Network error.");}
-    setLoading(false);
+    finally{setLoading(false);}
   }
 
   const bg="#fff";const surf="#f7f7f7";const bdr="#EDEBE8";const txt="#0A0A0A";const mut="rgba(0,0,0,0.4)";
@@ -5014,9 +5014,12 @@ function FriendsModal({onClose}:{onClose:()=>void}){
   useEffect(()=>{
     if(!token)return;
     fetch("/api/friends/leaderboard",{headers:{Authorization:`Bearer ${token}`}})
-      .then(r=>r.json()).then(d=>{if(d.leaderboard)setLeaderboard(d.leaderboard);}).catch(()=>{});
-    fetch("/api/friends",{headers:{Authorization:`Bearer ${token}`}})
-      .then(r=>r.json()).then(d=>{if(d.friends)setFriends(d.friends.map((f:any)=>f.username));}).catch(()=>{});
+      .then(r=>r.json()).then(d=>{
+        if(d.leaderboard){
+          setLeaderboard(d.leaderboard);
+          setFriends(d.leaderboard.filter((p:any)=>!p.isMe).map((p:any)=>p.username));
+        }
+      }).catch(()=>{});
   },[token]);
 
   async function doSearch(q:string){
@@ -11495,7 +11498,7 @@ function OnboardingOverlay({onDone,onStartGame}:{onDone:()=>void,onStartGame?:(g
   function finish(){
     localStorage.setItem("has_boarded","1");
     localStorage.setItem("tgg:cityPref",cityPref);
-    saveProfile({name:profileName.trim(),emoji:profileEmoji,bio:"",optIn:false});
+    if(profileName.trim()||profileEmoji!=="🎯")saveProfile({name:profileName.trim(),emoji:profileEmoji,bio:"",optIn:false});
     onDone();
   }
   const screens=[

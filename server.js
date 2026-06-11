@@ -46,7 +46,7 @@ const ALLOWED_ORIGINS = ["https://urbaniq.quest", "https://www.urbaniq.quest", "
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && ALLOWED_ORIGINS.includes(origin)) res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
   res.setHeader("Vary", "Origin");
   if (req.method === "OPTIONS") return res.sendStatus(204);
@@ -584,6 +584,7 @@ app.get("/api/admin/stats", adminAuth, async (req, res) => {
 // Without RESEND_API_KEY the OTP is returned directly in the API response (dev mode).
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+const socialLimiter = rateLimit({ windowMs: 60 * 1000, max: 30, standardHeaders: true, legacyHeaders: false });
 
 // In-memory OTP fallback — used when Supabase otps table isn't set up yet
 const _otpStore = new Map(); // email -> { code, expires }
@@ -676,9 +677,14 @@ app.post("/api/auth/verify", authLimiter, async (req, res) => {
   let user = users?.[0];
   if (!user) {
     const emailPrefix = cleanEmail.split("@")[0].replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 12) || "player";
-    const autoUsername = emailPrefix + String(Math.floor(1000 + Math.random() * 9000));
-    const { data: newUser, error: insErr } = await supabase.from("users").insert({ email: cleanEmail, username: autoUsername }).select().single();
-    if (insErr) { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
+    let newUser = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const autoUsername = emailPrefix + String(Math.floor(1000 + Math.random() * 9000));
+      const { data, error: insErr } = await supabase.from("users").insert({ email: cleanEmail, username: autoUsername }).select().single();
+      if (!insErr) { newUser = data; break; }
+      if (insErr.code !== "23505") { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
+    }
+    if (!newUser) return res.status(500).json({ error: "Could not generate unique username. Please try again." });
     user = newUser;
   }
   const token = jwt.sign({ userId: user.id, email: cleanEmail }, process.env.JWT_SECRET || "urbaniq-dev-secret", { expiresIn: "90d" });
@@ -708,7 +714,8 @@ app.post("/api/me/sync", jwtRequired, async (req, res) => {
   };
   if (displayName) updates.display_name = String(displayName).trim().slice(0, 30);
   if (username && /^[a-zA-Z0-9_]{3,20}$/.test(username)) updates.username = username.toLowerCase();
-  await supabase.from("users").update(updates).eq("id", req.user.userId);
+  const { error: syncErr } = await supabase.from("users").update(updates).eq("id", req.user.userId);
+  if (syncErr?.code === "23505") { delete updates.username; await supabase.from("users").update(updates).eq("id", req.user.userId); }
   return res.json({ ok: true, ...updates });
 });
 
@@ -740,7 +747,7 @@ app.post("/api/me/username", jwtRequired, async (req, res) => {
 });
 
 // GET /api/users/search?q=xxx — find users by username prefix
-app.get("/api/users/search", jwtRequired, async (req, res) => {
+app.get("/api/users/search", jwtRequired, socialLimiter, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Not configured." });
   const q = String(req.query.q || "").toLowerCase().trim();
   if (q.length < 2) return res.json({ users: [] });
@@ -749,7 +756,7 @@ app.get("/api/users/search", jwtRequired, async (req, res) => {
 });
 
 // POST /api/friends/add — follow a user by username
-app.post("/api/friends/add", jwtRequired, async (req, res) => {
+app.post("/api/friends/add", jwtRequired, socialLimiter, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Not configured." });
   const { username } = req.body || {};
   if (!username) return res.status(400).json({ error: "Username required." });
@@ -786,7 +793,8 @@ app.delete("/api/friends/:username", jwtRequired, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Not configured." });
   const { data: friend } = await supabase.from("users").select("id").eq("username", req.params.username.toLowerCase()).maybeSingle();
   if (!friend) return res.status(404).json({ error: "Player not found." });
-  await supabase.from("friendships").delete().eq("user_id", req.user.userId).eq("friend_id", friend.id);
+  const { error: delErr } = await supabase.from("friendships").delete().eq("user_id", req.user.userId).eq("friend_id", friend.id);
+  if (delErr) return res.status(500).json({ error: delErr.message });
   return res.json({ ok: true });
 });
 
@@ -812,7 +820,7 @@ app.get("/api/stripe/products", stripeRequired, async (req, res) => {
 });
 
 // Create a Checkout Session → returns hosted Stripe URL
-app.post("/api/stripe/checkout", stripeRequired, async (req, res) => {
+app.post("/api/stripe/checkout", jwtRequired, stripeRequired, async (req, res) => {
   const { email, priceId, origin } = req.body || {};
   const safeOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : (process.env.SITE_URL || "https://urbaniq.quest");
   if (!email || !priceId || !safeOrigin) return res.status(400).json({ error: "Missing fields." });
@@ -833,9 +841,12 @@ app.post("/api/stripe/checkout", stripeRequired, async (req, res) => {
 });
 
 // Create a Customer Portal session so subscriber can manage/cancel
-app.post("/api/stripe/portal", stripeRequired, async (req, res) => {
-  const { email, origin } = req.body || {};
+app.post("/api/stripe/portal", jwtRequired, stripeRequired, async (req, res) => {
+  const { origin } = req.body || {};
   const safePortalOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : (process.env.SITE_URL || "https://urbaniq.quest");
+  // Look up the authenticated user's email from the DB — never trust the request body for this
+  const { data: userData } = await supabase?.from("users").select("email").eq("id", req.user.userId).single() || {};
+  const email = userData?.email;
   if (!email) return res.status(400).json({ error: "Missing fields." });
   try {
     const customers = await stripe.customers.list({ email, limit: 1 });
