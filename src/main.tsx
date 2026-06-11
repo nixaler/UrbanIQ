@@ -3760,6 +3760,94 @@ const NBA_TRIVIA=[
   {q:"Dirk Nowitzki played his entire career with which franchise?",opts:["San Antonio Spurs","Houston Rockets","Dallas Mavericks","Oklahoma City Thunder"],ans:2},
 ];
 
+// ── CULTURE DATA ─────────────────────────────────────────────────────────────
+const LOCAL_LEGENDS=[
+  {id:"duke-ellington",name:"Duke Ellington",city:"dc",station:"U Street/Afr-Amer Civil War Memorial",era:"1920s–1974",category:"Music",emoji:"🎹",rarity:"legendary",panels:["Edward Kennedy Ellington grew up blocks from U Street, born in 1899 to a middle-class DC family. He played his first gigs in the clubs and ballrooms of this corridor before New York ever heard his name — U Street made him.","Duke led his orchestra at the Howard Theatre right off U Street for decades. When Ellington played DC, the whole block shut down. Presidents came. Critics called it 'The Aristocrat of Jazz.' He called it home.","Ellington composed over 1,000 pieces and won a Presidential Medal of Freedom. U Street still carries his spirit — the murals, the music, the Monday night go-go shows. Some cities make artists. U Street made Duke."]},
+  {id:"frederick-douglass",name:"Frederick Douglass",city:"dc",station:"Anacostia",era:"1840s–1895",category:"Civil Rights",emoji:"✊",rarity:"legendary",panels:["Frederick Douglass escaped slavery in Maryland at 20 and became America's most powerful abolitionist voice. He chose to live in Anacostia — southeast DC, across the river — in a hilltop house he called Cedar Hill. He didn't hide from the city; he watched it.","Douglass wrote three autobiographies, advised Abraham Lincoln, and was appointed US Marshal of DC. He believed in radical equality at a time when that could get you killed. He argued with his voice, his pen, and his presence.","Cedar Hill is now a National Historic Site, steps from the Anacostia Metro station. Visitors still walk his parlor and see his desk. He told America what it was. His neighborhood is still fighting for what it could be."]},
+  {id:"marvin-gaye",name:"Marvin Gaye",city:"dc",station:"Columbia Heights",era:"1950s–1984",category:"Music",emoji:"🎤",rarity:"rare",panels:["Marvin Pentz Gay Jr. grew up in Washington's Columbia Heights, the son of a strict Pentecostal minister. The contradiction between the church's severity and the neighborhood's soul music shaped everything he made — the tension never left his voice.","'What's Going On' was written in 1971 while Marvin wrestled with the Vietnam War, police brutality, and a country coming apart. Motown didn't want to release it. He threatened to never record again. It became the greatest soul album ever made.","Columbia Heights is different now — brighter storefronts, new buildings, different faces. But the spirit Marvin sang about — the longing, the grief, the stubborn hope — lives in every neighborhood that's ever been pushed around and loved anyway."]},
+  {id:"langston-hughes",name:"Langston Hughes",city:"nyc",station:"116 St-Columbia University",era:"1920s–1967",category:"Literature",emoji:"📝",rarity:"legendary",panels:["James Mercer Langston Hughes arrived in Harlem in 1921 and knew immediately this was where Black America had come to dream out loud. He lived on East 127th Street, right in the heart of it — writing, listening, arguing, absorbing everything the neighborhood had to give.","Hughes wrote 'The Negro Speaks of Rivers' at 18, 'A Dream Deferred' at 29, and kept writing until he died. He was the poet laureate of Black America not because the academy gave him that title but because the people on the corners recognized their own voices in his lines.","The Harlem Hughes knew — rent parties, jazz clubs, political debates, church on Sunday — is partly gone and partly eternal. Take the 2 or 3 train to 116th and walk north. You'll still hear what he heard if you know how to listen."]},
+  {id:"biggie",name:"The Notorious B.I.G.",city:"nyc",station:"Atlantic Av-Barclays Ctr",era:"1990s",category:"Music",emoji:"👑",rarity:"legendary",panels:["Christopher Wallace grew up on St. James Place in Clinton Hill, Brooklyn — just blocks from the Fulton Street A/C stop. He sold drugs on the corner, got arrested twice, and somewhere in there became Biggie Smalls, the greatest MC New York ever produced.","His debut album 'Ready to Die' in 1994 painted Brooklyn so vividly that people who'd never visited recognized the feeling. He didn't romanticize the streets. He reported them. 'Mo Money Mo Problems.' 'Juicy.' 'Big Poppa.' Every song was a dispatch from a life most people only read about.","Biggie was shot in Los Angeles in 1997 at 24. The Barclays Center — built on the land he walked — opened in 2012. Brooklyn has never stopped mourning him. His face is still on murals in Bed-Stuy. Some artists belong to the world. Biggie belongs to Brooklyn."]},
+  {id:"jay-z",name:"Jay-Z",city:"nyc",station:"Atlantic Av-Barclays Ctr",era:"1990s–present",category:"Music",emoji:"💿",rarity:"rare",panels:["Shawn Corey Carter grew up in the Marcy Houses projects in Bedford-Stuyvesant — a short walk from Atlantic Avenue. He turned drug dealing into rapping and rapping into an empire, becoming the first hip-hop billionaire without ever pretending the journey was clean.","Reasonable Doubt in 1996. Blueprint in 2001. Every Jay-Z album was a dispatch from ambition — the hunger to build something lasting from nothing. He didn't just want to be rich. He wanted to own things. He does. Including a piece of the Barclays Center, right in his neighborhood.","Jay-Z and Beyoncé are the most powerful couple in entertainment. But walk through Bed-Stuy on a warm afternoon and watch older guys nod at the Marcy Houses like it's sacred ground. Because for one kid who made it out, it is."]},
+  {id:"harold-washington",name:"Harold Washington",city:"chi",station:"Washington/Wabash",era:"1960s–1987",category:"Politics",emoji:"🗳️",rarity:"legendary",panels:["Harold Washington grew up on the South Side and fought his way through Chicago's Democratic machine to become the city's first Black mayor in 1983 — winning against a party that didn't want him and a city deeply divided. His campaign slogan: 'It's our turn.'","Washington served with fierce intelligence, dismantling patronage jobs, opening city contracts to minority firms, and pushing for neighborhood development over downtown deals. He called it 'the politics of inclusion.' His opponents called it a threat. He won reelection easily.","Harold Washington died at his desk in City Hall eight months into his second term, in 1987. The entire city shut down. Even Chicagoans who voted against him wept. His name is on a cultural center, a college, and a park — and a CTA stop in the Loop that carries thousands of people past his legacy every day."]},
+  {id:"muddy-waters",name:"Muddy Waters",city:"chi",station:"35th-Bronzeville-IIT",era:"1940s–1983",category:"Music",emoji:"🎸",rarity:"rare",panels:["McKinley Morganfield — Muddy Waters — rode a train from Clarksdale, Mississippi to Chicago in 1943 and walked into Bronzeville with a guitar and a voice that sounded like the earth moving. He found a room. He found a band. He found an electric outlet. Blues was never the same.","Muddy electrified the Delta blues and in doing so created the vocabulary that became rock and roll. The Rolling Stones named themselves after his song. Eric Clapton called him god. Chuck Berry learned from him. Everything came from those clubs in Bronzeville and the South Side in the late 1940s.","Bronzeville — the 'Black Metropolis' — was where Black Chicago lived, loved, and created when segregation kept them out of everywhere else. That pressure produced genius. Muddy Waters carried that genius to the world. The 35th Street Green Line stop sits in the middle of where it all happened."]},
+  {id:"chance-the-rapper",name:"Chance the Rapper",city:"chi",station:"69th",era:"2010s–present",category:"Music",emoji:"🎩",rarity:"uncommon",panels:["Chancelor Jonathan Bennett grew up in Chatham on Chicago's South Side and released his mixtape 'Acid Rap' in 2013 from his bedroom — for free, while under house arrest after a ten-day school suspension. Chicago was in crisis. He made something joyful anyway.","Chance won three Grammys without ever signing to a major label, proved that streaming alone could make an artist legitimate, and then donated millions to Chicago Public Schools when the city cut their budgets. He said if the city won't take care of its kids, he would.","The 69th Street Red Line stop is deep South Side — the Chicago that tourists don't visit and media only covers for the wrong reasons. Chance came from here. He stayed here. He still performs free shows here. He is proof that the South Side makes people who believe in the South Side."]},
+  {id:"mlk",name:"Dr. Martin Luther King Jr.",city:"atl",station:"Five Points",era:"1950s–1968",category:"Civil Rights",emoji:"✊",rarity:"legendary",panels:["Michael King Jr. — who later took his father's name Martin Luther — was born on Auburn Avenue in Atlanta in 1929, minutes from what is now Five Points station. He grew up walking these streets, preaching his first sermons in the city's Black churches, learning what inequality looked like up close.","King led the Montgomery Bus Boycott, the March on Washington, and the Selma to Montgomery marches. He was arrested 29 times. He won the Nobel Peace Prize at 35. He was assassinated in Memphis in 1968 at 39. In those 13 years of public activism he remade the country.","Five Points is Atlanta's transit hub — where all MARTA lines converge. That a city famous for its traffic built a subway at all is partly MLK's legacy. He believed in public space, collective movement, the right of all people to go where they needed to go. The trains still run past his birthplace."]},
+  {id:"outkast",name:"OutKast",city:"atl",station:"West End",era:"1990s–2000s",category:"Music",emoji:"🌀",rarity:"rare",panels:["André 3000 and Big Boi met at Tri-Cities High School in East Point, just outside Atlanta. They formed OutKast in 1992 and got booed at the Source Awards in 1995 — Big Boi grabbed the mic and said 'the South got something to say.' That was the turning point for Southern hip-hop.","Six albums. Stankonia. Speakerboxxx/The Love Below. A Grammy for Album of the Year. OutKast didn't just make music — they made a new sonic language that blended Atlanta funk, blues, hip-hop, and something that had no name before they invented it. André's verse on 'Da Art of Storytellin'' is still quoted like scripture.","West End is one of Atlanta's oldest Black neighborhoods — a historically HBCU corridor that shaped André and Big Boi's worldview. The area produced artists who knew they were part of something longer and larger than a trend. OutKast proved them right."]},
+  {id:"tom-bradley",name:"Tom Bradley",city:"la",station:"7th St/Metro Center",era:"1960s–1993",category:"Politics",emoji:"🏛️",rarity:"rare",panels:["Thomas Bradley was born in a Texas sharecropper's shack in 1917 and moved to Los Angeles as a child. He became an LAPD officer, then a city councilman, then in 1973 the first Black mayor of Los Angeles — winning in a majority-white city during a deeply divided era by building the broadest coalition the city had ever seen.","Bradley served five terms — 20 years — and transformed LA from a sprawling car city into something with ambitions of a global metropolis. He brought the 1984 Olympics to Los Angeles. He pushed for the original Metro Rail system that eventually became the Blue Line, now Expo Line, the same network that stops at 7th Street Metro Center.","The 7th Street station opened in 1990, in the final stretch of Bradley's last term. His legacy is complicated — the '92 uprising happened on his watch — but the Metro system he championed still moves people who couldn't afford the car he grew up without. That's infrastructure as moral act."]},
+  {id:"malcolm-x",name:"Malcolm X",city:"bos",station:"Roxbury Crossing",era:"1940s–1965",category:"Civil Rights",emoji:"✊",rarity:"legendary",panels:["Malcolm Little arrived in Boston in 1940 at 15 to live with his half-sister Ella in Roxbury — the heart of Black Boston. He shined shoes at Roseland Ballroom, hustled on the streets, went to prison in 1946. He walked out of Charlestown Prison a different man named Malcolm X.","After prison, Malcolm X rose through the Nation of Islam to become its most electric voice — then broke with it, visited Mecca, returned as El-Hajj Malik El-Shabazz, and began building something new. He was assassinated in New York in 1965 at 39. The evolution was still happening.","Roxbury Crossing on the Orange Line sits in the neighborhood that made Malcolm before the Nation found him. The Massachusetts Avenue corridor, Dudley Square, the three-deckers where he learned to read people — it's all still there. Walk it slowly. Understand what he was running from, and what he was running toward."]},
+  {id:"ursula-le-guin",name:"Ursula K. Le Guin",city:"pdx",station:"Library/SW 9th Avenue",era:"1950s–2018",category:"Literature",emoji:"📚",rarity:"rare",panels:["Ursula Kroeber Le Guin was born in Berkeley but lived most of her life in Portland, Oregon — a city she loved fiercely and wrote into the fabric of her imagination. Her father was an anthropologist. Her mother wrote Ishi in Two Worlds. She inherited their gift for other worlds.","Le Guin wrote The Left Hand of Darkness, The Dispossessed, the Earthsea series, and dozens of other works that used fantasy and science fiction to interrogate gender, power, capitalism, and freedom with more clarity than most literary fiction ever managed. She was the most important American writer working in genre.","The Library MAX stop — a short walk from Powell's Books, where her work fills entire shelves — honors what Portland has always believed: that books are public infrastructure. Le Guin agreed. She gave a speech at the National Book Awards in 2014 telling writers to resist the market. The crowd gave her a standing ovation. She sat down and smiled."]},
+  {id:"marion-barry",name:"Marion Barry",city:"dc",station:"Columbia Heights",era:"1970s–2014",category:"Politics",emoji:"🏙️",rarity:"uncommon",panels:["Marion Shepilov Barry arrived in Washington from Mississippi and became the most complicated figure in DC history — civil rights activist, four-term mayor, convicted felon, beloved father of DC statehood. The city loved him and watched him fall and then elected him again.","Barry built DC's summer youth employment program from scratch, hired Black professionals into city government at a scale never seen before, and negotiated DC's fiscal recovery in the 1990s with a debt-laden city that everyone else had written off. He also smoked crack on federal video. He didn't hide from either legacy.","Columbia Heights was a neighborhood Barry fought for — pushing development, resisting disinvestment during the crack epidemic his own use didn't help. He was reelected to city council until he died in 2014. At his funeral the line stretched for blocks. DC is complicated. Marion Barry was DC."]}
+];
+
+const CITY_STORIES=[
+  {id:"black_broadway",city:"dc",title:"Black Broadway",subtitle:"How U Street Built Its Own World",coverEmoji:"🎭",legendId:"duke-ellington",chapters:[
+    {title:"The Making of a Corridor",body:"Before U Street had the metro stop, before the condos, before Whole Foods, it was the center of Black Washington. From the 1920s through the 1950s, U Street was known as 'Black Broadway' — a four-block stretch of theaters, jazz clubs, barbershops, and restaurants where Black DC lived freely in a segregated city that didn't want them anywhere else."},
+    {title:"The Howard Theatre",body:"The Howard Theatre, opened in 1910, was the crown jewel. Duke Ellington, Ella Fitzgerald, Louis Armstrong, Pearl Bailey — every major Black artist of the 20th century performed here. It was one of the first theaters in America built specifically for Black audiences, by Black architects, in a Black neighborhood that took immense pride in it."},
+    {title:"The Riots and the Silence",body:"On April 4, 1968, Martin Luther King Jr. was assassinated in Memphis. U Street erupted. Four days of uprising left 12 dead, 1,100 injured, and large sections of the corridor in ashes. Businesses closed. Residents left. U Street went quiet for 20 years. The block that was once Black Broadway became a ghost of itself."},
+    {title:"The Metro Arrives",body:"When the U Street Metro station opened in 1991, it was supposed to be the turning point. It was — but not immediately. The 1990s brought slow recovery, new restaurants, the 9:30 Club moving in. Black residents who'd survived the post-riot years watched newcomers discover 'their' neighborhood as if for the first time. The tension was real."},
+    {title:"What Remains",body:"Today U Street is expensive and complicated. Long-term Black residents have been largely priced out. The Howard Theatre is a concert venue again. Ben's Chili Bowl is still there — it survived everything. The murals are still there. The history is preserved in the name of the Metro station itself: U Street/African-American Civil War Memorial. That's the city admitting what this place was."}
+  ]},
+  {id:"harlem_renaissance",city:"nyc",title:"The Harlem Renaissance",subtitle:"Art That Changed America",coverEmoji:"🎨",legendId:"langston-hughes",chapters:[
+    {title:"The Great Migration Arrives",body:"Between 1910 and 1930, over one million Black Americans left the South for northern cities — Chicago, Detroit, Philadelphia, New York. Harlem, developed for white middle-class residents who never materialized, became the destination. Black families filled its brownstones and brought with them every tradition, dialect, and talent the South had produced."},
+    {title:"The Artists Gather",body:"Langston Hughes, Zora Neale Hurston, Claude McKay, Countee Cullen, Aaron Douglas — they were all here, all in conversation, all publishing, all arguing about what Black art was supposed to be and for whom. The NAACP's Crisis magazine, edited by W.E.B. Du Bois, was printed nearby. The ideas were electric."},
+    {title:"The Music",body:"Jazz didn't start in Harlem but it matured here. Duke Ellington at the Cotton Club. Billie Holiday at Small's Paradise. Louis Armstrong everywhere. The clubs ran until 4 AM. Downtown white audiences came uptown to listen — a reversal of every cultural assumption the country had made about who made art and who consumed it."},
+    {title:"The Crash",body:"The Great Depression hit Harlem harder than almost anywhere else. The money dried up. Publishers stopped printing Black writers. The clubs closed or went white-only. By 1935 the Renaissance was officially over, though its participants never stopped working. Hurston died broke. Hughes kept writing until 1967. The art outlasted the moment."},
+    {title:"The Legacy",body:"The Harlem Renaissance established that Black American art was not a curiosity but a foundation — that blues, jazz, literature, and visual art produced in Black communities were the most vital American art forms of the 20th century. Take the A or D train to 125th Street and walk. Everything that came after started somewhere nearby."}
+  ]},
+  {id:"chicago_sound",city:"chi",title:"From Blues to House",subtitle:"Chicago's 100-Year Soundtrack",coverEmoji:"🎵",legendId:"muddy-waters",chapters:[
+    {title:"The Great Migration Brings the Blues",body:"When Black Southerners moved to Chicago in the 1940s, they brought Delta blues with them. Muddy Waters, Howlin' Wolf, Little Walter — they arrived with guitars and found electric outlets. Chicago's South Side clubs on the 'Chitlin' Circuit' let them play loud. The acoustic Mississippi sound became something harder, louder, more urban."},
+    {title:"Chess Records",body:"In 1947, Leonard and Phil Chess opened Chess Records on South Michigan Avenue. They recorded Muddy Waters, Chuck Berry, Bo Diddley, Etta James, and a young Little Richard. The electric Chicago blues sound went national. Britain heard it — the Rolling Stones, Led Zeppelin, The Who — and named themselves after Chicago songs."},
+    {title:"Soul and Funk",body:"By the 1960s and 1970s, Chicago's South Side had produced Curtis Mayfield, the Impressions, Jerry Butler, and the Chi-Lites — artists who turned the blues tradition into soul music with explicit political content. 'People Get Ready.' 'Move On Up.' 'We're a Winner.' Chicago soul was always about survival."},
+    {title:"House Music Is Born",body:"In 1977, DJ Frankie Knuckles began playing at the Warehouse club on South Jefferson. He blended disco, soul, and electronic beats at a time when New York had declared disco dead. Chicago's Black and Latino gay clubgoers created something new in that room. They called it House — after the club. It became the foundation of all electronic dance music."},
+    {title:"The Sound Continues",body:"Kanye West's debut album 'College Dropout' in 2004 sampled soul records and rapped about a Chicago that no one in mainstream hip-hop had addressed — middle-class struggles, community colleges, retail jobs. Chance the Rapper gave it away for free. Chance the Rapper donated to the public schools. The tradition of using music to take care of the community is still alive."}
+  ]},
+  {id:"atl_hip_hop",city:"atl",title:"The ATL Sound",subtitle:"How the South Got Something to Say",coverEmoji:"🔊",legendId:"outkast",chapters:[
+    {title:"The Source Awards, 1995",body:"When OutKast won Best New Artist at the Source Awards in New York, the New York crowd booed. Big Boi walked to the mic and said 'the South got something to say.' He was right and he knew it. Atlanta hip-hop had been building for years — Arrested Development, TLC, Goodie Mob — but that moment was the declaration."},
+    {title:"LaFace Records",body:"L.A. Reid and Babyface founded LaFace Records in Atlanta in 1989. They signed TLC, Toni Braxton, Usher, and eventually OutKast. The label proved you could build a world-class music industry in the South without leaving for New York or LA. The city's recording infrastructure grew up around that proof."},
+    {title:"Crunk and the Strip",body:"Lil Jon emerged from Atlanta in the early 2000s with crunk — maximalist, aggressive, designed for clubs and arenas. Young Jeezy, T.I., Ludacris all came shortly after. The Highway 85 corridor, the Mercedes-Benz Stadium parking lots, the Waffle House at 3 AM — Atlanta developed a distinct geography of music-making."},
+    {title:"Trap Music",body:"T.I. coined the term 'trap music' — trap referring to the trap houses where drugs were sold. By 2012, Gucci Mane, Young Thug, Future, and 21 Savage had developed it into something that sounded like nothing else. Producer Metro Boomin built beats in his mother's house. The sound went global in three years."},
+    {title:"What Atlanta Made",body:"Atlanta is now the undisputed capital of American pop music. Migos, Cardi B (who built her career on ATL features), Lil Baby, Gunna, Donald Glover — the city produces more charting artists than anywhere else. Hartsfield-Jackson Airport is the world's busiest. MARTA connects it all. The South had something to say. It still does."}
+  ]},
+  {id:"la_freedom",city:"la",title:"Leimert Park",subtitle:"LA's Black Cultural Mecca",coverEmoji:"🌟",legendId:"tom-bradley",chapters:[
+    {title:"A Neighborhood Built for Exclusion",body:"Leimert Park was developed in the 1920s with racially restrictive covenants — meaning Black people could not legally live there. The Supreme Court struck those covenants down in 1948. Black Angelenos began moving in. By the 1970s, Leimert Park had become the heart of Black cultural life in Los Angeles."},
+    {title:"The Jazz Scene",body:"The World Stage, founded by drummer Billy Higgins and poet Kamau Daáood in 1989, became the anchor. Free jazz workshops. Poetry readings. Late-night sessions. Herbie Hancock lived nearby. Horace Tapscott organized the Pan Afrikan Peoples Arkestra out of the neighborhood for decades. The music was a form of community organizing."},
+    {title:"The Uprising",body:"In April 1992, after four LAPD officers were acquitted in the beating of Rodney King, Los Angeles erupted in six days of uprising that killed 63 people and caused $1 billion in damage. Leimert Park became a gathering point for community response — not just grief but organizing, art-making, mutual aid."},
+    {title:"The Artists Remain",body:"Even as neighboring Crenshaw gentrifies and the Expo Line brings new visitors, Leimert Park has fought to remain itself. The Vision Theatre. The weekly drum circle at Leimert Park Plaza. 5th Street Dick's coffee. These institutions are not ornamental — they are how a community holds ground when the market tries to take it."},
+    {title:"The Metro and the Future",body:"The Crenshaw/LAX Line, opened in 2022, brings Metro rail through the heart of Black LA for the first time. Some see it as access. Some see it as the beginning of displacement. Leimert Park has watched this play out before. The neighborhood's answer, as always, is to make something — art, music, community — that can survive whatever comes next."}
+  ]},
+  {id:"portland_vanport",city:"pdx",title:"Vanport",subtitle:"The City Oregon Forgot",coverEmoji:"🌊",legendId:"ursula-le-guin",chapters:[
+    {title:"A City Built in Three Months",body:"In 1942, Kaiser Shipyards needed workers to build warships for World War II. They built Vanport — a city of 40,000 people constructed in 110 days on the Columbia River floodplain between Portland and Vancouver. It became Oregon's second-largest city overnight. Most of its residents were Black workers who had come from the South, lured by Kaiser's promise of work."},
+    {title:"The Color Line in the Northwest",body:"Oregon had excluded Black residents by law since 1857. Portland's housing was explicitly segregated. Vanport was, in a sense, where Black Oregonians were put — outside the city's formal boundaries, on land no one else wanted, vulnerable. They built community anyway. Churches, clubs, a junior college, a vibrant social life on borrowed ground."},
+    {title:"The Flood",body:"On May 30, 1948, Memorial Day, the Columbia River dike broke. Vanport was inundated in 15 minutes. At least 15 people died — likely more, because the count of bodies was never completed. The city that had housed 40,000 people was gone by nightfall. Survivors were told the dike was safe that morning. The city knew it wasn't."},
+    {title:"Dispersal",body:"After the flood, Black Oregonians who had lived in Vanport were forced into Portland proper — specifically into the Albina neighborhood in North and Northeast Portland, the only area where they could find housing. Albina became Black Portland. Decades of urban renewal, freeway construction, and gentrification have since displaced much of that community again."},
+    {title:"The Delta Park Stop",body:"The Yellow Line's Delta Park/Vanport station sits on the exact ground where 40,000 people once lived. There is a small memorial. There are information signs. But mostly there is a parking lot and a sports complex where a city used to be. Ursula Le Guin lived in Portland and wrote about invisible histories. This one is literal — the city is gone. The land remembers."}
+  ]}
+];
+
+const CITY_SCENE:{[k:string]:{vibe:string,music:string,food:string,slang:string,hotspot:string,fact:string}}={
+  dc:{vibe:"Political but make it go-go",music:"Go-go, punk, hip-hop, Ethiopian jazz",food:"Half-smokes, mumbo sauce, Ethiopian on U Street, Ben's Chili Bowl",slang:"The DMV (DC, Maryland, Virginia)",hotspot:"U Street Corridor",fact:"DC has more museums per capita than any US city — and they're all free to the public."},
+  nyc:{vibe:"Every borough is a different planet",music:"Hip-hop, jazz, salsa, drill, everything simultaneously",food:"Bodega bacon egg & cheese, dollar pizza, Katz's pastrami, dim sum in Flushing",slang:"'Mad' means very. 'No cap' started here. 'Deadass' is sincere.",hotspot:"The L train corridor (Williamsburg to Bushwick)",fact:"NYC's subway system runs 24 hours a day, 365 days a year — the only major system in the world that does."},
+  chi:{vibe:"Second city swagger — doesn't care what you think",music:"Blues, house, footwork, drill, gospel",food:"Deep dish (Lou Malnati's), Chicago dog (no ketchup, ever), Italian beef, jibarito",slang:"'Jit' means friend. 'Opps' are rivals. The city is simply 'the city.'",hotspot:"The 606 Trail on the North Side / Bronzeville on the South Side",fact:"Chicago's elevated train — the 'L' — has been running since 1892, making it one of the oldest elevated transit systems in North America."},
+  la:{vibe:"Car culture slowly learning to walk",music:"West Coast hip-hop, cumbia, k-pop, indie",food:"Tacos al pastor from a truck, In-N-Out, ramen in Little Tokyo, birria in Boyle Heights",slang:"'The 405' is a state of mind. 'No cap' arrived from NY. 'Lowkey' is a local obsession.",hotspot:"Leimert Park / Frogtown / Echo Park",fact:"Los Angeles has the largest urban park system in the US — Griffith Park alone is five times the size of Central Park."},
+  bos:{vibe:"Wicked proud, deeply local",music:"Punk, hardcore, folk revival, hip-hop",food:"Clam chowdah, lobster roll (butter, not mayo), Dunkin' everything, Fenway franks",slang:"'Wicked' means very. 'Pissa' means excellent. 'The T' is the subway.",hotspot:"Somerville's Davis Square / Roxbury / South End",fact:"The Boston T is the oldest subway system in the Western Hemisphere, opening in 1897 — beating NYC by four years."},
+  atl:{vibe:"IYKYK — the South's greatest city and it knows it",music:"Trap, R&B, gospel, Afrobeats, everything Black America makes first",food:"Fried chicken and waffles (yes it's real), Waffle House at 3 AM, Paschal's, Busy Bee Cafe",slang:"'Dead' means extremely. 'Slime' is a close friend. 'ATL' is never pronounced fully by people from here.",hotspot:"Old Fourth Ward / Edgewood / Westside Atlanta",fact:"Atlanta's Hartsfield-Jackson Airport is the world's busiest by passenger traffic — more people pass through it annually than any airport on earth."},
+  pdx:{vibe:"Weird on purpose, earnest about it",music:"Indie rock, folk, electronic, hip-hop",food:"Voodoo Doughnut, food cart pods (not trucks), Salt & Straw ice cream, the 24-hour Montage",slang:"'Portlandia' is the show. 'Portlandians' would never use that word. 'NoPo' is North Portland.",hotspot:"Alberta Arts District / Mississippi Ave / Division Street",fact:"Portland has more food carts per capita than any other US city, with over 500 operating across the metro area."},
+  balt:{vibe:"Underestimated, undefeated",music:"Club music (Baltimore club is its own genre), blues, hip-hop",food:"Steamed blue crabs with Old Bay, pit beef, Berger cookies, lake trout (it's whiting, not lake trout)",slang:"'Hon' is everyone. 'Boh' is National Bohemian beer. 'The Block' is the entertainment district.",hotspot:"Fells Point / Station North / Hampden",fact:"Baltimore's Inner Harbor was one of the first major US waterfront redevelopment projects, completed in 1980 and inspiring similar projects in cities across the country."}
+};
+
+const WEEKLY_MATCHUPS:[string,string][]=[["dc","nyc"],["chi","atl"],["la","bos"],["pdx","balt"],["nyc","chi"],["dc","atl"],["la","pdx"],["bos","balt"],["nyc","la"],["dc","chi"]];
+function getISOWeek():number{const d=new Date();const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil((((t as any)-(y as any))/86400000+1)/7);}
+function getCurrentMatchup():[string,string]{return WEEKLY_MATCHUPS[getISOWeek()%WEEKLY_MATCHUPS.length];}
+
+const MASTERY_RANKS=["Visitor","Local","Resident","Native","Legend"];
+function getCityMastery(city:string):{rank:string,next:string|null,pct:number}{
+  const storiesDone=CITY_STORIES.filter(s=>s.city===city&&(()=>{try{return JSON.parse(localStorage.getItem("tgg:story:"+s.id)||"{}").done;}catch{return false;}})()).length;
+  const legendsUnlocked=LOCAL_LEGENDS.filter(l=>l.city===city).filter(l=>{try{return (JSON.parse(localStorage.getItem("tgg:legends-unlocked")||"[]") as string[]).includes(l.id);}catch{return false;}}).length;
+  const pct=Math.min(100,storiesDone*40+legendsUnlocked*15);
+  const rankIdx=Math.min(4,Math.floor(pct/25));
+  return{rank:MASTERY_RANKS[rankIdx],next:rankIdx<4?MASTERY_RANKS[rankIdx+1]:null,pct};
+}
+
 // ── TRIVIA DATA ───────────────────────────────────────────────────────────────
 const PDX_TRIVIA=[
   {q:"What year did Portland MAX first open?",opts:["1982","1984","1986","1990"],ans:2},
@@ -5584,7 +5672,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
   const[hotIdx,setHotIdx]=useState(0);
   const hotDragStart=useRef<number|null>(null);
   const[activeTab,setActiveTab]=useState<string>("all");
-  const[activeSection,setActiveSection]=useState<"home"|"explore">("home");
+  const[activeSection,setActiveSection]=useState<"home"|"explore"|"culture">("home");
   const[collapsedSections,setCollapsedSections]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
   const toggleSection=(tag:string)=>setCollapsedSections(prev=>{const n=new Set(prev);n.has(tag)?n.delete(tag):n.add(tag);return n;});
   const[lmCollapsed,setLmCollapsed]=useState<Set<string>>(new Set(["TRANSIT","GEOGRAPHY","SPORTS","ARCADE"]));
@@ -6227,17 +6315,17 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
       </footer>
       </>}
       {activeSection==="explore"&&<ExploreView onSelectGame={onSelectGame}/>}
+      {activeSection==="culture"&&<CultureView onSelectGame={onSelectGame}/>}
 
       {/* BOTTOM TAB BAR */}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:520,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",borderTop:"1px solid #EDEBE8",display:"flex",zIndex:200,boxSizing:"border-box",paddingBottom:"env(safe-area-inset-bottom,0px)"}}>
-        {(["home","explore"] as const).map(id=>{
+        {([["home","HOME"],["explore","EXPLORE"],["culture","CULTURE"]] as [string,string][]).map(([id,label])=>{
           const isActive=activeSection===id;
-          const label=id==="home"?"HOME":"EXPLORE";
           return(
-            <button key={id} onClick={()=>{setActiveSection(id);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
+            <button key={id} onClick={()=>{setActiveSection(id as any);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
               style={{flex:1,padding:"14px 0 18px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent",position:"relative"}}>
-              {isActive&&<div style={{position:"absolute",inset:"6px 16px",borderRadius:10,background:"linear-gradient(135deg,rgba(232,41,74,0.07) 0%,rgba(65,105,225,0.09) 100%)",border:"1px solid rgba(65,105,225,0.15)",boxShadow:"0 0 14px rgba(65,105,225,0.08)"}}/>}
-              <span style={{position:"relative",fontSize:"10px",fontWeight:800,letterSpacing:"3px",textTransform:"uppercase",...(isActive?{backgroundImage:"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"#C8C5BF"})}}>{label}</span>
+              {isActive&&<div style={{position:"absolute",inset:"6px 8px",borderRadius:10,background:id==="culture"?"linear-gradient(135deg,rgba(168,85,247,0.08),rgba(65,105,225,0.08))":"linear-gradient(135deg,rgba(232,41,74,0.07),rgba(65,105,225,0.09))",border:`1px solid ${id==="culture"?"rgba(168,85,247,0.2)":"rgba(65,105,225,0.15)"}`,boxShadow:`0 0 14px ${id==="culture"?"rgba(168,85,247,0.1)":"rgba(65,105,225,0.08)"}`}}/>}
+              <span style={{position:"relative",fontSize:"9px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",...(isActive?{backgroundImage:id==="culture"?"linear-gradient(90deg,#A855F7,#4169E1,#A855F7)":"linear-gradient(90deg,#E8294A,#FF8C42,#FFB800,#4169E1,#A855F7,#E8294A)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",animation:"lmFlow 3s linear infinite"}:{color:"#C8C5BF"})}}>{label}</span>
             </button>
           );
         })}
@@ -7036,6 +7124,387 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
       {markDoneQuest&&<MarkDoneModal quest={markDoneQuest} onVerified={()=>{completeQuest(markDoneQuest.id,markDoneQuest.xp,markDoneQuest.shield);setMarkDoneQuest(null);}} onClose={()=>setMarkDoneQuest(null)}/>}
       {showOffer&&<OfferModal pick={showOffer} onClose={()=>{const t2=new Date().toISOString().slice(0,10);setClaimedToday(new Set(JSON.parse(localStorage.getItem(`tgg:offers:used:${t2}`)||"[]")));setShowOffer(null);}}/>}
       {showExploreMap&&<MapsGuideModal onClose={()=>setShowExploreMap(false)} onSelectGame={onSelectGame} defaultCity={cityKey}/>}
+    </div>
+  );
+}
+
+// ── CULTURE SUB-COMPONENTS ────────────────────────────────────────────────────
+
+const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
+const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
+
+function StoryModal({story,onClose}:{story:typeof CITY_STORIES[0],onClose:()=>void}){
+  const saved=()=>{try{return JSON.parse(localStorage.getItem("tgg:story:"+story.id)||"{}");}catch{return{};}};
+  const[chapter,setChapter]=useState<number>(saved().chapter||0);
+  const[done,setDone]=useState<boolean>(saved().done||false);
+  const[celebrated,setCelebrated]=useState(false);
+  const total=story.chapters.length;
+  const ch=story.chapters[chapter];
+  const save=(c:number,d:boolean)=>{localStorage.setItem("tgg:story:"+story.id,JSON.stringify({chapter:c,done:d}));};
+  function advance(){
+    if(chapter<total-1){const nc=chapter+1;setChapter(nc);save(nc,false);}
+    else if(!done){
+      setDone(true);save(chapter,true);
+      addXP(200);
+      try{const ul=JSON.parse(localStorage.getItem("tgg:legends-unlocked")||"[]") as string[];if(!ul.includes(story.legendId)){ul.push(story.legendId);localStorage.setItem("tgg:legends-unlocked",JSON.stringify(ul));}}catch{}
+      setCelebrated(true);
+    }
+  }
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,0.85)",display:"flex",flexDirection:"column",animation:"lmFadeIn .2s ease both"}}>
+      <style>{`@keyframes storyIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div style={{position:"absolute",inset:0}} onClick={onClose}/>
+      <div style={{position:"relative",margin:"auto",width:"min(500px,96vw)",maxHeight:"90dvh",background:"#0D0D10",borderRadius:20,overflow:"hidden",display:"flex",flexDirection:"column",animation:"storyIn .25s ease both"}}>
+        <div style={{padding:"20px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",alignItems:"center",gap:12}}>
+          <span style={{fontSize:28}}>{story.coverEmoji}</span>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#fff"}}>{story.title}</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",marginTop:2}}>{story.subtitle}</div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:20,cursor:"pointer",padding:4}}>✕</button>
+        </div>
+        <div style={{display:"flex",gap:4,padding:"10px 20px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+          {story.chapters.map((_,i)=>(
+            <div key={i} style={{flex:1,height:3,borderRadius:2,background:i<=chapter?"#A855F7":"rgba(255,255,255,0.12)",transition:"background .3s"}}/>
+          ))}
+        </div>
+        {celebrated?(
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:32,gap:16}}>
+            <div style={{fontSize:48}}>🌟</div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:3,color:"#A855F7",textAlign:"center"}}>STORY COMPLETE</div>
+            <div style={{fontSize:14,color:"rgba(255,255,255,0.6)",textAlign:"center"}}>+200 XP · Legend unlocked: {LOCAL_LEGENDS.find(l=>l.id===story.legendId)?.name}</div>
+            <button onClick={onClose} style={{marginTop:8,padding:"12px 32px",borderRadius:12,background:"linear-gradient(135deg,#A855F7,#4169E1)",border:"none",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",letterSpacing:1}}>CLOSE</button>
+          </div>
+        ):(
+          <>
+            <div style={{flex:1,overflowY:"auto",padding:"24px 20px"}}>
+              <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Chapter {chapter+1} of {total}</div>
+              <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:2,color:"#fff",marginBottom:16}}>{ch.title}</div>
+              <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",lineHeight:1.75}}>{ch.body}</div>
+            </div>
+            <div style={{padding:"16px 20px",borderTop:"1px solid rgba(255,255,255,0.07)"}}>
+              <button onClick={advance} style={{width:"100%",padding:"14px",borderRadius:12,background:"linear-gradient(135deg,#A855F7,#4169E1)",border:"none",color:"#fff",fontSize:13,fontWeight:800,cursor:"pointer",letterSpacing:1.5}}>
+                {chapter<total-1?"NEXT CHAPTER →":"COMPLETE STORY ★"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StorylinesSection(){
+  const[cityFilter,setCityFilter]=useState<string>("all");
+  const[activeStory,setActiveStory]=useState<typeof CITY_STORIES[0]|null>(null);
+  const cities=["all",...Array.from(new Set(CITY_STORIES.map(s=>s.city)))];
+  const filtered=cityFilter==="all"?CITY_STORIES:CITY_STORIES.filter(s=>s.city===cityFilter);
+  const getProgress=(id:string)=>{try{const d=JSON.parse(localStorage.getItem("tgg:story:"+id)||"{}");return{chapter:d.chapter||0,done:d.done||false};}catch{return{chapter:0,done:false};}};
+  return(
+    <div>
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}}>
+        {cities.map(c=>(
+          <button key={c} onClick={()=>setCityFilter(c)} style={{flexShrink:0,padding:"6px 12px",borderRadius:16,border:`1.5px solid ${cityFilter===c?"#A855F7":"#EDEBE8"}`,background:cityFilter===c?"#A855F7":"transparent",color:cityFilter===c?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:.5,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>
+            {c==="all"?"ALL":CITY_EMOJIS[c]+" "+CITY_NAMES[c]?.split(" ")[0]}
+          </button>
+        ))}
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        {filtered.map(story=>{
+          const{chapter,done}=getProgress(story.id);
+          const pct=done?100:Math.round((chapter/story.chapters.length)*100);
+          return(
+            <div key={story.id} onClick={()=>setActiveStory(story)} style={{background:"#fff",borderRadius:16,border:"1px solid #EDEBE8",padding:16,cursor:"pointer",boxShadow:"0 2px 8px rgba(0,0,0,0.04)",transition:"box-shadow .2s,transform .15s"}}
+              onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.boxShadow="0 8px 24px rgba(168,85,247,0.12)";(e.currentTarget as HTMLDivElement).style.transform="translateY(-1px)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.boxShadow="0 2px 8px rgba(0,0,0,0.04)";(e.currentTarget as HTMLDivElement).style.transform="none";}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
+                <span style={{fontSize:32}}>{story.coverEmoji}</span>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                    <span style={{fontSize:11}}>{CITY_EMOJIS[story.city]}</span>
+                    <span style={{fontSize:10,color:"rgba(0,0,0,0.4)",fontWeight:600,letterSpacing:1}}>{CITY_NAMES[story.city]?.toUpperCase()}</span>
+                  </div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:1.5,color:"#0D0D10"}}>{story.title}</div>
+                  <div style={{fontSize:11,color:"rgba(0,0,0,0.5)",marginTop:1}}>{story.subtitle}</div>
+                </div>
+                {done&&<span style={{fontSize:18}}>⭐</span>}
+              </div>
+              <div style={{height:4,borderRadius:2,background:"#F0EDEA",overflow:"hidden"}}>
+                <div style={{height:"100%",width:pct+"%",background:done?"linear-gradient(90deg,#A855F7,#4169E1)":"linear-gradient(90deg,#A855F7,#C084FC)",borderRadius:2,transition:"width .5s ease"}}/>
+              </div>
+              <div style={{fontSize:10,color:"rgba(0,0,0,0.35)",marginTop:4,letterSpacing:.5}}>{done?"COMPLETE":chapter===0?"NOT STARTED":`${chapter} of ${story.chapters.length} chapters`}</div>
+            </div>
+          );
+        })}
+      </div>
+      {activeStory&&<StoryModal story={activeStory} onClose={()=>setActiveStory(null)}/>}
+    </div>
+  );
+}
+
+function LegendDetailModal({legend,onClose}:{legend:typeof LOCAL_LEGENDS[0],onClose:()=>void}){
+  const[panel,setPanel]=useState(0);
+  const RARITY_COLORS:{[k:string]:string}={uncommon:"#4169E1",rare:"#A855F7",legendary:"#FFB800"};
+  const RARITY_GEMS:{[k:string]:string}={uncommon:"🔵",rare:"💜",legendary:"⭐"};
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:700,background:"rgba(0,0,0,0.88)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"lmFadeIn .2s ease both"}}>
+      <div style={{position:"absolute",inset:0}} onClick={onClose}/>
+      <div style={{position:"relative",width:"min(420px,94vw)",background:"linear-gradient(160deg,#13131A,#1E1828)",borderRadius:20,overflow:"hidden",border:`1px solid ${RARITY_COLORS[legend.rarity]}40`}}>
+        <div style={{padding:"20px 20px 16px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"flex-start",gap:12}}>
+          <span style={{fontSize:40}}>{legend.emoji}</span>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:2,color:"#fff"}}>{legend.name}</div>
+            <div style={{display:"flex",gap:6,marginTop:4,flexWrap:"wrap"}}>
+              <span style={{fontSize:10,padding:"3px 8px",borderRadius:8,background:RARITY_COLORS[legend.rarity]+"22",color:RARITY_COLORS[legend.rarity],fontWeight:700,letterSpacing:1}}>{RARITY_GEMS[legend.rarity]} {legend.rarity.toUpperCase()}</span>
+              <span style={{fontSize:10,padding:"3px 8px",borderRadius:8,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.4)",fontWeight:600,letterSpacing:.5}}>{legend.category}</span>
+              <span style={{fontSize:10,padding:"3px 8px",borderRadius:8,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.4)",fontWeight:600,letterSpacing:.5}}>{legend.era}</span>
+            </div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:20,cursor:"pointer",padding:4}}>✕</button>
+        </div>
+        <div style={{display:"flex",gap:4,padding:"10px 20px",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+          {legend.panels.map((_,i)=>(
+            <div key={i} onClick={()=>setPanel(i)} style={{flex:1,height:3,borderRadius:2,background:i===panel?RARITY_COLORS[legend.rarity]:"rgba(255,255,255,0.1)",cursor:"pointer",transition:"background .2s"}}/>
+          ))}
+        </div>
+        <div style={{padding:"20px",minHeight:180}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:1.5,marginBottom:10}}>PANEL {panel+1} OF {legend.panels.length}</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",lineHeight:1.75}}>{legend.panels[panel]}</div>
+        </div>
+        <div style={{padding:"0 20px 16px",fontSize:11,color:"rgba(255,255,255,0.25)"}}>📍 Found at · {legend.station} · {CITY_NAMES[legend.city]}</div>
+        <div style={{padding:"0 20px 20px",display:"flex",gap:8}}>
+          <button onClick={()=>setPanel(p=>Math.max(0,p-1))} disabled={panel===0} style={{flex:1,padding:"11px",borderRadius:10,background:"rgba(255,255,255,0.06)",border:"none",color:panel===0?"rgba(255,255,255,0.2)":"rgba(255,255,255,0.6)",fontSize:13,cursor:panel===0?"default":"pointer",fontWeight:700}}>← PREV</button>
+          <button onClick={()=>setPanel(p=>Math.min(legend.panels.length-1,p+1))} disabled={panel===legend.panels.length-1} style={{flex:1,padding:"11px",borderRadius:10,background:panel<legend.panels.length-1?RARITY_COLORS[legend.rarity]:"rgba(255,255,255,0.06)",border:"none",color:"#fff",fontSize:13,cursor:panel===legend.panels.length-1?"default":"pointer",fontWeight:700}}>NEXT →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LegendsSection(){
+  const[cityFilter,setCityFilter]=useState<string>("all");
+  const[catFilter,setCatFilter]=useState<string>("all");
+  const[activeLegend,setActiveLegend]=useState<typeof LOCAL_LEGENDS[0]|null>(null);
+  const getUnlocked=():string[]=>{try{return JSON.parse(localStorage.getItem("tgg:legends-unlocked")||"[]");}catch{return[];}};
+  const unlocked=getUnlocked();
+  const cities=["all",...Array.from(new Set(LOCAL_LEGENDS.map(l=>l.city)))];
+  const cats=["all",...Array.from(new Set(LOCAL_LEGENDS.map(l=>l.category)))];
+  const filtered=LOCAL_LEGENDS.filter(l=>(cityFilter==="all"||l.city===cityFilter)&&(catFilter==="all"||l.category===catFilter));
+  const RARITY_COLORS:{[k:string]:string}={uncommon:"#4169E1",rare:"#A855F7",legendary:"#FFB800"};
+  const RARITY_GEMS:{[k:string]:string}={uncommon:"🔵",rare:"💜",legendary:"⭐"};
+  return(
+    <div>
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:6,marginBottom:8}}>
+        {cities.map(c=>(
+          <button key={c} onClick={()=>setCityFilter(c)} style={{flexShrink:0,padding:"5px 10px",borderRadius:14,border:`1.5px solid ${cityFilter===c?"#A855F7":"#EDEBE8"}`,background:cityFilter===c?"#A855F7":"transparent",color:cityFilter===c?"#fff":"rgba(0,0,0,0.5)",fontSize:10,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+            {c==="all"?"ALL":CITY_EMOJIS[c]+" "+c.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:5,overflowX:"auto",paddingBottom:8,marginBottom:14}}>
+        {cats.map(c=>(
+          <button key={c} onClick={()=>setCatFilter(c)} style={{flexShrink:0,padding:"4px 9px",borderRadius:12,border:`1px solid ${catFilter===c?"#4169E1":"#EDEBE8"}`,background:catFilter===c?"#4169E1":"transparent",color:catFilter===c?"#fff":"rgba(0,0,0,0.4)",fontSize:10,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>
+            {c==="all"?"All Categories":c}
+          </button>
+        ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {filtered.map(legend=>{
+          const isUnlocked=unlocked.includes(legend.id);
+          return(
+            <div key={legend.id} onClick={()=>setActiveLegend(legend)} style={{background:isUnlocked?"linear-gradient(160deg,#13131A,#1E1828)":"#F5F3F0",borderRadius:14,padding:"14px 12px",cursor:"pointer",border:`1.5px solid ${isUnlocked?RARITY_COLORS[legend.rarity]+"40":"#EDEBE8"}`,transition:"transform .15s,box-shadow .2s",boxShadow:isUnlocked?"0 4px 16px rgba(168,85,247,0.1)":"none",position:"relative",overflow:"hidden"}}
+              onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.transform="scale(1.02)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.transform="none";}}>
+              {!isUnlocked&&<div style={{position:"absolute",inset:0,background:"rgba(255,255,255,0.6)",backdropFilter:"blur(2px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}><span style={{fontSize:24}}>🔒</span></div>}
+              <div style={{fontSize:28,marginBottom:6}}>{legend.emoji}</div>
+              <div style={{fontSize:12,fontWeight:800,color:isUnlocked?"#fff":"rgba(0,0,0,0.7)",lineHeight:1.2,marginBottom:4}}>{legend.name}</div>
+              <div style={{fontSize:9,color:isUnlocked?"rgba(255,255,255,0.4)":"rgba(0,0,0,0.35)",letterSpacing:.5,marginBottom:6}}>{legend.category} · {legend.era}</div>
+              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                <span style={{fontSize:9,padding:"2px 6px",borderRadius:6,background:RARITY_COLORS[legend.rarity]+(isUnlocked?"33":"22"),color:RARITY_COLORS[legend.rarity],fontWeight:700,letterSpacing:.5}}>{RARITY_GEMS[legend.rarity]} {legend.rarity.toUpperCase()}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {activeLegend&&<LegendDetailModal legend={activeLegend} onClose={()=>setActiveLegend(null)}/>}
+    </div>
+  );
+}
+
+function SceneSection(){
+  const[selCity,setSelCity]=useState<string>("dc");
+  const cities=Object.keys(CITY_SCENE);
+  const scene=CITY_SCENE[selCity];
+  const cards=[
+    {icon:"✨",label:"VIBE",value:scene.vibe},
+    {icon:"🎵",label:"MUSIC",value:scene.music},
+    {icon:"🍽️",label:"FOOD",value:scene.food},
+    {icon:"💬",label:"SLANG",value:scene.slang},
+    {icon:"📍",label:"HOTSPOT",value:scene.hotspot},
+  ];
+  return(
+    <div>
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}}>
+        {cities.map(c=>(
+          <button key={c} onClick={()=>setSelCity(c)} style={{flexShrink:0,padding:"7px 13px",borderRadius:18,border:`1.5px solid ${selCity===c?"#4169E1":"#EDEBE8"}`,background:selCity===c?"linear-gradient(135deg,#4169E1,#A855F7)":"transparent",color:selCity===c?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",letterSpacing:.5}}>
+            {CITY_EMOJIS[c]} {c.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div style={{marginBottom:16}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:22,letterSpacing:2,color:"#0D0D10"}}>{CITY_EMOJIS[selCity]} {CITY_NAMES[selCity]}</div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {cards.map(card=>(
+          <div key={card.label} style={{background:"#fff",borderRadius:14,border:"1px solid #EDEBE8",padding:"14px 16px",display:"flex",gap:12,alignItems:"flex-start"}}>
+            <span style={{fontSize:22,flexShrink:0,marginTop:1}}>{card.icon}</span>
+            <div>
+              <div style={{fontSize:9,fontWeight:800,letterSpacing:2,color:"rgba(0,0,0,0.3)",marginBottom:4}}>{card.label}</div>
+              <div style={{fontSize:14,color:"#0D0D10",lineHeight:1.5}}>{card.value}</div>
+            </div>
+          </div>
+        ))}
+        <div style={{background:"linear-gradient(135deg,rgba(65,105,225,0.06),rgba(168,85,247,0.06))",borderRadius:14,border:"1px solid rgba(65,105,225,0.15)",padding:"14px 16px"}}>
+          <div style={{fontSize:9,fontWeight:800,letterSpacing:2,color:"#4169E1",marginBottom:6}}>💡 DID YOU KNOW</div>
+          <div style={{fontSize:13,color:"rgba(0,0,0,0.7)",lineHeight:1.6}}>{scene.fact}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BattleSection({cityEmojis,cityNames}:{cityEmojis:{[k:string]:string},cityNames:{[k:string]:string}}){
+  const[cityA,cityB]=getCurrentMatchup();
+  const isoWeek=getISOWeek();
+  const sideKey="tgg:battle-side:"+isoWeek;
+  const scoreKey="tgg:battle-score:"+isoWeek;
+  const getSide=():string|null=>{try{return localStorage.getItem(sideKey);}catch{return null;}};
+  const getSavedScore=():number|null=>{try{const v=localStorage.getItem(scoreKey);return v===null?null:Number(v);}catch{return null;}};
+  const[side,setSide]=useState<string|null>(getSide);
+  const[qIdx,setQIdx]=useState(0);
+  const[score,setScore]=useState<number|null>(getSavedScore);
+  const[answered,setAnswered]=useState<number|null>(null);
+  const[done,setDone]=useState(score!==null);
+  const CITY_TRIVIA_MAP:{[k:string]:any[]}={dc:DC_TRIVIA,nyc:NYC_TRIVIA,chi:CHI_TRIVIA,la:LA_TRIVIA,bos:BOS_TRIVIA,atl:ATL_TRIVIA,pdx:PDX_TRIVIA};
+  const allQ=useMemo(()=>{
+    const pool=[...(CITY_TRIVIA_MAP[cityA]||[]),...(CITY_TRIVIA_MAP[cityB]||[])];
+    const shuffled=[...pool].sort(()=>Math.random()-0.5);
+    return shuffled.slice(0,5);
+  },[cityA,cityB]);
+  function pickSide(c:string){setSide(c);localStorage.setItem(sideKey,c);}
+  function answer(idx:number){
+    if(answered!==null)return;
+    setAnswered(idx);
+    const correct=allQ[qIdx].ans===idx;
+    setTimeout(()=>{
+      if(qIdx<allQ.length-1){setQIdx(q=>q+1);setAnswered(null);}
+      else{
+        const finalScore=correct?qIdx+1:qIdx;
+        setScore(finalScore);setDone(true);
+        localStorage.setItem(scoreKey,String(finalScore));
+        addXP(finalScore*40);
+        if(side){
+          fetch("/api/scores",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameKey:"battle-"+side,score:finalScore,deviceId:getDeviceId()})}).catch(()=>{});
+        }
+      }
+    },900);
+  }
+  const q=allQ[qIdx];
+  const ACCENT="#A855F7";
+  if(!side){
+    return(
+      <div style={{textAlign:"center"}}>
+        <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",letterSpacing:2,marginBottom:8}}>WEEK {isoWeek} MATCHUP</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:2,color:"#0D0D10",marginBottom:4}}>City vs. City</div>
+        <div style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center",margin:"20px 0"}}>
+          <div style={{textAlign:"center"}}><div style={{fontSize:40}}>{cityEmojis[cityA]}</div><div style={{fontWeight:800,fontSize:13}}>{cityNames[cityA]}</div></div>
+          <div style={{fontSize:20,fontWeight:800,color:"rgba(0,0,0,0.2)"}}>VS</div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:40}}>{cityEmojis[cityB]}</div><div style={{fontWeight:800,fontSize:13}}>{cityNames[cityB]}</div></div>
+        </div>
+        <div style={{fontSize:13,color:"rgba(0,0,0,0.5)",marginBottom:20}}>Pick your city. Answer 5 trivia questions. Earn XP for your side.</div>
+        <div style={{display:"flex",gap:12,justifyContent:"center"}}>
+          {[cityA,cityB].map(c=>(
+            <button key={c} onClick={()=>pickSide(c)} style={{padding:"16px 24px",borderRadius:16,border:"2px solid #EDEBE8",background:"#fff",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:8,transition:"border-color .2s,box-shadow .2s",minWidth:130}}
+              onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor=ACCENT;(e.currentTarget as HTMLButtonElement).style.boxShadow="0 0 20px rgba(168,85,247,0.15)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor="#EDEBE8";(e.currentTarget as HTMLButtonElement).style.boxShadow="none";}}>
+              <span style={{fontSize:36}}>{cityEmojis[c]}</span>
+              <span style={{fontWeight:800,fontSize:14,color:"#0D0D10"}}>{cityNames[c]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if(done){
+    return(
+      <div style={{textAlign:"center",padding:"20px 0"}}>
+        <div style={{fontSize:48,marginBottom:12}}>{cityEmojis[side]}</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,color:"#0D0D10",marginBottom:4}}>BATTLE COMPLETE</div>
+        <div style={{fontSize:14,color:"rgba(0,0,0,0.5)",marginBottom:4}}>You scored <strong>{score}</strong> out of {allQ.length} for {cityNames[side]}</div>
+        <div style={{fontSize:13,color:ACCENT,fontWeight:700,marginBottom:16}}>+{(score||0)*40} XP earned</div>
+        <div style={{fontSize:12,color:"rgba(0,0,0,0.35)"}}>Battle resets next week · Week {isoWeek+1} matchup coming soon</div>
+      </div>
+    );
+  }
+  if(!q)return null;
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+        <span style={{fontSize:24}}>{cityEmojis[side]}</span>
+        <div>
+          <div style={{fontWeight:800,fontSize:13,color:"#0D0D10"}}>Representing {cityNames[side]}</div>
+          <div style={{fontSize:11,color:"rgba(0,0,0,0.4)"}}>Question {qIdx+1} of {allQ.length}</div>
+        </div>
+      </div>
+      <div style={{height:4,borderRadius:2,background:"#F0EDEA",marginBottom:20,overflow:"hidden"}}>
+        <div style={{height:"100%",width:`${(qIdx/allQ.length)*100}%`,background:"linear-gradient(90deg,#A855F7,#4169E1)",transition:"width .4s"}}/>
+      </div>
+      <div style={{background:"#fff",borderRadius:16,border:"1px solid #EDEBE8",padding:"18px 16px",marginBottom:14}}>
+        <div style={{fontSize:15,color:"#0D0D10",fontWeight:600,lineHeight:1.5}}>{q.q}</div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        {q.opts.map((opt:string,i:number)=>{
+          const isCorrect=q.ans===i;
+          const isSelected=answered===i;
+          let bg="#fff",border="1px solid #EDEBE8",color="#0D0D10";
+          if(answered!==null){
+            if(isCorrect){bg="#E8F5E9";border="1.5px solid #4CAF50";color="#1B5E20";}
+            else if(isSelected){bg="#FFEBEE";border="1.5px solid #F44336";color="#B71C1C";}
+          }
+          return(
+            <button key={i} onClick={()=>answer(i)} style={{padding:"13px 16px",borderRadius:12,border,background:bg,color,fontSize:14,fontWeight:600,cursor:answered===null?"pointer":"default",textAlign:"left",transition:"background .2s,border-color .2s"}}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── CULTURE VIEW ───────────────────────────────────────────────────────────────
+function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
+  const[pill,setPill]=useState<"stories"|"legends"|"scene"|"battle">("stories");
+  const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
+  const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
+  const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["battle","⚔️ BATTLE"]];
+  return(
+    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:80}}>
+      <div style={{padding:"20px 16px 0"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,backgroundImage:"linear-gradient(90deg,#A855F7,#4169E1)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",marginBottom:4}}>CULTURE</div>
+        <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",marginBottom:16}}>Dive into the stories behind every city.</div>
+        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4}}>
+          {PILLS.map(([k,label])=>(
+            <button key={k} onClick={()=>setPill(k as any)} style={{flexShrink:0,padding:"8px 14px",borderRadius:20,border:`1.5px solid ${pill===k?"#A855F7":"#EDEBE8"}`,background:pill===k?"linear-gradient(135deg,#A855F7,#4169E1)":"transparent",color:pill===k?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>{label}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{padding:"20px 16px"}}>
+        {pill==="stories"&&<StorylinesSection/>}
+        {pill==="legends"&&<LegendsSection/>}
+        {pill==="scene"&&<SceneSection/>}
+        {pill==="battle"&&<BattleSection cityEmojis={CITY_EMOJIS} cityNames={CITY_NAMES}/>}
+      </div>
     </div>
   );
 }
