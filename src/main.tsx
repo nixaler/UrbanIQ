@@ -7781,7 +7781,11 @@ function CultureQuizSection(){
   const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const[selCity,setSelCity]=useState("dc");
-  const[qPool,setQPool]=useState<{q:string,opts:string[],ans:number}[]>([]);
+  const[qPool,setQPool]=useState<{q:string,opts:string[],ans:number}[]>(()=>{
+    const pool=[...(CULTURE_TRIVIA["dc"]||[])];
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    return pool.slice(0,5);
+  });
   const[qIdx,setQIdx]=useState(0);
   const[answered,setAnswered]=useState<number|null>(null);
   const[correct,setCorrect]=useState(0);
@@ -7792,8 +7796,6 @@ function CultureQuizSection(){
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
     return pool.slice(0,5);
   }
-
-  useState(()=>{setQPool(drawQuestions("dc"));});
 
   function pickCity(c:string){
     setSelCity(c);
