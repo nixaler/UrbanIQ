@@ -7427,6 +7427,22 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
 const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
 const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
 
+class CultureErrorBoundary extends React.Component<{children:React.ReactNode},{hasError:boolean,msg:string}>{
+  constructor(p:any){super(p);this.state={hasError:false,msg:""};}
+  static getDerivedStateFromError(e:any){return{hasError:true,msg:String(e?.message||e)};}
+  render(){
+    if(this.state.hasError)return(
+      <div style={{padding:32,textAlign:"center",color:"rgba(0,0,0,0.5)"}}>
+        <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:8}}>Something went wrong in CULTURE</div>
+        <div style={{fontSize:11,fontFamily:"monospace",background:"#f0f0f0",padding:"8px 12px",borderRadius:8,textAlign:"left",wordBreak:"break-word"}}>{this.state.msg}</div>
+        <button onClick={()=>this.setState({hasError:false,msg:""})} style={{marginTop:16,padding:"10px 24px",borderRadius:8,background:"#A855F7",border:"none",color:"#fff",fontWeight:700,cursor:"pointer"}}>RETRY</button>
+      </div>
+    );
+    return this.props.children;
+  }
+}
+
 function StoryModal({story,onClose}:{story:typeof CITY_STORIES[0],onClose:()=>void}){
   const saved=()=>{try{return JSON.parse(localStorage.getItem("tgg:story:"+story.id)||"{}");}catch{return{};}};
   const[chapter,setChapter]=useState<number>(saved().chapter||0);
@@ -7944,12 +7960,14 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
         </div>
       </div>
       <div style={{padding:"20px 16px"}}>
-        {pill==="stories"&&<StorylinesSection/>}
-        {pill==="legends"&&<LegendsSection/>}
-        {pill==="scene"&&<SceneSection/>}
-        {pill==="quiz"&&<CultureQuizSection/>}
-        {pill==="timeline"&&<TimelineSection/>}
-        {pill==="battle"&&<BattleSection cityEmojis={CITY_EMOJIS} cityNames={CITY_NAMES}/>}
+        <CultureErrorBoundary>
+          {pill==="stories"&&<StorylinesSection/>}
+          {pill==="legends"&&<LegendsSection/>}
+          {pill==="scene"&&<SceneSection/>}
+          {pill==="quiz"&&<CultureQuizSection/>}
+          {pill==="timeline"&&<TimelineSection/>}
+          {pill==="battle"&&<BattleSection cityEmojis={CITY_EMOJIS} cityNames={CITY_NAMES}/>}
+        </CultureErrorBoundary>
       </div>
     </div>
   );
