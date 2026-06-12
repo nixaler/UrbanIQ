@@ -5697,7 +5697,7 @@ function DkCard({g,featured,delay,darkHov,setDarkHov,onSelectGame}:{g:any,featur
 }
 function AnimatedCityBg(){
   return(
-    <div style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden",background:"#F7F6F4"}}>
+    <div style={{position:"fixed",inset:0,zIndex:-1,pointerEvents:"none",overflow:"hidden",background:"#F7F6F4"}}>
       <svg viewBox="0 0 520 400" preserveAspectRatio="xMidYMax meet" style={{position:"absolute",bottom:0,left:0,width:"100%",height:"100%",opacity:0.045}} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <style>{`
