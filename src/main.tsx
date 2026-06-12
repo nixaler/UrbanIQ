@@ -264,6 +264,7 @@ function PackOpening({card,onDone,isDaily=false}:{card:any,onDone:()=>void,isDai
         @keyframes dailyCardPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
         @keyframes packCardReveal{from{opacity:0;transform:scale(0.7) rotateY(-25deg)}to{opacity:1;transform:scale(1) rotateY(0deg)}}
       `}</style>
+      <button onClick={onDone} style={{position:"absolute",top:16,right:16,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:8,padding:"6px 14px",color:"rgba(255,255,255,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"inherit"}}>SKIP ✕</button>
       {phase==="intro"&&(
         <div style={{textAlign:"center",animation:"dailyCardIntroIn .6s ease both"}}>
           <div style={{fontSize:64,marginBottom:18,animation:"dailyCardPulse 1.8s ease-in-out infinite"}}>🎁</div>
