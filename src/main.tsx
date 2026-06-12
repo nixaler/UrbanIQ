@@ -3776,7 +3776,29 @@ const LOCAL_LEGENDS=[
   {id:"tom-bradley",name:"Tom Bradley",city:"la",station:"7th St/Metro Center",era:"1960s–1993",category:"Politics",emoji:"🏛️",rarity:"rare",panels:["Thomas Bradley was born in a Texas sharecropper's shack in 1917 and moved to Los Angeles as a child. He became an LAPD officer, then a city councilman, then in 1973 the first Black mayor of Los Angeles — winning in a majority-white city during a deeply divided era by building the broadest coalition the city had ever seen.","Bradley served five terms — 20 years — and transformed LA from a sprawling car city into something with ambitions of a global metropolis. He brought the 1984 Olympics to Los Angeles. He pushed for the original Metro Rail system that eventually became the Blue Line, now Expo Line, the same network that stops at 7th Street Metro Center.","The 7th Street station opened in 1990, in the final stretch of Bradley's last term. His legacy is complicated — the '92 uprising happened on his watch — but the Metro system he championed still moves people who couldn't afford the car he grew up without. That's infrastructure as moral act."]},
   {id:"malcolm-x",name:"Malcolm X",city:"bos",station:"Roxbury Crossing",era:"1940s–1965",category:"Civil Rights",emoji:"✊",rarity:"legendary",panels:["Malcolm Little arrived in Boston in 1940 at 15 to live with his half-sister Ella in Roxbury — the heart of Black Boston. He shined shoes at Roseland Ballroom, hustled on the streets, went to prison in 1946. He walked out of Charlestown Prison a different man named Malcolm X.","After prison, Malcolm X rose through the Nation of Islam to become its most electric voice — then broke with it, visited Mecca, returned as El-Hajj Malik El-Shabazz, and began building something new. He was assassinated in New York in 1965 at 39. The evolution was still happening.","Roxbury Crossing on the Orange Line sits in the neighborhood that made Malcolm before the Nation found him. The Massachusetts Avenue corridor, Dudley Square, the three-deckers where he learned to read people — it's all still there. Walk it slowly. Understand what he was running from, and what he was running toward."]},
   {id:"ursula-le-guin",name:"Ursula K. Le Guin",city:"pdx",station:"Library/SW 9th Avenue",era:"1950s–2018",category:"Literature",emoji:"📚",rarity:"rare",panels:["Ursula Kroeber Le Guin was born in Berkeley but lived most of her life in Portland, Oregon — a city she loved fiercely and wrote into the fabric of her imagination. Her father was an anthropologist. Her mother wrote Ishi in Two Worlds. She inherited their gift for other worlds.","Le Guin wrote The Left Hand of Darkness, The Dispossessed, the Earthsea series, and dozens of other works that used fantasy and science fiction to interrogate gender, power, capitalism, and freedom with more clarity than most literary fiction ever managed. She was the most important American writer working in genre.","The Library MAX stop — a short walk from Powell's Books, where her work fills entire shelves — honors what Portland has always believed: that books are public infrastructure. Le Guin agreed. She gave a speech at the National Book Awards in 2014 telling writers to resist the market. The crowd gave her a standing ovation. She sat down and smiled."]},
-  {id:"marion-barry",name:"Marion Barry",city:"dc",station:"Columbia Heights",era:"1970s–2014",category:"Politics",emoji:"🏙️",rarity:"uncommon",panels:["Marion Shepilov Barry arrived in Washington from Mississippi and became the most complicated figure in DC history — civil rights activist, four-term mayor, convicted felon, beloved father of DC statehood. The city loved him and watched him fall and then elected him again.","Barry built DC's summer youth employment program from scratch, hired Black professionals into city government at a scale never seen before, and negotiated DC's fiscal recovery in the 1990s with a debt-laden city that everyone else had written off. He also smoked crack on federal video. He didn't hide from either legacy.","Columbia Heights was a neighborhood Barry fought for — pushing development, resisting disinvestment during the crack epidemic his own use didn't help. He was reelected to city council until he died in 2014. At his funeral the line stretched for blocks. DC is complicated. Marion Barry was DC."]}
+  {id:"marion-barry",name:"Marion Barry",city:"dc",station:"Columbia Heights",era:"1970s–2014",category:"Politics",emoji:"🏙️",rarity:"uncommon",panels:["Marion Shepilov Barry arrived in Washington from Mississippi and became the most complicated figure in DC history — civil rights activist, four-term mayor, convicted felon, beloved father of DC statehood. The city loved him and watched him fall and then elected him again.","Barry built DC's summer youth employment program from scratch, hired Black professionals into city government at a scale never seen before, and negotiated DC's fiscal recovery in the 1990s with a debt-laden city that everyone else had written off. He also smoked crack on federal video. He didn't hide from either legacy.","Columbia Heights was a neighborhood Barry fought for — pushing development, resisting disinvestment during the crack epidemic his own use didn't help. He was reelected to city council until he died in 2014. At his funeral the line stretched for blocks. DC is complicated. Marion Barry was DC."]},
+  {id:"billie-holiday",name:"Billie Holiday",city:"balt",station:"Lexington Market",era:"1930s–1959",category:"Music",emoji:"🎤",rarity:"legendary",panels:["Eleanora Fagan was born in Philadelphia but raised on the streets of Baltimore, singing for nickels in the waterfront taverns of Fells Point. The city's cruelty and beauty shaped the voice that would become Lady Day — a sound drenched in the salt of the Chesapeake and the weight of Jim Crow.","Holiday sang in Baltimore clubs before Harlem ever heard her name. She learned jazz phrasing from Louis Armstrong records played on secondhand phonographs, then invented her own — a behind-the-beat intimacy that made every song sound like a confession whispered directly to you across a small table.","She recorded 'Strange Fruit' in 1939, the most devastating protest song in American history. Her voice never left Baltimore entirely. The melancholy, the resilience, the refusal to be smaller than the truth — all of it was formed in a city that treated her badly and made her great."]},
+  {id:"cab-calloway",name:"Cab Calloway",city:"balt",station:"State Center",era:"1930s–1994",category:"Music",emoji:"🎩",rarity:"rare",panels:["Cabell Calloway III grew up in Baltimore and attended Douglas High School before heading north to become the most flamboyant showman of the swing era. He led his orchestra at the Cotton Club in Harlem for years while New York claimed him — but Baltimore made the man who made the zoot suit iconic.","'Minnie the Moocher' in 1931 introduced the world to hi-de-hi-de-hi-de-ho — scat improvisation as audience participation, Calloway conducting the crowd like a gospel preacher. The song went to number one and stayed in the American imagination forever. He performed it live until his eighties.","Calloway returned to Baltimore throughout his life, knowing the city had given him the rhythm and showmanship no conservatory could teach. State Center sits in the heart of the neighborhood that produced him — a reminder that the greatest entertainers are not made in spotlight, but in the hunger to find one."]},
+  {id:"tupac-baltimore",name:"Tupac Shakur",city:"balt",station:"Mondawmin",era:"1980s–1996",category:"Music",emoji:"🌹",rarity:"legendary",panels:["Tupac Amaru Shakur attended Baltimore School for the Arts as a teenager in the late 1980s, studying acting, poetry, jazz, and ballet on a scholarship in a city he would later call the most formative of his life. He arrived from New York angry and left with the tools to make that anger art.","In Baltimore he wrote his first poems, performed Shakespeare, studied under teachers who told him his voice mattered. He was not yet a rapper — he was a student discovering that his sensitivity was a weapon, not a weakness. The school gave him permission to be complicated.","He was shot dead in Las Vegas in 1996 at 25, but Baltimore never forgot him. Mondawmin Mall — the transit hub, the place where teenagers gather — is exactly the kind of intersection Tupac wrote about: where youth and poverty and talent and danger share the same narrow sidewalk. His murals appear here still."]},
+  {id:"basquiat",name:"Jean-Michel Basquiat",city:"nyc",station:"Bedford-Nostrand Avs",era:"1980s",category:"Art",emoji:"🎨",rarity:"legendary",panels:["Jean-Michel Basquiat grew up in Brooklyn and began tagging Manhattan walls as SAMO© — Same Old Shit — at seventeen, writing aphorisms that confused and captivated the downtown art world. He slept in cardboard boxes in Tompkins Square Park and sold postcards on the street before a gallery showed his work.","By 1982 he was the most talked-about artist in New York, exhibiting with Andy Warhol, fetching six-figure prices at auction, on the cover of the New York Times Magazine. He was twenty-one. He had gone from homeless to celebrated without the city bothering to make it make sense.","Basquiat died of a heroin overdose in 1988 at twenty-seven in his Great Jones Street loft. The Bedford-Nostrand station sits in Bedford-Stuyvesant, the Brooklyn neighborhood where he formed his vision of Black life in America — crowded and luminous and brutally undervalued. His paintings still sell for over a hundred million dollars. He never saw a fraction of that."]},
+  {id:"nina-simone",name:"Nina Simone",city:"nyc",station:"125 St",era:"1950s–2003",category:"Music",emoji:"🎹",rarity:"legendary",panels:["Eunice Kathleen Waymon came to New York from North Carolina with a scholarship dream to study at Juilliard that the Curtis Institute ultimately denied her, she believed, because she was Black. She started playing in Atlantic City bars under the name Nina Simone, combining classical technique with blues and jazz in rooms that had never heard anything like it.","Harlem's 125th Street corridor became her spiritual address — the neighborhood where Black intellectuals and artists gathered to argue about what freedom meant. Her 1964 song 'Mississippi Goddam' was the most explicit political statement any Black artist had made on record, direct and furious and unapologetic. Radio stations returned the record unplayed.","She left America in 1969, unable to bear what it kept doing to Black people. She lived in Liberia, Barbados, France. She returned for concerts but not to stay. 125th Street remains the heart of Harlem she helped define — a corridor that still plays her music from open windows on hot August nights when the city almost forgives itself."]},
+  {id:"patti-smith",name:"Patti Smith",city:"nyc",station:"8 Av",era:"1970s–present",category:"Literature",emoji:"📖",rarity:"rare",panels:["Patricia Lee Smith arrived in New York in 1967 with seven dollars and checked into the Chelsea Hotel, where she met Robert Mapplethorpe and began the collaboration that would define downtown Manhattan's artistic underground. She was a poet first — rock and roll came later as an extension of the same impulse toward transgression and witness.","Her 1975 album 'Horses' opened with a rearrangement of Van Morrison's 'Gloria' that announced a new voice — neither folk nor punk nor rock but something rawer and more literary than any of them. The CBGB scene on the Bowery became her stage, her congregation, her argument with the world.","Smith is still writing, still performing, still walking the streets of a Manhattan that barely resembles the one she inhabited. Her memoir 'Just Kids' is one of the great New York books. The 8th Avenue stop puts you near Chelsea, near the Hotel that still stands as a monument to everyone who ever arrived in this city with nothing and made something that lasted."]},
+  {id:"gwendolyn-brooks",name:"Gwendolyn Brooks",city:"chi",station:"35th-Bronzeville-IIT",era:"1940s–2000",category:"Literature",emoji:"📝",rarity:"legendary",panels:["Gwendolyn Elizabeth Brooks was born in Topeka but raised in Chicago, and she became the first Black author to win the Pulitzer Prize for Poetry in 1950 for 'Annie Allen' — a collection that documented Black womanhood in Bronzeville with technical precision and moral ferocity that the literary establishment had never seen from any quarter.","She taught poetry workshops in prisons and public schools, believing that literature was not an ornament but a necessity. She changed her publisher from Harper & Row to Broadside Press, a Black-owned Detroit press, to put money into the community. She said art had to serve the people who needed it most.","Brooks lived in Bronzeville for most of her life, writing about the people who walked past her window on their way to work and church and struggle. The 35th-Bronzeville-IIT Green Line stop sits in the neighborhood she made immortal. She called Bronzeville home. The neighborhood calls her back with every reading of 'We Real Cool.'"]},
+  {id:"richard-wright",name:"Richard Wright",city:"chi",station:"Garfield",era:"1940s–1960",category:"Literature",emoji:"📚",rarity:"rare",panels:["Richard Nathaniel Wright came to Chicago from Mississippi in 1927 on the Illinois Central Railroad — one of hundreds of thousands making the Great Migration north. He worked menial jobs, joined the Communist Party, and spent his evenings writing in a South Side rooming house about the world that American literature had refused to look at.","'Native Son' in 1940 introduced Bigger Thomas — a young Black man whose violence the novel forces you to understand as the only rational response to a system designed to crush him. It was the first Book-of-the-Month Club selection by a Black author. It was shocking. It was true. It sold two hundred thousand copies in three weeks.","Wright left America for Paris in 1947, unable to tolerate what the country did to Black people and unwilling to pretend otherwise. The Garfield Green Line stop sits deep on the South Side, in neighborhoods that still live the conditions Wright described. His books are still banned in some school districts. His observations are still accurate."]},
+  {id:"common",name:"Common",city:"chi",station:"87th",era:"1990s–present",category:"Music",emoji:"🎵",rarity:"uncommon",panels:["Lonnie Rashid Lynn grew up in Chicago's South Side and released his debut album as Common Sense in 1992, establishing a lane for conscious rap that didn't ask permission from either the gangsta rap mainstream or the white indie gatekeepers. He rapped about women, God, Black power, and basketball with equal sincerity.","He won an Oscar in 2015 for 'Glory' from the film Selma, co-written with John Legend — a song about the Selma to Montgomery marches that played over footage of the Edmund Pettus Bridge. He had also won a Grammy. He taught at University of Chicago. He represented Chicago at every level without ever pretending the South Side was simple.","The 87th Street Red Line stop sits in Chatham and Auburn Gresham, Chicago's deeply residential Black South Side — the world Common grew up adjacent to and wrote about with affection and clear-eyed honesty. He stayed. He came back. He still performs here. That loyalty is part of the art."]},
+  {id:"kendrick-lamar",name:"Kendrick Lamar",city:"la",station:"Crenshaw/LAX",era:"2000s–present",category:"Music",emoji:"🎤",rarity:"legendary",panels:["Kendrick Lamar Duckworth grew up in Compton, California — not Los Angeles proper but its shadow, a city that LA's transit and investment maps treated as invisible. He started rapping at thirteen under the name K-Dot, making mixtapes in his bedroom while gang violence moved through the streets like weather.","'good kid, m.A.A.d city' in 2012 was a concept album that treated Compton's streets with the moral complexity of a great novel. 'DAMN.' in 2017 won the Pulitzer Prize for Music — the first hip-hop album to do so. He performed at the Super Bowl halftime show in 2022 and turned it into a lecture on power.","The Crenshaw/LAX Metro station is in the heart of the corridor Kendrick made mythic — Crenshaw Boulevard, the 110 freeway, the neighborhoods where Black LA has held on through disinvestment and displacement and still produced one of the greatest artists America has ever made. He bought property in Compton. He stayed."]},
+  {id:"ice-cube",name:"Ice Cube",city:"la",station:"Vermont/Athens",era:"1980s–present",category:"Music",emoji:"🎤",rarity:"rare",panels:["O'Shea Jackson grew up in South Los Angeles, attended Phoenix High School in Crenshaw, and joined NWA at sixteen — writing lyrics that described LAPD brutality and South Central street life with documentary accuracy that terrified radio programmers and congresspeople equally. 'Straight Outta Compton' in 1988 was the most dangerous album in America.","Ice Cube left NWA in 1989 over money disputes, released 'AmeriKKKa's Most Wanted' in 1990, and began building a parallel career as an actor that eventually made him one of Hollywood's most bankable comedic stars. The same person who wrote 'Fuck tha Police' made 'Friday' and the 'Barbershop' series. Both were true.","Vermont/Athens station sits in South LA — the neighborhood where Cube learned to see clearly enough to report what he saw. The LAPD's relationship with this community is still complicated. NWA's music documented it when no one else would. That documentation is now in the Library of Congress. Truth eventually gets its due."]},
+  {id:"joni-mitchell",name:"Joni Mitchell",city:"la",station:"Hollywood/Highland",era:"1960s–present",category:"Music",emoji:"🎸",rarity:"legendary",panels:["Roberta Joan Anderson — Joni Mitchell — came to Los Angeles from Canada in the late 1960s and settled in Laurel Canyon, the winding hills neighborhood that became the center of the California singer-songwriter movement. Her neighbors were Carole King, James Taylor, David Crosby, Graham Nash. They played each other songs on back porches.","'Blue' in 1971 is widely considered the greatest singer-songwriter album ever recorded — ten songs of radical emotional honesty about love, travel, longing, and freedom that have never been matched for confessional depth. 'California,' 'A Case of You,' 'River' — each song a small perfect world. She set the standard everyone else was measured against.","Mitchell stopped performing for years after developing Morgellons disease, then returned triumphantly at Newport Folk Festival in 2022, embraced by the music world she had largely retreated from. Hollywood/Highland puts you in the hills she made mythic — the canyons and eucalyptus and perpetual golden light that she turned into the sound of longing for somewhere you already are."]},
+  {id:"john-lewis",name:"John Lewis",city:"atl",station:"Five Points",era:"1960s–2020",category:"Civil Rights",emoji:"✊",rarity:"legendary",panels:["John Robert Lewis was born on a sharecropper farm in Alabama and came to Nashville to study theology — where he joined the sit-in movement at lunch counters, was beaten, arrested, and kept going. He was twenty-three when he spoke at the March on Washington in 1963, twenty-five when Alabama state troopers beat him on the Edmund Pettus Bridge in Selma on Bloody Sunday, 1965.","Lewis was arrested over forty times in service of the civil rights movement. He was elected to Congress from Atlanta in 1986 and served until his death in 2020, becoming the moral conscience of the institution — the person other members looked to when they needed to know what was right. He called the work 'good trouble, necessary trouble.'","Five Points is the center of Atlanta's transit system — all MARTA lines converge here, the city's public infrastructure meeting point. Lewis believed in public infrastructure as moral commitment: the right of every person to move freely through their city. He spent his life fighting for that right in every form it took."]},
+  {id:"gucci-mane",name:"Gucci Mane",city:"atl",station:"Bankhead",era:"2000s–present",category:"Music",emoji:"🧊",rarity:"uncommon",panels:["Radric Delantic Davis grew up in the Bankhead neighborhood of Atlanta's west side — a community defined by the intersection of poverty, creativity, and street life that Atlanta's music industry was built on top of. He started rapping in 2005 and helped define trap music's sound before trap was a genre name anyone used.","Gucci Mane went to federal prison in 2013 and came out in 2016 transformed — sober, physically healthy, writing a memoir about addiction and self-destruction with the same directness that made his music compelling. The transformation was genuine and public and unprecedented for an artist of his stature.","Bankhead is not on the MARTA rail map yet — but it should be, because no neighborhood has contributed more to Atlanta's global musical identity. Gucci's catalog from the mid-2000s is a documentary of that neighborhood's sound, its humor, its violence, and its unexpected gentleness. He got the ice cream cone tattoo on his face. Atlanta understands."]},
+  {id:"lil-jon",name:"Lil Jon",city:"atl",station:"West End",era:"2000s",category:"Music",emoji:"👑",rarity:"uncommon",panels:["Jonathan Smith grew up in Atlanta and became the architect of crunk — a maximalist subgenre of Southern hip-hop characterized by shouted call-and-response lyrics, thunderous bass, and an energy level calibrated specifically for the moment before a crowd loses its collective mind. Crunk was Atlanta exporting its id to the world.","'Yeah!' with Usher and Ludacris in 2004 was the song of the year, spending twelve weeks at number one — Lil Jon's production style meeting Usher's R&B precision in a combination that felt genuinely new. The chalice, the dreads, the YEAAAAH — Lil Jon was building a persona as precise and intentional as any in pop music.","West End is one of Atlanta's oldest Black neighborhoods, anchored by the AUC — the Atlanta University Center, home of Morehouse, Spelman, and Clark Atlanta. Lil Jon came from the same South Atlanta cultural ecosystem that the HBCUs cultivated. Crunk was not mindless. It was the sound of people who worked all week being free on Saturday night."]},
+  {id:"chuck-brown",name:"Chuck Brown",city:"dc",station:"Shaw-Howard U",era:"1960s–2012",category:"Music",emoji:"🥁",rarity:"legendary",panels:["Charles Louis Brown taught himself guitar in prison and spent the 1960s and 1970s playing every club on DC's chitlin' circuit before inventing something no one had heard before — a continuous percussive groove that kept the party going between songs, never letting the beat drop. He called it go-go. The city called it home.","'Bustin' Loose' in 1978 was go-go's first national hit, reaching number one on the R&B chart. But go-go was always more than a record — it was a live event, a call-and-response between Chuck and the crowd, an ongoing conversation that existed only in real time between Washington DC and itself. It never really exported. It belonged here.","Chuck Brown died in 2012 at 75 and the city held a funeral that felt like a wake for something larger than one man. Go-go music is DC's official music by city law since 2020. Shaw-Howard U station sits in the heart of the neighborhood that gave Chuck his ear and his audience — the Black DC that built something beautiful from what the city left behind."]},
+  {id:"wale",name:"Wale",city:"dc",station:"U Street/Afr-Amer Civil War Memorial",era:"2000s–present",category:"Music",emoji:"🎤",rarity:"uncommon",panels:["Olubowale Victor Akintimehin — Wale — grew up in DC and Prince George's County Maryland and became the first rapper to make Washington DC's specific identity central to his art. His Seinfeld mixtape in 2008, built around samples from the television show, established a voice that was intellectual, sensitive, and completely DC in its references and preoccupations.","Wale signed to Rick Ross's Maybach Music Group and released 'The Matrimony' in 2015, a meditation on commitment and Black love that became one of R&B's most sampled wedding songs. He rapped about DC's go-go scene, its neighborhoods, its fashion, its specific way of being Black in America's most politically charged city.","U Street/Afr-Amer Civil War Memorial station is Wale's station — the corridor where DC's musical history lives in its oldest form and its newest. He is DC's ambassador to the rap world in the same way Duke Ellington was DC's ambassador to jazz: someone who absorbed the city's specific frequency and transmitted it outward without losing the signal."]},
+  {id:"dave-chappelle",name:"Dave Chappelle",city:"dc",station:"Congress Heights",era:"1990s–present",category:"Art",emoji:"🎭",rarity:"rare",panels:["David Khari Webber Chappelle grew up in Silver Spring Maryland and Southeast DC, the son of a music professor and a Unitarian minister who raised him to take ideas seriously. He started performing stand-up comedy at fourteen and by the early 2000s had a show on Comedy Central that redefined what American satire could do on television.","'Chappelle's Show' ran for two seasons before he walked away from a fifty-million dollar contract in 2005, saying he didn't want to make comedy that he feared was being laughed at for the wrong reasons. He moved to Yellow Springs Ohio with his family and largely disappeared from public life for several years. The refusal was itself a form of protest.","He returned to comedy with Netflix specials that made him the most commercially successful stand-up comedian alive and also the most controversial — a reminder that comedy as protest cuts multiple directions. Congress Heights, his DC neighborhood, is Southeast — the part of the city that tourists and politicians forget exists. He still knows it."]},
+  {id:"elliott-smith",name:"Elliott Smith",city:"pdx",station:"Rose Quarter TC",era:"1990s–2003",category:"Music",emoji:"🎸",rarity:"rare",panels:["Steven Paul Smith moved to Portland as a teenager and spent formative years in the city's indie music scene before recording some of his early solo albums in Portland basements and borrowed studios. His introspective, acoustic songs about depression, addiction, and longing found their home in a city that rewarded quiet genius.","His album 'Either/Or' in 1997 established his reputation for confessional songwriting of devastating precision. His song 'Miss Misery,' written for the film 'Good Will Hunting,' earned him an Academy Award nomination in 1998 — he performed it at the Oscars in a white suit opposite Celine Dion. The image was surreal: Portland's quietest voice on the world's biggest stage.","Elliott Smith died in Los Angeles in 2003 at 34 under circumstances that remain disputed. His legacy is enormous — every acoustic indie songwriter who followed owes him a debt. A tribute wall in Los Angeles carries fan messages. Portland remembers him at the Rose Quarter, the venue area where he once played small clubs before the world noticed."]},
+  {id:"gus-van-sant",name:"Gus Van Sant",city:"pdx",station:"Library/SW 9th Avenue",era:"1980s–present",category:"Art",emoji:"🎬",rarity:"rare",panels:["Gus Van Sant moved to Portland in the late 1970s and began making films about the city's margins — the street youth, the drug users, the people that Portland's progressive self-image preferred not to see. 'Drugstore Cowboy' in 1989 shot on location in Portland and gave Matt Dillon the best role of his career. The city looked at itself and recognized something true.","'My Own Private Idaho' in 1991 brought River Phoenix and Keanu Reeves to Portland's streets, making a film about queer homeless youth that used Shakespeare's Henry IV as its structural skeleton. Portland's punk and queer communities had existed in the margins for decades. Van Sant made them visible on international screens.","'Good Will Hunting' in 1997 was set in Boston but Van Sant brought his Portland sensibility to it — the attention to class, to the relationship between intelligence and opportunity, to the way institutions exploit working-class genius. He won the Academy Award for Best Director. He still lives in Portland. The Library MAX stop is steps from Powell's Books, where his films line the shelves next to Ursula Le Guin."]},
+  {id:"donna-summer",name:"Donna Summer",city:"bos",station:"Roxbury Crossing",era:"1950s–2012",category:"Music",emoji:"🎵",rarity:"rare",panels:["LaDonna Adrian Gaines grew up in the Mission Hill neighborhood of Boston, singing in church choirs with a voice that was, from childhood, clearly extraordinary. She left Boston at eighteen to pursue musical theater in New York, then moved to Germany, where she met producer Giorgio Moroder and transformed herself into the Queen of Disco — Donna Summer.","'Love to Love You Baby' in 1975 was seventeen minutes of something no one had heard before on mainstream radio. 'Hot Stuff,' 'Bad Girls,' 'Last Dance' — she won five Grammys and became the defining voice of the disco era, a genre that was also, quietly, the music of Black and queer liberation in an era when both were under assault.","She died in 2012 at 63 from lung cancer, having never smoked — she believed it was caused by inhaling toxins in the air near Ground Zero, where she had volunteered after September 11th. Roxbury Crossing is the Orange Line stop nearest Mission Hill, the Boston neighborhood that formed her voice before the world knew her name. Boston has not entirely forgotten."]},
+  {id:"james-brown-boston",name:"James Brown",city:"bos",station:"Ruggles",era:"1960s–2006",category:"Music",emoji:"🎤",rarity:"uncommon",panels:["James Joseph Brown Jr. is from Georgia — Augusta, specifically — and spent most of his career in the South and on the road. But on the night of April 5th, 1968, the night after Martin Luther King Jr. was assassinated, James Brown was scheduled to perform at Boston Garden. The city was terrified of what might happen.","Boston's mayor Kevin White made an extraordinary decision: he allowed WGBH to broadcast the concert live on public television, believing that if people were watching James Brown they wouldn't be in the streets. An estimated 100,000 Bostonians watched on television. The riots that devastated Washington, Chicago, and Baltimore did not come to Boston that night.","Brown performed for an almost-empty Garden — many Black Bostonians had gone home to watch on TV. At one point the crowd began to surge the stage and Brown personally waved them back, saying 'let me finish.' The concert is studied in crisis management courses. Ruggles station, in the heart of the Roxbury and Mission Hill corridor, is where that night's history lives."]}
 ];
 
 const CITY_STORIES=[
@@ -3821,6 +3843,48 @@ const CITY_STORIES=[
     {title:"The Flood",body:"On May 30, 1948, Memorial Day, the Columbia River dike broke. Vanport was inundated in 15 minutes. At least 15 people died — likely more, because the count of bodies was never completed. The city that had housed 40,000 people was gone by nightfall. Survivors were told the dike was safe that morning. The city knew it wasn't."},
     {title:"Dispersal",body:"After the flood, Black Oregonians who had lived in Vanport were forced into Portland proper — specifically into the Albina neighborhood in North and Northeast Portland, the only area where they could find housing. Albina became Black Portland. Decades of urban renewal, freeway construction, and gentrification have since displaced much of that community again."},
     {title:"The Delta Park Stop",body:"The Yellow Line's Delta Park/Vanport station sits on the exact ground where 40,000 people once lived. There is a small memorial. There are information signs. But mostly there is a parking lot and a sports complex where a city used to be. Ursula Le Guin lived in Portland and wrote about invisible histories. This one is literal — the city is gone. The land remembers."}
+  ]},
+  {id:"bronzeville",city:"chi",title:"Bronzeville: The Black Metropolis",subtitle:"Chicago's City Within a City",coverEmoji:"🏙️",legendId:"muddy-waters",chapters:[
+    {title:"The Great Migration Arrives",body:"Between 1910 and 1930, over half a million Black Americans moved from the Deep South to Chicago along the Illinois Central Railroad. They arrived at Grand Central Station and walked south into Bronzeville — the neighborhood that would become known as the Black Metropolis, a city within a city that housed the entire social infrastructure of Black American life when segregation closed everything else off."},
+    {title:"47th Street: The Strip",body:"47th Street was Bronzeville's main boulevard — lined with theaters, nightclubs, barbershops, churches, and businesses that served a community locked out of downtown. The Regal Theatre on 47th brought Louis Armstrong, Ella Fitzgerald, and Nat King Cole. The Savoy Ballroom drew dancers from across the city. On summer nights, 47th Street was the most alive street in America."},
+    {title:"Jesse Binga's Bank",body:"Jesse Binga opened the first Black-owned bank in Chicago in 1908 and built it into an institution that financed Bronzeville's growth — homes, businesses, churches — all the infrastructure of a community that had to create its own financial system because white banks wouldn't serve them. Binga's bank failed in the Depression of 1930. He went to prison. The community he financed endured."},
+    {title:"Urban Renewal Destroys It",body:"In the 1950s and 1960s, the City of Chicago used urban renewal — what James Baldwin called 'Negro removal' — to demolish Bronzeville's housing stock and replace it with high-rise public housing projects that concentrated poverty rather than alleviating it. Robert Taylor Homes. Stateway Gardens. The community that had built theaters and banks was packed into towers with broken elevators and no grocery stores."},
+    {title:"The Revival",body:"The Robert Taylor Homes were demolished between 1998 and 2007. Bronzeville has been rebuilding slowly — new housing, restored theaters, a museum district along 35th Street. The 35th-Bronzeville-IIT Green Line stop anchors the revival. Muddy Waters' music, recorded a mile from here in the 1940s, plays in coffee shops where the old clubs once stood. The Black Metropolis is still becoming itself."}
+  ]},
+  {id:"roxbury_story",city:"bos",title:"Roxbury: Boston's Black Heart",subtitle:"How a Neighborhood Survived Everything",coverEmoji:"🔴",legendId:"malcolm-x",chapters:[
+    {title:"The Great Migration to Boston",body:"While Chicago and New York drew the largest waves of the Great Migration, Black Southerners came to Boston too — settling in Roxbury, where housing was available and work, if not plentiful, was at least possible. By the 1940s, Roxbury had become the center of Black Boston: churches, jazz clubs, mutual aid societies, a community building itself in a city that was not particularly interested in welcoming it."},
+    {title:"Malcolm X's Roxbury Years",body:"Malcolm Little arrived in Roxbury in 1940 at fifteen to live with his half-sister Ella on Dale Street. He shined shoes at the Roseland Ballroom, hustled in the neighborhood's bars and streets, went to prison in 1946 at Charlestown. He walked out a different man. Those Roxbury years — learning to read the world from its margins — became the foundation for everything Malcolm X would build and say and become."},
+    {title:"The Forced Busing Crisis",body:"In 1974, federal judge Arthur Garrity ordered the desegregation of Boston Public Schools through mandatory busing — transporting Black students from Roxbury to South Boston and white students into Roxbury. The response in South Boston and Charlestown was violent: buses stoned, students attacked, a city revealing a racism it preferred to believe belonged only to the South. Roxbury's children were the ones who bore the danger."},
+    {title:"Gentrification and Pressure",body:"By the 2010s, proximity to downtown Boston and the development of the South End had begun driving up Roxbury real estate values, pushing out long-term residents who had survived urban renewal, highway construction, and the crack epidemic. The Nubian Square corridor — renamed from Dudley Square in recognition of its African heritage — is now a contested symbol of who Roxbury is for and who gets to decide."},
+    {title:"What Remains",body:"Roxbury Crossing on the Orange Line puts you at the edge of a neighborhood that has survived more than most. Malcolm X walked these streets before anyone knew his name. The Warren Street corridor still has Caribbean restaurants and Black-owned businesses that represent continuity. The community organizing that has pushed back against displacement is some of the most sophisticated in Boston. The neighborhood is still here. So is the fight."}
+  ]},
+  {id:"bed_stuy",city:"nyc",title:"Bed-Stuy: Do or Die",subtitle:"Brooklyn Before and After",coverEmoji:"🍕",legendId:"biggie",chapters:[
+    {title:"Brownstone Brooklyn",body:"Bedford-Stuyvesant was developed as a middle-class white neighborhood in the late nineteenth century — its brownstones built for the Brooklyn bourgeoisie who rode the elevated trains to work in Manhattan. By the 1940s, as the Great Migration brought Black Southerners north and white flight emptied the brownstones, Bed-Stuy had become Brooklyn's largest Black neighborhood, its architectural grandeur housing a community that the city pretended wasn't there."},
+    {title:"Caribbean Immigration",body:"Throughout the 1960s and 1970s, Bed-Stuy's Black community was joined by waves of Caribbean immigrants — from Jamaica, Trinidad, Barbados, Guyana — who brought their own languages, foods, religions, and musical traditions and layered them onto the neighborhood's existing culture. The result was one of the most culturally dense communities in America: Caribbean bakeries next to Southern soul food restaurants next to corner bodegas run by recent arrivals from everywhere."},
+    {title:"The Crack Epidemic",body:"The crack cocaine epidemic of the mid-1980s hit Bed-Stuy with devastating force. The neighborhood's unemployment rate was already high; the drug economy provided income where none existed. Violence increased. Buildings abandoned. The city cut services. What the outside world saw was a neighborhood in crisis. What people inside it saw was a community fighting to survive an economic war being waged against it by neglect and indifference."},
+    {title:"Biggie's Block",body:"Christopher Wallace grew up on St. James Place in Clinton Hill, walking distance from Bed-Stuy. He sold drugs on Fulton Street corners and made mixtapes in between. His 1994 debut 'Ready to Die' documented the crack era with the specificity of someone who'd lived inside it — the desperation, the humor, the loyalty, the beauty of people trying to live fully in conditions designed to kill them. His funeral procession drove through Bed-Stuy."},
+    {title:"Gentrification and What's Left",body:"The Bedford-Nostrand Avs station on the G train — deepest Brooklyn, no Manhattan connection — anchors a neighborhood that has changed beyond recognition in twenty years. The brownstones that cost $50,000 in 1990 sell for two million dollars now. Long-term Black residents have been largely displaced to East New York and further out. But Biggie's face is still on the murals. The Caribbean bakeries hold on. Bed-Stuy has survived worse than money."}
+  ]},
+  {id:"crenshaw_story",city:"la",title:"Crenshaw: Holding the Line",subtitle:"LA's Black Neighborhood Against the Tide",coverEmoji:"🌆",legendId:"kendrick-lamar",chapters:[
+    {title:"The Great Migration West",body:"Los Angeles's Black community grew exponentially during World War II as Black workers came west for defense industry jobs at factories and shipyards in Watts, Compton, and South Central. They settled in the Crenshaw corridor — a long boulevard running from Exposition Park south toward Inglewood — which became the commercial and cultural spine of Black Los Angeles in ways that the city's segregated housing market made both inevitable and profound."},
+    {title:"The Watts Uprising and Its Legacy",body:"The 1965 Watts uprising — six days that left 34 dead and $40 million in damage — was centered just east of the Crenshaw corridor. The uprising's causes — LAPD brutality, housing discrimination, unemployment, and a city government that treated Black LA as invisible — were not addressed in its aftermath. What followed was the community-based organizing that gave Crenshaw its cultural infrastructure: the Vision Theatre, Leimert Park, the drum circles."},
+    {title:"The 1992 Uprising in Crenshaw",body:"After four LAPD officers were acquitted in the beating of Rodney King in April 1992, Los Angeles exploded with six days of uprising that killed 63 people. The Crenshaw corridor was heavily damaged — Korean-owned businesses burned alongside Black-owned ones, in a conflict that the mainstream media flattened into Black-vs-Korean when the real enemy was a city that had abandoned both communities. The Crenshaw neighborhood rebuilt."},
+    {title:"Gang Truce and Art",body:"In the aftermath of the 1992 uprising, the Bloods and Crips in the Crenshaw and Compton area negotiated a historic truce that reduced violence significantly. Community organizations moved in with arts programming, after-school activities, and economic development. The Leimert Park arts scene — already vibrant — expanded. Kendrick Lamar was a child in Compton watching this transformation happen. It went into every record he made."},
+    {title:"The Crenshaw/LAX Line Arrives",body:"The Metro Crenshaw/LAX Line, opened in 2022, runs through the heart of Black LA for the first time — connecting Crenshaw Boulevard to LAX, Inglewood, and eventually downtown. Some see it as long-overdue transit equity. Others watch the real estate prices rising along the route and recognize the pattern: infrastructure arrives when developers want the land. The neighborhood is paying attention. It always has been."}
+  ]},
+  {id:"go_go_dc",city:"dc",title:"Go-Go: DC's Loudest Secret",subtitle:"The Music the Rest of America Missed",coverEmoji:"🥁",legendId:"chuck-brown",chapters:[
+    {title:"Chuck Brown Invents a Genre",body:"In the mid-1970s, Chuck Brown was playing funk and soul at DC clubs when he made a decision that changed everything: instead of stopping between songs, he kept the rhythm going — a continuous groove that held the crowd in a state of anticipation rather than letting them settle between numbers. He added call-and-response with the audience. He added percussion breaks. He had invented go-go, and only Washington DC understood it."},
+    {title:"Southeast DC and the Go-Go Scene",body:"Go-go was born in Southeast and Northeast DC — the parts of the city that tourists and politicians forget exist, the Black working-class neighborhoods that had been redlined and neglected for decades. The go-go clubs were their Saturday nights: Ibex, Chapter III, Paramount. You didn't go to hear the band play songs you knew. You went to experience a continuous live event that could last six hours. It was church, party, and political rally simultaneously."},
+    {title:"The Howard University Protest",body:"In 2019, a T-Mobile store near Howard University's campus tried to shut down a go-go music speaker system that had played from a nearby store for years, citing noise complaints. The response was immediate and massive: a protest of thousands that shut down Georgia Avenue, a social media campaign that trended nationally, and a resolution by the DC Council declaring go-go the official music of Washington DC. The city defended its culture."},
+    {title:"Go-Go as Resistance",body:"Go-go has never been about crossing over to mainstream success — and that's the point. It is music that belongs entirely to Washington DC, that cannot be fully understood or replicated outside of it, that requires the specific call-and-response of a DC crowd to function. Every artist who tried to take go-go to New York or Los Angeles found that it arrived as something quieter, diminished, incomplete. You have to be there. Go-go insists on that."},
+    {title:"The Eternal Beat",body:"Chuck Brown died in 2012 and the city honored him with a park, a mural, a renaming of a stretch of Georgia Avenue. His band, the Soul Searchers, continues to perform. Young go-go acts — Backyard Band, Rare Essence, TCB — keep the groove alive. Shaw-Howard U station on the Green Line sits in the heart of the neighborhood where Chuck built the genre. The beat never drops. That was always the whole point."}
+  ]},
+  {id:"albina_story",city:"pdx",title:"Albina: The Neighborhood That Wouldn't Die",subtitle:"Black Portland's Long Struggle",coverEmoji:"🌲",legendId:"ursula-le-guin",chapters:[
+    {title:"Vanport Survivors Forced into Albina",body:"When the Columbia River flood destroyed Vanport in 1948, the Black Oregonians who had lived there were forced into Portland proper — specifically into the Albina neighborhood in North and Northeast Portland, the only area where they could legally rent or buy housing in a state that had explicitly excluded Black residents for nearly a century. Albina became Black Portland by default, by law, and by necessity."},
+    {title:"Emanuel Hospital Expands, Albina Contracts",body:"In the late 1960s and early 1970s, Legacy Emanuel Hospital in North Portland used urban renewal authority to acquire and demolish hundreds of homes and businesses in the Albina neighborhood — displacing thousands of Black residents in the name of hospital expansion plans that were mostly never built. The land sat vacant for decades. Albina's community was scattered. The neighborhood never fully recovered its density."},
+    {title:"Interstate 5 Splits the Neighborhood",body:"The construction of Interstate 5 through North Portland divided the Albina neighborhood physically and economically, cutting off blocks from each other and making street-level community life harder. The freeway was routed through Black neighborhoods with the particular efficiency that urban renewal planners consistently applied to communities with less political power. The noise and pollution fell on the people the city cared least about."},
+    {title:"Hip-Hop and Community",body:"Despite the institutional assault, Albina's community created a vibrant cultural life in the 1980s and 1990s — Portland's hip-hop scene, centered in Albina, produced artists who chronicled the neighborhood's history and articulated its political situation with a precision that the city government preferred not to hear. The Mississippi Avenue and Alberta Street corridors became centers of art and music that drew visitors from across Portland."},
+    {title:"Gentrification in the 2010s",body:"By the 2010s, what urban renewal began, the real estate market accelerated. North and Northeast Portland — once exclusively accessible to Black residents because no one else would live there — had become among the most desirable neighborhoods in the city. Long-term Black residents were priced out to Gresham and outer East Portland at rates that reduced Portland's Black population significantly. Ursula Le Guin wrote about invisible histories. Albina's history was visible, documented, and happening again."}
   ]}
 ];
 
@@ -3847,6 +3911,236 @@ function getCityMastery(city:string):{rank:string,next:string|null,pct:number}{
   const rankIdx=Math.min(4,Math.floor(pct/25));
   return{rank:MASTERY_RANKS[rankIdx],next:rankIdx<4?MASTERY_RANKS[rankIdx+1]:null,pct};
 }
+
+const CULTURE_TRIVIA:{[city:string]:{q:string,opts:string[],ans:number}[]}={
+  dc:[
+    {q:"What DC neighborhood was known as 'Black Broadway' in the 1920s–1950s?",opts:["Columbia Heights","U Street Corridor","Shaw","Anacostia"],ans:1},
+    {q:"Chuck Brown invented what genre of music in Washington DC?",opts:["Blues","Go-go","House","Soul"],ans:1},
+    {q:"In what year was Marion Barry first elected mayor of DC?",opts:["1976","1978","1981","1983"],ans:1},
+    {q:"Frederick Douglass's home Cedar Hill is in which DC neighborhood?",opts:["Georgetown","Capitol Hill","Anacostia","Petworth"],ans:2},
+    {q:"Which DC street hosts Ben's Chili Bowl, a landmark since 1958?",opts:["Georgia Avenue","14th Street","U Street NW","H Street NE"],ans:2},
+    {q:"Duke Ellington was born in which year in Washington DC?",opts:["1889","1895","1899","1903"],ans:2},
+    {q:"The Howard Theatre, a Black Broadway landmark, opened in what year?",opts:["1901","1905","1910","1915"],ans:2},
+    {q:"Marvin Gaye grew up in which DC neighborhood?",opts:["Anacostia","Columbia Heights","Petworth","Congress Heights"],ans:1},
+    {q:"What year was DC go-go officially declared the city's official music?",opts:["2015","2017","2019","2020"],ans:3},
+    {q:"Wale's famous 2008 mixtape sampled which TV show?",opts:["The Wire","Seinfeld","The Office","Friends"],ans:1},
+    {q:"John Lewis represented which city in Congress for over 30 years?",opts:["Washington DC","Birmingham","Nashville","Atlanta"],ans:3},
+    {q:"The U Street corridor's 1968 uprising was sparked by which event?",opts:["Watts uprising","MLK assassination","Vietnam War protests","Housing discrimination ruling"],ans:1}
+  ],
+  nyc:[
+    {q:"The Harlem Renaissance took place primarily in which decades?",opts:["1900s–1910s","1920s–1930s","1940s–1950s","1930s–1940s"],ans:1},
+    {q:"Which Brooklyn housing project did Jay-Z grow up in?",opts:["Red Hook Houses","Queensbridge Houses","Marcy Houses","Farragut Houses"],ans:2},
+    {q:"Jean-Michel Basquiat tagged Manhattan walls under what pseudonym?",opts:["TAKI 183","SAMO©","CRASH","LEE"],ans:1},
+    {q:"The Notorious B.I.G. grew up on which Brooklyn street?",opts:["Fulton Street","Atlantic Avenue","St. James Place","Myrtle Avenue"],ans:2},
+    {q:"Nina Simone's 'Mississippi Goddam' was written in response to what?",opts:["Vietnam War","Birmingham church bombing","MLK assassination","Freedom Riders attack"],ans:1},
+    {q:"Langston Hughes lived at which Harlem address for decades?",opts:["East 116th St","East 127th St","West 125th St","St. Nicholas Avenue"],ans:1},
+    {q:"Which Harlem venue hosted Duke Ellington, Ella Fitzgerald, and Billie Holiday?",opts:["Apollo Theatre","Cotton Club","Savoy Ballroom","Small's Paradise"],ans:1},
+    {q:"Patti Smith's debut album 'Horses' was released in what year?",opts:["1973","1975","1977","1979"],ans:1},
+    {q:"The CBGB club that launched punk was located in which Manhattan neighborhood?",opts:["Chelsea","Lower East Side","East Village","Tribeca"],ans:2},
+    {q:"Which NYC neighborhood is known as the birthplace of hip-hop?",opts:["Harlem","Bronx","Brooklyn","Queens"],ans:1},
+    {q:"Basquiat first showed his work publicly in what year?",opts:["1978","1980","1981","1983"],ans:2},
+    {q:"The Apollo Theatre's famous Amateur Night has been running since what year?",opts:["1925","1934","1940","1947"],ans:1}
+  ],
+  chi:[
+    {q:"Gwendolyn Brooks was the first Black author to win what award?",opts:["National Book Award","Man Booker Prize","Pulitzer Prize for Poetry","Nobel Prize in Literature"],ans:2},
+    {q:"House music was born at which Chicago club in 1977?",opts:["The Warehouse","The Music Box","The Loft","Red Dog"],ans:0},
+    {q:"Harold Washington served how many terms as Chicago mayor?",opts:["One","Two","Three","Four"],ans:1},
+    {q:"Chess Records was located on which Chicago street?",opts:["North Michigan Avenue","South Michigan Avenue","Wabash Avenue","State Street"],ans:1},
+    {q:"Richard Wright's 'Native Son' was published in what year?",opts:["1937","1940","1943","1945"],ans:1},
+    {q:"Chance the Rapper's breakthrough mixtape 'Acid Rap' was released in what year?",opts:["2011","2012","2013","2014"],ans:2},
+    {q:"Muddy Waters arrived in Chicago from which Mississippi city?",opts:["Jackson","Natchez","Clarksdale","Greenwood"],ans:2},
+    {q:"The Bronzeville neighborhood was nicknamed what?",opts:["The Black Belt","The Black Metropolis","The Promised Land","The South Side"],ans:1},
+    {q:"Common won an Academy Award for a song from which film?",opts:["Straight Outta Compton","12 Years a Slave","Selma","MLK/FBI"],ans:2},
+    {q:"Frankie Knuckles was known as the 'Godfather of' what genre?",opts:["Blues","Jazz","House Music","Techno"],ans:2},
+    {q:"Jesse Binga opened Chicago's first Black-owned bank in what year?",opts:["1900","1904","1908","1912"],ans:2},
+    {q:"Curtis Mayfield's 'People Get Ready' was written as an anthem for what?",opts:["Anti-war movement","Civil rights movement","Labor movement","Women's suffrage"],ans:1}
+  ],
+  la:[
+    {q:"Tom Bradley served how many terms as Los Angeles mayor?",opts:["Three","Four","Five","Six"],ans:2},
+    {q:"The Watts uprising occurred in what year?",opts:["1963","1965","1967","1969"],ans:1},
+    {q:"Kendrick Lamar grew up in which city adjacent to LA?",opts:["Inglewood","Long Beach","Compton","Carson"],ans:2},
+    {q:"Joni Mitchell's landmark album 'Blue' was released in what year?",opts:["1969","1971","1973","1975"],ans:1},
+    {q:"Leimert Park was developed in the 1920s with what kind of housing restriction?",opts:["Income-based covenants","Racially restrictive covenants","Zoning height restrictions","Owner-occupancy requirements"],ans:1},
+    {q:"Ice Cube was a founding member of which rap group?",opts:["Cypress Hill","A Tribe Called Quest","NWA","Public Enemy"],ans:2},
+    {q:"The 1992 Los Angeles uprising was triggered by the acquittal of officers who beat whom?",opts:["Latasha Harlins","Rodney King","Eula Love","Reginald Denny"],ans:1},
+    {q:"Laurel Canyon was the center of what music movement in the 1960s–70s?",opts:["Punk rock","Psychedelic rock","Singer-songwriter","Heavy metal"],ans:2},
+    {q:"Which LA venue was Billy Higgins and Kamau Daáood's jazz workshop anchor in Leimert Park?",opts:["The Troubadour","World Stage","The Lighthouse","Catalina Bar & Grill"],ans:1},
+    {q:"Kendrick Lamar won the Pulitzer Prize for Music for which album?",opts:["To Pimp a Butterfly","good kid m.A.A.d city","DAMN.","Mr. Morale & the Big Steppers"],ans:2},
+    {q:"The Crenshaw/LAX Metro Line opened in what year?",opts:["2019","2020","2021","2022"],ans:3},
+    {q:"'Straight Outta Compton' by NWA was released in what year?",opts:["1986","1988","1990","1991"],ans:1}
+  ],
+  bos:[
+    {q:"Malcolm X arrived in Boston to live with his half-sister in what year?",opts:["1938","1940","1942","1944"],ans:1},
+    {q:"Donna Summer grew up in which Boston neighborhood?",opts:["Dorchester","Jamaica Plain","Roxbury/Mission Hill","South End"],ans:2},
+    {q:"The forced busing crisis in Boston's public schools began in what year?",opts:["1970","1972","1974","1976"],ans:2},
+    {q:"Roxbury's Dudley Square was renamed to what in 2019?",opts:["African Square","Nubian Square","Freedom Square","Malcolm X Square"],ans:1},
+    {q:"Which concert after MLK's assassination reportedly kept Boston calm?",opts:["Aretha Franklin at Symphony Hall","James Brown at Boston Garden","Ray Charles at the Orpheum","Otis Redding tribute concert"],ans:1},
+    {q:"The Boston T opened in what year, making it the oldest in the Western Hemisphere?",opts:["1890","1893","1897","1901"],ans:2},
+    {q:"Malcolm X was born in what city before moving to Boston?",opts:["Detroit","Omaha","Chicago","Cleveland"],ans:1},
+    {q:"Donna Summer's breakthrough song 'Love to Love You Baby' ran for approximately how long?",opts:["7 minutes","12 minutes","17 minutes","22 minutes"],ans:2},
+    {q:"James Brown performed at Boston Garden the day after which assassination?",opts:["JFK assassination","RFK assassination","MLK assassination","Medgar Evers assassination"],ans:2},
+    {q:"Roxbury Crossing is on which MBTA line?",opts:["Red Line","Green Line","Orange Line","Blue Line"],ans:2},
+    {q:"Malcolm X was born as Malcolm Little in what year?",opts:["1923","1925","1927","1929"],ans:1},
+    {q:"The Roseland Ballroom in Roxbury was primarily known as what type of venue?",opts:["Jazz club","Dance ballroom","Movie theater","Comedy club"],ans:1}
+  ],
+  atl:[
+    {q:"Martin Luther King Jr. was born on which Atlanta street?",opts:["Peachtree Street","Auburn Avenue","Martin Luther King Jr. Drive","Edgewood Avenue"],ans:1},
+    {q:"At what age did MLK win the Nobel Peace Prize?",opts:["33","35","37","39"],ans:1},
+    {q:"OutKast was formed in which Atlanta suburb/area?",opts:["Decatur","East Point","Stone Mountain","College Park"],ans:1},
+    {q:"What year did OutKast win the Grammy for Album of the Year?",opts:["2002","2003","2004","2005"],ans:2},
+    {q:"LaFace Records was founded in Atlanta by which two music executives?",opts:["Jermaine Dupri and Dallas Austin","L.A. Reid and Babyface","Diddy and Jay-Z","Baby and Birdman"],ans:1},
+    {q:"John Lewis was beaten on the Edmund Pettus Bridge in which city?",opts:["Montgomery","Birmingham","Selma","Tuscaloosa"],ans:2},
+    {q:"Lil Jon's song 'Yeah!' featured which two artists?",opts:["T.I. and Ludacris","Usher and Ludacris","Usher and Young Jeezy","T.I. and Usher"],ans:1},
+    {q:"Which Atlanta HBCU is located in the West End neighborhood?",opts:["Spelman College only","Morehouse College only","Clark Atlanta only","Multiple AUC schools"],ans:3},
+    {q:"Gucci Mane released his debut album in what year?",opts:["2003","2005","2007","2009"],ans:1},
+    {q:"John Lewis served in Congress for how many years?",opts:["20 years","25 years","30 years","34 years"],ans:3},
+    {q:"MLK's church, Ebenezer Baptist, is located in which Atlanta neighborhood?",opts:["West End","Old Fourth Ward","Sweet Auburn","Mechanicsville"],ans:2},
+    {q:"Trap music's name derives from 'trap houses' which were associated with what?",opts:["Music studios","Drug sales locations","Community centers","Abandoned buildings"],ans:1}
+  ],
+  pdx:[
+    {q:"Ursula K. Le Guin's 'The Left Hand of Darkness' explored which theme?",opts:["Climate change","Gender and sexuality","Racial inequality","Economic inequality"],ans:1},
+    {q:"Elliott Smith received an Academy Award nomination for a song in which film?",opts:["American Beauty","Good Will Hunting","Almost Famous","Garden State"],ans:1},
+    {q:"Vanport was destroyed in what year by a Columbia River flood?",opts:["1944","1946","1948","1950"],ans:2},
+    {q:"Gus Van Sant's film 'Drugstore Cowboy' was released in what year?",opts:["1987","1989","1991","1993"],ans:1},
+    {q:"Portland's Albina neighborhood was populated by Black residents largely due to what?",opts:["Affordable rents","Proximity to work","Exclusionary housing policies everywhere else","Railroad employment"],ans:2},
+    {q:"Elliott Smith's album 'Either/Or' was released in what year?",opts:["1995","1996","1997","1998"],ans:2},
+    {q:"Portland's Alberta Street is named after which state?",opts:["Alberta, Canada","Alberta, Texas","Princess Alberta","It was always Alberta"],ans:0},
+    {q:"The Tilikum Crossing bridge prohibits what type of vehicle?",opts:["Buses","Bicycles","Private cars","Motorcycles"],ans:2},
+    {q:"Ursula Le Guin's 'The Dispossessed' won which literary award in 1975?",opts:["Pulitzer Prize","Hugo Award","Man Booker Prize","National Book Award"],ans:1},
+    {q:"Powell's Books in Portland is notable for being what?",opts:["Oldest bookstore in America","Largest independent bookstore in the world","First feminist bookstore","Only 24-hour bookstore"],ans:1},
+    {q:"Gus Van Sant's 'Good Will Hunting' won the Academy Award for what?",opts:["Best Picture","Best Director","Best Original Screenplay","Best Actor"],ans:2},
+    {q:"The Emanuel Hospital urban renewal project in Albina primarily displaced which community?",opts:["Vietnamese immigrants","Black residents","Latino residents","Native American families"],ans:1}
+  ],
+  balt:[
+    {q:"Billie Holiday grew up in which Baltimore neighborhood/area?",opts:["Hampden","Fells Point area","Roland Park","Guilford"],ans:1},
+    {q:"Cab Calloway attended which Baltimore high school?",opts:["Frederick Douglass High","Dunbar High","Douglas High","Western High"],ans:2},
+    {q:"Tupac Shakur attended which Baltimore arts school?",opts:["MICA","Peabody Institute","Baltimore School for the Arts","BCCC"],ans:2},
+    {q:"Billie Holiday's protest song 'Strange Fruit' was recorded in what year?",opts:["1935","1937","1939","1941"],ans:2},
+    {q:"Cab Calloway's signature hit 'Minnie the Moocher' reached number one in what year?",opts:["1929","1931","1933","1935"],ans:1},
+    {q:"Baltimore club music is a distinct subgenre most closely related to what?",opts:["Go-go","House music","Techno","Drum and bass"],ans:1},
+    {q:"Baltimore's Inner Harbor redevelopment was completed in approximately what year?",opts:["1975","1978","1980","1984"],ans:2},
+    {q:"Billie Holiday's nickname 'Lady Day' was given to her by which musician?",opts:["Duke Ellington","Louis Armstrong","Lester Young","Count Basie"],ans:2},
+    {q:"Tupac Shakur moved to Baltimore from which city?",opts:["Oakland","Los Angeles","New York","Marin City"],ans:2},
+    {q:"The Baltimore neighborhood Station North is known primarily for what?",opts:["Seafood restaurants","Arts district","Historic rowhouses","Financial district"],ans:1},
+    {q:"Cab Calloway performed his signature style of what at the Cotton Club?",opts:["Delta blues","Bebop jazz","Swing era scat/hi-de-ho","Ragtime"],ans:2},
+    {q:"Baltimore is famous for steamed crabs seasoned primarily with what?",opts:["Cajun seasoning","Old Bay seasoning","Chesapeake Blend","J.O. Spice"],ans:1}
+  ]
+};
+
+const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"Music"|"Politics"|"Art"|"Uprising"|"Sports"|"Food"}[]}={
+  dc:[
+    {year:1910,event:"Howard Theatre Opens",detail:"The Howard Theatre opens as one of the first venues built specifically for Black audiences, launching Black Broadway on U Street.",cat:"Art"},
+    {year:1920,event:"Duke Ellington Leaves DC",detail:"Edward Kennedy Ellington moves to New York, taking DC's musical genius to Harlem while remaining tied to U Street forever.",cat:"Music"},
+    {year:1939,event:"Marian Anderson at Lincoln Memorial",detail:"After being barred from Constitution Hall by the DAR, contralto Marian Anderson performs to 75,000 people at the Lincoln Memorial.",cat:"Music"},
+    {year:1963,event:"March on Washington",detail:"250,000 people gather on the National Mall for the March on Washington where MLK delivers 'I Have a Dream' in front of the Lincoln Memorial.",cat:"Politics"},
+    {year:1968,event:"U Street Uprising",detail:"Four days of uprising follow MLK's assassination, leaving 12 dead and the U Street corridor in ashes for two decades.",cat:"Uprising"},
+    {year:1974,event:"DC Home Rule Act",detail:"Congress passes the DC Home Rule Act, allowing DC residents to elect their own mayor and city council for the first time since 1874.",cat:"Politics"},
+    {year:1978,event:"Chuck Brown Records 'Bustin' Loose'",detail:"Chuck Brown's 'Bustin' Loose' reaches number one on the R&B chart, introducing go-go music to a national audience.",cat:"Music"},
+    {year:1983,event:"Harold Washington Elected",detail:"Marion Barry wins his third mayoral term while Harold Washington becomes Chicago's first Black mayor — a year of Black political firsts nationally.",cat:"Politics"},
+    {year:1991,event:"U Street Metro Opens",detail:"The U Street/African-American Civil War Memorial Metro station opens, beginning the slow revitalization of the post-riot corridor.",cat:"Politics"},
+    {year:2003,event:"National Museum of African American History Announced",detail:"Congress authorizes the National Museum of African American History and Culture on the National Mall, opening in 2016.",cat:"Art"},
+    {year:2019,event:"Go-Go Protest on Georgia Avenue",detail:"Thousands protest to save the go-go speaker at a Shaw shop; DC Council responds by naming go-go the official music of Washington DC.",cat:"Music"},
+    {year:2020,event:"Black Lives Matter Plaza",detail:"DC Mayor Muriel Bowser paints 'Black Lives Matter' in massive yellow letters on 16th Street NW, blocks from the White House.",cat:"Politics"}
+  ],
+  nyc:[
+    {year:1910,event:"Great Migration to Harlem Begins",detail:"The first wave of the Great Migration brings Black Southerners to Harlem, beginning the transformation of the neighborhood.",cat:"Politics"},
+    {year:1925,event:"Harlem Renaissance Peaks",detail:"Langston Hughes, Zora Neale Hurston, and Claude McKay are all publishing simultaneously in Harlem, the center of Black American culture.",cat:"Art"},
+    {year:1935,event:"Harlem Riot",detail:"A rumor that a Black teenager was beaten in a Woolworth's sparks Harlem's first major uprising, revealing tensions beneath the Renaissance.",cat:"Uprising"},
+    {year:1947,event:"Jackie Robinson Signs with Dodgers",detail:"Jackie Robinson integrates Major League Baseball with the Brooklyn Dodgers, playing at Ebbets Field in Flatbush.",cat:"Sports"},
+    {year:1964,event:"Harlem Riot",detail:"Six days of uprising in Harlem and Bedford-Stuyvesant follow the killing of fifteen-year-old James Powell by an off-duty police officer.",cat:"Uprising"},
+    {year:1975,event:"NYC Fiscal Crisis",detail:"New York City verges on bankruptcy; President Ford refuses a federal bailout. The Daily News headline: 'Ford to City: Drop Dead.' The Bronx burns.",cat:"Politics"},
+    {year:1977,event:"NYC Blackout and the Birth of Hip-Hop",detail:"During the July 1977 blackout, looting provides turntables and speakers that fuel the Bronx hip-hop scene. DJ Kool Herc had begun it in 1973.",cat:"Music"},
+    {year:1988,event:"Basquiat Dies",detail:"Jean-Michel Basquiat dies of a heroin overdose at 27 in his Great Jones Street loft, ending one of the most electric careers in American art.",cat:"Art"},
+    {year:1994,event:"Biggie's 'Ready to Die'",detail:"The Notorious B.I.G. releases his debut album, establishing Brooklyn's voice in hip-hop and beginning the East Coast-West Coast rivalry.",cat:"Music"},
+    {year:2001,event:"September 11th",detail:"The World Trade Center attacks kill nearly 3,000 people and reshape New York's geography, politics, and psyche permanently.",cat:"Politics"},
+    {year:2012,event:"Barclays Center Opens",detail:"The Barclays Center opens in Brooklyn on land that includes Jay-Z's neighborhood, bringing NBA basketball back to Brooklyn for the first time since 1957.",cat:"Sports"},
+    {year:2020,event:"George Floyd Protests",detail:"Massive protests fill the streets of all five boroughs following the murder of George Floyd; Brooklyn Bridge march draws over 10,000 people.",cat:"Politics"}
+  ],
+  chi:[
+    {year:1919,event:"Red Summer Race Massacre",detail:"White mobs attack Black Chicagoans on the lakefront and in Black neighborhoods for 13 days, killing 38 and injuring 537 in one of America's worst race massacres.",cat:"Uprising"},
+    {year:1940,event:"Native Son Published",detail:"Richard Wright publishes 'Native Son,' the first Book-of-the-Month Club selection by a Black author, selling 200,000 copies in three weeks.",cat:"Art"},
+    {year:1943,event:"Muddy Waters Arrives",detail:"McKinley Morganfield — Muddy Waters — arrives from Clarksdale, Mississippi and begins electrifying the Delta blues on the South Side.",cat:"Music"},
+    {year:1950,event:"Gwendolyn Brooks Wins Pulitzer",detail:"Gwendolyn Brooks wins the Pulitzer Prize for Poetry for 'Annie Allen,' becoming the first Black author to receive the award.",cat:"Art"},
+    {year:1955,event:"Emmett Till Murdered",detail:"Emmett Till, 14, from Chicago's South Side, is lynched in Mississippi. His mother Mamie's open-casket funeral at Roberts Temple in Chicago galvanizes the civil rights movement.",cat:"Politics"},
+    {year:1966,event:"MLK Moves to Chicago",detail:"Martin Luther King Jr. moves into a Lawndale apartment to lead the Chicago Freedom Movement, targeting housing segregation in the North.",cat:"Politics"},
+    {year:1977,event:"House Music Born at the Warehouse",detail:"DJ Frankie Knuckles begins playing at the Warehouse club, blending disco and electronic beats to create house music for Chicago's Black and Latino gay community.",cat:"Music"},
+    {year:1983,event:"Harold Washington Elected Mayor",detail:"Harold Washington becomes Chicago's first Black mayor, defeating the white Democratic machine with a coalition of Black, Latino, and progressive white voters.",cat:"Politics"},
+    {year:2003,event:"E2 Nightclub Stampede",detail:"21 people are killed in a stampede at the E2 nightclub in Bronzeville, exposing safety failures in the city's entertainment licensing.",cat:"Uprising"},
+    {year:2004,event:"Kanye's 'College Dropout'",detail:"Kanye West releases 'The College Dropout,' sampling soul records and rapping about South Side Chicago experience with unprecedented mainstream success.",cat:"Music"},
+    {year:2013,event:"Chance the Rapper's 'Acid Rap'",detail:"Chance the Rapper releases 'Acid Rap' for free online, proving streaming viability and putting Chicago's new generation on the map.",cat:"Music"},
+    {year:2016,event:"Cubs Win the World Series",detail:"The Chicago Cubs end a 108-year championship drought by winning the World Series, generating the largest celebration in Chicago history.",cat:"Sports"}
+  ],
+  la:[
+    {year:1910,event:"Black Migration to Central Avenue",detail:"Black Angelenos begin settling in the Central Avenue corridor, creating a jazz and blues scene that will define the city's early Black culture.",cat:"Music"},
+    {year:1948,event:"Shelley v. Kraemer Ends Covenants",detail:"The Supreme Court strikes down racially restrictive housing covenants, allowing Black Angelenos to begin moving into neighborhoods previously barred to them.",cat:"Politics"},
+    {year:1965,event:"Watts Uprising",detail:"Six days of uprising in Watts leave 34 dead, over 1,000 injured, and $40 million in damage, forcing LA to confront systemic racism in housing and policing.",cat:"Uprising"},
+    {year:1971,event:"Joni Mitchell Releases 'Blue'",detail:"Joni Mitchell records and releases 'Blue' in Laurel Canyon, establishing the California singer-songwriter sound that defines an era.",cat:"Music"},
+    {year:1984,event:"Los Angeles Olympics",detail:"Tom Bradley brings the Summer Olympics to LA; the games are financially successful and help transform LA's global identity.",cat:"Sports"},
+    {year:1988,event:"NWA's 'Straight Outta Compton'",detail:"NWA releases 'Straight Outta Compton,' introducing West Coast gangsta rap and provoking the FBI to write a letter to the record label.",cat:"Music"},
+    {year:1991,event:"Rodney King Beating Filmed",detail:"George Holliday films LAPD officers beating Rodney King; the footage is broadcast globally, setting up a crisis a year away.",cat:"Uprising"},
+    {year:1992,event:"Los Angeles Uprising",detail:"After four LAPD officers are acquitted in the King beating, six days of uprising kill 63 people and cause $1 billion in damage across LA.",cat:"Uprising"},
+    {year:2017,event:"Kendrick Lamar Wins Pulitzer",detail:"Kendrick Lamar's album 'DAMN.' wins the Pulitzer Prize for Music, the first non-classical or jazz work to receive the award.",cat:"Music"},
+    {year:2019,event:"Nipsey Hussle Murdered",detail:"Rapper and community developer Nipsey Hussle is shot outside his Marathon Clothing store in Crenshaw; his death galvanizes South LA organizing.",cat:"Music"},
+    {year:2022,event:"Crenshaw/LAX Line Opens",detail:"The Metro Crenshaw/LAX Line opens, bringing rail transit through the heart of Black Los Angeles for the first time.",cat:"Politics"},
+    {year:2023,event:"Clippers' Intuit Dome Opens",detail:"The LA Clippers open the Intuit Dome in Inglewood, further developing the sports and entertainment corridor in the heart of Black LA.",cat:"Sports"}
+  ],
+  bos:[
+    {year:1863,event:"54th Massachusetts Regiment Departs",detail:"The first Black Civil War regiment from the North marches through Boston, cheered by crowds; the regiment's memorial stands on Boston Common.",cat:"Politics"},
+    {year:1897,event:"Boston T Opens",detail:"America's first subway opens in Boston under Tremont Street, becoming the Western Hemisphere's oldest operational subway system.",cat:"Politics"},
+    {year:1946,event:"Malcolm X in Roxbury",detail:"Malcolm Little, living in Roxbury, is convicted of burglary and begins his prison sentence at Charlestown — where he will be transformed into Malcolm X.",cat:"Politics"},
+    {year:1957,event:"Boston Celtics Dynasty Begins",detail:"Bill Russell joins the Celtics and begins an era of 11 championships in 13 years, making Boston the dominant city in professional basketball.",cat:"Sports"},
+    {year:1967,event:"Red Sox Impossible Dream Season",detail:"The Red Sox's surprising 1967 pennant season — the 'Impossible Dream' — galvanizes Boston's sports identity before the Celtics' championship run.",cat:"Sports"},
+    {year:1968,event:"James Brown Concert After MLK",detail:"James Brown performs at Boston Garden the night after MLK's assassination; Mayor Kevin White broadcasts it live on public TV, helping prevent widespread unrest.",cat:"Music"},
+    {year:1974,event:"Busing Crisis Begins",detail:"Federal Judge Garrity orders school desegregation through forced busing; South Boston responds with violence against Black students.",cat:"Uprising"},
+    {year:1975,event:"Donna Summer's Disco Debut",detail:"LaDonna Gaines from Mission Hill, Boston, breaks out as Donna Summer with 'Love to Love You Baby,' becoming the queen of disco.",cat:"Music"},
+    {year:1986,event:"Red Sox World Series Near-Miss",detail:"Bill Buckner's error in Game 6 lets the Mets score, extending the Red Sox World Series drought — becoming the defining heartbreak in Boston sports.",cat:"Sports"},
+    {year:2004,event:"Red Sox End the Curse",detail:"The Boston Red Sox win the World Series for the first time since 1918, ending 'The Curse of the Bambino' with a sweep of the Cardinals.",cat:"Sports"},
+    {year:2013,event:"Boston Marathon Bombing",detail:"Two bombs kill 3 and injure 264 at the Boston Marathon finish line; the city's response — 'Boston Strong' — becomes a defining moment.",cat:"Politics"},
+    {year:2020,event:"Nubian Square Renaming",detail:"Dudley Square in Roxbury is officially renamed Nubian Square, honoring the neighborhood's African heritage and its community's long advocacy.",cat:"Politics"}
+  ],
+  atl:[
+    {year:1906,event:"Atlanta Race Massacre",detail:"White mobs attack Black Atlantans for four days, killing at least 25 Black residents in one of the deadliest racial massacres in American history.",cat:"Uprising"},
+    {year:1929,event:"MLK Born on Auburn Avenue",detail:"Michael King Jr. — later Martin Luther King Jr. — is born at 501 Auburn Avenue in Atlanta's Sweet Auburn neighborhood.",cat:"Politics"},
+    {year:1960,event:"Atlanta Sit-Ins Begin",detail:"Morehouse, Spelman, and Clark Atlanta students launch coordinated sit-ins at downtown Atlanta lunch counters, publishing 'An Appeal for Human Rights.'",cat:"Politics"},
+    {year:1968,event:"MLK Assassinated, Funeral in Atlanta",detail:"Martin Luther King Jr. is assassinated in Memphis; his funeral at Ebenezer Baptist Church draws 300,000 mourners to Atlanta's streets.",cat:"Politics"},
+    {year:1989,event:"LaFace Records Founded",detail:"L.A. Reid and Babyface found LaFace Records in Atlanta, beginning the transformation of the city into a world capital of Black music.",cat:"Music"},
+    {year:1995,event:"OutKast at the Source Awards",detail:"OutKast wins Best New Artist at the Source Awards; Big Boi tells the New York crowd 'the South got something to say.' A cultural shift happens live.",cat:"Music"},
+    {year:1996,event:"Atlanta Olympics",detail:"Atlanta hosts the Summer Olympics; Centennial Olympic Park is bombed by Eric Rudolph, killing 2 and injuring 111.",cat:"Sports"},
+    {year:2002,event:"T.I. Coins 'Trap Music'",detail:"T.I.'s album 'Trap Muzik' coins the genre name and establishes Atlanta's sonic identity for the next two decades.",cat:"Music"},
+    {year:2012,event:"Atlanta Becomes Hip-Hop Capital",detail:"With Future, Young Thug, Gucci Mane, and Migos all releasing major projects, Atlanta is undeniably the center of American hip-hop.",cat:"Music"},
+    {year:2017,event:"Super Bowl LI in Atlanta Area",detail:"Super Bowl LI is played in Atlanta's Mercedes-Benz Stadium with Lady Gaga's halftime show; the Falcons lose a 28-3 lead to the Patriots.",cat:"Sports"},
+    {year:2020,event:"Rayshard Brooks Killed",detail:"Rayshard Brooks is killed by Atlanta police in a Wendy's parking lot; protests shut down the city and the Wendy's is burned.",cat:"Uprising"},
+    {year:2021,event:"Atlanta Braves Win World Series",detail:"The Atlanta Braves win their first World Series since 1995, setting off celebrations across the city.",cat:"Sports"}
+  ],
+  pdx:[
+    {year:1844,event:"Oregon's Black Exclusion Law",detail:"Oregon's provisional government passes the first of several Black exclusion laws, making Oregon the only free state to explicitly bar Black residents.",cat:"Politics"},
+    {year:1942,event:"Vanport Built",detail:"The Kaiser Shipyards construct Vanport in 110 days, housing 40,000 workers — most of them Black migrants — on Columbia River floodplain land.",cat:"Politics"},
+    {year:1948,event:"Vanport Flood",detail:"The Columbia River dike breaks on Memorial Day, destroying Vanport in 15 minutes. At least 15 die; Black survivors are forced into Albina.",cat:"Uprising"},
+    {year:1969,event:"Albina Uprising",detail:"Portland's Black community in Albina protests police brutality and housing discrimination; the McCoy's Cafe altercation triggers several nights of unrest.",cat:"Uprising"},
+    {year:1986,event:"MAX Opens",detail:"Portland's MAX light rail opens its first line, the beginning of the transit system that will define the city's progressive identity.",cat:"Politics"},
+    {year:1989,event:"Gus Van Sant's 'Drugstore Cowboy'",detail:"Gus Van Sant releases 'Drugstore Cowboy,' shot on location in Portland, establishing the city's avant-garde film identity.",cat:"Art"},
+    {year:1997,event:"Elliott Smith's Oscar Moment",detail:"Elliott Smith performs 'Miss Misery' at the Academy Awards, bringing Portland's indie music scene its most unexpected moment of mainstream recognition.",cat:"Music"},
+    {year:2001,event:"Le Guin's National Book Award",detail:"Ursula K. Le Guin receives the National Book Foundation Medal for Distinguished Contribution to American Letters.",cat:"Art"},
+    {year:2011,event:"Occupy Portland",detail:"Portland's Occupy encampment in Lownsdale and Chapman Squares becomes one of the largest and longest-running in the country.",cat:"Politics"},
+    {year:2020,event:"100 Days of Protest",detail:"Following George Floyd's murder, Portland sees nightly protests for over 100 consecutive days — the longest sustained protest in American history.",cat:"Uprising"},
+    {year:2022,event:"Tilikum Crossing Anniversary",detail:"Tilikum Crossing, the car-free bridge carrying MAX Orange Line, celebrates 7 years as a model for transit equity and car-free infrastructure.",cat:"Politics"},
+    {year:2023,event:"Powell's Books at 50",detail:"Powell's Books marks 50 years as Portland's defining cultural institution, surviving the pandemic and remaining the largest independent bookstore in the world.",cat:"Art"}
+  ],
+  balt:[
+    {year:1904,event:"Great Baltimore Fire",detail:"A massive fire destroys 1,500 buildings in downtown Baltimore; the city rebuilds rapidly, establishing modern street grid.",cat:"Politics"},
+    {year:1930,event:"Billie Holiday Sings in Baltimore",detail:"Teenage Eleanora Fagan begins performing in Baltimore's waterfront clubs, developing the voice that will become Lady Day.",cat:"Music"},
+    {year:1931,event:"Cab Calloway Records 'Minnie the Moocher'",detail:"Baltimore-born Cab Calloway records 'Minnie the Moocher' at the Cotton Club, introducing hi-de-ho scat to the world.",cat:"Music"},
+    {year:1954,event:"Thurgood Marshall Wins Brown v. Board",detail:"Baltimore native Thurgood Marshall argues and wins Brown v. Board of Education at the Supreme Court, ending legal school segregation.",cat:"Politics"},
+    {year:1968,event:"Baltimore Uprising",detail:"After MLK's assassination, Baltimore sees six days of uprising, 6 deaths, 700 injuries, and 5,800 arrests; National Guard occupies the city.",cat:"Uprising"},
+    {year:1980,event:"Inner Harbor Opens",detail:"Baltimore's Inner Harbor waterfront redevelopment opens, becoming a national model for urban waterfront revitalization.",cat:"Politics"},
+    {year:1983,event:"Baltimore Orioles Win World Series",detail:"The Baltimore Orioles defeat the Philadelphia Phillies in the World Series, with Cal Ripken Jr. anchoring the lineup.",cat:"Sports"},
+    {year:1988,event:"Baltimore Club Music Emerges",detail:"DJ producers in Baltimore's club scene develop Baltimore club music — a distinct high-tempo genre that stays local for a decade before spreading.",cat:"Music"},
+    {year:1992,event:"Tupac at Baltimore School for the Arts",detail:"Tupac Shakur's years at Baltimore School for the Arts are later credited as the formative period for his artistic voice and poetic sensibility.",cat:"Art"},
+    {year:2015,event:"Freddie Gray Uprising",detail:"Freddie Gray dies of a spinal injury in police custody; Baltimore erupts in the largest uprising since 1968, with a week of protests and unrest.",cat:"Uprising"},
+    {year:2019,event:"Ravens Win Super Bowl XLVII",detail:"The Baltimore Ravens win Super Bowl XLVII behind Joe Flacco, bringing the city's second NFL championship.",cat:"Sports"},
+    {year:2022,event:"The Wire's Legacy",detail:"Twenty years after The Wire's premiere, Baltimore landmarks from the show are recognized as cultural heritage sites in the city that inspired them.",cat:"Art"}
+  ]
+};
 
 // ── TRIVIA DATA ───────────────────────────────────────────────────────────────
 const PDX_TRIVIA=[
@@ -7482,12 +7776,160 @@ function BattleSection({cityEmojis,cityNames}:{cityEmojis:{[k:string]:string},ci
   );
 }
 
-// ── CULTURE VIEW ───────────────────────────────────────────────────────────────
-function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
-  const[pill,setPill]=useState<"stories"|"legends"|"scene"|"battle">("stories");
+function CultureQuizSection(){
+  const cities=["dc","nyc","chi","la","bos","atl","pdx","balt"];
   const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
-  const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["battle","⚔️ BATTLE"]];
+  const[selCity,setSelCity]=useState("dc");
+  const[qPool,setQPool]=useState<{q:string,opts:string[],ans:number}[]>([]);
+  const[qIdx,setQIdx]=useState(0);
+  const[answered,setAnswered]=useState<number|null>(null);
+  const[correct,setCorrect]=useState(0);
+  const[done,setDone]=useState(false);
+
+  function drawQuestions(city:string){
+    const pool=[...(CULTURE_TRIVIA[city]||[])];
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    return pool.slice(0,5);
+  }
+
+  useState(()=>{setQPool(drawQuestions("dc"));});
+
+  function pickCity(c:string){
+    setSelCity(c);
+    setQPool(drawQuestions(c));
+    setQIdx(0);setAnswered(null);setCorrect(0);setDone(false);
+  }
+
+  function handleAnswer(i:number){
+    if(answered!==null||done)return;
+    setAnswered(i);
+    const isCorrect=i===qPool[qIdx].ans;
+    if(isCorrect)setCorrect(p=>p+1);
+    setTimeout(()=>{
+      setAnswered(null);
+      if(qIdx+1>=qPool.length){setDone(true);if(isCorrect)addXP((correct+1)*30);else addXP(correct*30);}
+      else setQIdx(p=>p+1);
+    },800);
+  }
+
+  function reset(){setQPool(drawQuestions(selCity));setQIdx(0);setAnswered(null);setCorrect(0);setDone(false);}
+
+  const q=qPool[qIdx];
+  const CAT_COLORS:{[k:string]:string}={Music:"#A855F7",Politics:"#4169E1",Art:"#F97316",Uprising:"#EF4444",Sports:"#22C55E",Food:"#F59E0B"};
+
+  return(
+    <div>
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:11,color:"rgba(0,0,0,0.4)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>SELECT CITY</div>
+        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4}}>
+          {cities.map(c=>(
+            <button key={c} onClick={()=>pickCity(c)} style={{flexShrink:0,padding:"6px 12px",borderRadius:16,border:`1.5px solid ${selCity===c?"#A855F7":"#EDEBE8"}`,background:selCity===c?"#A855F7":"transparent",color:selCity===c?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:.5,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>
+              {CITY_EMOJIS[c]} {CITY_NAMES[c].split(" ")[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+      {done?(
+        <div style={{background:"linear-gradient(135deg,rgba(168,85,247,0.08),rgba(65,105,225,0.08))",borderRadius:20,padding:32,textAlign:"center"}}>
+          <div style={{fontSize:48,marginBottom:12}}>{correct>=4?"🌟":correct>=3?"🎉":correct>=2?"👍":"💪"}</div>
+          <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,color:"#A855F7",marginBottom:8}}>QUIZ COMPLETE</div>
+          <div style={{fontSize:15,color:"rgba(0,0,0,0.7)",marginBottom:4}}>{correct} / {qPool.length} correct</div>
+          <div style={{fontSize:13,color:"#A855F7",fontWeight:700,marginBottom:24}}>+{correct*30} XP earned</div>
+          <button onClick={reset} style={{padding:"12px 32px",borderRadius:12,background:"linear-gradient(135deg,#A855F7,#4169E1)",border:"none",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",letterSpacing:1}}>PLAY AGAIN</button>
+        </div>
+      ):q?(
+        <div>
+          <div style={{display:"flex",gap:4,marginBottom:16}}>
+            {qPool.map((_,i)=>(
+              <div key={i} style={{flex:1,height:3,borderRadius:2,background:i<qIdx?"#A855F7":i===qIdx?"rgba(168,85,247,0.4)":"rgba(0,0,0,0.1)"}}/>
+            ))}
+          </div>
+          <div style={{background:"#fff",borderRadius:16,padding:"20px",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",border:"1px solid rgba(0,0,0,0.06)",marginBottom:16}}>
+            <div style={{fontSize:11,color:"rgba(0,0,0,0.35)",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Question {qIdx+1} of {qPool.length}</div>
+            <div style={{fontSize:16,fontWeight:700,color:"#111",lineHeight:1.5}}>{q.q}</div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {q.opts.map((opt,i)=>{
+              let bg="rgba(0,0,0,0.03)";let border="rgba(0,0,0,0.08)";let color="#111";
+              if(answered!==null){
+                if(i===q.ans){bg="#dcfce7";border="#22C55E";color="#166534";}
+                else if(i===answered&&answered!==q.ans){bg="#fee2e2";border="#EF4444";color="#991b1b";}
+              }
+              return(
+                <button key={i} onClick={()=>handleAnswer(i)}
+                  style={{padding:"14px 16px",borderRadius:12,border:`1.5px solid ${border}`,background:bg,color,fontSize:14,fontWeight:600,cursor:answered!==null?"default":"pointer",textAlign:"left",transition:"all .2s",fontFamily:"'Outfit',sans-serif"}}>
+                  <span style={{opacity:.5,marginRight:8}}>{["A","B","C","D"][i]}.</span>{opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ):(
+        <div style={{textAlign:"center",padding:32,color:"rgba(0,0,0,0.4)"}}>Loading questions...</div>
+      )}
+    </div>
+  );
+}
+
+function TimelineSection(){
+  const cities=["dc","nyc","chi","la","bos","atl","pdx","balt"];
+  const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
+  const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
+  const[selCity,setSelCity]=useState("dc");
+  const[expanded,setExpanded]=useState<string|null>(null);
+  const CAT_COLORS:{[k:string]:string}={Music:"#A855F7",Politics:"#4169E1",Art:"#F97316",Uprising:"#EF4444",Sports:"#22C55E",Food:"#F59E0B"};
+  const events=CITY_TIMELINE[selCity]||[];
+  return(
+    <div>
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:11,color:"rgba(0,0,0,0.4)",letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>SELECT CITY</div>
+        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4}}>
+          {cities.map(c=>(
+            <button key={c} onClick={()=>{setSelCity(c);setExpanded(null);}} style={{flexShrink:0,padding:"6px 12px",borderRadius:16,border:`1.5px solid ${selCity===c?"#A855F7":"#EDEBE8"}`,background:selCity===c?"#A855F7":"transparent",color:selCity===c?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:.5,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>
+              {CITY_EMOJIS[c]} {CITY_NAMES[c].split(" ")[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{position:"relative",padding:"8px 0"}}>
+        <div style={{position:"absolute",left:"50%",top:0,bottom:0,width:2,background:"rgba(0,0,0,0.06)",transform:"translateX(-50%)"}}/>
+        {events.map((ev,i)=>{
+          const key=`${ev.year}-${ev.event}`;
+          const isExp=expanded===key;
+          const isLeft=i%2===0;
+          const col=CAT_COLORS[ev.cat]||"#A855F7";
+          return(
+            <div key={key} style={{display:"flex",alignItems:"flex-start",marginBottom:24,flexDirection:isLeft?"row":"row-reverse"}}>
+              <div style={{flex:1,padding:isLeft?"0 24px 0 0":"0 0 0 24px",textAlign:isLeft?"right":"left"}}>
+                <div onClick={()=>setExpanded(isExp?null:key)}
+                  style={{display:"inline-block",background:"#fff",borderRadius:12,padding:"12px 14px",boxShadow:"0 2px 8px rgba(0,0,0,0.06)",border:`1px solid rgba(0,0,0,0.06)`,cursor:"pointer",maxWidth:200,textAlign:"left"}}>
+                  <div style={{fontSize:11,color:col,fontWeight:700,letterSpacing:1,marginBottom:4}}>{ev.cat.toUpperCase()}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#111",lineHeight:1.3,marginBottom:4}}>{ev.event}</div>
+                  <div style={{overflow:"hidden",maxHeight:isExp?200:0,transition:"max-height .3s ease",opacity:isExp?1:0}}>
+                    <div style={{fontSize:12,color:"rgba(0,0,0,0.6)",lineHeight:1.5,marginTop:6,paddingTop:6,borderTop:"1px solid rgba(0,0,0,0.06)"}}>{ev.detail}</div>
+                  </div>
+                </div>
+              </div>
+              <div style={{width:40,display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,zIndex:1}}>
+                <div style={{width:12,height:12,borderRadius:"50%",background:col,border:"2px solid #fff",boxShadow:`0 0 0 3px ${col}40`}}/>
+                <div style={{fontSize:10,fontWeight:800,color:col,marginTop:4,letterSpacing:.5}}>{ev.year}</div>
+              </div>
+              <div style={{flex:1}}/>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── CULTURE VIEW ───────────────────────────────────────────────────────────────
+function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
+  const[pill,setPill]=useState<"stories"|"legends"|"scene"|"quiz"|"timeline"|"battle">("stories");
+  const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
+  const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
+  const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["quiz","🧠 QUIZ"],["timeline","⏳ TIMELINE"],["battle","⚔️ BATTLE"]];
   return(
     <div style={{minHeight:"100vh",background:"#fff",paddingBottom:80}}>
       <div style={{padding:"20px 16px 0"}}>
@@ -7503,6 +7945,8 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
         {pill==="stories"&&<StorylinesSection/>}
         {pill==="legends"&&<LegendsSection/>}
         {pill==="scene"&&<SceneSection/>}
+        {pill==="quiz"&&<CultureQuizSection/>}
+        {pill==="timeline"&&<TimelineSection/>}
         {pill==="battle"&&<BattleSection cityEmojis={CITY_EMOJIS} cityNames={CITY_NAMES}/>}
       </div>
     </div>
