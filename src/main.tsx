@@ -3579,7 +3579,6 @@ const NFL_DYK:string[]=[
   "The 1972 Miami Dolphins went 17–0 — the only perfect season in NFL history. They famously toast each year when the last undefeated team loses.",
   "Arrowhead Stadium (Kansas City) set a Guinness World Record for crowd noise at 142.2 decibels in 2014.",
   "The Arizona Cardinals are the oldest franchise in NFL history, founded in 1920 in Chicago as the Racine Cardinals.",
-  "Washington Park station has the deepest MAX platform in the system — but the DC Metro's Wheaton station has the longest escalator in the Western Hemisphere.",
   "Tom Brady won 7 Super Bowls — 6 with the Patriots and 1 with the Buccaneers — more than any player in history.",
   "The Dallas Cowboys have the highest franchise value in professional sports — over $9 billion as of 2024.",
   "Super Bowl XLII (2008): The undefeated Patriots (18–0) lost to the Giants 17–14. David Tyree's 'Helmet Catch' is one of sport's most iconic plays.",
@@ -3627,7 +3626,7 @@ const NBA_RAW:any[]=[
   ["Brooklyn Nets","Eastern","Atlantic","Northeast",0,1967,"Brooklyn, NY","Eastern Atlantic · Founded as the New Jersey Americans — now the anchor of the most culturally electric basketball market in the world","The Nets have never won an NBA title despite decades in the New York market. Their Big Three era with Durant, Harden, and Irving burned bright and collapsed in a single season."],
   ["New York Knicks","Eastern","Atlantic","Northeast",2,1946,"New York, NY","Eastern Atlantic · Madison Square Garden is the world's most famous arena — and the Knicks have the longest drought in their market","The Knicks won championships in 1970 and 1973 with Willis Reed, Walt Frazier, and the greatest Knicks team ever assembled. They haven't won since."],
   ["Philadelphia 76ers","Eastern","Atlantic","Mid-Atlantic",3,1946,"Philadelphia, PA","Eastern Atlantic · Trust the Process — one of NBA history's most iconic rebuilds produced three championships across two eras","The 76ers won titles in 1955 (as Syracuse Nationals), 1967, and 1983 (Moses Malone's 'Fo, Fo, Fo' sweep). Joel Embiid's era raised expectations without a title."],
-  ["Toronto Raptors","Eastern","Atlantic","Mid-Atlantic",1,1995,"Toronto, ON","Eastern Atlantic · Canada's only NBA franchise — their 2019 championship is the most stunning single-season rise in modern NBA history","The Raptors were founded in 1995 as an expansion team. In 2019, with Kawhi Leonard, they defeated the Golden State Warriors to win their first and only championship."],
+  ["Toronto Raptors","Eastern","Atlantic","Northeast",1,1995,"Toronto, ON","Eastern Atlantic · Canada's only NBA franchise — their 2019 championship is the most stunning single-season rise in modern NBA history","The Raptors were founded in 1995 as an expansion team. In 2019, with Kawhi Leonard, they defeated the Golden State Warriors to win their first and only championship."],
   ["Chicago Bulls","Eastern","Central","Midwest",6,1966,"Chicago, IL","Eastern Central · Michael Jordan's dynasty — six championships in eight years, the greatest sustained run of individual dominance in NBA history","Michael Jordan won 6 championships with the Bulls, all without going to a Game 7. Phil Jackson's triangle offense and Scottie Pippen's brilliance made Chicago unstoppable in the 1990s."],
   ["Cleveland Cavaliers","Eastern","Central","Midwest",1,1970,"Cleveland, OH","Eastern Central · LeBron James brought Cleveland its first major sports championship in 52 years — the 2016 comeback from 3-1 down is the greatest in Finals history","LeBron James returned to Cleveland in 2014 and delivered the impossible in 2016 — becoming the first team to ever win the Finals after trailing 3 games to 1."],
   ["Detroit Pistons","Eastern","Central","Midwest",3,1941,"Detroit, MI","Eastern Central · The Bad Boys — two championships in the late 1980s built on defense and physicality that literally changed the rules of basketball","The Pistons' 1989 and 1990 championships were won with a physical, bruising style that the NBA eventually legislated away. Isiah Thomas and Bill Laimbeer made Detroit the most hated champion of the era."],
@@ -4066,7 +4065,7 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1966,event:"MLK Moves to Chicago",detail:"Martin Luther King Jr. moves into a Lawndale apartment to lead the Chicago Freedom Movement, targeting housing segregation in the North.",cat:"Politics"},
     {year:1977,event:"House Music Born at the Warehouse",detail:"DJ Frankie Knuckles begins playing at the Warehouse club, blending disco and electronic beats to create house music for Chicago's Black and Latino gay community.",cat:"Music"},
     {year:1983,event:"Harold Washington Elected Mayor",detail:"Harold Washington becomes Chicago's first Black mayor, defeating the white Democratic machine with a coalition of Black, Latino, and progressive white voters.",cat:"Politics"},
-    {year:2003,event:"E2 Nightclub Stampede",detail:"21 people are killed in a stampede at the E2 nightclub in Bronzeville, exposing safety failures in the city's entertainment licensing.",cat:"Uprising"},
+    {year:2003,event:"E2 Nightclub Stampede",detail:"21 people are killed in a stampede at the E2 nightclub in the South Loop, exposing safety failures in the city's entertainment licensing.",cat:"Uprising"},
     {year:2004,event:"Kanye's 'College Dropout'",detail:"Kanye West releases 'The College Dropout,' sampling soul records and rapping about South Side Chicago experience with unprecedented mainstream success.",cat:"Music"},
     {year:2013,event:"Chance the Rapper's 'Acid Rap'",detail:"Chance the Rapper releases 'Acid Rap' for free online, proving streaming viability and putting Chicago's new generation on the map.",cat:"Music"},
     {year:2016,event:"Cubs Win the World Series",detail:"The Chicago Cubs end a 108-year championship drought by winning the World Series, generating the largest celebration in Chicago history.",cat:"Sports"}
@@ -4135,10 +4134,10 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1968,event:"Baltimore Uprising",detail:"After MLK's assassination, Baltimore sees six days of uprising, 6 deaths, 700 injuries, and 5,800 arrests; National Guard occupies the city.",cat:"Uprising"},
     {year:1980,event:"Inner Harbor Opens",detail:"Baltimore's Inner Harbor waterfront redevelopment opens, becoming a national model for urban waterfront revitalization.",cat:"Politics"},
     {year:1983,event:"Baltimore Orioles Win World Series",detail:"The Baltimore Orioles defeat the Philadelphia Phillies in the World Series, with Cal Ripken Jr. anchoring the lineup.",cat:"Sports"},
-    {year:1988,event:"Baltimore Club Music Emerges",detail:"DJ producers in Baltimore's club scene develop Baltimore club music — a distinct high-tempo genre that stays local for a decade before spreading.",cat:"Music"},
     {year:1986,event:"Tupac at Baltimore School for the Arts",detail:"Tupac Shakur enrolls at Baltimore School for the Arts, where he studies ballet, acting, and poetry. These years are later credited as the formative period for his artistic voice.",cat:"Art"},
-    {year:2015,event:"Freddie Gray Uprising",detail:"Freddie Gray dies of a spinal injury in police custody; Baltimore erupts in the largest uprising since 1968, with a week of protests and unrest.",cat:"Uprising"},
+    {year:1988,event:"Baltimore Club Music Emerges",detail:"DJ producers in Baltimore's club scene develop Baltimore club music — a distinct high-tempo genre that stays local for a decade before spreading.",cat:"Music"},
     {year:2013,event:"Ravens Win Super Bowl XLVII",detail:"The Baltimore Ravens win Super Bowl XLVII behind Joe Flacco's MVP performance, defeating the San Francisco 49ers 34–31 in New Orleans.",cat:"Sports"},
+    {year:2015,event:"Freddie Gray Uprising",detail:"Freddie Gray dies of a spinal injury in police custody; Baltimore erupts in the largest uprising since 1968, with a week of protests and unrest.",cat:"Uprising"},
     {year:2022,event:"The Wire's Legacy",detail:"Twenty years after The Wire's premiere, Baltimore landmarks from the show are recognized as cultural heritage sites in the city that inspired them.",cat:"Art"}
   ]
 };
@@ -5571,8 +5570,7 @@ function DailyChallengeModal({onClose,onPlay}:{onClose:()=>void,onPlay:(gk:strin
       else lines.push(`${G.emoji} ${G.short}: 💀 Missed`);
     }
     lines.push(``,`urbaniq.quest`);
-    navigator.clipboard.writeText(lines.join("\n")).catch(()=>{});
-    setShareToast(true);setTimeout(()=>setShareToast(false),2500);
+    navigator.clipboard.writeText(lines.join("\n")).then(()=>setShareToast(true)).catch(()=>{});setTimeout(()=>setShareToast(false),2500);
   }
 
   return(
@@ -8830,7 +8828,7 @@ function ItemOfWeek({T,fs,items,lineColors,gameKey,onClose}:{T:any,fs:any,items:
 
 // ── TRIVIA GAME ───────────────────────────────────────────────────────────────
 function TriviaGame({T,fs,questions,gameKey,onClose}:{T:any,fs:any,questions:any[],gameKey:string,onClose:()=>void}){
-  const daily=useMemo(()=>getDailyTrivia(questions),[gameKey]);
+  const daily=useMemo(()=>getDailyTrivia(questions),[gameKey,questions]);
   const[qIdx,setQIdx]=useState(0);
   const[selected,setSelected]=useState<number|null>(null);
   const[answers,setAnswers]=useState<any[]>([]);
@@ -9799,7 +9797,7 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
   function buildRound(){
     let a:any,b:any;
     for(let i=0;i<100;i++){const idx=Math.floor(Math.random()*(pool.length-2));a=pool[idx];b=pool[idx+1];if(a&&b&&a.traffic!==b.traffic)break;}
-    if(!a||!b||a.traffic===b.traffic){a=pool[0];b=pool[2];}
+    if(!a||!b||a.traffic===b.traffic){const diff2=pool.find((s:any)=>s.traffic!==pool[0].traffic);a=pool[0];b=diff2||pool[2];}
     setPair([a,b]);setChosen(null);setPhase("play");
   }
   function pick(name:string){
@@ -9886,7 +9884,7 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
      context:"LA Metro's B Line (formerly Red) runs entirely underground through Hollywood and the San Fernando Valley. It's one of only two fully underground Metro lines in the city."},
   ];
   const ROUNDS=5;
-  const[usedIdx]=useState<Set<number>>(()=>new Set());
+  const[usedIdx,setUsedIdx]=useState<Set<number>>(()=>new Set());
   const[round,setRound]=useState(0);
   const[score,setScore]=useState(0);
   const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");
@@ -9899,7 +9897,7 @@ function SoundboardMode({onClose}:{onClose:()=>void}){
     const available=ALL_CLUES.map((_,i)=>i).filter(i=>!usedIdx.has(i));
     const pool=available.length>=1?available:ALL_CLUES.map((_,i)=>i);
     const idx=pool[Math.floor(Math.random()*pool.length)];
-    usedIdx.add(idx);
+    setUsedIdx(s=>new Set([...s,idx]));
     const c=ALL_CLUES[idx];
     setClue(c);
     const wrong=ALL_SYSTEMS.filter(s=>s!==c.system).sort(()=>Math.random()-0.5).slice(0,3);
@@ -9979,7 +9977,7 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
       {q:"Which DC Metro line runs to Dulles Airport?",a:"Silver Line",opts:["Silver Line","Orange Line","Blue Line","Yellow Line"]},
       {q:"Chicago's 'L' Purple Line serves which neighborhood?",a:"Evanston",opts:["Evanston","Hyde Park","Wicker Park","Pilsen"]},
       {q:"Boston's Green Line is known as what type of transit?",a:"Light rail",opts:["Light rail","Heavy rail","Monorail","BRT"]},
-      {q:"Which DC Metro station is the deepest below ground?",a:"Forest Glen",opts:["Forest Glen","Wheaton","Bethesda","DuPont Circle"]},
+      {q:"Which DC Metro station is the deepest below ground?",a:"Forest Glen",opts:["Forest Glen","Wheaton","Bethesda","Dupont Circle"]},
     ],
   };
   const questions=useMemo(()=>(SEASON_QUESTIONS[season]||SEASON_QUESTIONS.spring).sort(()=>Math.random()-0.5).slice(0,4),[season]);
@@ -10080,7 +10078,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     if(capped.length<3){
       pickRound();return;
     }
-    const shuffled=[...capped].sort(()=>Math.random()-.5);
+    const arr=[...capped];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}const shuffled=arr;
     setRoundData({city,line,stations:capped,shuffled:[...shuffled]});
     setBank([...shuffled]);
     setPlayerOrder([]);
@@ -10103,7 +10101,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     const correct=roundData.stations;
     const result=playerOrder.map((n,i)=>n===correct[i]);
     const numCorrect=result.filter(Boolean).length;
-    const pct=playerOrder.length>0?numCorrect/correct.length:0;
+    const pct=playerOrder.length>0?numCorrect/playerOrder.length:0;
     let xp=0;
     if(pct>=0.7){xp=60;addXP(60);}
     setChecked(result);
@@ -10262,7 +10260,7 @@ function BuddyStreaksMode({onClose}:{onClose:()=>void}){
     const payload=btoa(JSON.stringify({streak,xp,played,ts:Date.now()}));
     const url=window.location.origin+"/?challenge="+payload;
     setLink(url);
-    navigator.clipboard?.writeText(url).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);}).catch(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);});
+    navigator.clipboard?.writeText(url).then(()=>setCopied(true)).catch(()=>{});
   }
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:16}} onClick={onClose}>
@@ -10346,7 +10344,7 @@ function PartnerMapMode({onClose}:{onClose:()=>void}){
                     style={{flex:1,background:"#4169E1",color:"#fff",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,textAlign:"center",textDecoration:"none",display:"block"}}>
                     GET DIRECTIONS
                   </a>
-                  <button onClick={()=>showToast("Open Explore → DC to claim")} style={{flex:1,background:"#028A48",color:"#fff",border:"none",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                  <button onClick={()=>showToast(`Open Explore → ${CITY_NAMES[p.city]||p.city?.toUpperCase()||"City"} to claim`)} style={{flex:1,background:"#028A48",color:"#fff",border:"none",borderRadius:8,padding:"9px",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                     CLAIM OFFER
                   </button>
                 </div>
@@ -10404,7 +10402,7 @@ function LineChallengeModal({onClose}:{onClose:()=>void}){
         setLineBonusAwarded(s=>new Set([...s,selLine]));
       }
     }
-  },[lcPhase,selLine]);
+  },[lcPhase,selLine,progress,lineMap]);
 
   function startLine(line:string){
     const lineStations=lineMap[line]||[];
@@ -10644,7 +10642,7 @@ function ArcadeHubModal({onClose,setShowFakeStation,setShowStationAge,setShowCit
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
             <div style={{fontSize:22,fontWeight:900,letterSpacing:2,color:"#0A0A0A"}}>🎮 ARCADE</div>
-            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>14 MINI-GAMES · EARN XP IN EVERY MODE</div>
+            <div style={{fontSize:11,color:"#888",letterSpacing:1,marginTop:2}}>15 MINI-GAMES · EARN XP IN EVERY MODE</div>
           </div>
           <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#888",padding:4,lineHeight:1}}>✕</button>
         </div>
@@ -10828,7 +10826,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
   function emptyRound():any{return{guesses:[],won:false,lost:false,alreadyPlayed:false,hardLocks:{},hintsUsed:0,revealedHints:[],targetName:null,peekPenalty:0,peekUsed:false,extraGuesses:0,cardHintsUsed:[]};}
   const G=GAMES[gameKey];
-  const DIFF=(()=>{const d=G.diffConfig[diff];const tw=getDailyTwist();return tw?.key==="nohints"?{...d,hints:0}:d;})();
+  const DIFF=useMemo(()=>{const d=G.diffConfig[diff];const tw=getDailyTwist();return tw?.key==="nohints"?{...d,hints:0}:d;},[diff,gameKey]);
   const items=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nfl"?NFL_TEAMS:gameKey==="nba"?NBA_TEAMS:gameKey==="balt"?BALT_STATIONS:gameKey==="la"?LA_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:gameKey==="atl"?ATL_STATIONS:STATES;
   const target=useMemo(()=>getTarget(items,gameKey,round),[gameKey,round]);
   const yesterday=useMemo(()=>getYesterday(items,gameKey),[gameKey]);
@@ -10923,7 +10921,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     })();
   },[]);
 
-  useEffect(()=>{const tick=()=>{const n=new Date();const m=new Date(n);m.setHours(24,0,0,0);setNextMins(Math.ceil((m.getTime()-n.getTime())/60000));};tick();const t=setInterval(tick,30000);return()=>clearInterval(t);},[]);
+  useEffect(()=>{const tick=()=>{const n=new Date();const m=new Date(n);m.setHours(24,0,0,0);setNextMins(Math.floor((m.getTime()-n.getTime())/60000));};tick();const t=setInterval(tick,30000);return()=>clearInterval(t);},[]);
   useEffect(()=>{if(shieldToast){const t=setTimeout(()=>setShieldToast(false),4500);return()=>clearTimeout(t);}},[shieldToast]);
   useEffect(()=>{
     if(input.length>0){
@@ -11006,7 +11004,8 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     await saveTodayData(gameKey,today+`r${round}`,{guesses:rd.guesses.map((g:any)=>g.item.name),won:false,lost:true,hardLocks:rd.hardLocks,hintsUsed:rd.hintsUsed,revealedHints:rd.revealedHints,targetName:tgtName,peekPenalty:rd.peekPenalty||0,peekUsed:rd.peekUsed||false,extraGuesses:rd.extraGuesses||0,cardHintsUsed:rd.cardHintsUsed||[]});
     const isFirstRoundGiveUp=round===0;
     if(isFirstRoundGiveUp)setProtectToast(true);
-    const ns={...stats,played:stats.played+1,wins:stats.wins,totalGuesses:stats.totalGuesses+rd.guesses.length,streak:isFirstRoundGiveUp?stats.streak:0,dist:stats.dist,lastGuesses:rd.guesses.length,lastPlayed:today};
+    const anyRoundAlreadyWon=roundData[gameKey].some((r:any,i:number)=>i!==round&&r.won);
+    const ns={...stats,played:stats.played+1,wins:stats.wins,totalGuesses:stats.totalGuesses+rd.guesses.length,streak:(isFirstRoundGiveUp||anyRoundAlreadyWon)?stats.streak:0,dist:stats.dist,lastGuesses:rd.guesses.length,lastPlayed:today};
     setAllStats((prev:any)=>({...prev,[gameKey]:ns}));await saveStats(gameKey,ns);
     const hist=playHistory[gameKey]||[];const newHist=[...hist,{date:today,won:false}].slice(-90);
     setPlayHistory((prev:any)=>({...prev,[gameKey]:newHist}));await savePlayHistory(gameKey,newHist);
@@ -11068,7 +11067,9 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       const newDist={...stats.dist};if(isWin)newDist[newGuesses.length]=(newDist[newGuesses.length]||0)+1;
       const isFirstRoundLoss=isLoss&&round===0;
       if(isFirstRoundLoss)setProtectToast(true);
-      const ns={...stats,played:stats.played+1,wins:isWin?stats.wins+1:stats.wins,totalGuesses:stats.totalGuesses+newGuesses.length,streak:isWin?stats.streak+1:isFirstRoundLoss?stats.streak:0,dist:newDist,lastGuesses:newGuesses.length,lastMaxGuesses:DIFF.maxGuesses,hardWins:(stats.hardWins||0)+(isWin&&diff==="hard"?1:0),proWins:(stats.proWins||0)+(isWin&&diff==="pro"?1:0),lastPlayed:today};
+      const streakAlreadyCountedToday=stats.lastPlayed===today;
+      const newStreak=isWin?(streakAlreadyCountedToday?stats.streak:stats.streak+1):isFirstRoundLoss?stats.streak:0;
+      const ns={...stats,played:stats.played+1,wins:isWin?stats.wins+1:stats.wins,totalGuesses:stats.totalGuesses+newGuesses.length,streak:newStreak,dist:newDist,lastGuesses:newGuesses.length,lastMaxGuesses:DIFF.maxGuesses,hardWins:(stats.hardWins||0)+(isWin&&diff==="hard"?1:0),proWins:(stats.proWins||0)+(isWin&&diff==="pro"?1:0),lastPlayed:today};
       setAllStats((prev:any)=>({...prev,[gameKey]:ns}));await saveStats(gameKey,ns);
       const hist=playHistory[gameKey]||[];const newHist=[...hist,{date:today,won:isWin}].slice(-90);
       setPlayHistory((prev:any)=>({...prev,[gameKey]:newHist}));await savePlayHistory(gameKey,newHist);
@@ -11467,7 +11468,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 <div className={shakeInput?"shake-anim":""} style={{background:T.surface,border:`1.5px solid ${shakeInput?T.cellBorder.red:T.border}`,borderRadius:10,display:"flex",alignItems:"center",gap:8,padding:"0 14px",transition:"border-color .2s"}}>
                   <span style={{fontSize:fs(17),opacity:.35}}>{G.itemEmoji}</span>
                   <input ref={inputRef} value={input} onChange={e=>setInput(e.target.value)}
-                    onKeyDown={e=>{if(e.key==="Enter"&&sugg.length>0)makeGuess(sugg[0]);else if(e.key==="Enter"&&input.trim()){const exact=sugg.find((s:any)=>s.name.toLowerCase()===input.trim().toLowerCase());if(exact)makeGuess(exact);}}}
+                    onKeyDown={e=>{if(e.key==="Enter"&&input.trim()){const exact=sugg.find((s:any)=>s.name.toLowerCase()===input.trim().toLowerCase());if(exact)makeGuess(exact);else if(sugg.length>0)makeGuess(sugg[0]);}}}
                     placeholder={`Type a ${G.itemLabel} name...`}
                     autoFocus
                     style={{flex:1,background:"transparent",border:"none",outline:"none",color:T.text,fontSize:fs(14),padding:"14px 0",fontFamily:"'JetBrains Mono',monospace"}}/>
@@ -11704,7 +11705,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       )}
       {showMapsModal&&<MapsGuideModal onClose={()=>setShowMapsModal(false)} onSelectGame={(gk)=>{setShowMapsModal(false);onHome();setTimeout(()=>onSelectGame?.(gk),80);}}/>}
       {tab==="cards"&&(
-        <CardSystemTab pendingCard={null} onClearPending={()=>setPendingCard(null)}/>
+        <CardSystemTab pendingCard={pendingCard} onClearPending={()=>setPendingCard(null)}/>
       )}
       {tab==="help"&&(
         <HelpTab T={T} fs={fs} G={G} DIFF={DIFF} gameKey={gameKey} onPlay={()=>setTab("play")}/>
@@ -11714,7 +11715,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     {showFeedback&&<BetaModal code={feedbackCode} onClose={()=>setShowFeedback(false)}/>}
     {showSupportModal&&<SupporterModal isSupporter={isSupporter} supporterEmail={supporterEmail} onClose={()=>{setShowSupportModal(false);setShieldAvail(shieldAvailableForSupporter());}}/>}
     {showPeek&&!rd.won&&!rd.lost&&!rd.alreadyPlayed&&(()=>{
-      const gl=DIFF.maxGuesses-rd.guesses.length-(rd.peekPenalty||0);
+      const gl=DIFF.maxGuesses+(rd.extraGuesses||0)-rd.guesses.length-(rd.peekPenalty||0);
       const cost=gl-1;
       return(
         <PeekModal T={T} fs={fs} gameKey={gameKey} target={target} DIFF={DIFF} rd={rd} cost={cost}
@@ -11751,13 +11752,19 @@ function MiniGamesScreen({blitzBests,onSelect,onBack}:{blitzBests:any,onSelect:(
   const GAME_DEFS=[
     {key:"pdx",name:"Portland MAX",emoji:"🚊",color:"#028A48",grad:"linear-gradient(135deg,#028A48,#016a36)",sub:"Light rail • Pacific NW",items:97},
     {key:"dc",name:"DC Metro",emoji:"🚇",color:"#BF0000",grad:"linear-gradient(135deg,#BF0000,#8a0000)",sub:"Subway • Nation's Capital",items:98},
+    {key:"balt",name:"Baltimore Metro",emoji:"🦀",color:"#003865",grad:"linear-gradient(135deg,#003865,#6a0032)",sub:"Light rail • Charm City",items:53},
+    {key:"la",name:"LA Metro",emoji:"🌴",color:"#005DAA",grad:"linear-gradient(135deg,#005DAA,#C4A020)",sub:"Rail • Los Angeles",items:93},
+    {key:"nyc",name:"NYC Subway",emoji:"🗽",color:"#EE352E",grad:"linear-gradient(135deg,#EE352E,#0039A6)",sub:"Subway • New York City",items:472},
+    {key:"chi",name:"Chicago 'L'",emoji:"🌬️",color:"#C60C30",grad:"linear-gradient(135deg,#C60C30,#005005)",sub:"Elevated rail • Chicago",items:145},
+    {key:"bos",name:"Boston MBTA",emoji:"🦞",color:"#DA291C",grad:"linear-gradient(135deg,#DA291C,#003DA5)",sub:"Subway • Boston",items:124},
+    {key:"atl",name:"Atlanta MARTA",emoji:"🍑",color:"#007A4D",grad:"linear-gradient(135deg,#007A4D,#FDB924)",sub:"Rail • Atlanta",items:38},
     {key:"states",name:"US States",emoji:"🗺️",color:"#1a3a8f",grad:"linear-gradient(135deg,#1a3a8f,#B22234)",sub:"Geography • 50 states",items:50},
     {key:"nfl",name:"NFL Teams",emoji:"🏈",color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",sub:"Sports • 32 franchises",items:32},
     {key:"nba",name:"NBA Teams",emoji:"🏀",color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",sub:"Basketball • 30 franchises",items:30},
   ];
   const MODE_DEFS=[
     {id:"blitz",emoji:"⚡",label:"BLITZ",color:"#e8a000",desc:"Race the clock — type as many as you can in 90 seconds. Use 2 hints wisely.",badge:"90 SEC",detail:"Fast-fire mode that tests your memory under pressure. Score as many as possible before time runs out. Two hints available.",icon:"🏁"},
-    {id:"trivia",emoji:"🧠",label:"TRIVIA",color:"#7c3aed",desc:"Multiple-choice deep-dive into facts, history, and stats.",badge:"26 Q's",detail:"Carefully crafted questions about each game's topic. Four options per question — one correct. Track your personal best score.",icon:"🎓"},
+    {id:"trivia",emoji:"🧠",label:"TRIVIA",color:"#7c3aed",desc:"Multiple-choice deep-dive into facts, history, and stats.",badge:"5 Q's",detail:"Carefully crafted questions about each game's topic. Four options per question — one correct. Track your personal best score.",icon:"🎓"},
   ];
   const[activeMode,setActiveMode]=useState<string>("blitz");
   const[hovered,setHovered]=useState<string|null>(null);
@@ -12184,13 +12191,16 @@ function HypeIntro({onDone}:{onDone:()=>void}){
           <div className="hy-chip" style={{borderColor:"#EE352E",color:"#EE352E"}}>🗽 New York</div>
           <div className="hy-chip" style={{borderColor:"#0072bc",color:"#0072bc"}}>🌴 LA</div>
           <div className="hy-chip" style={{borderColor:"#C60C30",color:"#C60C30"}}>🌬️ Chicago</div>
+          <div className="hy-chip" style={{borderColor:"#1DB954",color:"#1DB954"}}>🦞 Boston</div>
+          <div className="hy-chip" style={{borderColor:"#EF3A43",color:"#EF3A43"}}>🍑 Atlanta</div>
+          <div className="hy-chip" style={{borderColor:"#FF6B35",color:"#FF6B35"}}>🦀 Baltimore</div>
         </div>
       </div>
       {/* Phase 2 */}
       <div className="hy-ph" id="hy-ph2">
         <div id="hy-card">
           <div className="hy-cbar">
-            <div><div className="hy-cgame">DC METRO · PUZZLE #247</div><div className="hy-cday">MEDIUM · 6 GUESSES</div></div>
+            <div><div className="hy-cgame">DC METRO · PUZZLE #{getDayNum()}</div><div className="hy-cday">MEDIUM · 6 GUESSES</div></div>
             <div className="hy-lpills">
               {['#BF0000','#0039A6','#FF9900','#009b3a','#FFD700','#919D9D'].map(c=><div key={c} className="hy-lp" style={{background:c}}/>)}
             </div>
@@ -12221,8 +12231,8 @@ function HypeIntro({onDone}:{onDone:()=>void}){
         <div className="hy-lrow"><span className="hy-lu">Urban</span><span className="hy-lq">IQ</span></div>
         <div className="hy-ltag" id="hy-ltag">Decode the city · Daily transit puzzle</div>
         <div className="hy-stats" id="hy-stats">
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#028A48"}}>6</div><div className="hy-sl">CITIES</div></div>
-          <div className="hy-sb"><div className="hy-sn" style={{color:"#0060ff"}}>868+</div><div className="hy-sl">STATIONS</div></div>
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#028A48"}}>8</div><div className="hy-sl">CITIES</div></div>
+          <div className="hy-sb"><div className="hy-sn" style={{color:"#0060ff"}}>1,000+</div><div className="hy-sl">STATIONS</div></div>
           <div className="hy-sb"><div className="hy-sn" style={{color:"#C60C30"}}>3</div><div className="hy-sl">ROUNDS/DAY</div></div>
           <div className="hy-sb"><div className="hy-sn" style={{color:"#c8a800"}}>FREE</div><div className="hy-sl">ALWAYS</div></div>
         </div>
