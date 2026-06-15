@@ -6347,7 +6347,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </div>
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
-      {activeSection==="home"&&<div style={{position:"relative",zIndex:2}}>
+      {activeSection==="home"&&<div style={{position:"relative"}}>
       {/* HERO */}
       <div style={{padding:"20px 0 0",background:"#FFFFFF"}}>
         {/* Hero text */}
@@ -7184,7 +7184,7 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
     if(isShield&&!hasShield){localStorage.setItem(shieldKey,"1");addShield();setHasShield(true);setShieldPop(true);setTimeout(()=>setShieldPop(false),3500);}
   }
   return(
-    <div style={{background:"#FFFFFF",paddingBottom:16,position:"relative",zIndex:1,minHeight:"100dvh"}}>
+    <div style={{background:"#FFFFFF",paddingBottom:16,position:"relative",minHeight:"100dvh"}}>
       {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
       {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
       {!cityKey?(
@@ -7953,7 +7953,7 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["quiz","🧠 QUIZ"],["timeline","⏳ TIMELINE"],["battle","⚔️ BATTLE"]];
   return(
-    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))",position:"relative",zIndex:2}}>
+    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))",position:"relative"}}>
       <div style={{padding:"20px 16px 0"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,backgroundImage:"linear-gradient(90deg,#A855F7,#4169E1)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",marginBottom:4}}>CULTURE</div>
         <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",marginBottom:16}}>Dive into the stories behind every city.</div>
