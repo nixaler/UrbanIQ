@@ -10073,7 +10073,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     const lines=CITY_LINES[city];
     const line=lines[Math.floor(Math.random()*lines.length)];
     const raw=RAW_MAP[city]||[];
-    const onLine=raw.filter(([,ls]:any[])=>Array.isArray(ls)&&ls.some((l:string)=>l===line||l.includes(line.split(" ")[0]))).map(([name]:any[])=>name);
+    const onLine=raw.filter(([,ls]:any[])=>Array.isArray(ls)&&ls.some((l:string)=>l===line||l===line.split(" ")[0])).map(([name]:any[])=>name);
     const capped=onLine.slice(0,8);
     if(capped.length<3){
       pickRound();return;
@@ -10381,6 +10381,8 @@ function LineChallengeModal({onClose}:{onClose:()=>void}){
   const[lcSugg,setLcSugg]=useState<any[]>([]);
   const[progress,setProgress]=useState<Record<string,string[]>>({});
   const[lineBonusAwarded,setLineBonusAwarded]=useState<Set<string>>(()=>new Set());
+  const advTimerRef=useRef<ReturnType<typeof setTimeout>|null>(null);
+  useEffect(()=>()=>{if(advTimerRef.current)clearTimeout(advTimerRef.current);},[]);
 
   function selectCity(ck:string){
     const lm=getLineMap(ck);
@@ -10435,10 +10437,10 @@ function LineChallengeModal({onClose}:{onClose:()=>void}){
       saveLCProgress(selCity,selLine,newDone);
       setProgress(p=>({...p,[selLine]:newDone}));
       addXP(50);setSessionWins(w=>w+1);
-      setTimeout(()=>advance(),1400);
+      advTimerRef.current=setTimeout(()=>advance(),1400);
     }else if(newGuesses.length>=3){
       setRevealed(true);
-      setTimeout(()=>advance(),2200);
+      advTimerRef.current=setTimeout(()=>advance(),2200);
     }
   }
 
@@ -10851,7 +10853,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const winRate=stats.played>0?Math.round(stats.wins/stats.played*100):0;
   const maxDist=Math.max(...Object.values(stats.dist as Record<string,number>),1);
   const unlockedSet=new Set(unlocked);
-  const countdown=nextMins?`${String(Math.floor(nextMins/60)).padStart(2,"0")}:${String(nextMins%60).padStart(2,"0")}:00`:"--:--";
+  const countdown=nextMins?`${String(Math.floor(nextMins/60)).padStart(2,"0")}:${String(nextMins%60).padStart(2,"0")}`:"--:--";
   const allGameRounds=roundData[gameKey];
   const unfinishedRounds=allGameRounds.filter((r:any)=>!r.alreadyPlayed).length;
   useEffect(()=>{
@@ -12297,22 +12299,22 @@ function Root(){
       let shieldFired=false;
       const statsMut:{[k:string]:any}={pdx:pdxSt,dc:dcSt,states:stSt,nfl:nflSt,nba:nbaSt2,balt:baltSt,la:laSt,nyc:nycSt,chi:chiSt,bos:bosSt,atl:atlSt};
       const today2=getToday();
-      for(const gk2 of["pdx","dc","states","nfl","nba","balt","la","nyc","chi","bos","atl"]){
+      const allGk2=["pdx","dc","states","nfl","nba","balt","la","nyc","chi","bos","atl"];
+      // Identify all games that missed a day and sort by streak descending so the shield protects the highest streak
+      const missedGames=allGk2.filter(gk2=>{const s=statsMut[gk2];return s.lastPlayed&&s.streak>0&&daysSinceDate(s.lastPlayed)>1;});
+      missedGames.sort((a,b)=>(statsMut[b].streak||0)-(statsMut[a].streak||0));
+      for(const gk2 of missedGames){
         const s=statsMut[gk2];
-        if(!s.lastPlayed||s.streak===0)continue;
-        const dayDiff=daysSinceDate(s.lastPlayed);
-        if(dayDiff>1){
-          if(shieldAvail&&!shieldFired){
-            // Shield activates: forgive the miss by advancing lastPlayed to today
-            shieldFired=true;
-            const forgivenStats={...s,lastPlayed:today2};
-            statsMut[gk2]=forgivenStats;
-            await saveStats(gk2,forgivenStats);
-          } else {
-            const resetStats={...s,streak:0,lastPlayed:today2};
-            statsMut[gk2]=resetStats;
-            await saveStats(gk2,resetStats);
-          }
+        if(shieldAvail&&!shieldFired){
+          // Shield activates: forgive the miss by advancing lastPlayed to today
+          shieldFired=true;
+          const forgivenStats={...s,lastPlayed:today2};
+          statsMut[gk2]=forgivenStats;
+          await saveStats(gk2,forgivenStats);
+        } else {
+          const resetStats={...s,streak:0,lastPlayed:today2};
+          statsMut[gk2]=resetStats;
+          await saveStats(gk2,resetStats);
         }
       }
       if(shieldFired){markShieldUsed();setStreakShieldFired(true);}
@@ -12320,7 +12322,7 @@ function Root(){
       setAllStats(statsMut);
       setBlitzBests({pdx:pdxBest||0,dc:dcBest||0,states:stBest||0,nfl:nflBest||0,nba:nbaBest2||0,balt:baltBest||0,la:laBest||0,nyc:nycBest||0,chi:chiBest||0,bos:bosBest||0,atl:atlBest||0});
       setSettings(sett);SoundEngine.setEnabled(sett?.sounds!==false);
-      function quickRound(td:any){if(!td?.guesses)return{guesses:[],won:false,lost:false,alreadyPlayed:false};return{guesses:td.guesses,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost};}
+      function quickRound(td:any){if(!td?.guesses)return{guesses:[],won:false,lost:false,alreadyPlayed:false};const guesses=td.guesses.map((g:any)=>typeof g==="string"?{item:{name:g}}:g);return{guesses,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost};}
       const rd={pdx:[quickRound(pdxR0),quickRound(pdxR1),quickRound(pdxR2)],dc:[quickRound(dcR0),quickRound(dcR1),quickRound(dcR2)],states:[quickRound(stR0),quickRound(stR1),quickRound(stR2)],nfl:[quickRound(nflR0),quickRound(nflR1),quickRound(nflR2)],nba:[quickRound(nbaR0_2),quickRound(nbaR1_2),quickRound(nbaR2_2)],balt:[quickRound(baltR0),quickRound(baltR1),quickRound(baltR2)],la:[quickRound(laR0),quickRound(laR1),quickRound(laR2)],nyc:[quickRound(nycR0),quickRound(nycR1),quickRound(nycR2)],chi:[quickRound(chiR0),quickRound(chiR1),quickRound(chiR2)],bos:[quickRound(bosR0),quickRound(bosR1),quickRound(bosR2)],atl:[quickRound(atlR0),quickRound(atlR1),quickRound(atlR2)]};
       setRoundData(rd);
       const anyPlayed=Object.values(rd).some((rounds:any)=>rounds.some((r:any)=>r.alreadyPlayed));
