@@ -135,8 +135,6 @@ const CARD_ROUND_MODS=[
   {id:"wildcard",label:"🎲 Wildcard",desc:"Coin flip decides winner.",effect:"coin_flip"},
   {id:"rush",label:"🚄 Rush Hour",desc:"Transit cards +20 power.",effect:"transit_boost"},
   {id:"std",label:"Standard",desc:"Normal rules.",effect:"none"},
-  {id:"std",label:"Standard",desc:"Normal rules.",effect:"none"},
-  {id:"std",label:"Standard",desc:"Normal rules.",effect:"none"},
 ];
 
 function getCardUnique(name, gameType){
@@ -1582,7 +1580,7 @@ function unlockGhost(id:string):void{const u=getGhostUnlocked();if(!u.includes(i
 const CITY_STATS:{[k:string]:{name:string,emoji:string,founded:number,stations:number,lines:number,miles:number,dailyRiders:number}}={
   pdx:{name:"Portland MAX",emoji:"🌹",founded:1986,stations:97,lines:5,miles:60,dailyRiders:100000},
   dc:{name:"DC Metro",emoji:"🌸",founded:1976,stations:98,lines:6,miles:117,dailyRiders:600000},
-  balt:{name:"Baltimore Metro",emoji:"🦀",founded:1983,stations:14,lines:1,miles:15,dailyRiders:35000},
+  balt:{name:"Baltimore Metro",emoji:"🦀",founded:1983,stations:14,lines:2,miles:15,dailyRiders:35000},
   la:{name:"LA Metro Rail",emoji:"🌴",founded:1990,stations:101,lines:7,miles:105,dailyRiders:330000},
   nyc:{name:"NYC Subway",emoji:"🗽",founded:1904,stations:472,lines:36,miles:245,dailyRiders:3500000},
   chi:{name:"Chicago L",emoji:"🌭",founded:1892,stations:145,lines:8,miles:102,dailyRiders:600000},
@@ -1646,7 +1644,7 @@ const NEIGHBORHOOD_CARDS:{[city:string]:{[station:string]:{neighborhood:string,v
   chi:{"Chicago":{neighborhood:"The Loop",vibe:"Business & Transit Hub"},"Belmont":{neighborhood:"Lakeview",vibe:"Nightlife & Diverse"},"Wicker Park":{neighborhood:"Wicker Park",vibe:"Art & Indie Music"},"Hyde Park":{neighborhood:"Hyde Park",vibe:"Academic & Historic"}},
   bos:{"Park Street":{neighborhood:"Downtown Crossing",vibe:"Shopping & History"},"Kendall/MIT":{neighborhood:"Kendall Square",vibe:"Tech & Innovation"},"Harvard":{neighborhood:"Harvard Square",vibe:"Academic & Books"},"Davis":{neighborhood:"Somerville",vibe:"Young & Creative"}},
 };
-function getStationOfWeek(gameKey:string):string{const stations=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:[];if(!stations.length)return"";const week=Math.floor(getDayNum()/7);return(stations[_h(week*7919+stations.length)%stations.length]?.name)||"";}
+function getStationOfWeek(gameKey:string):string{const stations=gameKey==="pdx"?PDX_STATIONS:gameKey==="dc"?DC_STATIONS:gameKey==="nyc"?NYC_STATIONS:gameKey==="chi"?CHI_STATIONS:gameKey==="bos"?BOS_STATIONS:[];if(!stations.length)return"";const week=Math.floor(getDayNum()/7);return(stations[_h(week*7919)%stations.length]?.name)||"";}
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gkMap:Record<string,number>={pdx:1,dc:2,la:3,nyc:4,chi:5,balt:6,bos:7,atl:8,nfl:9,states:10,nba:12};const gk=gkMap[gameKey]||11;const N=items.length;const indices=Array.from({length:N},(_,i)=>i);let seed=_h(_h(day*48271)^_h(gk*22695477));function next(){seed=_h(seed+0x9e3779b9);return seed;}for(let i=N-1;i>0;i--){const j=next()%(i+1);[indices[i],indices[j]]=[indices[j],indices[i]];}return indices.slice(0,Math.min(3,N));}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
@@ -6630,7 +6628,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
 }
 
 // ── XP & SHIELD HELPERS ───────────────────────────────────────────────────────
-function getXP():number{return Number(localStorage.getItem("tgg:xp")||0);}
+function getXP():number{const v=Number(localStorage.getItem("tgg:xp")||0);return isNaN(v)?0:v;}
 function getDeviceId():string{let d=localStorage.getItem("tgg:did");if(!d){d=crypto.randomUUID();localStorage.setItem("tgg:did",d);}return d;}
 function getFirstPlay():string{return localStorage.getItem("tgg:first-play")||"";}
 function markFirstPlay():void{if(!localStorage.getItem("tgg:first-play"))localStorage.setItem("tgg:first-play",new Date().toISOString());}
@@ -6862,7 +6860,7 @@ function getShieldCount():number{return Number(localStorage.getItem("tgg:shields
 function addShield():void{localStorage.setItem("tgg:shields",String(getShieldCount()+1));}
 function consumeShield():boolean{const n=getShieldCount();if(n<=0)return false;localStorage.setItem("tgg:shields",String(n-1));return true;}
 function getGlobalData():{streak:number,lastWin:string,proStatus:boolean}{try{const d=JSON.parse(localStorage.getItem("tgg:global")||'{}');return{streak:d.streak||0,lastWin:d.lastWin||"",proStatus:!!d.proStatus};}catch{return{streak:0,lastWin:"",proStatus:false};}}
-function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yest=new Date(Date.now()-86400000).toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({...g,streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
+function incGlobalStreak():void{const today=new Date().toISOString().slice(0,10);const g=getGlobalData();if(g.lastWin===today)return;const yD=new Date();yD.setDate(yD.getDate()-1);const yest=yD.toISOString().slice(0,10);localStorage.setItem("tgg:global",JSON.stringify({...g,streak:g.lastWin===yest?g.streak+1:1,lastWin:today}));}
 function getUserWallet():{xp:number,shields:number,streak:number,proStatus:boolean,hintsRemaining:number}{const g=getGlobalData();return{xp:getXP(),shields:getShieldCount(),streak:g.streak,proStatus:g.proStatus,hintsRemaining:Number(localStorage.getItem("tgg:hints")||0)};}
 // ── ACCOUNT AUTH HELPERS ──────────────────────────────────────────────────────
 function getAuthToken():string|null{return localStorage.getItem("tgg:auth-token");}
@@ -8616,7 +8614,7 @@ function BlitzMode({T,fs,items,lineColors,gameKey,blitzBest,onNewBest,onClose}:{
     const targets=items.filter(s=>s.lines?.includes(line));
     return{label:`Name every ${line} Line station`,targets,hint:`${targets.length} stations`};
   }
-  useEffect(()=>{setCategory(pickCategory());},[]);
+  useEffect(()=>{setCategory(pickCategory());},[gameKey]);
   useEffect(()=>{if(phase!=="playing")return;if(timeLeft<=0){setPhase("done");return;}const t=setTimeout(()=>setTimeLeft(t=>t-1),1000);return()=>clearTimeout(t);},[phase,timeLeft]);
   useEffect(()=>{if(phase==="playing"&&category&&category.targets.length>0&&guessed.size>=category.targets.length)setPhase("done");},[guessed,phase,category]);
   function normalize(s:string){
@@ -8671,7 +8669,7 @@ function BlitzMode({T,fs,items,lineColors,gameKey,blitzBest,onNewBest,onClose}:{
       sr.start();
     }catch(err){setListening(false);}
   }
-  useEffect(()=>{if(phase==="done"&&score>blitzBest)onNewBest(score);},[phase]);
+  useEffect(()=>{if(phase==="done"&&score>blitzBest)onNewBest(score);},[phase,score,blitzBest]);
   const tc=timeLeft>20?"green":timeLeft>10?"yellow":"red";
   const missed=category?.targets.filter((t:any)=>!guessed.has(t.name))||[];
   const hasSpeech=!!(((window as any).SpeechRecognition)||(window as any).webkitSpeechRecognition);
@@ -9280,7 +9278,7 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
   }
   useEffect(()=>{if(stations.length>3)buildRound();},[round,stations]);
   function pick(name:string,fake:boolean){setChosen(name);setPhase("reveal");if(fake)setScore(s=>s+1);}
-  function next(){if(round+1>=ROUNDS){setPhase("done");markBingo("blitz_win");}else{setRound(r=>r+1);}}
+  function next(){if(round+1>=ROUNDS){setPhase("done");}else{setRound(r=>r+1);}}
   if(phase==="done")return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
@@ -9379,7 +9377,8 @@ function CityShowdownMode({T,fs,onClose}:{T:any,fs:any,onClose:()=>void}){
   },[round]);
   const q=SHOWDOWN_QUESTIONS[qIdx];
   const a=CITY_STATS[pair[0]],b=CITY_STATS[pair[1]];
-  const correctKey=q.dir==="asc"?(a[q.field]<b[q.field]?pair[0]:pair[1]):(a[q.field]>b[q.field]?pair[0]:pair[1]);
+  const correctKey=a&&b&&a[q?.field]!==b[q?.field]?(q.dir==="asc"?(a[q.field]<b[q.field]?pair[0]:pair[1]):(a[q.field]>b[q.field]?pair[0]:pair[1])):null;
+  useEffect(()=>{if(correctKey===null&&phase==="play")setQIdx(Math.floor(Math.random()*SHOWDOWN_QUESTIONS.length));},[correctKey]);
   if(phase==="done")return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,width:"90%"}}>
@@ -9800,11 +9799,12 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
     if(!a||!b||a.traffic===b.traffic){const diff2=pool.find((s:any)=>s.traffic!==pool[0].traffic);a=pool[0];b=diff2||pool[2];}
     setPair([a,b]);setChosen(null);setPhase("play");
   }
+  const scoreRef=useRef(0);
   function pick(name:string){
     if(!pair)return;const[a,b]=pair;const correct=a.traffic>b.traffic?a.name:b.name;
-    setChosen(name);setPhase("reveal");if(name===correct){setScore(s=>s+1);addXP(80);}
+    setChosen(name);setPhase("reveal");if(name===correct){scoreRef.current++;setScore(scoreRef.current);addXP(80);}
   }
-  function next(){if(round+1>=ROUNDS){if(score===ROUNDS)addXP(50);setPhase("done");}else setRound(r=>r+1);}
+  function next(){if(round+1>=ROUNDS){if(scoreRef.current===ROUNDS)addXP(50);setPhase("done");}else setRound(r=>r+1);}
   if(!pair)return null;
   const[a,b]=pair;const correctName=a.traffic>b.traffic?a.name:b.name;
   const TRAFFIC_LABELS=["","Quiet","Light","Moderate","Busy","Major Hub"];
@@ -10004,7 +10004,7 @@ function SeasonalEventsMode({onClose}:{onClose:()=>void}){
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:24,marginBottom:6}}>{emoji}</div>
           <div style={{fontSize:11,letterSpacing:2,color:"#888",marginBottom:6}}>SEASONAL EVENTS · {SEASON_LABEL[season].toUpperCase()} · ROUND {round+1}/{ROUNDS}</div>
-          <div style={{display:"inline-block",background:`${color}22`,color,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,marginBottom:12}}>⚡ 1.5× XP BONUS</div>
+          <div style={{display:"inline-block",background:`${color}22`,color,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,marginBottom:12}}>⚡ BONUS XP · SEASONAL EVENT</div>
           <div style={{fontSize:15,fontWeight:800,color:"#0A0A0A",lineHeight:1.4}}>{q.q}</div>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
@@ -10067,7 +10067,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
   const[bank,setBank]=useState<string[]>([]);
   const[checked,setChecked]=useState<boolean[]|null>(null);
   const[roundScore,setRoundScore]=useState<number|null>(null);
-  function pickRound(){
+  function pickRound(retries=0){
     const cities=Object.keys(CITY_LINES);
     const city=cities[Math.floor(Math.random()*cities.length)];
     const lines=CITY_LINES[city];
@@ -10076,7 +10076,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     const onLine=raw.filter(([,ls]:any[])=>Array.isArray(ls)&&ls.some((l:string)=>l===line||l===line.split(" ")[0])).map(([name]:any[])=>name);
     const capped=onLine.slice(0,8);
     if(capped.length<3){
-      pickRound();return;
+      if((retries||0)<10)pickRound(((retries||0)+1) as any);return;
     }
     const arr=[...capped];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}const shuffled=arr;
     setRoundData({city,line,stations:capped,shuffled:[...shuffled]});
@@ -10101,7 +10101,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
     const correct=roundData.stations;
     const result=playerOrder.map((n,i)=>n===correct[i]);
     const numCorrect=result.filter(Boolean).length;
-    const pct=playerOrder.length>0?numCorrect/playerOrder.length:0;
+    const pct=playerOrder.length>0?numCorrect/correct.length:0;
     let xp=0;
     if(pct>=0.7){xp=60;addXP(60);}
     setChecked(result);
@@ -10142,7 +10142,7 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
           <div style={{fontSize:10,letterSpacing:2,color:"#888",marginBottom:6}}>YOUR ROUTE ({playerOrder.length}/{roundData.stations.length})</div>
           <div style={{minHeight:48,background:"#f8f8f8",borderRadius:10,padding:8,display:"flex",flexWrap:"wrap",gap:6}}>
             {playerOrder.map((n,i)=>(
-              <div key={i} onClick={()=>tapRoute(n)} style={{background:checked?checked[i]?"#028A48":"#E8294A":"#4169E1",color:"#fff",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:700,cursor:checked?"default":"pointer"}}>
+              <div key={n} onClick={()=>tapRoute(n)} style={{background:checked?checked[i]?"#028A48":"#E8294A":"#4169E1",color:"#fff",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:700,cursor:checked?"default":"pointer"}}>
                 {i+1}. {n}
               </div>
             ))}
@@ -10152,8 +10152,8 @@ function RouteArchitectMode({onClose}:{onClose:()=>void}){
         <div style={{marginBottom:14}}>
           <div style={{fontSize:10,letterSpacing:2,color:"#888",marginBottom:6}}>STATION BANK</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-            {bank.map((n,i)=>(
-              <div key={i} onClick={()=>tapBank(n)} style={{background:"#f0f0f0",border:"1px solid #ddd",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:600,cursor:checked?"default":"pointer",color:"#333"}}>
+            {bank.map((n)=>(
+              <div key={n} onClick={()=>tapBank(n)} style={{background:"#f0f0f0",border:"1px solid #ddd",borderRadius:6,padding:"6px 10px",fontSize:11,fontWeight:600,cursor:checked?"default":"pointer",color:"#333"}}>
                 {n}
               </div>
             ))}
@@ -12301,7 +12301,7 @@ function Root(){
       const today2=getToday();
       const allGk2=["pdx","dc","states","nfl","nba","balt","la","nyc","chi","bos","atl"];
       // Identify all games that missed a day and sort by streak descending so the shield protects the highest streak
-      const missedGames=allGk2.filter(gk2=>{const s=statsMut[gk2];return s.lastPlayed&&s.streak>0&&daysSinceDate(s.lastPlayed)>1;});
+      const missedGames=allGk2.filter(gk2=>{const s=statsMut[gk2];return s.lastPlayed&&s.streak>0&&daysSinceDate(s.lastPlayed)===2;});
       missedGames.sort((a,b)=>(statsMut[b].streak||0)-(statsMut[a].streak||0));
       for(const gk2 of missedGames){
         const s=statsMut[gk2];
