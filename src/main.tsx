@@ -6347,7 +6347,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         </div>
       </div>
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
-      {activeSection==="home"&&<>
+      {activeSection==="home"&&<div style={{position:"relative",zIndex:2}}>
       {/* HERO */}
       <div style={{padding:"20px 0 0",background:"#FFFFFF"}}>
         {/* Hero text */}
@@ -6608,7 +6608,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
         <div style={{fontSize:"10px",fontWeight:600,letterSpacing:"1.5px",textTransform:"uppercase",color:"rgba(255,255,255,0.25)"}}>No Ads · No Tracking · Always Free</div>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"13px",letterSpacing:"2px",color:"rgba(255,255,255,0.25)"}}>NIXALERLLC</div>
       </footer>
-      </>}
+      </div>}
       {activeSection==="explore"&&<ExploreView onSelectGame={onSelectGame}/>}
       {activeSection==="culture"&&<CultureView onSelectGame={onSelectGame}/>}
 
@@ -7950,7 +7950,7 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["quiz","🧠 QUIZ"],["timeline","⏳ TIMELINE"],["battle","⚔️ BATTLE"]];
   return(
-    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:80}}>
+    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:80,position:"relative",zIndex:2}}>
       <div style={{padding:"20px 16px 0"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,backgroundImage:"linear-gradient(90deg,#A855F7,#4169E1)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",marginBottom:4}}>CULTURE</div>
         <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",marginBottom:16}}>Dive into the stories behind every city.</div>
