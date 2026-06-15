@@ -394,10 +394,16 @@ const ADMIN_LOGIN_HTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta
 
 function adminAuth(req, res, next) {
   const pw = process.env.ADMIN_PASSWORD || process.env.ADMIN_PASS;
-  if (!pw) return res.status(503).send("Admin not configured. Set ADMIN_PASSWORD in Railway.");
+  if (!pw) {
+    if (req.path.startsWith("/api/")) return res.status(503).json({ error: "Admin not configured. Set ADMIN_PASSWORD in Railway." });
+    return res.status(503).send("Admin not configured. Set ADMIN_PASSWORD in Railway.");
+  }
   const cookie = req.headers.cookie || "";
-  const token = cookie.split(";").map(c => c.trim()).find(c => c.startsWith("admin_token="))?.split("=")[1];
+  // Handle passwords containing "=" (e.g. base64) by joining all parts after the first "="
+  const raw = cookie.split(";").map(c => c.trim()).find(c => c.startsWith("admin_token=")) || "";
+  const token = raw.slice("admin_token=".length);
   if (token === pw) return next();
+  if (req.path.startsWith("/api/")) return res.status(401).json({ error: "Unauthorized" });
   res.redirect("/admin/login");
 }
 
@@ -439,7 +445,9 @@ const ADMIN_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><
 </div>
 <script>
 async function loadAll(){
+  try{
   const [cr, sr] = await Promise.all([fetch('/api/claims'), fetch('/api/admin/stats')]);
+  if(!cr.ok){const e=await cr.json().catch(()=>({error:cr.status+' '+cr.statusText}));document.getElementById('s-total').textContent='ERR';document.getElementById('s-pending').textContent=e.error||'Auth?';return;}
   const claims = await cr.json();
   const stats = sr.ok ? await sr.json() : {};
   let pend=0, done=0;
@@ -464,6 +472,7 @@ async function loadAll(){
   document.getElementById('s-pending').textContent = pend;
   document.getElementById('s-fulfilled').textContent = done;
   document.getElementById('s-dau').textContent = stats.dau ?? '—';
+  }catch(e){document.getElementById('s-total').textContent='ERR';document.getElementById('s-pending').textContent=String(e.message||e).slice(0,40);}
 }
 async function loadAnalytics(){
   const r = await fetch('/api/analytics?days=30');
@@ -910,7 +919,7 @@ app.get("/api/scores", async (req, res) => {
 //   );
 //   CREATE INDEX IF NOT EXISTS idx_pv_ts ON page_views(ts DESC);
 
-const _mem = { total: 0, days: {}, refs: {} }; // in-memory fallback
+const _mem = { total: 0, days: {}, refs: {}, mobile: 0, desktop: 0 }; // in-memory fallback
 
 function uaType(ua = "") {
   if (/bot|crawl|spider|slurp|facebookexternalhit|twitterbot/i.test(ua)) return "bot";
@@ -932,6 +941,7 @@ app.use(async (req, res, next) => {
   // in-memory
   _mem.total++;
   _mem.days[today] = (_mem.days[today] || 0) + 1;
+  if (type === "mobile") _mem.mobile++; else _mem.desktop++;
   if (ref) { try { const h = new URL(ref).hostname; if (h) _mem.refs[h] = (_mem.refs[h] || 0) + 1; } catch {} }
   // persist to Supabase if available
   if (supabase) {
@@ -966,7 +976,7 @@ app.get("/api/analytics", adminAuth, async (req, res) => {
   // fallback: return in-memory stats
   const daily = Object.entries(_mem.days).sort(([a], [b]) => a.localeCompare(b)).map(([date, views]) => ({ date, views }));
   const topRefs = Object.entries(_mem.refs).sort(([,a], [,b]) => b - a).slice(0, 10).map(([host, count]) => ({ host, count }));
-  return res.json({ total: _mem.total, daily, topRefs, note: "In-memory only — add Supabase for persistence" });
+  return res.json({ total: _mem.total, daily, topRefs, mobile: _mem.mobile || 0, desktop: _mem.desktop || 0, note: "In-memory only — add Supabase for persistence" });
 });
 
 
