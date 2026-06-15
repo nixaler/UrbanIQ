@@ -3845,12 +3845,12 @@ const CITY_STORIES=[
     {title:"Dispersal",body:"After the flood, Black Oregonians who had lived in Vanport were forced into Portland proper — specifically into the Albina neighborhood in North and Northeast Portland, the only area where they could find housing. Albina became Black Portland. Decades of urban renewal, freeway construction, and gentrification have since displaced much of that community again."},
     {title:"The Delta Park Stop",body:"The Yellow Line's Delta Park/Vanport station sits on the exact ground where 40,000 people once lived. There is a small memorial. There are information signs. But mostly there is a parking lot and a sports complex where a city used to be. Ursula Le Guin lived in Portland and wrote about invisible histories. This one is literal — the city is gone. The land remembers."}
   ]},
-  {id:"bronzeville",city:"chi",title:"Bronzeville: The Black Metropolis",subtitle:"Chicago's City Within a City",coverEmoji:"🏙️",legendId:"muddy-waters",chapters:[
+  {id:"bronzeville",city:"chi",title:"Bronzeville: The Black Metropolis",subtitle:"Chicago's City Within a City",coverEmoji:"🏙️",legendId:"gwendolyn-brooks",chapters:[
     {title:"The Great Migration Arrives",body:"Between 1910 and 1930, over half a million Black Americans moved from the Deep South to Chicago along the Illinois Central Railroad. They arrived at Grand Central Station and walked south into Bronzeville — the neighborhood that would become known as the Black Metropolis, a city within a city that housed the entire social infrastructure of Black American life when segregation closed everything else off."},
     {title:"47th Street: The Strip",body:"47th Street was Bronzeville's main boulevard — lined with theaters, nightclubs, barbershops, churches, and businesses that served a community locked out of downtown. The Regal Theatre on 47th brought Louis Armstrong, Ella Fitzgerald, and Nat King Cole. The Savoy Ballroom drew dancers from across the city. On summer nights, 47th Street was the most alive street in America."},
     {title:"Jesse Binga's Bank",body:"Jesse Binga opened the first Black-owned bank in Chicago in 1908 and built it into an institution that financed Bronzeville's growth — homes, businesses, churches — all the infrastructure of a community that had to create its own financial system because white banks wouldn't serve them. Binga's bank failed in the Depression of 1930. He went to prison. The community he financed endured."},
     {title:"Urban Renewal Destroys It",body:"In the 1950s and 1960s, the City of Chicago used urban renewal — what James Baldwin called 'Negro removal' — to demolish Bronzeville's housing stock and replace it with high-rise public housing projects that concentrated poverty rather than alleviating it. Robert Taylor Homes. Stateway Gardens. The community that had built theaters and banks was packed into towers with broken elevators and no grocery stores."},
-    {title:"The Revival",body:"The Robert Taylor Homes were demolished between 1998 and 2007. Bronzeville has been rebuilding slowly — new housing, restored theaters, a museum district along 35th Street. The 35th-Bronzeville-IIT Green Line stop anchors the revival. Muddy Waters' music, recorded a mile from here in the 1940s, plays in coffee shops where the old clubs once stood. The Black Metropolis is still becoming itself."}
+    {title:"The Revival",body:"The Robert Taylor Homes were demolished between 1998 and 2007. Bronzeville has been rebuilding slowly — new housing, restored theaters, a museum district along 35th Street. The 35th-Bronzeville-IIT Green Line stop anchors the revival. Gwendolyn Brooks won the Pulitzer Prize for poems she wrote about the people on these blocks. She never left. The Black Metropolis is still becoming itself."}
   ]},
   {id:"roxbury_story",city:"bos",title:"Roxbury: Boston's Black Heart",subtitle:"How a Neighborhood Survived Everything",coverEmoji:"🔴",legendId:"malcolm-x",chapters:[
     {title:"The Great Migration to Boston",body:"While Chicago and New York drew the largest waves of the Great Migration, Black Southerners came to Boston too — settling in Roxbury, where housing was available and work, if not plentiful, was at least possible. By the 1940s, Roxbury had become the center of Black Boston: churches, jazz clubs, mutual aid societies, a community building itself in a city that was not particularly interested in welcoming it."},
@@ -3880,12 +3880,12 @@ const CITY_STORIES=[
     {title:"Go-Go as Resistance",body:"Go-go has never been about crossing over to mainstream success — and that's the point. It is music that belongs entirely to Washington DC, that cannot be fully understood or replicated outside of it, that requires the specific call-and-response of a DC crowd to function. Every artist who tried to take go-go to New York or Los Angeles found that it arrived as something quieter, diminished, incomplete. You have to be there. Go-go insists on that."},
     {title:"The Eternal Beat",body:"Chuck Brown died in 2012 and the city honored him with a park, a mural, a renaming of a stretch of Georgia Avenue. His band, the Soul Searchers, continues to perform. Young go-go acts — Backyard Band, Rare Essence, TCB — keep the groove alive. Shaw-Howard U station on the Green Line sits in the heart of the neighborhood where Chuck built the genre. The beat never drops. That was always the whole point."}
   ]},
-  {id:"albina_story",city:"pdx",title:"Albina: The Neighborhood That Wouldn't Die",subtitle:"Black Portland's Long Struggle",coverEmoji:"🌲",legendId:"ursula-le-guin",chapters:[
+  {id:"albina_story",city:"pdx",title:"Albina: The Neighborhood That Wouldn't Die",subtitle:"Black Portland's Long Struggle",coverEmoji:"🌲",legendId:"gus-van-sant",chapters:[
     {title:"Vanport Survivors Forced into Albina",body:"When the Columbia River flood destroyed Vanport in 1948, the Black Oregonians who had lived there were forced into Portland proper — specifically into the Albina neighborhood in North and Northeast Portland, the only area where they could legally rent or buy housing in a state that had explicitly excluded Black residents for nearly a century. Albina became Black Portland by default, by law, and by necessity."},
     {title:"Emanuel Hospital Expands, Albina Contracts",body:"In the late 1960s and early 1970s, Legacy Emanuel Hospital in North Portland used urban renewal authority to acquire and demolish hundreds of homes and businesses in the Albina neighborhood — displacing thousands of Black residents in the name of hospital expansion plans that were mostly never built. The land sat vacant for decades. Albina's community was scattered. The neighborhood never fully recovered its density."},
     {title:"Interstate 5 Splits the Neighborhood",body:"The construction of Interstate 5 through North Portland divided the Albina neighborhood physically and economically, cutting off blocks from each other and making street-level community life harder. The freeway was routed through Black neighborhoods with the particular efficiency that urban renewal planners consistently applied to communities with less political power. The noise and pollution fell on the people the city cared least about."},
     {title:"Hip-Hop and Community",body:"Despite the institutional assault, Albina's community created a vibrant cultural life in the 1980s and 1990s — Portland's hip-hop scene, centered in Albina, produced artists who chronicled the neighborhood's history and articulated its political situation with a precision that the city government preferred not to hear. The Mississippi Avenue and Alberta Street corridors became centers of art and music that drew visitors from across Portland."},
-    {title:"Gentrification in the 2010s",body:"By the 2010s, what urban renewal began, the real estate market accelerated. North and Northeast Portland — once exclusively accessible to Black residents because no one else would live there — had become among the most desirable neighborhoods in the city. Long-term Black residents were priced out to Gresham and outer East Portland at rates that reduced Portland's Black population significantly. Ursula Le Guin wrote about invisible histories. Albina's history was visible, documented, and happening again."}
+    {title:"Gentrification in the 2010s",body:"By the 2010s, what urban renewal began, the real estate market accelerated. North and Northeast Portland — once exclusively accessible to Black residents because no one else would live there — had become among the most desirable neighborhoods in the city. Long-term Black residents were priced out to Gresham and outer East Portland at rates that reduced Portland's Black population significantly. Gus Van Sant spent his early career in Portland filming the people the city preferred not to see. Albina's story is what he was seeing."}
   ]}
 ];
 
@@ -3925,7 +3925,7 @@ const CULTURE_TRIVIA:{[city:string]:{q:string,opts:string[],ans:number}[]}={
     {q:"Marvin Gaye grew up in which DC neighborhood?",opts:["Anacostia","Columbia Heights","Petworth","Congress Heights"],ans:1},
     {q:"What year was DC go-go officially declared the city's official music?",opts:["2015","2017","2019","2020"],ans:3},
     {q:"Wale's famous 2008 mixtape sampled which TV show?",opts:["The Wire","Seinfeld","The Office","Friends"],ans:1},
-    {q:"John Lewis represented which city in Congress for over 30 years?",opts:["Washington DC","Birmingham","Nashville","Atlanta"],ans:3},
+    {q:"Which DC mayor served four terms and became a symbol of both Black political power and controversy?",opts:["Walter Washington","Sharon Pratt Kelly","Marion Barry","Adrian Fenty"],ans:2},
     {q:"The U Street corridor's 1968 uprising was sparked by which event?",opts:["Watts uprising","MLK assassination","Vietnam War protests","Housing discrimination ruling"],ans:1}
   ],
   nyc:[
@@ -3935,7 +3935,7 @@ const CULTURE_TRIVIA:{[city:string]:{q:string,opts:string[],ans:number}[]}={
     {q:"The Notorious B.I.G. grew up on which Brooklyn street?",opts:["Fulton Street","Atlantic Avenue","St. James Place","Myrtle Avenue"],ans:2},
     {q:"Nina Simone's 'Mississippi Goddam' was written in response to what?",opts:["Vietnam War","Birmingham church bombing","MLK assassination","Freedom Riders attack"],ans:1},
     {q:"Langston Hughes lived at which Harlem address for decades?",opts:["East 116th St","East 127th St","West 125th St","St. Nicholas Avenue"],ans:1},
-    {q:"Which Harlem venue hosted Duke Ellington, Ella Fitzgerald, and Billie Holiday?",opts:["Apollo Theatre","Cotton Club","Savoy Ballroom","Small's Paradise"],ans:1},
+    {q:"Which Harlem venue is most associated with all three: Duke Ellington, Ella Fitzgerald, and Billie Holiday?",opts:["Apollo Theatre","Cotton Club","Savoy Ballroom","Small's Paradise"],ans:0},
     {q:"Patti Smith's debut album 'Horses' was released in what year?",opts:["1973","1975","1977","1979"],ans:1},
     {q:"The CBGB club that launched punk was located in which Manhattan neighborhood?",opts:["Chelsea","Lower East Side","East Village","Tribeca"],ans:2},
     {q:"Which NYC neighborhood is known as the birthplace of hip-hop?",opts:["Harlem","Bronx","Brooklyn","Queens"],ans:1},
@@ -4037,7 +4037,7 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1968,event:"U Street Uprising",detail:"Four days of uprising follow MLK's assassination, leaving 12 dead and the U Street corridor in ashes for two decades.",cat:"Uprising"},
     {year:1974,event:"DC Home Rule Act",detail:"Congress passes the DC Home Rule Act, allowing DC residents to elect their own mayor and city council for the first time since 1874.",cat:"Politics"},
     {year:1978,event:"Chuck Brown Records 'Bustin' Loose'",detail:"Chuck Brown's 'Bustin' Loose' reaches number one on the R&B chart, introducing go-go music to a national audience.",cat:"Music"},
-    {year:1983,event:"Harold Washington Elected",detail:"Marion Barry wins his third mayoral term while Harold Washington becomes Chicago's first Black mayor — a year of Black political firsts nationally.",cat:"Politics"},
+    {year:1983,event:"Marion Barry's Second Term Begins",detail:"Marion Barry begins his second term as DC mayor after a landslide victory, becoming a dominant political force in the city through the 1980s.",cat:"Politics"},
     {year:1991,event:"U Street Metro Opens",detail:"The U Street/African-American Civil War Memorial Metro station opens, beginning the slow revitalization of the post-riot corridor.",cat:"Politics"},
     {year:2003,event:"National Museum of African American History Announced",detail:"Congress authorizes the National Museum of African American History and Culture on the National Mall, opening in 2016.",cat:"Art"},
     {year:2019,event:"Go-Go Protest on Georgia Avenue",detail:"Thousands protest to save the go-go speaker at a Shaw shop; DC Council responds by naming go-go the official music of Washington DC.",cat:"Music"},
@@ -4109,7 +4109,7 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1996,event:"Atlanta Olympics",detail:"Atlanta hosts the Summer Olympics; Centennial Olympic Park is bombed by Eric Rudolph, killing 2 and injuring 111.",cat:"Sports"},
     {year:2002,event:"T.I. Coins 'Trap Music'",detail:"T.I.'s album 'Trap Muzik' coins the genre name and establishes Atlanta's sonic identity for the next two decades.",cat:"Music"},
     {year:2012,event:"Atlanta Becomes Hip-Hop Capital",detail:"With Future, Young Thug, Gucci Mane, and Migos all releasing major projects, Atlanta is undeniably the center of American hip-hop.",cat:"Music"},
-    {year:2017,event:"Super Bowl LI in Atlanta Area",detail:"Super Bowl LI is played in Atlanta's Mercedes-Benz Stadium with Lady Gaga's halftime show; the Falcons lose a 28-3 lead to the Patriots.",cat:"Sports"},
+    {year:2019,event:"Super Bowl LIII in Atlanta",detail:"Atlanta's Mercedes-Benz Stadium hosts Super Bowl LIII with Maroon 5's halftime show; the Patriots defeat the Rams 13–3 in the lowest-scoring Super Bowl ever.",cat:"Sports"},
     {year:2020,event:"Rayshard Brooks Killed",detail:"Rayshard Brooks is killed by Atlanta police in a Wendy's parking lot; protests shut down the city and the Wendy's is burned.",cat:"Uprising"},
     {year:2021,event:"Atlanta Braves Win World Series",detail:"The Atlanta Braves win their first World Series since 1995, setting off celebrations across the city.",cat:"Sports"}
   ],
@@ -4121,7 +4121,7 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1986,event:"MAX Opens",detail:"Portland's MAX light rail opens its first line, the beginning of the transit system that will define the city's progressive identity.",cat:"Politics"},
     {year:1989,event:"Gus Van Sant's 'Drugstore Cowboy'",detail:"Gus Van Sant releases 'Drugstore Cowboy,' shot on location in Portland, establishing the city's avant-garde film identity.",cat:"Art"},
     {year:1997,event:"Elliott Smith's Oscar Moment",detail:"Elliott Smith performs 'Miss Misery' at the Academy Awards, bringing Portland's indie music scene its most unexpected moment of mainstream recognition.",cat:"Music"},
-    {year:2001,event:"Le Guin's National Book Award",detail:"Ursula K. Le Guin receives the National Book Foundation Medal for Distinguished Contribution to American Letters.",cat:"Art"},
+    {year:2004,event:"Le Guin's National Book Award",detail:"Ursula K. Le Guin receives the National Book Foundation Medal for Distinguished Contribution to American Letters, recognizing a lifetime of visionary science fiction and fantasy.",cat:"Art"},
     {year:2011,event:"Occupy Portland",detail:"Portland's Occupy encampment in Lownsdale and Chapman Squares becomes one of the largest and longest-running in the country.",cat:"Politics"},
     {year:2020,event:"100 Days of Protest",detail:"Following George Floyd's murder, Portland sees nightly protests for over 100 consecutive days — the longest sustained protest in American history.",cat:"Uprising"},
     {year:2022,event:"Tilikum Crossing Anniversary",detail:"Tilikum Crossing, the car-free bridge carrying MAX Orange Line, celebrates 7 years as a model for transit equity and car-free infrastructure.",cat:"Politics"},
@@ -4136,9 +4136,9 @@ const CITY_TIMELINE:{[city:string]:{year:number,event:string,detail:string,cat:"
     {year:1980,event:"Inner Harbor Opens",detail:"Baltimore's Inner Harbor waterfront redevelopment opens, becoming a national model for urban waterfront revitalization.",cat:"Politics"},
     {year:1983,event:"Baltimore Orioles Win World Series",detail:"The Baltimore Orioles defeat the Philadelphia Phillies in the World Series, with Cal Ripken Jr. anchoring the lineup.",cat:"Sports"},
     {year:1988,event:"Baltimore Club Music Emerges",detail:"DJ producers in Baltimore's club scene develop Baltimore club music — a distinct high-tempo genre that stays local for a decade before spreading.",cat:"Music"},
-    {year:1992,event:"Tupac at Baltimore School for the Arts",detail:"Tupac Shakur's years at Baltimore School for the Arts are later credited as the formative period for his artistic voice and poetic sensibility.",cat:"Art"},
+    {year:1986,event:"Tupac at Baltimore School for the Arts",detail:"Tupac Shakur enrolls at Baltimore School for the Arts, where he studies ballet, acting, and poetry. These years are later credited as the formative period for his artistic voice.",cat:"Art"},
     {year:2015,event:"Freddie Gray Uprising",detail:"Freddie Gray dies of a spinal injury in police custody; Baltimore erupts in the largest uprising since 1968, with a week of protests and unrest.",cat:"Uprising"},
-    {year:2019,event:"Ravens Win Super Bowl XLVII",detail:"The Baltimore Ravens win Super Bowl XLVII behind Joe Flacco, bringing the city's second NFL championship.",cat:"Sports"},
+    {year:2013,event:"Ravens Win Super Bowl XLVII",detail:"The Baltimore Ravens win Super Bowl XLVII behind Joe Flacco's MVP performance, defeating the San Francisco 49ers 34–31 in New Orleans.",cat:"Sports"},
     {year:2022,event:"The Wire's Legacy",detail:"Twenty years after The Wire's premiere, Baltimore landmarks from the show are recognized as cultural heritage sites in the city that inspired them.",cat:"Art"}
   ]
 };
@@ -7462,10 +7462,10 @@ function StoryModal({story,onClose}:{story:typeof CITY_STORIES[0],onClose:()=>vo
     }
   }
   return(
-    <div style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,0.85)",display:"flex",flexDirection:"column",animation:"lmFadeIn .2s ease both"}}>
-      <style>{`@keyframes storyIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}`}</style>
+    <div style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,0.85)",display:"flex",flexDirection:"column",animation:"lmFadeIn .2s ease both",padding:"env(safe-area-inset-top,8px) 0 env(safe-area-inset-bottom,8px)"}}>
+      <style>{`@keyframes lmFadeIn{from{opacity:0}to{opacity:1}}@keyframes storyIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}`}</style>
       <div style={{position:"absolute",inset:0}} onClick={onClose}/>
-      <div style={{position:"relative",margin:"auto",width:"min(500px,96vw)",maxHeight:"90dvh",background:"#0D0D10",borderRadius:20,overflow:"hidden",display:"flex",flexDirection:"column",animation:"storyIn .25s ease both"}}>
+      <div style={{position:"relative",margin:"auto",width:"min(500px,96vw)",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",background:"#0D0D10",borderRadius:20,overflow:"hidden",display:"flex",flexDirection:"column",animation:"storyIn .25s ease both"}}>
         <div style={{padding:"20px 20px 12px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",alignItems:"center",gap:12}}>
           <span style={{fontSize:28}}>{story.coverEmoji}</span>
           <div style={{flex:1}}>
@@ -7476,7 +7476,7 @@ function StoryModal({story,onClose}:{story:typeof CITY_STORIES[0],onClose:()=>vo
         </div>
         <div style={{display:"flex",gap:4,padding:"10px 20px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
           {story.chapters.map((_,i)=>(
-            <div key={i} style={{flex:1,height:3,borderRadius:2,background:i<=chapter?"#A855F7":"rgba(255,255,255,0.12)",transition:"background .3s"}}/>
+            <div key={i} style={{flex:1,height:3,borderRadius:2,background:i<chapter?"#A855F7":i===chapter?"rgba(168,85,247,0.4)":"rgba(255,255,255,0.12)",transition:"background .3s"}}/>
           ))}
         </div>
         {celebrated?(
@@ -7558,9 +7558,9 @@ function LegendDetailModal({legend,onClose}:{legend:typeof LOCAL_LEGENDS[0],onCl
   const RARITY_COLORS:{[k:string]:string}={uncommon:"#4169E1",rare:"#A855F7",legendary:"#FFB800"};
   const RARITY_GEMS:{[k:string]:string}={uncommon:"🔵",rare:"💜",legendary:"⭐"};
   return(
-    <div style={{position:"fixed",inset:0,zIndex:700,background:"rgba(0,0,0,0.88)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"lmFadeIn .2s ease both"}}>
+    <div style={{position:"fixed",inset:0,zIndex:700,background:"rgba(0,0,0,0.88)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"lmFadeIn .2s ease both",padding:"env(safe-area-inset-top,8px) 0 env(safe-area-inset-bottom,8px)"}}>
       <div style={{position:"absolute",inset:0}} onClick={onClose}/>
-      <div style={{position:"relative",width:"min(420px,94vw)",background:"linear-gradient(160deg,#13131A,#1E1828)",borderRadius:20,overflow:"hidden",border:`1px solid ${RARITY_COLORS[legend.rarity]}40`}}>
+      <div style={{position:"relative",width:"min(420px,94vw)",maxHeight:"calc(100dvh - env(safe-area-inset-top,8px) - env(safe-area-inset-bottom,8px))",overflowY:"auto",background:"linear-gradient(160deg,#13131A,#1E1828)",borderRadius:20,overflow:"hidden",border:`1px solid ${RARITY_COLORS[legend.rarity]}40`}}>
         <div style={{padding:"20px 20px 16px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"flex-start",gap:12}}>
           <span style={{fontSize:40}}>{legend.emoji}</span>
           <div style={{flex:1}}>
@@ -7608,7 +7608,7 @@ function LegendsSection(){
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:6,marginBottom:8}}>
         {cities.map(c=>(
           <button key={c} onClick={()=>setCityFilter(c)} style={{flexShrink:0,padding:"5px 10px",borderRadius:14,border:`1.5px solid ${cityFilter===c?"#A855F7":"#EDEBE8"}`,background:cityFilter===c?"#A855F7":"transparent",color:cityFilter===c?"#fff":"rgba(0,0,0,0.5)",fontSize:10,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-            {c==="all"?"ALL":CITY_EMOJIS[c]+" "+c.toUpperCase()}
+            {c==="all"?"ALL":CITY_EMOJIS[c]+" "+(CITY_NAMES[c]?.split(" ")[0]||c.toUpperCase())}
           </button>
         ))}
       </div>
@@ -7646,6 +7646,7 @@ function SceneSection(){
   const[selCity,setSelCity]=useState<string>("dc");
   const cities=Object.keys(CITY_SCENE);
   const scene=CITY_SCENE[selCity];
+  const SCENE_NAMES:{[k:string]:string}={dc:"DC",nyc:"NYC",chi:"Chicago",la:"LA",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const cards=[
     {icon:"✨",label:"VIBE",value:scene.vibe},
     {icon:"🎵",label:"MUSIC",value:scene.music},
@@ -7658,7 +7659,7 @@ function SceneSection(){
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}}>
         {cities.map(c=>(
           <button key={c} onClick={()=>setSelCity(c)} style={{flexShrink:0,padding:"7px 13px",borderRadius:18,border:`1.5px solid ${selCity===c?"#4169E1":"#EDEBE8"}`,background:selCity===c?"linear-gradient(135deg,#4169E1,#A855F7)":"transparent",color:selCity===c?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap",letterSpacing:.5}}>
-            {CITY_EMOJIS[c]} {c.toUpperCase()}
+            {CITY_EMOJIS[c]} {SCENE_NAMES[c]||c.toUpperCase()}
           </button>
         ))}
       </div>
@@ -7693,6 +7694,7 @@ function BattleSection({cityEmojis,cityNames}:{cityEmojis:{[k:string]:string},ci
   const getSavedScore=():number|null=>{try{const v=localStorage.getItem(scoreKey);return v===null?null:Number(v);}catch{return null;}};
   const[side,setSide]=useState<string|null>(getSide);
   const[qIdx,setQIdx]=useState(0);
+  const[correctCount,setCorrectCount]=useState(0);
   const[score,setScore]=useState<number|null>(getSavedScore);
   const[answered,setAnswered]=useState<number|null>(null);
   const[done,setDone]=useState(score!==null);
@@ -7706,16 +7708,17 @@ function BattleSection({cityEmojis,cityNames}:{cityEmojis:{[k:string]:string},ci
   function answer(idx:number){
     if(answered!==null)return;
     setAnswered(idx);
-    const correct=allQ[qIdx].ans===idx;
+    const isCorrect=allQ[qIdx].ans===idx;
+    const newCount=isCorrect?correctCount+1:correctCount;
+    if(isCorrect)setCorrectCount(newCount);
     setTimeout(()=>{
       if(qIdx<allQ.length-1){setQIdx(q=>q+1);setAnswered(null);}
       else{
-        const finalScore=correct?qIdx+1:qIdx;
-        setScore(finalScore);setDone(true);
-        localStorage.setItem(scoreKey,String(finalScore));
-        addXP(finalScore*40);
+        setScore(newCount);setDone(true);
+        localStorage.setItem(scoreKey,String(newCount));
+        addXP(newCount*40);
         if(side){
-          fetch("/api/scores",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameKey:"battle-"+side,score:finalScore,deviceId:getDeviceId()})}).catch(()=>{});
+          fetch("/api/scores",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameKey:"battle-"+side,score:newCount,deviceId:getDeviceId()})}).catch(()=>{});
         }
       }
     },900);
@@ -7753,7 +7756,7 @@ function BattleSection({cityEmojis,cityNames}:{cityEmojis:{[k:string]:string},ci
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,letterSpacing:2,color:"#0D0D10",marginBottom:4}}>BATTLE COMPLETE</div>
         <div style={{fontSize:14,color:"rgba(0,0,0,0.5)",marginBottom:4}}>You scored <strong>{score}</strong> out of {allQ.length} for {cityNames[side]}</div>
         <div style={{fontSize:13,color:ACCENT,fontWeight:700,marginBottom:16}}>+{(score||0)*40} XP earned</div>
-        <div style={{fontSize:12,color:"rgba(0,0,0,0.35)"}}>Battle resets next week · Week {isoWeek+1} matchup coming soon</div>
+        <div style={{fontSize:12,color:"rgba(0,0,0,0.35)"}}>Battle resets next week · New matchup coming soon</div>
       </div>
     );
   }
@@ -7799,7 +7802,7 @@ function CultureQuizSection(){
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const[selCity,setSelCity]=useState("dc");
   const[qPool,setQPool]=useState<{q:string,opts:string[],ans:number}[]>(()=>{
-    const pool=[...(CULTURE_TRIVIA["dc"]||[])];
+    const pool=[...(CULTURE_TRIVIA["dc"]||[])]; // selCity is "dc" on init
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
     return pool.slice(0,5);
   });
@@ -7950,13 +7953,13 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["quiz","🧠 QUIZ"],["timeline","⏳ TIMELINE"],["battle","⚔️ BATTLE"]];
   return(
-    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:80,position:"relative",zIndex:2}}>
+    <div style={{minHeight:"100vh",background:"#fff",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))",position:"relative",zIndex:2}}>
       <div style={{padding:"20px 16px 0"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,backgroundImage:"linear-gradient(90deg,#A855F7,#4169E1)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",marginBottom:4}}>CULTURE</div>
         <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",marginBottom:16}}>Dive into the stories behind every city.</div>
-        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4}}>
+        <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"} as React.CSSProperties}>
           {PILLS.map(([k,label])=>(
-            <button key={k} onClick={()=>setPill(k as any)} style={{flexShrink:0,padding:"8px 14px",borderRadius:20,border:`1.5px solid ${pill===k?"#A855F7":"#EDEBE8"}`,background:pill===k?"linear-gradient(135deg,#A855F7,#4169E1)":"transparent",color:pill===k?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>{label}</button>
+            <button key={k} onClick={()=>{setPill(k as any);window.scrollTo({top:0,behavior:"instant"} as ScrollToOptions);}} style={{flexShrink:0,padding:"8px 14px",borderRadius:20,border:`1.5px solid ${pill===k?"#A855F7":"#EDEBE8"}`,background:pill===k?"linear-gradient(135deg,#A855F7,#4169E1)":"transparent",color:pill===k?"#fff":"rgba(0,0,0,0.5)",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:1,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap"}}>{label}</button>
           ))}
         </div>
       </div>
