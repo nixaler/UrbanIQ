@@ -6288,6 +6288,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
       {/* NAV */}
       <nav style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 22px",position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,0.95)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderBottom:"1px solid #EDEBE8",boxSizing:"border-box"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"24px",letterSpacing:2,color:"#0A0A0A",lineHeight:1,cursor:"pointer",WebkitTapHighlightColor:"transparent"}} onClick={()=>{setActiveSection("home");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}>Urban<span className="lm-grad">IQ</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          {onHostParty&&<button onClick={onHostParty} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"7px 12px",fontSize:"12px",fontWeight:700,letterSpacing:0.5,cursor:"pointer",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent"}}>🎉 Party</button>}
         <div style={{position:"relative"}}>
           <button onClick={()=>setShowNavMenu(m=>!m)} style={{background:"none",border:"1px solid #EDEBE8",borderRadius:8,padding:"7px 12px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontSize:"12px",fontWeight:700,letterSpacing:1,color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",WebkitTapHighlightColor:"transparent",transition:"background .15s"}} onMouseEnter={e=>(e.currentTarget.style.background="#F5F5F5")} onMouseLeave={e=>(e.currentTarget.style.background="none")}>
             <span style={{display:"flex",flexDirection:"column",gap:3.5,width:16}}>
@@ -6302,14 +6304,10 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
               <div style={{position:"fixed",inset:0,zIndex:98}} onClick={()=>setShowNavMenu(false)}/>
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
-                  {emoji:"🎉",label:"Host a Party",action:()=>{setShowNavMenu(false);onHostParty?.();}},
                   {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
                   {emoji:"👥",label:"Friends",action:()=>{setShowNavMenu(false);setShowFriends(true);}},
-                  {emoji:"🃏",label:"My Cards",action:()=>{setShowNavMenu(false);setShowCollection(true);}},
-                  {emoji:"🗺️",label:"Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
+                  {emoji:"🗺️",label:"Transit Maps",action:()=>{setShowNavMenu(false);setShowMaps(true);}},
                   {emoji:"💬",label:"Feedback",action:()=>{setShowNavMenu(false);setShowBeta(true);}},
-                  ...(!installed?[{emoji:"📲",label:"Install App",action:()=>{setShowNavMenu(false);setShowInstall(true);}}]:[]),
-                  ...(pushSupported?[{emoji:notifEnabled?"🔔":"🔕",label:notifEnabled?"Reminders On":"Reminders Off",action:()=>{setShowNavMenu(false);toggleNotif();}}]:[]),
                   {emoji:"❤️",label:isSupporter?"Supporter ✓":"Support UrbanIQ",action:()=>{setShowNavMenu(false);setShowSupport(true);}},
                 ].map((item,i,arr)=>(
                   <button key={item.label} onClick={item.action} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"13px 16px",background:"none",border:"none",borderBottom:i<arr.length-1?"1px solid #EDEBE8":"none",cursor:"pointer",fontSize:"13px",fontWeight:600,color:"#0A0A0A",fontFamily:"'Outfit',sans-serif",textAlign:"left",WebkitTapHighlightColor:"transparent",transition:"background .12s"}} onMouseEnter={e=>(e.currentTarget.style.background="#F8F7F5")} onMouseLeave={e=>(e.currentTarget.style.background="none")}>
@@ -6321,15 +6319,16 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
             </>
           )}
         </div>
+        </div>
       </nav>
 
       <div style={{display:"flex",justifyContent:"center",padding:"8px 22px 0",position:"sticky",top:52,zIndex:99,pointerEvents:"none",animation:"lmFadeIn .3s ease both"}}>
         <div style={{display:"inline-flex",alignItems:"center",gap:14,background:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(0,0,0,0.08)",borderRadius:100,padding:"6px 18px",boxShadow:"0 2px 16px rgba(0,0,0,0.07)",pointerEvents:"all",animation:"pillFloat 4s ease-in-out infinite"}}>
-          <div style={{display:"flex",alignItems:"center",gap:5}}>
+          {hudStreak>0&&<><div style={{display:"flex",alignItems:"center",gap:5}}>
             <span style={{fontSize:13,display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
             <span style={{fontSize:13,fontWeight:800,color:"#FF8C42",lineHeight:1}}>{hudStreak}</span>
           </div>
-          <div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          <div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/></>}
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             <span style={{fontSize:13}}>⚡</span>
             <span style={{fontSize:13,fontWeight:800,color:"#FFB800",lineHeight:1}}>{hudXP}</span>
@@ -6337,11 +6336,11 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
               <div style={{width:`${Math.min(100,(hudXP%500)/500*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF6B35)",borderRadius:2}}/>
             </div>
           </div>
-          <div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          {hudShields>0&&<><div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
           <div style={{display:"flex",alignItems:"center",gap:5}}>
             <span style={{fontSize:13,fontWeight:800,color:"#4169E1",lineHeight:1}}>{hudShields}</span>
             <span style={{fontSize:13}}>🛡️</span>
-          </div>
+          </div></>}
         </div>
       </div>
       {shieldHealToast&&<div style={{position:"fixed",top:76,left:"50%",transform:"translateX(-50%)",background:"#4169E1",color:"#fff",fontSize:"12px",fontWeight:700,padding:"10px 20px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 16px rgba(0,0,0,0.18)",letterSpacing:1}}>🛡️ Shield used — streak preserved!</div>}
@@ -11300,13 +11299,6 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           ))}
         </div>
-        {!isSupporter&&(
-          <div onClick={()=>setShowSupportModal(true)} style={{display:"flex",justifyContent:"center",marginBottom:8,cursor:"pointer"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,border:`1px solid ${T.border}`,borderRadius:6,padding:"4px 12px",fontSize:fs(8),color:T.textMuted,letterSpacing:.5,transition:"border-color .2s,color .2s"}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=T.accent;(e.currentTarget as HTMLDivElement).style.color=T.accentB;}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=T.border;(e.currentTarget as HTMLDivElement).style.color=T.textMuted;}}>
-              🛡️ <span>Supporters get streak protection</span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Tabs */}
@@ -11400,7 +11392,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
           {rd.alreadyPlayed&&!rd.won&&!rd.lost&&(<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"10px",marginBottom:10,fontSize:fs(10),color:T.textMuted,textAlign:"center"}}>Already played this round! Come back tomorrow.</div>)}
 
-          <div style={{display:"grid",gridTemplateColumns:DIFF.grid,gap:3,marginBottom:5}}>
+          <div style={{display:"grid",gridTemplateColumns:DIFF.grid,gap:3,marginBottom:4}}>
             {DIFF.headers.map((h:string)=>{
               const headerLockMap:{[k:string]:string}={REGION:"region",COAST:"coast",POP:"pop",YEAR:"year",SIZE:"size",ZONE:"zone"};
               const lockKey=headerLockMap[h];
@@ -11410,6 +11402,11 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 {h}
               </div>);
             })}
+          </div>
+          <div style={{display:"flex",justifyContent:"center",gap:10,marginBottom:6,fontSize:fs(7),color:T.textMuted,letterSpacing:.5}}>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:8,height:8,borderRadius:2,background:T.cellBg.green,display:"inline-block"}}/>exact</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:8,height:8,borderRadius:2,background:T.cellBg.yellow,display:"inline-block"}}/>close</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:8,height:8,borderRadius:2,background:T.cellBg.red,display:"inline-block"}}/>wrong</span>
           </div>
 
           <div style={{overflowY:"auto",overflowX:"hidden",maxHeight:"min(272px,38dvh)",WebkitOverflowScrolling:"touch" as any,scrollBehavior:"smooth",marginBottom:4}}>
