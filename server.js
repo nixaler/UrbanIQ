@@ -1,12 +1,16 @@
 const express = require("express");
+const http = require("http");
 const path = require("path");
 const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
 const jwt = require("jsonwebtoken");
+const { Server: IOServer } = require("socket.io");
+const QRCode = require("qrcode");
 
 const app = express();
+const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -1020,7 +1024,108 @@ app.get("/api/card/:code", (req, res) => {
   return res.json({ card, alreadyRedeemed: _redeemedCodes.has(clean) });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+// ── PARTY MODE ───────────────────────────────────────────────────────────────
+const partyRooms = new Map(); // roomId -> room object
+
+function genRoomId() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let id = "";
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function sanitizeRoom(r) {
+  return {
+    roomId: r.roomId, gameKey: r.gameKey, difficulty: r.difficulty,
+    dayNum: r.dayNum, status: r.status,
+    players: r.players.map(p => ({ name: p.name, isHost: p.isHost, roundScores: p.roundScores }))
+  };
+}
+
+// Clean up rooms older than 2 hours
+setInterval(() => {
+  const cutoff = Date.now() - 7200000;
+  for (const [id, r] of partyRooms) if (r.createdAt < cutoff) partyRooms.delete(id);
+}, 60000);
+
+app.post("/api/party/create", express.json(), async (req, res) => {
+  const { gameKey = "pdx", difficulty = "medium", hostName = "Host", dayNum } = req.body || {};
+  let roomId = genRoomId();
+  while (partyRooms.has(roomId)) roomId = genRoomId();
+  const siteUrl = process.env.SITE_URL || "https://urbaniq.quest";
+  const joinUrl = `${siteUrl}/?party=${roomId}`;
+  let qrDataUrl = "";
+  try { qrDataUrl = await QRCode.toDataURL(joinUrl, { width: 240, margin: 2 }); } catch {}
+  partyRooms.set(roomId, {
+    roomId, gameKey, difficulty, dayNum: dayNum || 0,
+    status: "lobby", hostSocketId: null,
+    players: [], createdAt: Date.now()
+  });
+  res.json({ roomId, joinUrl, qrDataUrl });
+});
+
+app.get("/api/party/:roomId", (req, res) => {
+  const room = partyRooms.get((req.params.roomId || "").toUpperCase());
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  res.json(sanitizeRoom(room));
+});
+
+const io = new IOServer(httpServer, {
+  cors: { origin: ALLOWED_ORIGINS, methods: ["GET", "POST"] }
+});
+
+io.on("connection", socket => {
+  socket.on("party:join", ({ roomId, playerName }) => {
+    const id = (roomId || "").toUpperCase();
+    const room = partyRooms.get(id);
+    if (!room) return socket.emit("party:error", "Room not found");
+    if (room.status !== "lobby") return socket.emit("party:error", "Game already started");
+    if (room.players.length >= 10) return socket.emit("party:error", "Room is full (10 players max)");
+    const name = String(playerName || "Player").slice(0, 20).trim() || "Player";
+    const isHost = room.players.length === 0;
+    room.players.push({ socketId: socket.id, name, isHost, roundScores: [null, null, null] });
+    if (isHost) room.hostSocketId = socket.id;
+    socket.join(id);
+    socket.data.roomId = id;
+    io.to(id).emit("party:room-update", sanitizeRoom(room));
+  });
+
+  socket.on("party:start", ({ roomId }) => {
+    const id = (roomId || "").toUpperCase();
+    const room = partyRooms.get(id);
+    if (!room || room.hostSocketId !== socket.id) return;
+    room.status = "playing";
+    io.to(id).emit("party:started", sanitizeRoom(room));
+  });
+
+  socket.on("party:round-done", ({ roomId, round, won, guesses }) => {
+    const id = (roomId || "").toUpperCase();
+    const room = partyRooms.get(id);
+    if (!room) return;
+    const player = room.players.find(p => p.socketId === socket.id);
+    if (player && round >= 0 && round <= 2) player.roundScores[round] = { won: !!won, guesses: Number(guesses) || 0 };
+    io.to(id).emit("party:scores-update", sanitizeRoom(room));
+    if (room.players.length > 0 && room.players.every(p => p.roundScores.every(s => s !== null))) {
+      room.status = "finished";
+      io.to(id).emit("party:finished", sanitizeRoom(room));
+    }
+  });
+
+  socket.on("disconnect", () => {
+    const id = socket.data.roomId;
+    const room = partyRooms.get(id);
+    if (!room) return;
+    room.players = room.players.filter(p => p.socketId !== socket.id);
+    if (room.players.length === 0) { partyRooms.delete(id); return; }
+    if (room.hostSocketId === socket.id) {
+      room.players[0].isHost = true;
+      room.hostSocketId = room.players[0].socketId;
+    }
+    io.to(id).emit("party:room-update", sanitizeRoom(room));
+  });
+});
+
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
   if (!process.env.JWT_SECRET) console.warn("[WARN] JWT_SECRET not set — using insecure default. Set this in Railway env vars.");
   if (!process.env.SUPABASE_URL) console.warn("[WARN] SUPABASE_URL not set — accounts and progress sync will not work.");

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Component } from 'react';
 import ReactDOM from 'react-dom/client';
+import { io as socketIO } from "socket.io-client";
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -5810,7 +5811,7 @@ function AnimatedCityBg(){
   );
 }
 
-function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:()=>void,onSelectGame:(gk:string)=>void,initialShowSupport?:boolean,settings?:any}){
+function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty}:{onBegin:()=>void,onSelectGame:(gk:string)=>void,initialShowSupport?:boolean,settings?:any,onHostParty?:()=>void}){
   const dayNum=useMemo(getDayNum,[]);
   const hotGameKey=useMemo(()=>{const d=new Date().getDay();return d===0?"nyc":d===1?"pdx":d===2?"dc":d===3?"states":d===4?"nfl":d===5?"bos":d===6?"atl":"chi";},[]);
   const [showBeta,setShowBeta]=useState(false);
@@ -6301,6 +6302,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings}:{onBegin:(
               <div style={{position:"fixed",inset:0,zIndex:98}} onClick={()=>setShowNavMenu(false)}/>
               <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"#fff",border:"1px solid #EDEBE8",borderRadius:12,boxShadow:"0 8px 32px rgba(0,0,0,0.12)",minWidth:200,overflow:"hidden",zIndex:99,animation:"lmFadeIn .15s ease both"}}>
                 {[
+                  {emoji:"🎉",label:"Host a Party",action:()=>{setShowNavMenu(false);onHostParty?.();}},
                   {emoji:isLoggedIn?"☁️ ✓":"☁️",label:isLoggedIn?"Progress Synced":"Sync Progress",action:()=>{setShowNavMenu(false);setShowAccount(true);}},
                   {emoji:"👥",label:"Friends",action:()=>{setShowNavMenu(false);setShowFriends(true);}},
                   {emoji:"🃏",label:"My Cards",action:()=>{setShowNavMenu(false);setShowCollection(true);}},
@@ -10734,7 +10736,7 @@ function GameHistoryCalendar({gameKey:gk,playHistory,T}:{gameKey:string,playHist
   const days=Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;const entry=hist.find((h:any)=>h.date===dateStr);return{dateStr,day:d.getDate(),entry};});
   return(<div style={{display:"flex",gap:3,flexWrap:"wrap",marginTop:6}}>{days.map((d:any,i:number)=>(<div key={i} title={d.dateStr} style={{width:20,height:20,borderRadius:4,background:d.entry?.won?T.cellBg.green:d.entry?T.cellBg.red:T.surface,border:`1px solid ${d.entry?.won?T.cellBorder.green:d.entry?T.cellBorder.red:T.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"8px",color:d.entry?.won?T.cellText.green:d.entry?T.cellText.red:T.textMuted}}>{d.entry?.won?"✓":d.entry?"✗":d.day}</div>))}</div>);
 }
-function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void}){
+function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,onSelectGame,partyRoom,onPartyRoundDone}:{initGameKey:string,initDiff:string,initMode?:string,onBack:()=>void,onHome:()=>void,shieldActivated?:boolean,onSelectGame?:(gk:string)=>void,partyRoom?:any,onPartyRoundDone?:(round:number,won:boolean,guesses:number)=>void}){
   const[gameKey,setGameKey]=useState(initGameKey);
   const[diff,setDiff]=useState(initDiff);
   const[gameHudXP,setGameHudXP]=useState(()=>getXP());
@@ -11080,6 +11082,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
       const newOnes=ACHIEVEMENTS.filter(a=>!prev2.includes(a.id)&&a.check(ctx));
       if(newOnes.length>0){const upd=[...prev2,...newOnes.map(a=>a.id)];await saveUnlocked(gameKey,upd);setAllUnlocked((p:any)=>({...p,[gameKey]:upd}));setNewAchieves(newOnes);setTimeout(()=>setNewAchieves([]),4500);}
     }
+    if((isWin||isLoss)&&onPartyRoundDone)onPartyRoundDone(round,isWin,newGuesses.length);
   }
   function revealHint(){
     if(rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
@@ -11135,6 +11138,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     <div style={{minHeight:"100vh",background:T.bg,fontFamily:"'JetBrains Mono','Courier New',monospace",color:T.text,position:"relative",overflow:"hidden",transition:"background .4s,color .3s"}}>
       <link rel="manifest" href="/manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+      {partyRoom&&<PartyHUD room={partyRoom} currentRound={round}/>}
       <PersistentHUD streak={stats.streak} xp={gameHudXP} shields={getShieldCount()}/>
       <style>{`
         @keyframes tpPetal{0%{transform:translateY(-10px) translateX(0) rotate(0deg);opacity:0}10%{opacity:var(--op)}90%{opacity:var(--op)}100%{transform:translateY(110vh) translateX(var(--drift)) rotate(360deg);opacity:0}}
@@ -12247,6 +12251,142 @@ function HypeIntro({onDone}:{onDone:()=>void}){
   );
 }
 
+// ── PARTY MODE COMPONENTS ─────────────────────────────────────────────────────
+function PartyNameModal({onJoin,onClose}:{onJoin:(n:string)=>void,onClose:()=>void}){
+  const[name,setName]=useState("");
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{background:"#fff",borderRadius:16,padding:28,width:"100%",maxWidth:340,fontFamily:"'Outfit',sans-serif"}}>
+        <div style={{fontSize:32,textAlign:"center",marginBottom:4}}>🎉</div>
+        <div style={{fontSize:20,fontWeight:800,textAlign:"center",marginBottom:4,color:"#0A0A0A"}}>Join the Party!</div>
+        <div style={{fontSize:13,color:"#888",textAlign:"center",marginBottom:20}}>Enter your name to join</div>
+        <input autoFocus value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&name.trim()&&onJoin(name.trim())} placeholder="Your name..." maxLength={20} style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"1.5px solid #E8E6E2",fontSize:15,fontFamily:"'Outfit',sans-serif",boxSizing:"border-box" as const,marginBottom:12,outline:"none"}}/>
+        <button onClick={()=>name.trim()&&onJoin(name.trim())} disabled={!name.trim()} style={{width:"100%",padding:13,borderRadius:10,border:"none",background:name.trim()?"#0A0A0A":"#ccc",color:"#fff",fontSize:14,fontWeight:700,cursor:name.trim()?"pointer":"default",letterSpacing:1,marginBottom:8,fontFamily:"'Outfit',sans-serif"}}>JOIN PARTY →</button>
+        <button onClick={onClose} style={{width:"100%",padding:10,borderRadius:10,border:"1px solid #E8E6E2",background:"none",fontSize:13,cursor:"pointer",color:"#888",fontFamily:"'Outfit',sans-serif"}}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function PartySetupModal({onCreate,onClose}:{onCreate:(gameKey:string,diff:string,name:string)=>void,onClose:()=>void}){
+  const[name,setName]=useState("");
+  const[gameKey,setGameKey]=useState("pdx");
+  const[diff,setDiff]=useState("medium");
+  const GAME_OPTS=[{k:"pdx",label:"Portland MAX 🚊"},{k:"dc",label:"DC Metro 🚇"},{k:"nyc",label:"NYC Subway 🗽"},{k:"chi",label:"Chicago L 🌬️"},{k:"la",label:"LA Metro 🌴"},{k:"bos",label:"Boston T 🦞"},{k:"states",label:"US States 🗺️"},{k:"nfl",label:"NFL Teams 🏈"},{k:"nba",label:"NBA Teams 🏀"}];
+  const DIFF_OPTS=[{k:"easy",label:"Easy 🟢"},{k:"medium",label:"Medium 🟡"},{k:"hard",label:"Hard 🔴"},{k:"pro",label:"Pro ⚫"}];
+  const sel={border:"2px solid #0A0A0A",background:"#0A0A0A",color:"#fff"};
+  const unsel={border:"1px solid #E8E6E2",background:"#fff",color:"#0A0A0A"};
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:999,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",padding:20,overflowY:"auto"}}>
+      <div style={{background:"#fff",borderRadius:16,padding:28,width:"100%",maxWidth:380,fontFamily:"'Outfit',sans-serif"}}>
+        <div style={{fontSize:32,textAlign:"center",marginBottom:4}}>🎉</div>
+        <div style={{fontSize:20,fontWeight:800,textAlign:"center",marginBottom:4,color:"#0A0A0A"}}>Host a Party</div>
+        <div style={{fontSize:13,color:"#888",textAlign:"center",marginBottom:20}}>Up to 10 players · Same daily puzzle</div>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:8}}>YOUR NAME</div>
+        <input autoFocus value={name} onChange={e=>setName(e.target.value)} placeholder="Your name..." maxLength={20} style={{width:"100%",padding:"11px 14px",borderRadius:10,border:"1.5px solid #E8E6E2",fontSize:14,fontFamily:"'Outfit',sans-serif",boxSizing:"border-box" as const,marginBottom:16,outline:"none"}}/>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:8}}>GAME</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:16}}>
+          {GAME_OPTS.map(g=><button key={g.k} onClick={()=>setGameKey(g.k)} style={{...(gameKey===g.k?sel:unsel),borderRadius:8,padding:"8px 6px",fontSize:12,fontWeight:600,cursor:"pointer",textAlign:"center",transition:"all .15s",fontFamily:"'Outfit',sans-serif"}}>{g.label}</button>)}
+        </div>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:8}}>DIFFICULTY</div>
+        <div style={{display:"flex",gap:6,marginBottom:20}}>
+          {DIFF_OPTS.map(d=><button key={d.k} onClick={()=>setDiff(d.k)} style={{...(diff===d.k?sel:unsel),flex:1,borderRadius:8,padding:"8px 4px",fontSize:11,fontWeight:700,cursor:"pointer",transition:"all .15s",fontFamily:"'Outfit',sans-serif"}}>{d.label}</button>)}
+        </div>
+        <button onClick={()=>name.trim()&&onCreate(gameKey,diff,name.trim())} disabled={!name.trim()} style={{width:"100%",padding:13,borderRadius:10,border:"none",background:name.trim()?"#0A0A0A":"#ccc",color:"#fff",fontSize:14,fontWeight:700,cursor:name.trim()?"pointer":"default",letterSpacing:1,marginBottom:8,fontFamily:"'Outfit',sans-serif"}}>CREATE PARTY →</button>
+        <button onClick={onClose} style={{width:"100%",padding:10,borderRadius:10,border:"1px solid #E8E6E2",background:"none",fontSize:13,cursor:"pointer",color:"#888",fontFamily:"'Outfit',sans-serif"}}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function PartyLobby({room,isHost,qrDataUrl,joinUrl,roomId,myName,onStart,onClose,socketErr}:{room:any,isHost:boolean,qrDataUrl:string,joinUrl:string,roomId:string,myName:string,onStart:()=>void,onClose:()=>void,socketErr?:string}){
+  const[copied,setCopied]=useState(false);
+  const players=room?.players||[];
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"center",justifyContent:"center",padding:20,boxSizing:"border-box" as const}}>
+      <div style={{background:"#fff",borderRadius:20,padding:28,width:"100%",maxWidth:420,fontFamily:"'Outfit',sans-serif",maxHeight:"90vh",overflowY:"auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div style={{fontSize:18,fontWeight:800,letterSpacing:0.5,color:"#0A0A0A"}}>🎉 PARTY MODE</div>
+          <button onClick={onClose} style={{background:"none",border:"1px solid #E8E6E2",borderRadius:8,padding:"4px 10px",cursor:"pointer",fontSize:12,color:"#888",fontFamily:"'Outfit',sans-serif"}}>✕ LEAVE</button>
+        </div>
+        {socketErr&&<div style={{background:"#FFF0F0",border:"1px solid #FFD5D5",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#c00",marginBottom:16}}>{socketErr}</div>}
+        <div style={{background:"#F8F7F5",borderRadius:12,padding:16,marginBottom:16,textAlign:"center"}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:6}}>ROOM CODE</div>
+          <div style={{fontSize:34,fontWeight:900,letterSpacing:8,color:"#0A0A0A",fontFamily:"'JetBrains Mono',monospace"}}>{roomId}</div>
+          <button onClick={()=>{navigator.clipboard?.writeText(joinUrl);setCopied(true);setTimeout(()=>setCopied(false),2000);}} style={{marginTop:8,background:"none",border:"1px solid #E8E6E2",borderRadius:6,padding:"5px 12px",fontSize:11,cursor:"pointer",color:copied?"#028A48":"#555",fontWeight:600,fontFamily:"'Outfit',sans-serif"}}>{copied?"✓ COPIED":"📋 COPY LINK"}</button>
+        </div>
+        {qrDataUrl&&<div style={{textAlign:"center",marginBottom:16}}><img src={qrDataUrl} alt="Party QR" style={{width:180,height:180,borderRadius:8}}/><div style={{fontSize:11,color:"#999",marginTop:4}}>Scan to join</div></div>}
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:2,color:"#888",marginBottom:8}}>PLAYERS ({players.length}/10)</div>
+          {players.length===0?<div style={{color:"#999",fontSize:13,padding:"10px 0"}}>Waiting for players to scan...</div>:players.map((p:any,i:number)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #F0EEE9"}}>
+              <span style={{fontSize:16}}>{p.isHost?"👑":"🟢"}</span>
+              <span style={{fontSize:14,fontWeight:600,color:"#0A0A0A"}}>{p.name}</span>
+              {p.name===myName&&<span style={{fontSize:10,color:"#888",marginLeft:"auto"}}>you</span>}
+            </div>
+          ))}
+        </div>
+        {isHost?<button onClick={onStart} style={{width:"100%",padding:14,borderRadius:12,border:"none",background:"#0A0A0A",color:"#fff",fontSize:15,fontWeight:800,cursor:"pointer",letterSpacing:1,fontFamily:"'Outfit',sans-serif"}}>🚀 START GAME</button>:<div style={{textAlign:"center",padding:14,borderRadius:12,background:"#F8F7F5",fontSize:13,color:"#888",fontWeight:600,letterSpacing:0.5}}>⏳ Waiting for host to start...</div>}
+      </div>
+    </div>
+  );
+}
+
+function PartyHUD({room,currentRound}:{room:any,currentRound:number}){
+  const players=room?.players||[];
+  if(!players.length)return null;
+  return(
+    <div style={{position:"sticky",top:0,zIndex:200,background:"rgba(10,10,10,0.9)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",padding:"7px 14px",display:"flex",alignItems:"center",gap:8,overflowX:"auto",flexWrap:"nowrap",boxSizing:"border-box" as const,borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <span style={{fontSize:9,color:"rgba(255,255,255,0.45)",flexShrink:0,letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace",fontWeight:700}}>PARTY</span>
+      {players.map((p:any,i:number)=>{
+        const s=p.roundScores?.[currentRound];
+        const done=s!==null&&s!==undefined;
+        return(
+          <div key={i} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,background:done?(s?.won?"rgba(2,138,72,0.3)":"rgba(180,0,0,0.25)"):"rgba(255,255,255,0.08)",border:`1px solid ${done?(s?.won?"rgba(2,138,72,0.5)":"rgba(200,0,0,0.3)"):"rgba(255,255,255,0.12)"}`,flexShrink:0}}>
+            <span style={{fontSize:11,color:"rgba(255,255,255,0.9)",fontWeight:600,fontFamily:"'Outfit',sans-serif",whiteSpace:"nowrap" as const,maxWidth:80,overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span>
+            <span style={{fontSize:11}}>{done?(s?.won?"✓":"✗"):"⏳"}</span>
+            {done&&s?.won&&s?.guesses>0&&<span style={{fontSize:10,color:"rgba(255,255,255,0.45)"}}>{s.guesses}g</span>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function PartyEndScreen({room,onPlayAgain,onHome}:{room:any,onPlayAgain:()=>void,onHome:()=>void}){
+  const ranked=[...(room?.players||[])].map((p:any)=>{
+    const wins=p.roundScores.filter((s:any)=>s?.won).length;
+    const totalG=p.roundScores.reduce((a:number,s:any)=>a+(s?.won?s.guesses:99),0);
+    return{...p,wins,totalG};
+  }).sort((a:any,b:any)=>b.wins-a.wins||(a.totalG-b.totalG));
+  const medals=["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:600,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{background:"#fff",borderRadius:20,padding:28,width:"100%",maxWidth:380,fontFamily:"'Outfit',sans-serif"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:44,marginBottom:4}}>🎉</div>
+          <div style={{fontSize:22,fontWeight:800,letterSpacing:0.5,color:"#0A0A0A"}}>Party Complete!</div>
+          <div style={{fontSize:13,color:"#888",marginTop:4}}>Final Standings</div>
+        </div>
+        {ranked.map((p:any,i:number)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:"1px solid #F0EEE9"}}>
+            <span style={{fontSize:22,width:28,textAlign:"center"}}>{medals[i]||"·"}</span>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:15,color:"#0A0A0A"}}>{p.name}</div>
+              <div style={{fontSize:12,color:"#888"}}>{p.wins}/3 wins · {p.totalG===297?"0":p.totalG} guesses</div>
+            </div>
+            <div style={{fontSize:18,fontWeight:800,color:i===0?"#028A48":"#0A0A0A"}}>{p.wins}🏆</div>
+          </div>
+        ))}
+        <div style={{display:"flex",gap:10,marginTop:20}}>
+          <button onClick={onHome} style={{flex:1,padding:11,borderRadius:10,border:"1px solid #E8E6E2",background:"none",fontSize:13,cursor:"pointer",fontWeight:600,color:"#555",fontFamily:"'Outfit',sans-serif"}}>🏠 Home</button>
+          <button onClick={onPlayAgain} style={{flex:1,padding:11,borderRadius:10,border:"none",background:"#0A0A0A",fontSize:13,cursor:"pointer",fontWeight:700,color:"#fff",letterSpacing:0.5,fontFamily:"'Outfit',sans-serif"}}>🎉 Play Again</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Root(){
   const[phase,setPhase]=useState<Phase>("start");
   useEffect(()=>{window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});},[phase]);
@@ -12275,6 +12415,76 @@ function Root(){
   const[initMode,setInitMode]=useState<string|undefined>();
   const[streakShieldFired,setStreakShieldFired]=useState(false);
   const[pendingDailyCards,setPendingDailyCards]=useState<any[]>([]);
+
+  // ── Party Mode state ──
+  const partySocketRef=useRef<any>(null);
+  const[partyRoom,setPartyRoom]=useState<any>(null);
+  const[partyIsHost,setPartyIsHost]=useState(false);
+  const[partyMyName,setPartyMyName]=useState("");
+  const[partyQR,setPartyQR]=useState({roomId:"",qrDataUrl:"",joinUrl:""});
+  const[showPartyLobby,setShowPartyLobby]=useState(false);
+  const[showPartyEnd,setShowPartyEnd]=useState(false);
+  const[showPartyJoin,setShowPartyJoin]=useState(false);
+  const[showPartySetup,setShowPartySetup]=useState(false);
+  const[partyJoinCode,setPartyJoinCode]=useState("");
+  const[partySocketErr,setPartySocketErr]=useState("");
+
+  // Detect ?party= URL param on mount
+  useEffect(()=>{
+    const p=new URLSearchParams(window.location.search);
+    const code=p.get("party");
+    if(code){setPartyJoinCode(code.toUpperCase());setShowPartyJoin(true);window.history.replaceState({},"",window.location.pathname);}
+  },[]);
+
+  function getPartySocket(){
+    if(!partySocketRef.current){
+      partySocketRef.current=socketIO();
+      partySocketRef.current.on("party:room-update",(r:any)=>setPartyRoom(r));
+      partySocketRef.current.on("party:started",(r:any)=>{setPartyRoom(r);setShowPartyLobby(false);setSelectedGame(r.gameKey);setSelectedDiff(r.difficulty);setPhase("play");});
+      partySocketRef.current.on("party:scores-update",(r:any)=>setPartyRoom(r));
+      partySocketRef.current.on("party:finished",(r:any)=>{setPartyRoom(r);setShowPartyEnd(true);});
+      partySocketRef.current.on("party:error",(msg:string)=>setPartySocketErr(msg));
+    }
+    return partySocketRef.current;
+  }
+
+  async function handleHostParty(gameKey:string,diff:string,hostName:string){
+    setPartySocketErr("");
+    try{
+      const res=await fetch("/api/party/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({gameKey,difficulty:diff,hostName,dayNum:getDayNum()})});
+      const data=await res.json();
+      if(!data.roomId)throw new Error("Failed to create room");
+      setPartyQR({roomId:data.roomId,qrDataUrl:data.qrDataUrl,joinUrl:data.joinUrl});
+      setPartyIsHost(true);setPartyMyName(hostName);
+      const sock=getPartySocket();
+      sock.emit("party:join",{roomId:data.roomId,playerName:hostName});
+      setShowPartySetup(false);setShowPartyLobby(true);
+    }catch(e:any){setPartySocketErr("Could not create party: "+(e.message||"Unknown error"));}
+  }
+
+  function handleJoinParty(roomId:string,playerName:string){
+    setPartySocketErr("");
+    setPartyMyName(playerName);setPartyIsHost(false);
+    const sock=getPartySocket();
+    sock.emit("party:join",{roomId,playerName});
+    setShowPartyJoin(false);setShowPartyLobby(true);
+  }
+
+  function handlePartyStart(){
+    partySocketRef.current?.emit("party:start",{roomId:partyQR.roomId});
+  }
+
+  function handlePartyRoundDone(round:number,won:boolean,guesses:number){
+    if(!partyRoom)return;
+    partySocketRef.current?.emit("party:round-done",{roomId:partyRoom.roomId,round,won,guesses});
+  }
+
+  function leaveParty(){
+    partySocketRef.current?.disconnect();partySocketRef.current=null;
+    setPartyRoom(null);setPartyIsHost(false);setPartyMyName("");
+    setPartyQR({roomId:"",qrDataUrl:"",joinUrl:""});
+    setShowPartyLobby(false);setShowPartyEnd(false);setShowPartyJoin(false);setShowPartySetup(false);
+  }
 
   useEffect(()=>{
     (async()=>{
@@ -12389,7 +12599,7 @@ function Root(){
   }
 
   if(phase==="play"){
-    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>setPhase("start")} shieldActivated={streakShieldFired} onSelectGame={handleSelectGame}/>;
+    return <GameApp initGameKey={selectedGame} initDiff={selectedDiff} initMode={initMode} onBack={handleBackToSelector} onHome={()=>{leaveParty();setPhase("start");}} shieldActivated={streakShieldFired} onSelectGame={handleSelectGame} partyRoom={partyRoom} onPartyRoundDone={handlePartyRoundDone}/>;
   }
 
   if(phase==="mini-games"){
@@ -12403,7 +12613,7 @@ function Root(){
   const pageContent=
     phase==="start"||phase==="select-game"?
       <>
-        <StartPage onBegin={()=>setPhase("select-game")} onSelectGame={handleSelectGame} initialShowSupport={showSupportOnLoad} settings={settings}/>
+        <StartPage onBegin={()=>setPhase("select-game")} onSelectGame={handleSelectGame} initialShowSupport={showSupportOnLoad} settings={settings} onHostParty={()=>setShowPartySetup(true)}/>
         {phase==="select-game"&&<GameSelector allStats={allStats} roundData={roundData} blitzBests={blitzBests} onSelect={handleSelectGame} onBack={()=>setPhase("start")} settings={settings}/>}
         {showDiffPicker&&<DiffPickerModal gameKey={selectedGame} settings={settings} onSelect={handleSelectDiff} onClose={()=>setShowDiffPicker(false)}/>}
       </>:null;
@@ -12413,6 +12623,10 @@ function Root(){
     {showHype&&<HypeIntro onDone={()=>setShowHype(false)}/>}
     {pendingDailyCards.length>0&&<PackOpening isDaily={true} card={pendingDailyCards[0]} onDone={()=>{const _e=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");localStorage.setItem("tgg-card-col",JSON.stringify([..._e,pendingDailyCards[0]]));setPendingDailyCards(p=>p.slice(1));}}/>}
     {showOnboarding&&<OnboardingOverlay onDone={()=>{setShowOnboarding(false);setSelectedGame(localStorage.getItem("tgg:cityPref")||"pdx");}} onStartGame={(gk)=>{setShowOnboarding(false);setSelectedGame(gk);setSelectedDiff("medium");setPhase("play");}}/>}
+    {showPartySetup&&<PartySetupModal onCreate={handleHostParty} onClose={()=>setShowPartySetup(false)}/>}
+    {showPartyJoin&&<PartyNameModal onJoin={(name)=>handleJoinParty(partyJoinCode,name)} onClose={()=>setShowPartyJoin(false)}/>}
+    {showPartyLobby&&<PartyLobby room={partyRoom} isHost={partyIsHost} qrDataUrl={partyQR.qrDataUrl} joinUrl={partyQR.joinUrl} roomId={partyQR.roomId||partyJoinCode} myName={partyMyName} onStart={handlePartyStart} onClose={leaveParty} socketErr={partySocketErr}/>}
+    {showPartyEnd&&<PartyEndScreen room={partyRoom} onPlayAgain={()=>{setShowPartyEnd(false);}} onHome={()=>{setShowPartyEnd(false);leaveParty();setPhase("start");}}/>}
     <div key={phase==="select-game"?"start":phase} style={{animation:"pageIn .32s ease both"}}>
       <style>{`@keyframes pageIn{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}`}</style>
       {pageContent}
