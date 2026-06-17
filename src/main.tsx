@@ -7553,8 +7553,28 @@ function StorylinesSection(){
 
 function LegendDetailModal({legend,onClose}:{legend:typeof LOCAL_LEGENDS[0],onClose:()=>void}){
   const[panel,setPanel]=useState(0);
+  const[done,setDone]=useState(false);
   const RARITY_COLORS:{[k:string]:string}={uncommon:"#4169E1",rare:"#A855F7",legendary:"#FFB800"};
   const RARITY_GEMS:{[k:string]:string}={uncommon:"🔵",rare:"💜",legendary:"⭐"};
+  const isLast=panel===legend.panels.length-1;
+
+  function handleNext(){
+    if(isLast){
+      // Unlock the legend and award XP if not already done
+      try{
+        const prev:string[]=JSON.parse(localStorage.getItem("tgg:legends-unlocked")||"[]");
+        if(!prev.includes(legend.id)){
+          localStorage.setItem("tgg:legends-unlocked",JSON.stringify([...prev,legend.id]));
+          const xpBonus=legend.rarity==="legendary"?75:legend.rarity==="rare"?50:25;
+          addXP(xpBonus);
+        }
+      }catch{}
+      setDone(true);
+      setTimeout(onClose,1200);
+    } else {
+      setPanel(p=>p+1);
+    }
+  }
   return(
     <div style={{position:"fixed",inset:0,zIndex:700,background:"rgba(0,0,0,0.88)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"lmFadeIn .2s ease both",padding:"env(safe-area-inset-top,8px) 0 env(safe-area-inset-bottom,8px)"}}>
       <div style={{position:"absolute",inset:0}} onClick={onClose}/>
@@ -7578,12 +7598,14 @@ function LegendDetailModal({legend,onClose}:{legend:typeof LOCAL_LEGENDS[0],onCl
         </div>
         <div style={{padding:"20px",minHeight:180}}>
           <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:1.5,marginBottom:10}}>PANEL {panel+1} OF {legend.panels.length}</div>
-          <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",lineHeight:1.75}}>{legend.panels[panel]}</div>
+          <div style={{fontSize:15,color:"rgba(255,255,255,0.85)",lineHeight:1.75}}>{done?"✓ Legend unlocked":legend.panels[panel]}</div>
         </div>
         <div style={{padding:"0 20px 16px",fontSize:11,color:"rgba(255,255,255,0.25)"}}>📍 Found at · {legend.station} · {CITY_NAMES[legend.city]}</div>
         <div style={{padding:"0 20px 20px",display:"flex",gap:8}}>
-          <button onClick={()=>setPanel(p=>Math.max(0,p-1))} disabled={panel===0} style={{flex:1,padding:"11px",borderRadius:10,background:"rgba(255,255,255,0.06)",border:"none",color:panel===0?"rgba(255,255,255,0.2)":"rgba(255,255,255,0.6)",fontSize:13,cursor:panel===0?"default":"pointer",fontWeight:700}}>← PREV</button>
-          <button onClick={()=>setPanel(p=>Math.min(legend.panels.length-1,p+1))} disabled={panel===legend.panels.length-1} style={{flex:1,padding:"11px",borderRadius:10,background:panel<legend.panels.length-1?RARITY_COLORS[legend.rarity]:"rgba(255,255,255,0.06)",border:"none",color:"#fff",fontSize:13,cursor:panel===legend.panels.length-1?"default":"pointer",fontWeight:700}}>NEXT →</button>
+          <button onClick={()=>setPanel(p=>Math.max(0,p-1))} disabled={panel===0||done} style={{flex:1,padding:"11px",borderRadius:10,background:"rgba(255,255,255,0.06)",border:"none",color:panel===0?"rgba(255,255,255,0.2)":"rgba(255,255,255,0.6)",fontSize:13,cursor:panel===0?"default":"pointer",fontWeight:700}}>← PREV</button>
+          <button onClick={handleNext} disabled={done} style={{flex:1,padding:"11px",borderRadius:10,background:done?"rgba(2,138,72,0.4)":RARITY_COLORS[legend.rarity],border:"none",color:"#fff",fontSize:13,cursor:done?"default":"pointer",fontWeight:700,transition:"background .3s"}}>
+            {done?"✓ DONE":isLast?"FINISH ★":"NEXT →"}
+          </button>
         </div>
       </div>
     </div>
