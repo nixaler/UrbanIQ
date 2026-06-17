@@ -5451,6 +5451,7 @@ function AccountModal({onClose,onOpenFriends}:{onClose:()=>void,onOpenFriends?:(
       const prof=d.user;
       localStorage.setItem("tgg:server-profile",JSON.stringify(prof));
       if(prof.xp>getXP())localStorage.setItem("tgg:xp",String(prof.xp));
+      if(prof.pro_status){localStorage.setItem("supporter_email",prof.email||"");const _g=JSON.parse(localStorage.getItem("tgg:global")||"{}");localStorage.setItem("tgg:global",JSON.stringify({..._g,proStatus:true}));}
       setProfile(prof);
       await syncToServer();
       setPhase("done");
@@ -5467,6 +5468,7 @@ function AccountModal({onClose,onOpenFriends}:{onClose:()=>void,onOpenFriends?:(
         const d=await r.json();
         localStorage.setItem("tgg:server-profile",JSON.stringify(d));
         if(d.xp>getXP())localStorage.setItem("tgg:xp",String(d.xp));
+        if(d.pro_status){localStorage.setItem("supporter_email",d.email||"");const _g=JSON.parse(localStorage.getItem("tgg:global")||"{}");localStorage.setItem("tgg:global",JSON.stringify({..._g,proStatus:true}));}
         setProfile(d);setSyncMsg("Synced ✓");
       }else{setSyncMsg("Sync failed");}
     }catch{setSyncMsg("Network error");}
@@ -8586,7 +8588,7 @@ function InteractiveTutorial({T,fs,gameKey,DIFF,lineColors,onDone}:{T:any,fs:any
     {title:"Make a guess, get clues",body:`Type any ${G.itemLabel} and tap it. Each column lights up — green is exact, yellow is close, red is off.`,icon:null,cta:"Got it →",demo:true},
     {title:"Build your streak",body:null,icon:"🔥",cta:"Got it, let's play",streak:true},
   ];
-  function dismiss(){localStorage.setItem("onboarding_complete","1");onDone();}
+  function dismiss(){localStorage.setItem("has_boarded","1");onDone();}
   useEffect(()=>{
     if(step!==1)return;
     setCellsLit(-1);
@@ -9744,7 +9746,7 @@ function CardRedemptionModal({code,onClose}:{code:string,onClose:()=>void}){
   const[card,setCard]=useState<any>(null);
   const[errMsg,setErrMsg]=useState("");
   const[flipped,setFlipped]=useState(false);
-  const deviceId=useMemo(()=>{let d=localStorage.getItem("tgg:device");if(!d){d=Math.random().toString(36).slice(2);localStorage.setItem("tgg:device",d);}return d;},[]);
+  const deviceId=useMemo(()=>getDeviceId(),[]);
   useEffect(()=>{
     (async()=>{
       try{
@@ -12600,9 +12602,13 @@ function Root(){
   const[showOnboarding,setShowOnboarding]=useState(()=>!localStorage.getItem("has_boarded"));
   const[showSupportOnLoad]=useState(()=>{
     const p=new URLSearchParams(window.location.search);
-    if(p.get("supporter")==="true"){
+    if(p.get("supporter")==="1"||p.get("supporter")==="true"){
       const email=p.get("email");
-      if(email)localStorage.setItem("supporter_email",email);
+      if(email){
+        localStorage.setItem("supporter_email",email);
+        const g=JSON.parse(localStorage.getItem("tgg:global")||"{}");
+        localStorage.setItem("tgg:global",JSON.stringify({...g,proStatus:true}));
+      }
       window.history.replaceState({},"",window.location.pathname);
       return true;
     }
@@ -12774,10 +12780,10 @@ function Root(){
   }
   function handleSelectDiff(d:string){
     SoundEngine.play("select");setSelectedDiff(d);localStorage.setItem("tgg:diff",d);setShowDiffPicker(false);
-    const hasFlag=!!localStorage.getItem("onboarding_complete");
+    const hasFlag=!!localStorage.getItem("has_boarded");
     const hasHistory=Object.values(allStats).some((s:any)=>s.played>0);
     if(hasFlag||hasHistory){
-      if(!hasFlag)localStorage.setItem("onboarding_complete","1");
+      if(!hasFlag)localStorage.setItem("has_boarded","1");
       setPhase("play");
     }else{
       setPhase("tutorial");

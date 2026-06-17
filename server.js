@@ -60,6 +60,42 @@ app.use((req, res, next) => {
 // Compress all responses (gzip) — reduces JS bundle from ~750KB to ~210KB on the wire
 app.use(compression({ level: 6 }));
 
+// Stripe webhook — must be registered BEFORE express.json() so we receive the raw body
+// for signature verification. Set STRIPE_WEBHOOK_SECRET in Railway env vars.
+app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!stripe || !endpointSecret) return res.status(200).json({ received: true }); // no-op if not configured
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error("[webhook] signature failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  try {
+    if (event.type === "checkout.session.completed") {
+      const email = event.data.object.customer_email;
+      if (email && supabase) {
+        await supabase.from("users").update({ pro_status: true }).eq("email", email);
+        console.log("[webhook] pro_status=true for", email);
+      }
+    } else if (event.type === "customer.subscription.deleted") {
+      const custId = event.data.object.customer;
+      if (custId && stripe && supabase) {
+        const cust = await stripe.customers.retrieve(custId);
+        if (cust.email) {
+          await supabase.from("users").update({ pro_status: false }).eq("email", cust.email);
+          console.log("[webhook] pro_status=false for", cust.email);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[webhook] handler error:", err.message);
+  }
+  res.json({ received: true });
+});
+
 app.use(express.json());
 
 // Cache hashed assets (JS/CSS) for 1 year; HTML and SW never cached
@@ -878,17 +914,36 @@ app.post("/api/stripe/portal", jwtRequired, stripeRequired, async (req, res) => 
 // ── LIVE LEADERBOARD ─────────────────────────────────────────────────────────
 const scoresLimiter = rateLimit({ windowMs: 60000, max: 20, standardHeaders: true, legacyHeaders: false });
 
+// Per-device score rate limiting: max 6 POSTs per deviceId per calendar day
+const _scoreDeviceMap = new Map(); // deviceId -> {date, count}
+function checkDeviceScoreLimit(deviceId) {
+  const today = new Date().toISOString().slice(0, 10);
+  const rec = _scoreDeviceMap.get(deviceId);
+  if (!rec || rec.date !== today) { _scoreDeviceMap.set(deviceId, { date: today, count: 1 }); return true; }
+  if (rec.count >= 6) return false;
+  rec.count++;
+  return true;
+}
+
 // POST /api/scores — submit a game session result
 app.post("/api/scores", scoresLimiter, async (req, res) => {
   if (!supabase) return res.status(503).json({ error: "Leaderboard not configured." });
   const { playerName, gameKey, difficulty, wins, rounds, totalGuesses, dayNum, deviceId } = req.body || {};
   if (!playerName || !gameKey || wins == null) return res.status(400).json({ error: "Missing fields." });
+  // Validate dayNum is within ±1 day of today
+  const todayNum = Math.floor(Date.now() / 86400000);
+  if (dayNum != null && Math.abs(Number(dayNum) - todayNum) > 1) return res.status(400).json({ error: "Invalid day." });
+  // Validate numeric ranges
+  const winsN = Number(wins); const totalG = Number(totalGuesses);
+  if (winsN < 0 || winsN > 3 || totalG < 0 || totalG > 18) return res.status(400).json({ error: "Invalid score." });
+  // Per-device rate limit
+  if (deviceId && !checkDeviceScoreLimit(String(deviceId).slice(0, 64))) return res.status(429).json({ error: "Too many submissions today." });
   const safe = String(playerName).trim().slice(0, 30);
   if (!safe) return res.status(400).json({ error: "Invalid name." });
   const { error } = await supabase.from("leaderboard").insert({
     player_name: safe, game_key: gameKey, difficulty: difficulty || "medium",
-    wins: Number(wins) || 0, rounds: Number(rounds) || 3,
-    total_guesses: Number(totalGuesses) || 0, day_num: Number(dayNum) || 0,
+    wins: winsN, rounds: Number(rounds) || 3,
+    total_guesses: totalG, day_num: Number(dayNum) || todayNum,
     device_id: deviceId || null,
   });
   if (error) { console.error("[scores/post]", error.message); return res.status(500).json({ error: "Internal server error." }); }
