@@ -755,7 +755,7 @@ app.post("/api/me/username", jwtRequired, async (req, res) => {
   const clean = username.toLowerCase();
   const { error } = await supabase.from("users").update({ username: clean }).eq("id", req.user.userId);
   if (error?.code === "23505") return res.status(409).json({ error: "Username already taken." });
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) return res.status(500).json({ error: "Internal server error." });
   return res.json({ ok: true, username: clean });
 });
 
@@ -777,7 +777,7 @@ app.post("/api/friends/add", jwtRequired, socialLimiter, async (req, res) => {
   if (!friend) return res.status(404).json({ error: "Player not found." });
   if (friend.id === req.user.userId) return res.status(400).json({ error: "You can't follow yourself." });
   const { error } = await supabase.from("friendships").upsert({ user_id: req.user.userId, friend_id: friend.id }, { onConflict: "user_id,friend_id" });
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) return res.status(500).json({ error: "Internal server error." });
   return res.json({ ok: true, friend: { username: friend.username, displayName: friend.display_name } });
 });
 
@@ -891,7 +891,7 @@ app.post("/api/scores", scoresLimiter, async (req, res) => {
     total_guesses: Number(totalGuesses) || 0, day_num: Number(dayNum) || 0,
     device_id: deviceId || null,
   });
-  if (error) { console.error("[scores/post]", error.message); return res.status(500).json({ error: error.message }); }
+  if (error) { console.error("[scores/post]", error.message); return res.status(500).json({ error: "Internal server error." }); }
   return res.json({ ok: true });
 });
 
@@ -949,7 +949,7 @@ app.use(async (req, res, next) => {
   if (ref) { try { const h = new URL(ref).hostname; if (h) _mem.refs[h] = (_mem.refs[h] || 0) + 1; } catch {} }
   // persist to Supabase if available
   if (supabase) {
-    supabase.from("page_views").insert({ path: pth, referrer: ref || null, ua_type: type }).then(() => {});
+    supabase.from("page_views").insert({ path: pth, referrer: ref || null, ua_type: type }).then(() => {}).catch(e => console.error("[pv]", e.message));
   }
 });
 
@@ -962,7 +962,7 @@ app.get("/api/analytics", adminAuth, async (req, res) => {
       .select("ts, referrer, ua_type")
       .gte("ts", since)
       .neq("ua_type", "bot");
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error("[analytics]", error.message); return res.status(500).json({ error: "Internal server error." }); }
     const rows = data || [];
     const dailyMap = {};
     const refMap = {};

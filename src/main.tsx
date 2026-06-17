@@ -7444,7 +7444,7 @@ class CultureErrorBoundary extends React.Component<{children:React.ReactNode},{h
 
 function StoryModal({story,onClose}:{story:typeof CITY_STORIES[0],onClose:()=>void}){
   const saved=()=>{try{return JSON.parse(localStorage.getItem("tgg:story:"+story.id)||"{}");}catch{return{};}};
-  const[chapter,setChapter]=useState<number>(saved().chapter||0);
+  const[chapter,setChapter]=useState<number>(()=>{const c=saved().chapter||0;return Math.min(c,story.chapters.length-1);});
   const[done,setDone]=useState<boolean>(saved().done||false);
   const[celebrated,setCelebrated]=useState(false);
   const total=story.chapters.length;
@@ -12377,8 +12377,9 @@ function PartyHUD({room,currentRound}:{room:any,currentRound:number}){
 
 function PartyEndScreen({room,onPlayAgain,onHome}:{room:any,onPlayAgain:()=>void,onHome:()=>void}){
   const ranked=[...(room?.players||[])].map((p:any)=>{
-    const wins=p.roundScores.filter((s:any)=>s?.won).length;
-    const totalG=p.roundScores.reduce((a:number,s:any)=>a+(s?.won?s.guesses:99),0);
+    const scores=p.roundScores||[];
+    const wins=scores.filter((s:any)=>s?.won).length;
+    const totalG=scores.reduce((a:number,s:any)=>a+(s?.won?s.guesses:99),0);
     return{...p,wins,totalG};
   }).sort((a:any,b:any)=>b.wins-a.wins||(a.totalG-b.totalG));
   const medals=["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
