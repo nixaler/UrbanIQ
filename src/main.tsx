@@ -12337,7 +12337,7 @@ function PartyHUD({room,currentRound}:{room:any,currentRound:number}){
   if(!players.length)return null;
   return(
     <div style={{position:"sticky",top:0,zIndex:200,background:"rgba(10,10,10,0.9)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",padding:"7px 14px",display:"flex",alignItems:"center",gap:8,overflowX:"auto",flexWrap:"nowrap",boxSizing:"border-box" as const,borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-      <span style={{fontSize:9,color:"rgba(255,255,255,0.45)",flexShrink:0,letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace",fontWeight:700}}>PARTY</span>
+      <span style={{fontSize:10,color:"rgba(255,255,255,0.45)",flexShrink:0,letterSpacing:1.5,fontFamily:"'JetBrains Mono',monospace",fontWeight:700}}>PARTY</span>
       {players.map((p:any,i:number)=>{
         const s=p.roundScores?.[currentRound];
         const done=s!==null&&s!==undefined;
@@ -12380,7 +12380,7 @@ function PartyEndScreen({room,onPlayAgain,onHome}:{room:any,onPlayAgain:()=>void
         ))}
         <div style={{display:"flex",gap:10,marginTop:20}}>
           <button onClick={onHome} style={{flex:1,padding:11,borderRadius:10,border:"1px solid #E8E6E2",background:"none",fontSize:13,cursor:"pointer",fontWeight:600,color:"#555",fontFamily:"'Outfit',sans-serif"}}>🏠 Home</button>
-          <button onClick={onPlayAgain} style={{flex:1,padding:11,borderRadius:10,border:"none",background:"#0A0A0A",fontSize:13,cursor:"pointer",fontWeight:700,color:"#fff",letterSpacing:0.5,fontFamily:"'Outfit',sans-serif"}}>🎉 Play Again</button>
+          <button onClick={onPlayAgain} style={{flex:1,padding:11,borderRadius:10,border:"none",background:"#0A0A0A",fontSize:13,cursor:"pointer",fontWeight:700,color:"#fff",letterSpacing:0.5,fontFamily:"'Outfit',sans-serif"}}>🎉 New Party</button>
         </div>
       </div>
     </div>
@@ -12442,7 +12442,7 @@ function Root(){
       partySocketRef.current.on("party:room-update",(r:any)=>setPartyRoom(r));
       partySocketRef.current.on("party:started",(r:any)=>{setPartyRoom(r);setShowPartyLobby(false);setSelectedGame(r.gameKey);setSelectedDiff(r.difficulty);setPhase("play");});
       partySocketRef.current.on("party:scores-update",(r:any)=>setPartyRoom(r));
-      partySocketRef.current.on("party:finished",(r:any)=>{setPartyRoom(r);setShowPartyEnd(true);});
+      partySocketRef.current.on("party:finished",(r:any)=>{setPartyRoom(r);setShowPartyEnd(true);setPhase("start");});
       partySocketRef.current.on("party:error",(msg:string)=>setPartySocketErr(msg));
     }
     return partySocketRef.current;
@@ -12626,7 +12626,7 @@ function Root(){
     {showPartySetup&&<PartySetupModal onCreate={handleHostParty} onClose={()=>setShowPartySetup(false)}/>}
     {showPartyJoin&&<PartyNameModal onJoin={(name)=>handleJoinParty(partyJoinCode,name)} onClose={()=>setShowPartyJoin(false)}/>}
     {showPartyLobby&&<PartyLobby room={partyRoom} isHost={partyIsHost} qrDataUrl={partyQR.qrDataUrl} joinUrl={partyQR.joinUrl} roomId={partyQR.roomId||partyJoinCode} myName={partyMyName} onStart={handlePartyStart} onClose={leaveParty} socketErr={partySocketErr}/>}
-    {showPartyEnd&&<PartyEndScreen room={partyRoom} onPlayAgain={()=>{setShowPartyEnd(false);}} onHome={()=>{setShowPartyEnd(false);leaveParty();setPhase("start");}}/>}
+    {showPartyEnd&&<PartyEndScreen room={partyRoom} onPlayAgain={()=>{setShowPartyEnd(false);leaveParty();setShowPartySetup(true);}} onHome={()=>{setShowPartyEnd(false);leaveParty();}}/>}
     <div key={phase==="select-game"?"start":phase} style={{animation:"pageIn .32s ease both"}}>
       <style>{`@keyframes pageIn{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}`}</style>
       {pageContent}
