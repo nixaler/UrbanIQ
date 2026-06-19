@@ -206,12 +206,12 @@ function LoadingScreen() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#080808',
+      background: '#fff',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontFamily: '"JetBrains Mono", monospace',
-      color: '#333',
+      color: '#aaa',
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: '32px', marginBottom: '16px', opacity: 0.4 }}>◎</div>
@@ -232,8 +232,8 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#080808',
-      color: '#fff',
+      background: '#fff',
+      color: '#111',
       fontFamily: '"JetBrains Mono", monospace',
       display: 'flex',
       flexDirection: 'column',
@@ -244,20 +244,20 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
       <div style={{ maxWidth: '480px', width: '100%' }}>
         <button
           onClick={onBack}
-          style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontFamily: 'inherit', fontSize: '12px', padding: 0, marginBottom: '48px', letterSpacing: '2px' }}
+          style={{ background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontFamily: 'inherit', fontSize: '12px', padding: 0, marginBottom: '48px', letterSpacing: '2px' }}
         >
           ← BACK
         </button>
 
         {/* Title */}
         <div style={{ marginBottom: '40px' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#444', marginBottom: '12px', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '4px', color: '#aaa', marginBottom: '12px', textTransform: 'uppercase' }}>
             A Generational Life Simulator
           </div>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 700, letterSpacing: '-1px', lineHeight: 1.2 }}>
+          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 700, letterSpacing: '-1px', lineHeight: 1.2, color: '#111' }}>
             The City Lives
           </h1>
-          <p style={{ color: '#555', fontSize: '13px', lineHeight: '1.8', margin: '16px 0 0' }}>
+          <p style={{ color: '#666', fontSize: '13px', lineHeight: '1.8', margin: '16px 0 0' }}>
             Play the lives of six interconnected families across four generations in Crestfield. Every decision you make echoes into someone else's story.
           </p>
         </div>
@@ -267,10 +267,10 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
           {['6 Families', '30 Characters', '1920–2025', 'Butterfly Effect', 'City Mystery'].map(tag => (
             <div key={tag} style={{
               padding: '4px 10px',
-              border: '1px solid #1a1a1a',
+              border: '1px solid #e0e0e0',
               borderRadius: '20px',
               fontSize: '11px',
-              color: '#444',
+              color: '#888',
             }}>
               {tag}
             </div>
@@ -278,7 +278,7 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
         </div>
 
         {error && (
-          <div style={{ color: '#e53935', fontSize: '12px', marginBottom: '16px', padding: '12px', background: '#1a0000', borderRadius: '8px' }}>
+          <div style={{ color: '#c0392b', fontSize: '12px', marginBottom: '16px', padding: '12px', background: '#fff5f5', border: '1px solid #fcc', borderRadius: '8px' }}>
             {error}
           </div>
         )}
@@ -289,10 +289,10 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
           style={{
             width: '100%',
             padding: '18px',
-            background: isLoading ? '#111' : '#fff',
+            background: isLoading ? '#f5f5f5' : '#111',
             border: 'none',
             borderRadius: '12px',
-            color: isLoading ? '#444' : '#000',
+            color: isLoading ? '#aaa' : '#fff',
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: '13px',
             fontWeight: 700,
@@ -304,7 +304,7 @@ function WorldSelectScreen({ isLoading, error, onCreateWorld, onBack }: WorldSel
           {isLoading ? 'SEEDING THE CITY…' : 'BEGIN A NEW WORLD →'}
         </button>
 
-        <p style={{ color: '#2a2a2a', fontSize: '11px', textAlign: 'center', marginTop: '16px', lineHeight: '1.6' }}>
+        <p style={{ color: '#ccc', fontSize: '11px', textAlign: 'center', marginTop: '16px', lineHeight: '1.6' }}>
           The city runs from 1920 to 2025. Every life you play adds to the history.
         </p>
       </div>

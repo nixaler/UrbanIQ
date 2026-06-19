@@ -6322,15 +6322,19 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
         {/* The City Lives banner */}
         <div style={{position:"relative",zIndex:10,padding:"0 48px 16px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
           <div onClick={()=>onSelectGame("city-lives")}
-            style={{background:"linear-gradient(135deg,#0d0d0d 0%,#111108 100%)",border:"1px solid #FFB80033",borderRadius:12,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,transition:"border-color .2s,box-shadow .2s"}}
+            style={{position:"relative",overflow:"hidden",border:"1px solid #FFB80033",borderRadius:12,padding:"16px 20px",cursor:"pointer",transition:"border-color .2s,box-shadow .2s"}}
             onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#FFB800";(e.currentTarget as HTMLDivElement).style.boxShadow="0 0 24px #FFB80018";}}
             onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#FFB80033";(e.currentTarget as HTMLDivElement).style.boxShadow="none";}}>
-            <div style={{width:44,height:44,borderRadius:10,background:"#0a0a0a",border:"1px solid #FFB80044",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0}}>🏙️</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"13px",fontWeight:700,color:"#fff",letterSpacing:.2,marginBottom:2}}>The City Lives</div>
-              <div style={{fontSize:"10px",color:"rgba(255,184,0,0.5)",letterSpacing:1.5}}>GENERATIONAL LIFE SIMULATOR · CRESTFIELD</div>
+            <img src="/photo-chi.jpg" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.2,pointerEvents:"none"}} alt="" />
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,#0d0d0d 30%,rgba(13,13,13,0.7) 100%)",pointerEvents:"none"}}/>
+            <div style={{position:"relative",display:"flex",alignItems:"center",gap:16}}>
+              <div style={{width:44,height:44,borderRadius:10,background:"rgba(10,10,10,0.8)",border:"1px solid #FFB80044",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0}}>🏙️</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:"13px",fontWeight:700,color:"#fff",letterSpacing:.2,marginBottom:2}}>The City Lives</div>
+                <div style={{fontSize:"10px",color:"rgba(255,184,0,0.5)",letterSpacing:1.5}}>GENERATIONAL LIFE SIMULATOR · CRESTFIELD</div>
+              </div>
+              <div style={{background:"#FFB800",color:"#000",fontSize:"10px",fontWeight:800,padding:"7px 14px",borderRadius:20,letterSpacing:1.5,flexShrink:0,whiteSpace:"nowrap"}}>PLAY →</div>
             </div>
-            <div style={{background:"#FFB800",color:"#000",fontSize:"10px",fontWeight:800,padding:"7px 14px",borderRadius:20,letterSpacing:1.5,flexShrink:0,whiteSpace:"nowrap"}}>PLAY →</div>
           </div>
         </div>
 
@@ -6600,7 +6604,8 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
             onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
             onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
             style={{height:90,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.12)",background:"#0a0a0a"}}>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#0a0a0a 0%,#1a1200 100%)"}}/>
+            <img src="/photo-chi.jpg" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.38,pointerEvents:"none"}} alt="" />
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,10,0.85) 30%,rgba(10,10,10,0.5) 100%)"}}/>
             <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
               <span style={{fontSize:28}}>🏙️</span>
               <div>

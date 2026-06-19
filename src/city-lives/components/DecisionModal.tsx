@@ -40,7 +40,7 @@ export function DecisionModal({ decision, family, triggeringRipple, onChoose }: 
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(0,0,0,0.92)',
+      background: 'rgba(0,0,0,0.5)',
       zIndex: 200,
       display: 'flex',
       alignItems: 'center',
@@ -53,10 +53,11 @@ export function DecisionModal({ decision, family, triggeringRipple, onChoose }: 
         maxWidth: '600px',
         maxHeight: '90vh',
         overflowY: 'auto',
-        background: '#0a0a0a',
-        border: `1px solid ${family.colorTheme}33`,
+        background: '#fff',
+        border: `1px solid ${family.colorTheme}44`,
         borderRadius: '14px',
         padding: '32px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
       }}>
         {/* Ripple origin hint */}
         {triggeringRipple && (
@@ -90,12 +91,12 @@ export function DecisionModal({ decision, family, triggeringRipple, onChoose }: 
         </div>
 
         {/* Context */}
-        <p style={{ color: '#888', fontSize: '13px', lineHeight: '1.7', margin: '0 0 20px' }}>
+        <p style={{ color: '#777', fontSize: '13px', lineHeight: '1.7', margin: '0 0 20px' }}>
           {decision.contextText}
         </p>
 
         {/* Prompt */}
-        <h2 style={{ color: '#fff', fontSize: '17px', fontWeight: 600, lineHeight: '1.5', margin: '0 0 28px' }}>
+        <h2 style={{ color: '#111', fontSize: '17px', fontWeight: 600, lineHeight: '1.5', margin: '0 0 28px' }}>
           {decision.prompt}
         </h2>
 
@@ -121,15 +122,15 @@ export function DecisionModal({ decision, family, triggeringRipple, onChoose }: 
             {/* Result */}
             <div style={{
               padding: '16px',
-              background: '#111',
+              background: '#f8f8f8',
               borderRadius: '8px',
               borderLeft: `3px solid ${family.colorTheme}`,
               marginBottom: '16px',
             }}>
-              <div style={{ color: '#fff', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>
+              <div style={{ color: '#111', fontWeight: 600, fontSize: '14px', marginBottom: '8px' }}>
                 {chosenOption?.label}
               </div>
-              <p style={{ color: '#888', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>
+              <p style={{ color: '#666', fontSize: '13px', lineHeight: '1.6', margin: 0 }}>
                 {chosenOption?.outcomes.narrativeResult}
               </p>
             </div>
@@ -196,10 +197,10 @@ function OptionButton({ option, family, isChosen, isDimmed, isHovered, onHover, 
   const border = isChosen
     ? `2px solid ${family.colorTheme}`
     : isHovered
-    ? `1px solid ${family.colorTheme}66`
-    : '1px solid #1e1e1e';
+    ? `1px solid ${family.colorTheme}88`
+    : '1px solid #e8e8e8';
 
-  const bg = isChosen ? `${family.colorTheme}11` : isHovered ? '#111' : '#0d0d0d';
+  const bg = isChosen ? `${family.colorTheme}0f` : isHovered ? '#f5f5f5' : '#fafafa';
 
   return (
     <button
@@ -220,10 +221,10 @@ function OptionButton({ option, family, isChosen, isDimmed, isHovered, onHover, 
         transition: 'all 0.2s ease',
       }}
     >
-      <div style={{ color: '#fff', fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>
+      <div style={{ color: '#111', fontWeight: 600, fontSize: '14px', marginBottom: '4px' }}>
         {option.label}
       </div>
-      <div style={{ color: '#666', fontSize: '12px', lineHeight: '1.5' }}>
+      <div style={{ color: '#777', fontSize: '12px', lineHeight: '1.5' }}>
         {option.description}
       </div>
 

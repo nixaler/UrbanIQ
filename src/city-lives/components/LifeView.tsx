@@ -58,15 +58,15 @@ export function LifeView({
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#080808',
-      color: '#fff',
+      background: '#fff',
+      color: '#111',
       fontFamily: '"JetBrains Mono", monospace',
       paddingTop: '72px', // HUD bar space
     }}>
       {/* Stage banner */}
       <div style={{
-        background: `${family.colorTheme}08`,
-        borderBottom: `1px solid ${family.colorTheme}22`,
+        background: `${family.colorTheme}0a`,
+        borderBottom: `1px solid ${family.colorTheme}30`,
         padding: '16px 24px',
         display: 'flex',
         alignItems: 'center',
@@ -119,10 +119,10 @@ export function LifeView({
               style={{
                 width: '100%',
                 padding: '16px',
-                background: '#111',
-                border: '1px solid #333',
+                background: '#f5f5f5',
+                border: '1px solid #ddd',
                 borderRadius: '10px',
-                color: '#888',
+                color: '#555',
                 fontFamily: 'inherit',
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -137,9 +137,9 @@ export function LifeView({
                 width: '100%',
                 padding: '14px',
                 background: 'none',
-                border: '1px solid #1a1a1a',
+                border: '1px solid #ebebeb',
                 borderRadius: '8px',
-                color: '#444',
+                color: '#bbb',
                 fontFamily: 'inherit',
                 fontSize: '12px',
                 cursor: 'pointer',
@@ -168,7 +168,7 @@ function LifeEventRow({ event, isLast }: { event: LifeEvent; isLast: boolean }) 
           {event.isSealed ? '?' : TYPE_ICONS[event.type]}
         </div>
         {!isLast && (
-          <div style={{ flex: 1, width: '1px', background: '#1a1a1a', minHeight: '20px' }} />
+          <div style={{ flex: 1, width: '1px', background: '#e8e8e8', minHeight: '20px' }} />
         )}
       </div>
 
@@ -177,7 +177,7 @@ function LifeEventRow({ event, isLast }: { event: LifeEvent; isLast: boolean }) 
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
           <span style={{ color: '#555', fontSize: '11px', flexShrink: 0 }}>{event.year}</span>
           <span style={{
-            color: event.isSealed ? '#333' : color === '#555' ? '#888' : color,
+            color: event.isSealed ? '#ccc' : color === '#555' ? '#777' : color,
             fontSize: '13px',
             fontWeight: 500,
           }}>
@@ -185,12 +185,12 @@ function LifeEventRow({ event, isLast }: { event: LifeEvent; isLast: boolean }) 
           </span>
         </div>
         {!event.isSealed && event.description && (
-          <p style={{ color: '#666', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
+          <p style={{ color: '#888', fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
             {event.description}
           </p>
         )}
         {event.isSealed && (
-          <p style={{ color: '#2a2a2a', fontSize: '12px', margin: 0 }}>
+          <p style={{ color: '#ccc', fontSize: '12px', margin: 0 }}>
             A past decision is waiting to arrive in this year.
           </p>
         )}

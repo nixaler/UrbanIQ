@@ -11,6 +11,15 @@ function getAuthToken(): string | null {
   return localStorage.getItem('tgg:auth-token');
 }
 
+function getDeviceId(): string {
+  let id = localStorage.getItem('cl:deviceId');
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem('cl:deviceId', id);
+  }
+  return id;
+}
+
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
   const token = getAuthToken();
   const res = await fetch(`/api/city-lives${path}`, {
@@ -33,7 +42,7 @@ async function api<T>(method: string, path: string, body?: unknown): Promise<T> 
 // ── WORLD ─────────────────────────────────────────────────────────────────────
 
 export function createWorld(name: string): Promise<CreateWorldResponse> {
-  return api('POST', '/worlds', { name });
+  return api('POST', '/worlds', { name, deviceId: getDeviceId() });
 }
 
 export function listWorlds(): Promise<World[]> {

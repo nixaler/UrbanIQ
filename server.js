@@ -726,15 +726,12 @@ app.post("/api/auth/verify", authLimiter, async (req, res) => {
   let user = users?.[0];
   if (!user) {
     const emailPrefix = cleanEmail.split("@")[0].replace(/[^a-z0-9]/gi, "").toLowerCase().slice(0, 12) || "player";
-    let newUser = null;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const autoUsername = emailPrefix + String(Math.floor(1000 + Math.random() * 9000));
-      const { data, error: insErr } = await supabase.from("users").insert({ email: cleanEmail, username: autoUsername }).select().single();
-      if (!insErr) { newUser = data; break; }
-      if (insErr.code !== "23505") { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
-    }
-    if (!newUser) return res.status(500).json({ error: "Could not generate unique username. Please try again." });
+    const { data: newUser, error: insErr } = await supabase.from("users").insert({ email: cleanEmail }).select().single();
+    if (insErr) { console.error("[auth/verify/insert]", insErr.message); return res.status(500).json({ error: "Account creation failed." }); }
     user = newUser;
+    // Best-effort username assignment (requires username column migration)
+    const autoUsername = emailPrefix + String(Math.floor(1000 + Math.random() * 9000));
+    supabase.from("users").update({ username: autoUsername }).eq("id", user.id).then(() => {}).catch(() => {});
   }
   const token = jwt.sign({ userId: user.id, email: cleanEmail }, process.env.JWT_SECRET || "urbaniq-dev-secret", { expiresIn: "90d" });
   return res.json({ ok: true, token, user: { id: user.id, email: user.email, username: user.username, displayName: user.display_name, xp: user.xp, streak: user.streak, shields: user.shields, proStatus: user.pro_status } });

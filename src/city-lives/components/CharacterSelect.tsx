@@ -35,8 +35,8 @@ export function CharacterSelect({
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#080808',
-      color: '#fff',
+      background: '#fff',
+      color: '#111',
       fontFamily: '"JetBrains Mono", monospace',
       padding: '40px 24px',
     }}>
@@ -44,10 +44,10 @@ export function CharacterSelect({
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>
+            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 700, color: '#111', letterSpacing: '-0.5px' }}>
               Crestfield
             </h1>
-            <p style={{ margin: '6px 0 0', color: '#555', fontSize: '13px' }}>
+            <p style={{ margin: '6px 0 0', color: '#888', fontSize: '13px' }}>
               {completedPlaythroughCount === 0
                 ? 'Choose a character to begin.'
                 : `${completedPlaythroughCount} ${completedPlaythroughCount === 1 ? 'life' : 'lives'} lived. The city carries their decisions.`}
@@ -59,8 +59,8 @@ export function CharacterSelect({
                 onClick={onOpenWestsideFiles}
                 style={{
                   background: 'none',
-                  border: '1px solid #FFB80033',
-                  color: '#FFB800',
+                  border: '1px solid #FFB80044',
+                  color: '#D4A000',
                   padding: '8px 16px',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -75,8 +75,8 @@ export function CharacterSelect({
               onClick={onBack}
               style={{
                 background: 'none',
-                border: '1px solid #1a1a1a',
-                color: '#444',
+                border: '1px solid #e0e0e0',
+                color: '#888',
                 padding: '8px 16px',
                 borderRadius: '6px',
                 cursor: 'pointer',
@@ -126,7 +126,7 @@ export function CharacterSelect({
             })}
           </div>
         ) : (
-          <div style={{ color: '#555', fontSize: '14px', textAlign: 'center', padding: '48px 0' }}>
+          <div style={{ color: '#aaa', fontSize: '14px', textAlign: 'center', padding: '48px 0' }}>
             {selectedFamily ? 'No unplayed characters in this family.' : 'All characters have been played.'}
           </div>
         )}
@@ -134,7 +134,7 @@ export function CharacterSelect({
         {/* Played characters section */}
         {playedCitizens.length > 0 && (
           <div style={{ marginTop: '48px' }}>
-            <h3 style={{ color: '#444', fontSize: '13px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>
+            <h3 style={{ color: '#aaa', fontSize: '13px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>
               Lives Already Lived
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
@@ -143,19 +143,19 @@ export function CharacterSelect({
                 return (
                   <div key={citizen.id} style={{
                     padding: '16px',
-                    border: '1px solid #1a1a1a',
+                    border: '1px solid #ebebeb',
                     borderRadius: '10px',
-                    opacity: 0.5,
+                    opacity: 0.6,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{
                         width: '8px', height: '8px', borderRadius: '50%',
-                        background: family?.colorTheme ?? '#555',
+                        background: family?.colorTheme ?? '#aaa',
                       }} />
-                      <span style={{ color: '#888', fontSize: '14px' }}>
+                      <span style={{ color: '#555', fontSize: '14px' }}>
                         {citizen.firstName} {citizen.lastName}
                       </span>
-                      <span style={{ marginLeft: 'auto', color: '#444', fontSize: '11px' }}>
+                      <span style={{ marginLeft: 'auto', color: '#aaa', fontSize: '11px' }}>
                         {citizen.birthYear}–{citizen.deathYear ?? 'present'}
                       </span>
                     </div>
@@ -194,8 +194,8 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
       style={{
         width: '100%',
         textAlign: 'left',
-        background: hovered ? '#0e0e0e' : '#0a0a0a',
-        border: `1px solid ${hovered ? (family?.colorTheme ?? '#333') : '#1e1e1e'}`,
+        background: hovered ? '#f7f7f7' : '#fafafa',
+        border: `1px solid ${hovered ? (family?.colorTheme ?? '#ccc') : '#e8e8e8'}`,
         borderRadius: '10px',
         padding: '20px',
         cursor: 'pointer',
@@ -218,10 +218,10 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
         <div>
-          <div style={{ color: '#fff', fontWeight: 700, fontSize: '16px' }}>
+          <div style={{ color: '#111', fontWeight: 700, fontSize: '16px' }}>
             {citizen.firstName} {citizen.lastName}
           </div>
-          <div style={{ color: '#555', fontSize: '11px', marginTop: '2px' }}>
+          <div style={{ color: '#aaa', fontSize: '11px', marginTop: '2px' }}>
             {yearsActive} · {citizen.currentCareer?.title ?? 'Unknown'}
           </div>
         </div>
@@ -229,9 +229,9 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
         {/* Ripple badge */}
         {rippleCount > 0 && (
           <div style={{
-            background: '#FFB80022',
+            background: '#FFF8E1',
             border: '1px solid #FFB800',
-            color: '#FFB800',
+            color: '#B8860B',
             borderRadius: '20px',
             padding: '2px 10px',
             fontSize: '11px',
@@ -248,7 +248,7 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
       </div>
 
       {/* Biography */}
-      <p style={{ color: '#777', fontSize: '12px', lineHeight: '1.6', margin: '0 0 12px' }}>
+      <p style={{ color: '#666', fontSize: '12px', lineHeight: '1.6', margin: '0 0 12px' }}>
         {citizen.biography}
       </p>
 
@@ -257,8 +257,8 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
         {citizen.traitIds.slice(0, 3).map(trait => (
           <span key={trait} style={{
             fontSize: '10px',
-            color: '#555',
-            border: '1px solid #222',
+            color: '#888',
+            border: '1px solid #e0e0e0',
             padding: '2px 6px',
             borderRadius: '3px',
           }}>
@@ -272,8 +272,8 @@ function CharacterCard({ citizen, family, rippleCount, onSelect }: CharacterCard
         <div style={{
           marginTop: '12px',
           paddingTop: '12px',
-          borderTop: '1px solid #1a1a1a',
-          color: '#FFB80099',
+          borderTop: '1px solid #f0f0f0',
+          color: '#B8860B',
           fontSize: '11px',
         }}>
           {rippleCount === 1
@@ -292,9 +292,9 @@ function FilterChip({ label, active, onClick, color }: { label: string; active: 
     <button
       onClick={onClick}
       style={{
-        background: active ? `${color}22` : 'none',
-        border: `1px solid ${active ? color : '#2a2a2a'}`,
-        color: active ? color : '#555',
+        background: active ? `${color}18` : 'none',
+        border: `1px solid ${active ? color : '#e0e0e0'}`,
+        color: active ? color : '#999',
         padding: '5px 12px',
         borderRadius: '20px',
         cursor: 'pointer',
