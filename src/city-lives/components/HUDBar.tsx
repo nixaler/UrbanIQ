@@ -33,6 +33,11 @@ export function HUDBar({ citizen, family, playthrough, year, audioEnabled, onTog
   const age = playthrough.currentYear - citizen.birthYear;
   const stage = getLifeStage(citizen, playthrough.currentYear);
   const era = getEraTheme(year ?? playthrough.currentYear);
+
+  const mood = citizen.reputationScore > 20 ? 'calm'
+    : citizen.reputationScore >= 0 ? 'tense'
+    : 'troubled';
+  const moodColor = mood === 'calm' ? '#4CAF50' : mood === 'tense' ? '#FFB800' : '#e53935';
   const repBar = Math.max(0, Math.min(100, citizen.reputationScore + 100)) / 2; // 0-100 display
 
   return (
@@ -85,8 +90,15 @@ export function HUDBar({ citizen, family, playthrough, year, audioEnabled, onTog
             {family.familyName}
           </span>
         </div>
-        <div style={{ color: '#aaa', fontSize: '12px', marginTop: '2px' }}>
-          {LIFE_STAGE_LABELS[stage]} · Age {age} · {citizen.currentCareer?.title ?? 'Unemployed'}
+        <div style={{ color: '#aaa', fontSize: '12px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>{LIFE_STAGE_LABELS[stage]} · Age {age} · {citizen.currentCareer?.title ?? 'Unemployed'}</span>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            fontSize: '10px', color: moodColor,
+          }}>
+            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: moodColor, display: 'inline-block' }} />
+            {mood}
+          </span>
         </div>
         <div style={{ color: era.accent, fontSize: '10px', marginTop: '2px', opacity: 0.7 }}>
           {era.name}

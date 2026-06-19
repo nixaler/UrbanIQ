@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Citizen, CityEvent, Decision, Family, Playthrough, Ripple, Location } from '../types';
 import { getLifeStage } from '../engine/decisionEngine';
 import { HISTORICAL_EVENTS, LOCATIONS, getActiveLocations } from '../data/crestfield';
 import { CITIZENS } from '../data/families';
 import { getEraTheme } from '../utils/eraTheme';
 import { getYearNarrative } from '../utils/yearNarrative';
-import { LocationModal } from './LocationModal';
+import { SceneView } from './SceneView';
 import { NewspaperModal } from './NewspaperModal';
 
 interface LifeViewProps {
@@ -58,7 +58,8 @@ export function LifeView({
   sealedRippleCount, cityEvents, pendingDecision,
   onMakeDecision, onAdvanceYear, onCompleteLife,
 }: LifeViewProps) {
-  const [locationModal, setLocationModal] = useState<Location | null>(null);
+  const [sceneLocation, setSceneLocation] = useState<Location | null>(null);
+  const [visitedLocations, setVisitedLocations] = useState<Set<string>>(new Set());
   const [showNewspaper, setShowNewspaper] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
 
@@ -75,6 +76,21 @@ export function LifeView({
     getActiveLocations(citizen.districtId, currentYear).slice(0, 2),
     [citizen.districtId, currentYear]
   );
+
+  // Reset visited locations when the year advances
+  useEffect(() => {
+    setVisitedLocations(new Set());
+    setSceneLocation(null);
+  }, [currentYear]);
+
+  const handleVisitLocation = (loc: Location) => {
+    setVisitedLocations(prev => new Set([...prev, loc.id]));
+    setSceneLocation(loc);
+  };
+
+  const allLocationsVisited =
+    availableLocations.length === 0 ||
+    availableLocations.every(l => visitedLocations.has(l.id));
 
   // Build life event feed
   const lifeEvents: LifeEvent[] = useMemo(() =>
@@ -133,27 +149,31 @@ export function LifeView({
             THIS YEAR:
           </span>
 
-          {availableLocations.map(loc => (
-            <button
-              key={loc.id}
-              onClick={() => setLocationModal(loc)}
-              style={{
-                padding: '6px 14px',
-                background: 'none',
-                border: `1px solid ${era.accent}44`,
-                borderRadius: '20px',
-                color: era.accent,
-                fontFamily: 'inherit',
-                fontSize: '11px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={e => { (e.target as HTMLElement).style.background = `${era.accent}11`; }}
-              onMouseLeave={e => { (e.target as HTMLElement).style.background = 'none'; }}
-            >
-              ◉ Visit {loc.name}
-            </button>
-          ))}
+          {availableLocations.map(loc => {
+            const visited = visitedLocations.has(loc.id);
+            return (
+              <button
+                key={loc.id}
+                onClick={() => handleVisitLocation(loc)}
+                style={{
+                  padding: '6px 14px',
+                  background: visited ? `${era.accent}14` : 'none',
+                  border: `1px solid ${visited ? era.accent + '66' : era.accent + '44'}`,
+                  borderRadius: '20px',
+                  color: visited ? era.accent : era.accent,
+                  fontFamily: 'inherit',
+                  fontSize: '11px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  opacity: visited ? 0.7 : 1,
+                }}
+                onMouseEnter={e => { if (!visited) (e.target as HTMLElement).style.background = `${era.accent}11`; }}
+                onMouseLeave={e => { if (!visited) (e.target as HTMLElement).style.background = 'none'; }}
+              >
+                {visited ? '✓' : '◉'} {loc.name}
+              </button>
+            );
+          })}
 
           <button
             onClick={() => setShowNewspaper(true)}
@@ -260,26 +280,73 @@ export function LifeView({
             </button>
 
           ) : (
-            <button
-              onClick={onAdvanceYear}
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: 'none',
-                border: `1px solid ${era.accent}33`,
-                borderRadius: '10px',
-                color: era.accent,
-                fontFamily: 'inherit',
-                fontSize: '12px',
-                cursor: 'pointer',
-                letterSpacing: '1px',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${era.accent}0a`; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
-            >
-              Continue into {currentYear + 1} →
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {/* Action dots — show remaining visits */}
+              {availableLocations.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0' }}>
+                  {availableLocations.map(loc => (
+                    <div
+                      key={loc.id}
+                      style={{
+                        width: '8px', height: '8px', borderRadius: '50%',
+                        background: visitedLocations.has(loc.id) ? era.accent : `${era.accent}33`,
+                        transition: 'background 0.3s ease',
+                      }}
+                    />
+                  ))}
+                  <span style={{ fontSize: '10px', color: era.textMuted, letterSpacing: '1px' }}>
+                    {allLocationsVisited
+                      ? 'All locations visited'
+                      : `${availableLocations.length - visitedLocations.size} place${availableLocations.length - visitedLocations.size !== 1 ? 's' : ''} left to explore`}
+                  </span>
+                </div>
+              )}
+
+              {/* Continue — prominent when all visited, muted when not */}
+              {allLocationsVisited ? (
+                <button
+                  onClick={onAdvanceYear}
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    background: 'none',
+                    border: `1px solid ${era.accent}44`,
+                    borderRadius: '10px',
+                    color: era.accent,
+                    fontFamily: 'inherit',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    letterSpacing: '1px',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${era.accent}0a`; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+                >
+                  Continue into {currentYear + 1} →
+                </button>
+              ) : (
+                <button
+                  onClick={onAdvanceYear}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    background: 'none',
+                    border: `1px solid ${era.accent}18`,
+                    borderRadius: '10px',
+                    color: era.textMuted,
+                    fontFamily: 'inherit',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    letterSpacing: '1px',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${era.accent}06`; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+                >
+                  Skip — continue into {currentYear + 1} →
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -343,13 +410,14 @@ export function LifeView({
         </div>
       )}
 
-      {/* ── MODALS ──────────────────────────────────────────────────────── */}
-      {locationModal && (
-        <LocationModal
-          location={locationModal}
+      {/* ── SCENE VIEW (full-screen location visit) ─────────────────────── */}
+      {sceneLocation && (
+        <SceneView
+          location={sceneLocation}
+          year={currentYear}
+          playerCitizen={citizen}
           allCitizens={CITIZENS}
-          familyColorTheme={family.colorTheme}
-          onClose={() => setLocationModal(null)}
+          onLeave={() => setSceneLocation(null)}
         />
       )}
 
