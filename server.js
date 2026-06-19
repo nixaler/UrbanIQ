@@ -1332,29 +1332,40 @@ app.get("/api/city-lives/worlds/:worldId", jwtOptional, async (req, res) => {
   const { worldId } = req.params;
 
   if (supabase) {
-    const [{ data: worldRow }, { data: famRows }, { data: citRows }] = await Promise.all([
+    const [wRes, fRes, cRes] = await Promise.all([
       supabase.from("cl_worlds").select("*").eq("id", worldId).single(),
       supabase.from("cl_families").select("*").eq("world_id", worldId),
       supabase.from("cl_citizens").select("*").eq("world_id", worldId),
     ]);
-    if (!worldRow) return res.status(404).json({ error: "World not found" });
-    const world = { id: worldRow.id, name: worldRow.name, currentYear: worldRow.current_year, createdAt: worldRow.created_at };
-    const families = (famRows || []).map(f => ({
-      id: f.family_key, worldId, familyName: f.family_name, archetype: f.archetype,
-      colorTheme: f.color_theme, description: "", memberBios: {}, familySecretText: "",
-      familySecretUnlocked: false, requiredPlaythroughs: 3,
-    }));
-    const citizens = (citRows || []).map(c => ({
-      id: c.citizen_key, worldId, familyId: c.family_id, firstName: c.first_name,
-      lastName: c.last_name, birthYear: c.birth_year, deathYear: c.death_year,
-      isPlayable: c.is_playable, playthroughId: c.playthrough_id,
-      wealthTier: c.wealth_tier || 2, reputationScore: c.reputation_score || 0,
-      traits: [], biography: "", currentCareer: null,
-    }));
-    return res.json({ world, families, citizens });
+    // Table missing or other DB error — fall through to static seed below
+    if (wRes.error) {
+      if (wRes.error.code === "PGRST116") {
+        // row not found — world genuinely doesn't exist
+        return res.status(404).json({ error: "World not found" });
+      }
+      console.error("[city-lives/get-world] db error, using static seed:", wRes.error.message);
+    } else {
+      const worldRow = wRes.data;
+      const famRows = fRes.data || [];
+      const citRows = cRes.data || [];
+      const world = { id: worldRow.id, name: worldRow.name, currentYear: worldRow.current_year, createdAt: worldRow.created_at };
+      const families = famRows.map(f => ({
+        id: f.family_key, worldId, familyName: f.family_name, archetype: f.archetype,
+        colorTheme: f.color_theme, description: "", memberBios: {}, familySecretText: "",
+        familySecretUnlocked: false, requiredPlaythroughs: 3,
+      }));
+      const citizens = citRows.map(c => ({
+        id: c.citizen_key, worldId, familyId: c.family_id, firstName: c.first_name,
+        lastName: c.last_name, birthYear: c.birth_year, deathYear: c.death_year,
+        isPlayable: c.is_playable, playthroughId: c.playthrough_id,
+        wealthTier: c.wealth_tier || 2, reputationScore: c.reputation_score || 0,
+        traits: [], biography: "", currentCareer: null,
+      }));
+      return res.json({ world, families, citizens });
+    }
   }
 
-  // No DB — return static seed
+  // No DB or DB error — return static seed
   const world = { id: worldId, name: "Crestfield", currentYear: 1940, createdAt: new Date().toISOString() };
   const families = CRESTFIELD_FAMILIES.map(f => ({
     id: f.id, worldId, familyName: f.name, archetype: f.archetype, colorTheme: f.color_theme,

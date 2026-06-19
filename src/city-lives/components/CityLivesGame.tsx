@@ -35,6 +35,15 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
 
   const world = useWorld(worldId);
 
+  // If stored worldId no longer exists on the server, clear it and go back to world-select
+  React.useEffect(() => {
+    if (world.error && world.error.toLowerCase().includes('not found')) {
+      localStorage.removeItem('cl:worldId');
+      setWorldId(null);
+      setSubPhase('world-select');
+    }
+  }, [world.error]);
+
   // ── World creation ──────────────────────────────────────────────────────────
 
   const handleCreateWorld = useCallback(async () => {
