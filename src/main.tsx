@@ -6319,6 +6319,21 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
           </div>
         )}
 
+        {/* The City Lives banner */}
+        <div style={{position:"relative",zIndex:10,padding:"0 48px 16px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
+          <div onClick={()=>onSelectGame("city-lives")}
+            style={{background:"linear-gradient(135deg,#0d0d0d 0%,#111108 100%)",border:"1px solid #FFB80033",borderRadius:12,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,transition:"border-color .2s,box-shadow .2s"}}
+            onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#FFB800";(e.currentTarget as HTMLDivElement).style.boxShadow="0 0 24px #FFB80018";}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#FFB80033";(e.currentTarget as HTMLDivElement).style.boxShadow="none";}}>
+            <div style={{width:44,height:44,borderRadius:10,background:"#0a0a0a",border:"1px solid #FFB80044",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0}}>🏙️</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:"13px",fontWeight:700,color:"#fff",letterSpacing:.2,marginBottom:2}}>The City Lives</div>
+              <div style={{fontSize:"10px",color:"rgba(255,184,0,0.5)",letterSpacing:1.5}}>GENERATIONAL LIFE SIMULATOR · CRESTFIELD</div>
+            </div>
+            <div style={{background:"#FFB800",color:"#000",fontSize:"10px",fontWeight:800,padding:"7px 14px",borderRadius:20,letterSpacing:1.5,flexShrink:0,whiteSpace:"nowrap"}}>PLAY →</div>
+          </div>
+        </div>
+
         {/* Cards */}
         <div className="sp-dark-grid" style={{position:"relative",zIndex:10,padding:"0 48px 40px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
           {/* Swipeable hot today carousel */}
