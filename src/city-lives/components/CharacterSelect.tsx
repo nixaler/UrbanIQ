@@ -10,12 +10,15 @@ interface CharacterSelectProps {
   westsideFilesUnlocked: boolean;
   onSelectCharacter: (citizenId: string) => void;
   onOpenWestsideFiles: () => void;
+  onOpenCityMap?: () => void;
+  onOpenFamilyTree?: () => void;
   onBack: () => void;
 }
 
 export function CharacterSelect({
   citizens, families, sealedRipplesByCitizen, completedPlaythroughCitizenIds,
-  westsideFilesUnlocked, onSelectCharacter, onOpenWestsideFiles, onBack,
+  westsideFilesUnlocked, onSelectCharacter, onOpenWestsideFiles,
+  onOpenCityMap, onOpenFamilyTree, onBack,
 }: CharacterSelectProps) {
   const pendingRipplesByCitizen = sealedRipplesByCitizen;
   const onSelect = onSelectCharacter;
@@ -53,7 +56,41 @@ export function CharacterSelect({
                 : `${completedPlaythroughCount} ${completedPlaythroughCount === 1 ? 'life' : 'lives'} lived. The city carries their decisions.`}
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {onOpenCityMap && (
+              <button
+                onClick={onOpenCityMap}
+                style={{
+                  background: 'none',
+                  border: '1px solid #e0e0e0',
+                  color: '#555',
+                  padding: '8px 14px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontFamily: 'inherit',
+                }}
+              >
+                ⬡ Map
+              </button>
+            )}
+            {onOpenFamilyTree && (
+              <button
+                onClick={onOpenFamilyTree}
+                style={{
+                  background: 'none',
+                  border: '1px solid #e0e0e0',
+                  color: '#555',
+                  padding: '8px 14px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontFamily: 'inherit',
+                }}
+              >
+                ⊕ Families
+              </button>
+            )}
             {westsideFilesUnlocked && (
               <button
                 onClick={onOpenWestsideFiles}
@@ -61,7 +98,7 @@ export function CharacterSelect({
                   background: 'none',
                   border: '1px solid #FFB80044',
                   color: '#D4A000',
-                  padding: '8px 16px',
+                  padding: '8px 14px',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '12px',
@@ -77,7 +114,7 @@ export function CharacterSelect({
                 background: 'none',
                 border: '1px solid #e0e0e0',
                 color: '#888',
-                padding: '8px 16px',
+                padding: '8px 14px',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 fontSize: '12px',

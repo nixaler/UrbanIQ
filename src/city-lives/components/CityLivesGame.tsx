@@ -1,23 +1,38 @@
 import React, { useState, useCallback } from 'react';
 import { useWorld } from '../hooks/useWorld';
 import { CharacterSelect } from './CharacterSelect';
+import { CharacterIntro } from './CharacterIntro';
 import { LifeView } from './LifeView';
 import { DecisionModal } from './DecisionModal';
 import { RippleReveal } from './RippleReveal';
 import { WestsideFiles } from './WestsideFiles';
+import { CityMap } from './CityMap';
+import { FamilyTree } from './FamilyTree';
+import { VoteView } from './VoteView';
 import { HUDBar } from './HUDBar';
-import type { Citizen, Decision } from '../types';
+import { useEraAudio } from '../hooks/useEraAudio';
 import { FAMILIES, CITIZENS } from '../data/families';
+
+// ── Constants ──────────────────────────────────────────────────────────────────
+
+const VOTE_ELIGIBLE = new Set([
+  'keisha_washington', 'ana_reyes', 'marcus_webb',
+  'maya_chen', 'rosa_reyes', 'claire_caldwell',
+]);
 
 // ── Sub-phase type ─────────────────────────────────────────────────────────────
 
 type SubPhase =
-  | 'world-select'   // Create / select world (world lobby)
+  | 'world-select'
   | 'character-select'
+  | 'intro'
   | 'playing'
   | 'decision'
   | 'ripple-reveal'
-  | 'westside-files';
+  | 'westside-files'
+  | 'vote'
+  | 'city-map'
+  | 'family-tree';
 
 interface CityLivesGameProps {
   onBack: () => void;
@@ -26,14 +41,18 @@ interface CityLivesGameProps {
 // ── Root component ─────────────────────────────────────────────────────────────
 
 export function CityLivesGame({ onBack }: CityLivesGameProps) {
-  // World state lives in localStorage for MVP (no auth required for world id)
   const [worldId, setWorldId] = useState<string | null>(() =>
     localStorage.getItem('cl:worldId')
   );
   const [subPhase, setSubPhase] = useState<SubPhase>(worldId ? 'character-select' : 'world-select');
   const [activeDecisionId, setActiveDecisionId] = useState<string | null>(null);
+  const [pendingCitizenId, setPendingCitizenId] = useState<string | null>(null);
+  const [voteCompleted, setVoteCompleted] = useState(false);
 
   const world = useWorld(worldId);
+
+  const currentYear = world.currentPlaythrough?.currentYear ?? 1950;
+  const { enabled: audioEnabled, toggle: toggleAudio } = useEraAudio(currentYear);
 
   // If stored worldId no longer exists on the server, clear it and go back to world-select
   React.useEffect(() => {
@@ -43,6 +62,11 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
       setSubPhase('world-select');
     }
   }, [world.error]);
+
+  // Reset vote flag when citizen changes
+  React.useEffect(() => {
+    setVoteCompleted(false);
+  }, [world.activeCitizen?.id]);
 
   // ── World creation ──────────────────────────────────────────────────────────
 
@@ -57,12 +81,34 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
     }
   }, [world]);
 
-  // ── Character selection ─────────────────────────────────────────────────────
+  // ── Character selection → intro → playing ──────────────────────────────────
 
-  const handleSelectCharacter = useCallback(async (citizenId: string) => {
-    await world.startPlaythrough(citizenId);
+  const handleSelectCharacter = useCallback((citizenId: string) => {
+    setPendingCitizenId(citizenId);
+    setSubPhase('intro');
+  }, []);
+
+  const handleBeginLife = useCallback(async () => {
+    if (!pendingCitizenId) return;
+    await world.startPlaythrough(pendingCitizenId);
+    setPendingCitizenId(null);
     setSubPhase('playing');
-  }, [world]);
+  }, [pendingCitizenId, world]);
+
+  // ── Year advancement (with vote intercept) ─────────────────────────────────
+
+  const handleAdvanceYear = useCallback(() => {
+    const nextYear = (world.currentPlaythrough?.currentYear ?? 0) + 1;
+    world.advanceYear();
+    if (
+      nextYear >= 2024 &&
+      !voteCompleted &&
+      world.activeCitizen &&
+      VOTE_ELIGIBLE.has(world.activeCitizen.id)
+    ) {
+      setSubPhase('vote');
+    }
+  }, [world, voteCompleted]);
 
   // ── Decision flow ───────────────────────────────────────────────────────────
 
@@ -88,6 +134,13 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
     setSubPhase('playing');
   }, [world]);
 
+  // ── Vote flow ───────────────────────────────────────────────────────────────
+
+  const handleVote = useCallback((_choice: 'yes' | 'no') => {
+    setVoteCompleted(true);
+    setSubPhase('playing');
+  }, []);
+
   // ── Life completion ─────────────────────────────────────────────────────────
 
   const handleCompleteLife = useCallback(async () => {
@@ -95,13 +148,13 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
     setSubPhase('character-select');
   }, [world]);
 
-  // ── Westside Files ──────────────────────────────────────────────────────────
+  // ── Navigation ──────────────────────────────────────────────────────────────
 
-  const openWestsideFiles = useCallback(() => {
-    setSubPhase('westside-files');
-  }, []);
+  const openWestsideFiles = useCallback(() => setSubPhase('westside-files'), []);
+  const openCityMap = useCallback(() => setSubPhase('city-map'), []);
+  const openFamilyTree = useCallback(() => setSubPhase('family-tree'), []);
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
+  // ── Derived values ──────────────────────────────────────────────────────────
 
   const activeFamily = world.activeCitizen
     ? FAMILIES.find(f => f.id === world.activeCitizen!.familyId) ?? FAMILIES[0]
@@ -118,6 +171,23 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
   const sealedRippleCount = world.activeCitizen
     ? (world.sealedRipplesByCitizen[world.activeCitizen.id]?.length ?? 0)
     : 0;
+
+  const pendingCitizen = pendingCitizenId
+    ? (world.citizens.find(c => c.id === pendingCitizenId) ?? CITIZENS.find(c => c.id === pendingCitizenId) ?? null)
+    : null;
+  const pendingFamily = pendingCitizen
+    ? FAMILIES.find(f => f.id === pendingCitizen.familyId) ?? FAMILIES[0]
+    : FAMILIES[0];
+  const pendingRippleCount = pendingCitizenId
+    ? (world.sealedRipplesByCitizen[pendingCitizenId]?.length ?? 0)
+    : 0;
+
+  const playedCitizenIds = world.citizens
+    .filter(c => c.playthroughId !== null)
+    .map(c => c.id);
+
+  const HUD_PHASES: SubPhase[] = ['playing', 'decision', 'ripple-reveal'];
+  const showHUD = HUD_PHASES.includes(subPhase) && !!world.activeCitizen && !!world.currentPlaythrough;
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
@@ -138,12 +208,14 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
 
   return (
     <>
-      {/* HUD bar always visible during play / character select */}
-      {subPhase !== 'westside-files' && world.activeCitizen && world.currentPlaythrough && (
+      {showHUD && (
         <HUDBar
-          citizen={world.activeCitizen}
+          citizen={world.activeCitizen!}
           family={activeFamily}
-          playthrough={world.currentPlaythrough}
+          playthrough={world.currentPlaythrough!}
+          year={currentYear}
+          audioEnabled={audioEnabled}
+          onToggleAudio={toggleAudio}
           onOpenWestsideFiles={openWestsideFiles}
           onBack={() => setSubPhase('character-select')}
         />
@@ -154,11 +226,24 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
           citizens={world.citizens.length > 0 ? world.citizens : CITIZENS}
           families={FAMILIES}
           sealedRipplesByCitizen={world.sealedRipplesByCitizen}
-          completedPlaythroughCitizenIds={[]}
+          completedPlaythroughCitizenIds={playedCitizenIds}
           westsideFilesUnlocked={world.westsideFiles !== null}
           onSelectCharacter={handleSelectCharacter}
           onOpenWestsideFiles={openWestsideFiles}
+          onOpenCityMap={openCityMap}
+          onOpenFamilyTree={openFamilyTree}
           onBack={onBack}
+        />
+      )}
+
+      {subPhase === 'intro' && pendingCitizen && (
+        <CharacterIntro
+          citizen={pendingCitizen}
+          family={pendingFamily}
+          sealedRippleCount={pendingRippleCount}
+          isLoading={world.isLoading}
+          onBegin={handleBeginLife}
+          onBack={() => setSubPhase('character-select')}
         />
       )}
 
@@ -173,7 +258,7 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
           cityEvents={world.cityEvents}
           pendingDecision={world.pendingDecision}
           onMakeDecision={handleMakeDecision}
-          onAdvanceYear={world.advanceYear}
+          onAdvanceYear={handleAdvanceYear}
           onCompleteLife={handleCompleteLife}
         />
       )}
@@ -195,10 +280,34 @@ export function CityLivesGame({ onBack }: CityLivesGameProps) {
         />
       )}
 
+      {subPhase === 'vote' && world.activeCitizen && (
+        <VoteView
+          citizen={world.activeCitizen}
+          family={activeFamily}
+          onVote={handleVote}
+          onSkip={() => { setVoteCompleted(true); setSubPhase('playing'); }}
+        />
+      )}
+
       {subPhase === 'westside-files' && world.westsideFiles && (
         <WestsideFiles
           state={world.westsideFiles}
           onBack={() => setSubPhase(world.activeCitizen ? 'playing' : 'character-select')}
+        />
+      )}
+
+      {subPhase === 'city-map' && (
+        <CityMap
+          onBack={() => setSubPhase('character-select')}
+          playedCitizenIds={playedCitizenIds}
+        />
+      )}
+
+      {subPhase === 'family-tree' && (
+        <FamilyTree
+          onBack={() => setSubPhase('character-select')}
+          playedCitizenIds={playedCitizenIds}
+          sealedRipplesByCitizen={world.sealedRipplesByCitizen}
         />
       )}
 

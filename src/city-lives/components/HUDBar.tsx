@@ -1,11 +1,15 @@
 import React from 'react';
 import type { Citizen, Family, Playthrough } from '../types';
 import { getLifeStage } from '../engine/decisionEngine';
+import { getEraTheme } from '../utils/eraTheme';
 
 interface HUDBarProps {
   citizen: Citizen;
   family: Family;
   playthrough: Playthrough;
+  year?: number;
+  audioEnabled?: boolean;
+  onToggleAudio?: () => void;
   onBack: () => void;
   onOpenWestsideFiles?: () => void;
 }
@@ -25,9 +29,10 @@ const WEALTH_ICONS: Record<number, string> = {
   4: '◉◉◉◉',
 };
 
-export function HUDBar({ citizen, family, playthrough, onBack, onOpenWestsideFiles }: HUDBarProps) {
+export function HUDBar({ citizen, family, playthrough, year, audioEnabled, onToggleAudio, onBack, onOpenWestsideFiles }: HUDBarProps) {
   const age = playthrough.currentYear - citizen.birthYear;
   const stage = getLifeStage(citizen, playthrough.currentYear);
+  const era = getEraTheme(year ?? playthrough.currentYear);
   const repBar = Math.max(0, Math.min(100, citizen.reputationScore + 100)) / 2; // 0-100 display
 
   return (
@@ -39,6 +44,7 @@ export function HUDBar({ citizen, family, playthrough, onBack, onOpenWestsideFil
       zIndex: 100,
       background: 'rgba(255,255,255,0.97)',
       borderBottom: `2px solid ${family.colorTheme}`,
+      borderTop: `1px solid ${era.accent}22`,
       padding: '12px 20px',
       display: 'flex',
       alignItems: 'center',
@@ -82,6 +88,9 @@ export function HUDBar({ citizen, family, playthrough, onBack, onOpenWestsideFil
         <div style={{ color: '#aaa', fontSize: '12px', marginTop: '2px' }}>
           {LIFE_STAGE_LABELS[stage]} · Age {age} · {citizen.currentCareer?.title ?? 'Unemployed'}
         </div>
+        <div style={{ color: era.accent, fontSize: '10px', marginTop: '2px', opacity: 0.7 }}>
+          {era.name}
+        </div>
       </div>
 
       {/* Year */}
@@ -91,6 +100,27 @@ export function HUDBar({ citizen, family, playthrough, onBack, onOpenWestsideFil
         </div>
         <div style={{ color: '#bbb', fontSize: '10px', marginTop: '2px' }}>CRESTFIELD</div>
       </div>
+
+      {/* Audio toggle */}
+      {onToggleAudio && (
+        <button
+          onClick={onToggleAudio}
+          title={audioEnabled ? 'Mute ambient audio' : 'Enable ambient audio'}
+          style={{
+            background: 'none',
+            border: '1px solid #e8e8e8',
+            borderRadius: '6px',
+            padding: '4px 10px',
+            color: audioEnabled ? era.accent : '#ccc',
+            fontFamily: 'inherit',
+            fontSize: '14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          {audioEnabled ? '♪' : '♩'}
+        </button>
+      )}
 
       {/* Westside Files button */}
       {onOpenWestsideFiles && (
