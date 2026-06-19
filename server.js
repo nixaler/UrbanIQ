@@ -1317,7 +1317,7 @@ app.post("/api/city-lives/worlds", jwtOptional, async (req, res) => {
       id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
       birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
       playthroughId: null, wealthTier: 2, reputationScore: 0,
-      traits: [], biography: "", currentCareer: null,
+      traitIds: [], biography: "", currentCareer: null,
     }));
     res.json({ world, families, citizens });
   } catch (e) {
@@ -1359,7 +1359,7 @@ app.get("/api/city-lives/worlds/:worldId", jwtOptional, async (req, res) => {
         lastName: c.last_name, birthYear: c.birth_year, deathYear: c.death_year,
         isPlayable: c.is_playable, playthroughId: c.playthrough_id,
         wealthTier: c.wealth_tier || 2, reputationScore: c.reputation_score || 0,
-        traits: [], biography: "", currentCareer: null,
+        traitIds: [], biography: "", currentCareer: null,
       }));
       return res.json({ world, families, citizens });
     }
@@ -1376,7 +1376,7 @@ app.get("/api/city-lives/worlds/:worldId", jwtOptional, async (req, res) => {
     id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
     birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
     playthroughId: null, wealthTier: 2, reputationScore: 0,
-    traits: [], biography: "", currentCareer: null,
+    traitIds: [], biography: "", currentCareer: null,
   }));
   res.json({ world, families, citizens });
 });
@@ -1437,7 +1437,7 @@ app.post("/api/city-lives/playthroughs", jwtOptional, async (req, res) => {
     firstName: citizenSeed.first_name, lastName: citizenSeed.last_name,
     birthYear: citizenSeed.birth_year, deathYear: citizenSeed.death_year,
     isPlayable: true, playthroughId, wealthTier: 2, reputationScore: 0,
-    traits: [], biography: "", currentCareer: null,
+    traitIds: [], biography: "", currentCareer: null,
   };
 
   res.json({ playthrough, citizen, firstDecisions, incomingRipples: 0 });
