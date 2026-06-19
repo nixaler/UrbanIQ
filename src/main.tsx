@@ -6593,6 +6593,25 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
         </div>
 
 
+        {/* THE CITY LIVES */}
+        <div style={{margin:"0 22px 16px"}}>
+          <div onClick={()=>{SoundEngine.play("select");onSelectGame("city-lives");}}
+            onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+            onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            style={{height:90,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.12)",background:"#0a0a0a"}}>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#0a0a0a 0%,#1a1200 100%)"}}/>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+              <span style={{fontSize:28}}>🏙️</span>
+              <div>
+                <div style={{fontSize:"17px",fontWeight:800,color:"#fff",letterSpacing:-0.3}}>The City Lives</div>
+                <div style={{fontSize:"10px",color:"rgba(255,184,0,0.6)",marginTop:2,letterSpacing:"0.5px"}}>Generational life simulator · Crestfield 1920–2025</div>
+              </div>
+            </div>
+            <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"#000",background:"#FFB800",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+          </div>
+        </div>
+
         {/* EXPLORE */}
         <div style={{margin:"0 22px 20px"}}>
           <div onClick={()=>{SoundEngine.play("select");setActiveSection("explore");window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}}
