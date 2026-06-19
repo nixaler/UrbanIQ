@@ -1181,7 +1181,10 @@ io.on("connection", socket => {
 // THE CITY LIVES — /api/city-lives/*
 // ══════════════════════════════════════════════════════════════════════════════
 
-const { randomUUID: uuidv4 } = require("crypto");
+const _crypto = require("crypto");
+const uuidv4 = typeof _crypto.randomUUID === "function"
+  ? () => _crypto.randomUUID()
+  : () => _crypto.randomBytes(16).toString("hex").replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
 
 // Optional auth — routes work with or without a token; playerId falls back to
 // a device fingerprint stored in the request body for unauthenticated play.
@@ -1283,35 +1286,44 @@ async function seedWorld(worldId, playerId) {
 // ── POST /api/city-lives/worlds ───────────────────────────────────────────────
 
 app.post("/api/city-lives/worlds", jwtOptional, async (req, res) => {
-  const playerId = getPlayerId(req);
-  if (!playerId) return res.status(400).json({ error: "playerId required (deviceId in body or auth token)" });
+  try {
+    const playerId = getPlayerId(req);
+    if (!playerId) return res.status(400).json({ error: "playerId required (deviceId in body or auth token)" });
 
-  const worldId = uuidv4();
-  const ts = new Date().toISOString();
+    const worldId = uuidv4();
+    const ts = new Date().toISOString();
 
-  if (supabase) {
-    const { error } = await supabase.from("cl_worlds").insert({
-      id: worldId, player_id: playerId, name: req.body?.name || "Crestfield",
-      created_at: ts, current_year: 1940,
-    });
-    if (error) return res.status(500).json({ error: error.message });
-    await seedWorld(worldId, playerId);
+    if (supabase) {
+      const { error } = await supabase.from("cl_worlds").insert({
+        id: worldId, player_id: playerId, name: req.body?.name || "Crestfield",
+        created_at: ts, current_year: 1940,
+      });
+      if (error) {
+        console.error("[city-lives/worlds/post]", error.message);
+        // Fall through to return static data if DB isn't set up yet
+      } else {
+        await seedWorld(worldId, playerId).catch(e => console.error("[city-lives/seed]", e.message));
+      }
+    }
+
+    // Return lightweight world snapshot + seeded families/citizens
+    const world = { id: worldId, name: "Crestfield", currentYear: 1940, createdAt: ts };
+    const families = CRESTFIELD_FAMILIES.map(f => ({
+      id: f.id, worldId, familyName: f.name, archetype: f.archetype, colorTheme: f.color_theme,
+      description: "", memberBios: {}, familySecretText: "", familySecretUnlocked: false,
+      requiredPlaythroughs: 3,
+    }));
+    const citizens = CRESTFIELD_CITIZENS.map(c => ({
+      id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
+      birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
+      playthroughId: null, wealthTier: 2, reputationScore: 0,
+      traits: [], biography: "", currentCareer: null,
+    }));
+    res.json({ world, families, citizens });
+  } catch (e) {
+    console.error("[city-lives/worlds/post] unexpected error:", e.message);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  // Return lightweight world snapshot + seeded families/citizens
-  const world = { id: worldId, name: "Crestfield", currentYear: 1940, createdAt: ts };
-  const families = CRESTFIELD_FAMILIES.map(f => ({
-    id: f.id, worldId, familyName: f.name, archetype: f.archetype, colorTheme: f.color_theme,
-    description: "", memberBios: {}, familySecretText: "", familySecretUnlocked: false,
-    requiredPlaythroughs: 3,
-  }));
-  const citizens = CRESTFIELD_CITIZENS.map(c => ({
-    id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
-    birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
-    playthroughId: null, wealthTier: 2, reputationScore: 0,
-    traits: [], biography: "", currentCareer: null,
-  }));
-  res.json({ world, families, citizens });
 });
 
 // ── GET /api/city-lives/worlds/:worldId ───────────────────────────────────────
