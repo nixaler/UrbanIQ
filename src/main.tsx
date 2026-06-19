@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Component } from 'react';
 import ReactDOM from 'react-dom/client';
 import { io as socketIO } from "socket.io-client";
+import { CityLivesGame } from './city-lives';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -8276,6 +8277,29 @@ function GameSelector({allStats,roundData,blitzBests,onSelect,onBack,settings}:{
               </div>
             );
           })}
+          {/* The City Lives entry */}
+          <div className="gs-card" onClick={()=>onSelect("city-lives")}
+            style={{background:surface,border:`1px solid ${border}`,borderRadius:16,padding:"16px 18px",cursor:"pointer",animation:"gsCardIn .2s ease both"}}
+            onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#FFB800";(e.currentTarget as HTMLDivElement).style.boxShadow="0 8px 32px #FFB80018";}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=border;(e.currentTarget as HTMLDivElement).style.boxShadow="none";}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:44,height:44,borderRadius:12,background:"#0a0a0a",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0,boxShadow:"0 4px 12px rgba(0,0,0,0.3)"}}>
+                🏙️
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:"14px",fontWeight:700,color:text,letterSpacing:.2}}>The City Lives</div>
+                <div style={{fontSize:"10px",letterSpacing:2,color:textMuted,marginTop:2}}>GENERATIONAL LIFE SIMULATOR · CRESTFIELD 1920–2025</div>
+              </div>
+              <div style={{background:"#FFB800",color:"#000",fontSize:"10px",fontWeight:700,padding:"6px 14px",borderRadius:20,letterSpacing:1,flexShrink:0}}>
+                PLAY →
+              </div>
+            </div>
+            <div style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
+              {["6 Families","30 Characters","Butterfly Effect","City Mystery"].map((t:string)=>(
+                <div key={t} style={{background:"rgba(255,184,0,0.08)",border:"1px solid rgba(255,184,0,0.2)",borderRadius:20,padding:"2px 8px",fontSize:"9px",color:"#FFB800",letterSpacing:1}}>{t.toUpperCase()}</div>
+              ))}
+            </div>
+          </div>
           <div style={{textAlign:"center",fontSize:"9px",letterSpacing:2.5,color:textMuted,paddingTop:4}}>NO ADS · NO TRACKING · ALWAYS FREE</div>
         </div>
       </div>
@@ -12114,7 +12138,7 @@ function MiniGamesScreen({blitzBests,onSelect,onBack}:{blitzBests:any,onSelect:(
 }
 
 // ── ROOT ORCHESTRATOR ─────────────────────────────────────────────────────────
-type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games";
+type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games"|"city-lives";
 
 function IntroScreen({onDone}:{onDone:()=>void}){
   const[exiting,setExiting]=useState(false);
@@ -12756,7 +12780,9 @@ function Root(){
 
   function handleSelectGame(gk:string){
     SoundEngine.play("select");
-    if(gk==="minigames"){
+    if(gk==="city-lives"){
+      setPhase("city-lives");
+    }else if(gk==="minigames"){
       setPhase("mini-games");
     }else if(gk==="cards"){
       setInitMode("cards");
@@ -12814,6 +12840,10 @@ function Root(){
 
   if(phase==="mini-games"){
     return <MiniGamesScreen blitzBests={blitzBests} onSelect={handleSelectGame} onBack={()=>setPhase("start")}/>;
+  }
+
+  if(phase==="city-lives"){
+    return <CityLivesGame onBack={()=>setPhase("start")}/>;
   }
 
   if(phase==="tutorial"){

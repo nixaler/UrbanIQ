@@ -1180,6 +1180,329 @@ io.on("connection", socket => {
   });
 });
 
+// ══════════════════════════════════════════════════════════════════════════════
+// THE CITY LIVES — /api/city-lives/*
+// ══════════════════════════════════════════════════════════════════════════════
+
+const { randomUUID: uuidv4 } = require("crypto");
+
+// Optional auth — routes work with or without a token; playerId falls back to
+// a device fingerprint stored in the request body for unauthenticated play.
+function getPlayerId(req) {
+  if (req.user) return req.user.userId;
+  return req.body?.deviceId || req.headers["x-device-id"] || null;
+}
+
+function jwtOptional(req, res, next) {
+  const auth = req.headers.authorization;
+  if (auth && auth.startsWith("Bearer ")) {
+    try { req.user = jwt.verify(auth.slice(7), process.env.JWT_SECRET || "urbaniq-dev-secret"); } catch {}
+  }
+  next();
+}
+
+// ── Seed families + citizens into DB ─────────────────────────────────────────
+
+const CRESTFIELD_FAMILIES = [
+  { id: "caldwell", name: "The Caldwells", archetype: "founders", color_theme: "#B8860B" },
+  { id: "reyes",    name: "The Reyes",     archetype: "builders",   color_theme: "#C0392B" },
+  { id: "webb",     name: "The Webbs",     archetype: "keepers",    color_theme: "#1A5276" },
+  { id: "morozov",  name: "The Morozovs",  archetype: "soul",       color_theme: "#7D3C98" },
+  { id: "chen",     name: "The Chens",     archetype: "pragmatists",color_theme: "#1E8449" },
+  { id: "washington",name:"The Washingtons",archetype:"witnesses",  color_theme: "#E67E22" },
+];
+
+const CRESTFIELD_CITIZENS = [
+  // Caldwell
+  { id:"henry_caldwell",   family_id:"caldwell", first_name:"Henry",    last_name:"Caldwell",  birth_year:1895, death_year:1958, is_playable:true },
+  { id:"william_caldwell", family_id:"caldwell", first_name:"William",  last_name:"Caldwell",  birth_year:1928, death_year:1999, is_playable:true },
+  { id:"margaret_caldwell",family_id:"caldwell", first_name:"Margaret", last_name:"Caldwell",  birth_year:1955, death_year:null, is_playable:true },
+  { id:"oliver_caldwell",  family_id:"caldwell", first_name:"Oliver",   last_name:"Caldwell",  birth_year:1980, death_year:null, is_playable:true },
+  { id:"claire_caldwell",  family_id:"caldwell", first_name:"Claire",   last_name:"Caldwell",  birth_year:2002, death_year:null, is_playable:true },
+  // Reyes
+  { id:"esperanza_reyes",  family_id:"reyes",    first_name:"Esperanza",last_name:"Reyes",     birth_year:1922, death_year:2001, is_playable:true },
+  { id:"roberto_reyes",    family_id:"reyes",    first_name:"Roberto",  last_name:"Reyes",     birth_year:1948, death_year:null, is_playable:true },
+  { id:"ana_reyes",        family_id:"reyes",    first_name:"Ana",      last_name:"Reyes",     birth_year:1975, death_year:null, is_playable:true },
+  { id:"miguel_reyes",     family_id:"reyes",    first_name:"Miguel",   last_name:"Reyes",     birth_year:1978, death_year:null, is_playable:true },
+  { id:"rosa_reyes",       family_id:"reyes",    first_name:"Rosa",     last_name:"Reyes",     birth_year:2003, death_year:null, is_playable:true },
+  // Webb
+  { id:"james_webb_sr",    family_id:"webb",     first_name:"James",    last_name:"Webb",      birth_year:1920, death_year:1989, is_playable:true },
+  { id:"james_webb_jr",    family_id:"webb",     first_name:"James Jr.",last_name:"Webb",      birth_year:1948, death_year:null, is_playable:true },
+  { id:"denise_webb",      family_id:"webb",     first_name:"Denise",   last_name:"Webb",      birth_year:1975, death_year:null, is_playable:true },
+  { id:"marcus_webb",      family_id:"webb",     first_name:"Marcus",   last_name:"Webb",      birth_year:1978, death_year:null, is_playable:true },
+  { id:"jordan_webb",      family_id:"webb",     first_name:"Jordan",   last_name:"Webb",      birth_year:2000, death_year:null, is_playable:true },
+  // Morozov
+  { id:"sofia_morozov",    family_id:"morozov",  first_name:"Sofia",    last_name:"Morozov",   birth_year:1930, death_year:null, is_playable:true },
+  { id:"dmitri_morozov",   family_id:"morozov",  first_name:"Dmitri",   last_name:"Morozov",   birth_year:1932, death_year:1981, is_playable:true },
+  { id:"nadia_morozov",    family_id:"morozov",  first_name:"Nadia",    last_name:"Morozov",   birth_year:1958, death_year:null, is_playable:true },
+  { id:"anton_morozov",    family_id:"morozov",  first_name:"Anton",    last_name:"Morozov",   birth_year:1960, death_year:null, is_playable:true },
+  // Chen
+  { id:"wei_chen",         family_id:"chen",     first_name:"Wei",      last_name:"Chen",      birth_year:1925, death_year:1998, is_playable:true },
+  { id:"helen_chen",       family_id:"chen",     first_name:"Helen",    last_name:"Chen",      birth_year:1952, death_year:null, is_playable:true },
+  { id:"daniel_chen",      family_id:"chen",     first_name:"Daniel",   last_name:"Chen",      birth_year:1975, death_year:null, is_playable:true },
+  { id:"maya_chen",        family_id:"chen",     first_name:"Maya",     last_name:"Chen",      birth_year:2001, death_year:null, is_playable:true },
+  // Washington
+  { id:"ida_washington",   family_id:"washington",first_name:"Ida",     last_name:"Washington",birth_year:1900, death_year:1972, is_playable:true },
+  { id:"thomas_washington",family_id:"washington",first_name:"Thomas",  last_name:"Washington",birth_year:1928, death_year:2004, is_playable:true },
+  { id:"gloria_washington",family_id:"washington",first_name:"Gloria",  last_name:"Washington",birth_year:1955, death_year:null, is_playable:true },
+  { id:"darnell_washington",family_id:"washington",first_name:"Darnell",last_name:"Washington",birth_year:1975, death_year:null, is_playable:true },
+  { id:"keisha_washington",family_id:"washington",first_name:"Keisha",  last_name:"Washington",birth_year:1980, death_year:null, is_playable:true },
+  { id:"zara_washington",  family_id:"washington",first_name:"Zara",    last_name:"Washington",birth_year:2003, death_year:null, is_playable:true },
+];
+
+const WESTSIDE_EVIDENCE_KEYS = [
+  "dmitri_journal", "webb_closed_report", "wei_signature",
+  "ida_diary", "margaret_journal", "reyes_contract",
+];
+
+async function seedWorld(worldId, playerId) {
+  if (!supabase) return;
+  const ts = new Date().toISOString();
+
+  // Families
+  const families = CRESTFIELD_FAMILIES.map(f => ({
+    id: uuidv4(), world_id: worldId, family_key: f.id, family_name: f.name,
+    archetype: f.archetype, color_theme: f.color_theme, created_at: ts,
+  }));
+  await supabase.from("cl_families").insert(families).select();
+
+  // Citizens
+  const familyKeyToId = Object.fromEntries(families.map(f => [f.family_key, f.id]));
+  const citizens = CRESTFIELD_CITIZENS.map(c => ({
+    id: uuidv4(), world_id: worldId, citizen_key: c.id, family_id: familyKeyToId[c.family_id] || null,
+    first_name: c.first_name, last_name: c.last_name, birth_year: c.birth_year,
+    death_year: c.death_year, is_playable: c.is_playable, playthrough_id: null,
+    wealth_tier: 2, reputation_score: 0, created_at: ts,
+  }));
+  await supabase.from("cl_citizens").insert(citizens).select();
+
+  // Westside Files tracker
+  await supabase.from("cl_westside_files").insert({
+    id: uuidv4(), world_id: worldId, player_id: playerId,
+    collected_evidence: [], is_complete: false, created_at: ts,
+  });
+}
+
+// ── POST /api/city-lives/worlds ───────────────────────────────────────────────
+
+app.post("/api/city-lives/worlds", jwtOptional, async (req, res) => {
+  const playerId = getPlayerId(req);
+  if (!playerId) return res.status(400).json({ error: "playerId required (deviceId in body or auth token)" });
+
+  const worldId = uuidv4();
+  const ts = new Date().toISOString();
+
+  if (supabase) {
+    const { error } = await supabase.from("cl_worlds").insert({
+      id: worldId, player_id: playerId, name: req.body?.name || "Crestfield",
+      created_at: ts, current_year: 1940,
+    });
+    if (error) return res.status(500).json({ error: error.message });
+    await seedWorld(worldId, playerId);
+  }
+
+  // Return lightweight world snapshot + seeded families/citizens
+  const world = { id: worldId, name: "Crestfield", currentYear: 1940, createdAt: ts };
+  const families = CRESTFIELD_FAMILIES.map(f => ({
+    id: f.id, worldId, familyName: f.name, archetype: f.archetype, colorTheme: f.color_theme,
+    description: "", memberBios: {}, familySecretText: "", familySecretUnlocked: false,
+    requiredPlaythroughs: 3,
+  }));
+  const citizens = CRESTFIELD_CITIZENS.map(c => ({
+    id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
+    birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
+    playthroughId: null, wealthTier: 2, reputationScore: 0,
+    traits: [], biography: "", currentCareer: null,
+  }));
+  res.json({ world, families, citizens });
+});
+
+// ── GET /api/city-lives/worlds/:worldId ───────────────────────────────────────
+
+app.get("/api/city-lives/worlds/:worldId", jwtOptional, async (req, res) => {
+  const { worldId } = req.params;
+
+  if (supabase) {
+    const [{ data: worldRow }, { data: famRows }, { data: citRows }] = await Promise.all([
+      supabase.from("cl_worlds").select("*").eq("id", worldId).single(),
+      supabase.from("cl_families").select("*").eq("world_id", worldId),
+      supabase.from("cl_citizens").select("*").eq("world_id", worldId),
+    ]);
+    if (!worldRow) return res.status(404).json({ error: "World not found" });
+    const world = { id: worldRow.id, name: worldRow.name, currentYear: worldRow.current_year, createdAt: worldRow.created_at };
+    const families = (famRows || []).map(f => ({
+      id: f.family_key, worldId, familyName: f.family_name, archetype: f.archetype,
+      colorTheme: f.color_theme, description: "", memberBios: {}, familySecretText: "",
+      familySecretUnlocked: false, requiredPlaythroughs: 3,
+    }));
+    const citizens = (citRows || []).map(c => ({
+      id: c.citizen_key, worldId, familyId: c.family_id, firstName: c.first_name,
+      lastName: c.last_name, birthYear: c.birth_year, deathYear: c.death_year,
+      isPlayable: c.is_playable, playthroughId: c.playthrough_id,
+      wealthTier: c.wealth_tier || 2, reputationScore: c.reputation_score || 0,
+      traits: [], biography: "", currentCareer: null,
+    }));
+    return res.json({ world, families, citizens });
+  }
+
+  // No DB — return static seed
+  const world = { id: worldId, name: "Crestfield", currentYear: 1940, createdAt: new Date().toISOString() };
+  const families = CRESTFIELD_FAMILIES.map(f => ({
+    id: f.id, worldId, familyName: f.name, archetype: f.archetype, colorTheme: f.color_theme,
+    description: "", memberBios: {}, familySecretText: "", familySecretUnlocked: false,
+    requiredPlaythroughs: 3,
+  }));
+  const citizens = CRESTFIELD_CITIZENS.map(c => ({
+    id: c.id, worldId, familyId: c.family_id, firstName: c.first_name, lastName: c.last_name,
+    birthYear: c.birth_year, deathYear: c.death_year, isPlayable: c.is_playable,
+    playthroughId: null, wealthTier: 2, reputationScore: 0,
+    traits: [], biography: "", currentCareer: null,
+  }));
+  res.json({ world, families, citizens });
+});
+
+// ── GET /api/city-lives/worlds/:worldId/westside-files ────────────────────────
+
+app.get("/api/city-lives/worlds/:worldId/westside-files", jwtOptional, async (req, res) => {
+  const { worldId } = req.params;
+
+  if (supabase) {
+    const { data } = await supabase.from("cl_westside_files").select("*").eq("world_id", worldId).single();
+    if (data) {
+      return res.json({
+        collectedEvidence: data.collected_evidence || [],
+        isComplete: data.is_complete || false,
+        unlockedAt: data.unlocked_at || null,
+      });
+    }
+  }
+
+  res.json({ collectedEvidence: [], isComplete: false, unlockedAt: null });
+});
+
+// ── POST /api/city-lives/playthroughs ────────────────────────────────────────
+
+app.post("/api/city-lives/playthroughs", jwtOptional, async (req, res) => {
+  const { worldId, citizenId } = req.body || {};
+  if (!worldId || !citizenId) return res.status(400).json({ error: "worldId and citizenId required" });
+
+  // Find citizen birth year
+  const citizenSeed = CRESTFIELD_CITIZENS.find(c => c.id === citizenId);
+  if (!citizenSeed) return res.status(404).json({ error: "Citizen not found" });
+
+  const playthroughId = uuidv4();
+  const startYear = citizenSeed.birth_year;
+
+  const playthrough = {
+    id: playthroughId, worldId, citizenId, currentYear: startYear,
+    startYear, isComplete: false, legacyNote: null, createdAt: new Date().toISOString(),
+  };
+
+  if (supabase) {
+    await supabase.from("cl_playthroughs").insert({
+      id: playthroughId, world_id: worldId, citizen_id: citizenId,
+      current_year: startYear, start_year: startYear, is_complete: false,
+      created_at: playthrough.createdAt,
+    });
+    // Mark citizen as playing
+    await supabase.from("cl_citizens").update({ playthrough_id: playthroughId })
+      .eq("world_id", worldId).eq("citizen_key", citizenId);
+  }
+
+  // Build first decisions (decision template check — simplified for MVP)
+  const firstDecisions = buildDecisionsForYear(citizenId, startYear, playthroughId);
+
+  const citizen = {
+    id: citizenId, worldId, familyId: citizenSeed.family_id,
+    firstName: citizenSeed.first_name, lastName: citizenSeed.last_name,
+    birthYear: citizenSeed.birth_year, deathYear: citizenSeed.death_year,
+    isPlayable: true, playthroughId, wealthTier: 2, reputationScore: 0,
+    traits: [], biography: "", currentCareer: null,
+  };
+
+  res.json({ playthrough, citizen, firstDecisions, incomingRipples: 0 });
+});
+
+// ── POST /api/city-lives/decisions ───────────────────────────────────────────
+
+app.post("/api/city-lives/decisions", jwtOptional, async (req, res) => {
+  const { decisionId, optionId, playthroughId } = req.body || {};
+  if (!optionId || !playthroughId) return res.status(400).json({ error: "optionId and playthroughId required" });
+
+  const ts = new Date().toISOString();
+
+  if (supabase) {
+    await supabase.from("cl_decisions").update({
+      chosen_option_id: optionId, resolved_at: ts,
+    }).eq("id", decisionId).eq("playthrough_id", playthroughId);
+  }
+
+  // Stub decision response — full butterfly engine would create ripples here
+  const decision = {
+    id: decisionId, playthroughId, chosenOptionId: optionId,
+    prompt: "", contextText: "", category: "loyalty_vs_integrity",
+    year: 1940, options: [], resolvedAt: ts,
+  };
+
+  const updatedCitizen = null; // full implementation would return updated stats
+  const revealedRipple = null; // would return a ripple if one manifests this year
+
+  res.json({ decision, updatedCitizen, revealedRipple });
+});
+
+// ── PATCH /api/city-lives/playthroughs/:id/complete ──────────────────────────
+
+app.patch("/api/city-lives/playthroughs/:id/complete", jwtOptional, async (req, res) => {
+  const { id } = req.params;
+
+  const legacyNote = generateLegacyNoteStub(id);
+
+  if (supabase) {
+    await supabase.from("cl_playthroughs").update({
+      is_complete: true, legacy_note: legacyNote, completed_at: new Date().toISOString(),
+    }).eq("id", id);
+  }
+
+  res.json({ legacyNote, newPlayableCharacters: [] });
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function buildDecisionsForYear(citizenId, year, playthroughId) {
+  // MVP: return a single starter decision template per character
+  const STARTER_DECISIONS = {
+    esperanza_reyes: { prompt: "The city has offered you a relocation payment. The amount is more money than you have ever seen. Your bakery has been your life for thirty years.", category: "survival_vs_solidarity" },
+    james_webb_sr: { prompt: "Your captain has placed a missing person file on your desk with a note: 'Close this. No investigation.' The name is Sofia Morozov.", category: "loyalty_vs_integrity" },
+    sofia_morozov: { prompt: "You have documented evidence of election fraud. Publishing it could save the neighborhood — or destroy everything you have built here.", category: "truth_vs_protection" },
+    thomas_washington: { prompt: "The march is tomorrow. You know there will be arrests. Your family needs you home. The movement needs you in the street.", category: "community_vs_ambition" },
+    wei_chen: { prompt: "The demolition order is in front of you. You know what it means for the Westside families. Your signature will make it official.", category: "complicity_vs_consequence" },
+    ida_washington: { prompt: "You have worked in this house for thirty years. You have seen everything. A reporter has asked what you know about the Caldwell family.", category: "truth_vs_protection" },
+  };
+
+  const template = STARTER_DECISIONS[citizenId];
+  if (!template) return [];
+
+  return [{
+    id: uuidv4(), playthroughId, citizenId, year,
+    prompt: template.prompt, contextText: "Crestfield, " + year + ".",
+    category: template.category, chosenOptionId: null, resolvedAt: null,
+    options: [
+      {
+        id: uuidv4(), label: "Accept", description: "You make the practical choice.",
+        outcomes: { narrativeResult: "You chose the path of survival.", wealthDelta: 1, reputationDelta: -1, rippleSeeds: [] },
+      },
+      {
+        id: uuidv4(), label: "Refuse", description: "You hold the line.",
+        outcomes: { narrativeResult: "You stood your ground. The cost will come.", wealthDelta: -1, reputationDelta: 1, rippleSeeds: [] },
+      },
+    ],
+  }];
+}
+
+function generateLegacyNoteStub(playthroughId) {
+  return "They lived as the city remembers: imperfectly, honestly, with love and with regret. The decisions they made are still unfolding.";
+}
+
 httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`UrbanIQ running on http://0.0.0.0:${PORT}`);
   if (!process.env.JWT_SECRET) console.warn("[WARN] JWT_SECRET not set — using insecure default. Set this in Railway env vars.");
