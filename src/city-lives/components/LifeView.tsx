@@ -101,7 +101,7 @@ export function LifeView({
                 background: `${family.colorTheme}15`,
                 border: `1px solid ${family.colorTheme}`,
                 borderRadius: '10px',
-                color: '#fff',
+                color: '#111',
                 fontFamily: 'inherit',
                 fontSize: '14px',
                 cursor: 'pointer',
