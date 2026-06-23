@@ -149,6 +149,7 @@ function genId() {
 }
 
 function resolveBattle(deckA, deckB) {
+  if (!Array.isArray(deckA) || !Array.isArray(deckB)) return { wA: 0, wB: 0, rounds: [], winner: "a" };
   let wA = 0, wB = 0;
   const rounds = [];
   const len = Math.max(deckA.length, deckB.length);
@@ -203,7 +204,7 @@ async function appendHistory(playerId, record) {
 // POST /api/battle/submit
 app.post("/api/battle/submit", async (req, res) => {
   try {
-    const { playerId, playerName, deck } = req.body;
+    const { playerId, playerName, deck, gameKey: reqGameKey } = req.body;
     if (!playerId || !Array.isArray(deck) || deck.length < 1) {
       return res.status(400).json({ error: "Invalid submission" });
     }
@@ -211,7 +212,7 @@ app.post("/api/battle/submit", async (req, res) => {
     let matched = null;
     for (const k of waitingKeys) {
       const b = await store.get(k);
-      if (b?.status === "waiting" && b.playerId !== playerId) { matched = b; break; }
+      if (b?.status === "waiting" && b.playerId !== playerId && b.gameKey === (reqGameKey || "pdx")) { matched = b; break; }
     }
     const battleId = genId();
     const now = new Date().toISOString();
@@ -244,7 +245,7 @@ app.post("/api/battle/submit", async (req, res) => {
       await appendHistory(playerId, myRecord);
       return res.json({ battleId, status: "resolved", result: rB, record: myRecord });
     } else {
-      const record = { battleId, playerId, playerName: name, deck, status: "waiting", result: null, submittedAt: now };
+      const record = { battleId, playerId, playerName: name, deck, gameKey: reqGameKey || "pdx", status: "waiting", result: null, submittedAt: now };
       await store.set(`bwait:${battleId}`, record);
       return res.json({ battleId, status: "waiting" });
     }

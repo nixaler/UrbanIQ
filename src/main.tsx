@@ -994,8 +994,8 @@ function buildShare(guesses:any[],won:boolean,dayNum:number,gameKey:string,diff:
   const G=GAMES[gameKey];const D=G.diffConfig[diff];
   const rows=guesses.map((g:any)=>{
     if(gameKey==="nfl"||gameKey==="nba")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
-    if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult.color]].join("");
-    return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult.color]].join("");
+    if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult?.color]].join("");
+    return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult?.color]].join("");
   });
   const result=won?`${guesses.length}/${D.maxGuesses}`:"X";
   return`UrbanIQ Day #${dayNum} | ${G.name} | ${result}\n${rows.join("\n")}\nurbaniq.quest`;
@@ -1010,8 +1010,8 @@ function buildAllRoundsShare(rounds:any[],gameKey:string,diff:string,dayNum:numb
     if(!r.alreadyPlayed)return;
     const grid=r.guesses.map((g:any)=>{
       if(gameKey==="nfl"||gameKey==="nba")return[EMOJI_MAP[g.confColor],EMOJI_MAP[g.divColor],EMOJI_MAP[g.regionColor]].join("");
-      if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult.color]].join("");
-      return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult.color]].join("");
+      if(gameKey==="states")return[EMOJI_MAP[g.regionColor],EMOJI_MAP[g.coastColor],EMOJI_MAP[g.popResult?.color]].join("");
+      return[EMOJI_MAP[g.linesColor],EMOJI_MAP[g.zoneColor],EMOJI_MAP[g.trafficResult?.color]].join("");
     }).join(" ");
     lines.push(`R${i+1}: ${r.won?"✅":"❌"} ${grid}`);
   });
@@ -1649,7 +1649,7 @@ function getStationOfWeek(gameKey:string):string{const stations=gameKey==="pdx"?
 function _h(n:number):number{let x=(n^0xdeadbeef)>>>0;x=Math.imul(x^(x>>>16),0x45d9f3b)>>>0;x=Math.imul(x^(x>>>13),0xc2b2ae35)>>>0;return(x^(x>>>16))>>>0;}
 function _dayTargets(items:any[],day:number,gameKey:string):number[]{const gkMap:Record<string,number>={pdx:1,dc:2,la:3,nyc:4,chi:5,balt:6,bos:7,atl:8,nfl:9,states:10,nba:12};const gk=gkMap[gameKey]||11;const N=items.length;const indices=Array.from({length:N},(_,i)=>i);let seed=_h(_h(day*48271)^_h(gk*22695477));function next(){seed=_h(seed+0x9e3779b9);return seed;}for(let i=N-1;i>0;i--){const j=next()%(i+1);[indices[i],indices[j]]=[indices[j],indices[i]];}return indices.slice(0,Math.min(3,N));}
 function getTarget(items:any[],gameKey:string,round:number){return items[_dayTargets(items,getDayNum(),gameKey)[round]??0];}
-function getYesterday(items:any[],gameKey:string){return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
+function getYesterday(items:any[],gameKey:string){if(!items||items.length===0)return undefined;return items[_dayTargets(items,getDayNum()-1,gameKey)[0]??0];}
 function getDailyChallengeGames():string[]{const T=["pdx","dc","balt","la","nyc","chi","bos","atl"];const day=getDayNum();const used=new Set<number>();const out:number[]=[];const base=_h(_h(day*31337)^_h(88799));for(let a=0;out.length<3&&a<T.length*4;a++){const idx=_h(base^_h(a+1))%T.length;if(!used.has(idx)){used.add(idx);out.push(idx);}}return out.map(i=>T[i]);}
 function getLineMap(gk:string):Record<string,any[]>{
   const its=gk==="pdx"?PDX_STATIONS:gk==="dc"?DC_STATIONS:gk==="balt"?BALT_STATIONS:gk==="la"?LA_STATIONS:gk==="nyc"?NYC_STATIONS:gk==="chi"?CHI_STATIONS:gk==="bos"?BOS_STATIONS:gk==="atl"?ATL_STATIONS:[];
@@ -1659,7 +1659,7 @@ function getLineMap(gk:string):Record<string,any[]>{
 }
 function getLCProgress(gk:string,line:string):string[]{try{return JSON.parse(localStorage.getItem(`tgg:lc:${gk}:${line}`)||"[]");}catch{return[];}}
 function saveLCProgress(gk:string,line:string,names:string[]):void{localStorage.setItem(`tgg:lc:${gk}:${line}`,JSON.stringify(names));}
-function getDailyTrivia(questions:any[]){const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
+function getDailyTrivia(questions:any[]){if(!questions||questions.length===0)return[];const day=getDayNum();const selected:any[]=[];const used=new Set<number>();for(let i=0;i<20&&selected.length<5;i++){const x=Math.abs((day*7+i)*1103515245+12345)&0x7fffffff;const idx=x%questions.length;if(!used.has(idx)){used.add(idx);selected.push({...questions[idx],id:idx});}}return selected;}
 
 // ── THEME ─────────────────────────────────────────────────────────────────────
 function getTheme(gameKey:string,settings:any={}){
@@ -4377,6 +4377,20 @@ const ATL_TRIVIA=[
   {q:"Which MARTA station serves the Georgia Aquarium and World of Coca-Cola?",opts:["Peachtree Center","Civic Center","College Park","Dome/GWCC/Philips Arena/CNN Center"],ans:3},
   {q:"MARTA rail covers approximately how many route miles?",opts:["32 miles","48 miles","61 miles","75 miles"],ans:1},
   {q:"Which station is the southern terminus of both the Red and Gold lines?",opts:["East Point","College Park","Airport","Lakewood/Fort McPherson"],ans:2},
+];
+const BALT_TRIVIA=[
+  {q:"What year did the Baltimore Metro Subway first open?",opts:["1983","1987","1990","1995"],ans:0},
+  {q:"How many stations does the Baltimore Metro Subway have?",opts:["12","14","16","20"],ans:1},
+  {q:"What is the western terminus of the Baltimore Metro Subway?",opts:["Owings Mills","Reisterstown Plaza","Rogers Avenue","Old Court"],ans:0},
+  {q:"The Baltimore Light Rail runs between which two endpoints?",opts:["Penn Station and BWI","Hunt Valley and BWI Airport","Owings Mills and Johns Hopkins","Downtown and Towson"],ans:1},
+  {q:"Which station serves Johns Hopkins Hospital on the Baltimore Metro?",opts:["Shot Tower","State Center","Johns Hopkins","Lexington Market"],ans:0},
+  {q:"What does MTA stand for in Baltimore's transit system?",opts:["Metropolitan Transit Agency","Maryland Transit Administration","Maryland Transportation Authority","Metro Transit Authority"],ans:1},
+  {q:"Which Baltimore Metro station is closest to Baltimore Penn Station (Amtrak)?",opts:["Charles Center","Shot Tower/Market Place","State Center","Lexington Market"],ans:2},
+  {q:"The Baltimore Light Rail serves which major airport?",opts:["Reagan National","Dulles International","BWI Thurgood Marshall","Hartsfield-Jackson"],ans:2},
+  {q:"Approximately how many route miles does the Baltimore Metro Subway cover?",opts:["8 miles","14 miles","21 miles","30 miles"],ans:1},
+  {q:"Which Baltimore Light Rail stop serves Camden Yards?",opts:["Hamburg Street","Camden Station","Howard Street","Camden Yards"],ans:1},
+  {q:"What color is used for the Baltimore Metro Subway on maps?",opts:["Red","Orange","Blue","Green"],ans:2},
+  {q:"Which station is the eastern terminus of the Baltimore Metro Subway?",opts:["Shot Tower","Johns Hopkins Hospital","Bayview","Charles Center"],ans:0},
 ];
 const DC_TRIVIA=[
   {q:"What year did the DC Metro first open?",opts:["1972","1974","1976","1980"],ans:2},
@@ -8817,7 +8831,7 @@ function BlitzMode({T,fs,items,lineColors,gameKey,blitzBest,onNewBest,onClose}:{
       const targets=items.filter(s=>s[g]===val);
       return{label:`Name every ${val} state`,targets,hint:`${targets.length} states`};
     }
-    const G=gameKey==="pdx"?PDX_LINES:gameKey==="balt"?BALT_LINES:DC_LINES;
+    const G=gameKey==="pdx"?PDX_LINES:gameKey==="balt"?BALT_LINES:gameKey==="la"?LA_LINES:gameKey==="nyc"?NYC_LINES:gameKey==="chi"?CHI_LINES:gameKey==="bos"?BOS_LINES:gameKey==="atl"?ATL_LINES:DC_LINES;
     const lines=Object.keys(G);
     const line=lines[Math.floor(Math.random()*lines.length)];
     const targets=items.filter(s=>s.lines?.includes(line));
@@ -8981,10 +8995,10 @@ function ItemOfWeek({T,fs,items,lineColors,gameKey,onClose}:{T:any,fs:any,items:
       const yrs=[item.year-20,item.year+18,item.year+35].filter((y:number)=>y>1780&&y<=1960&&y!==item.year).map(String).sort(()=>Math.random()-.5).slice(0,3);
       return[makeQ(`Which region is ${item.name} in?`,item.region,allR),makeQ(`${item.name} has which type of coast?`,item.coast,allC),makeQ(`What year was ${item.name} admitted?`,String(item.year),yrs)];
     }
-    const allZ=[...new Set(items.map(s=>s.zone))].filter(z=>z!==item.zone).sort(()=>Math.random()-.5).slice(0,3) as string[];
+    const allZ=[...new Set(items.map(s=>s.zone))].filter(z=>z!==item.zone).sort(()=>Math.random()-.5).slice(0,3) as string[];const allZWithFallback=allZ.length>=3?allZ:[...allZ,...["Zone A","Zone B","Zone C","Zone D","Zone E"].filter(z=>z!==item.zone&&!allZ.includes(z))].slice(0,3);
     const allL=[...new Set(items.flatMap(s=>s.lines||[]))].filter(l=>!item.lines?.includes(l)) as string[];
     const yrs=[item.year-10,item.year+8,item.year+20].filter((y:number)=>y!==item.year).map(String).slice(0,3);
-    return[makeQ(`Which zone is ${item.name} in?`,item.zone,allZ),makeQ(`${item.name} serves which line?`,item.lines?.join(" & ")||"—",allL.sort(()=>Math.random()-.5).slice(0,3).map(l=>l+" only")),makeQ(`What year did ${item.name} open?`,String(item.year),yrs)];
+    return[makeQ(`Which zone is ${item.name} in?`,item.zone,allZWithFallback),makeQ(`${item.name} serves which line?`,item.lines?.join(" & ")||"—",allL.sort(()=>Math.random()-.5).slice(0,3).map(l=>l+" only")),makeQ(`What year did ${item.name} open?`,String(item.year),yrs)];
   },[item]);
   function handleAnswer(qi:number,opt:string){if(answered[qi]!==null)return;const newA=[...answered];newA[qi]=opt;setAnswered(newA);if(newA.every(a=>a!==null))setScore(newA.filter((a,i)=>a===qs[i].correct).length);}
   const G=GAMES[gameKey];
@@ -9485,7 +9499,7 @@ function FakeStationMode({gameKey,T,fs,onClose}:{gameKey:string,T:any,fs:any,onC
     const opts=[...realNames.map(n=>({name:n,fake:false})),{name:fake,fake:true}].sort(()=>Math.random()-0.5);
     setOptions(opts);setFakeIdx(opts.findIndex(o=>o.fake));setChosen(null);setPhase("play");
   }
-  useEffect(()=>{if(stations.length>3)buildRound();},[round,stations]);
+  useEffect(()=>{if(stations.length>=4)buildRound();else if(stations.length===0){setPhase("done");}},[round,stations]);
   function pick(name:string,fake:boolean){setChosen(name);setPhase("reveal");if(fake)setScore(s=>s+1);}
   function next(){if(round+1>=ROUNDS){setPhase("done");}else{setRound(r=>r+1);}}
   if(phase==="done")return(
@@ -9904,7 +9918,7 @@ function StreetLevelMode({onClose}:{onClose:()=>void}){
   },[round,targets]);
   function pick(name:string){const c=targets[round]?.name;setChosen(name);setPhase("reveal");if(name===c){setScore(s=>s+1);addXP(150);}}
   function next(){if(round+1>=ROUNDS)setPhase("done");else setRound(r=>r+1);}
-  if(!targets.length)return null;
+  if(!targets.length)return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}><div style={{background:"#fff",borderRadius:16,padding:32,textAlign:"center",maxWidth:340,color:"#333"}}><div style={{fontSize:32,marginBottom:12}}>📸</div><div style={{fontWeight:700,marginBottom:8}}>No photos available</div><button onClick={onClose} style={{background:"#0A0A0A",color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",cursor:"pointer",fontWeight:700}}>Close</button></div></div>);
   const target=targets[round];
   if(phase==="done")return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:8000,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto"}} onClick={onClose}>
@@ -10003,9 +10017,11 @@ function RidershipRaceMode({onClose}:{onClose:()=>void}){
   const[round,setRound]=useState(0);const[score,setScore]=useState(0);const[phase,setPhase]=useState<"play"|"reveal"|"done">("play");const[pair,setPair]=useState<[any,any]|null>(null);const[chosen,setChosen]=useState<string|null>(null);
   useEffect(()=>{buildRound();},[round,pool]);
   function buildRound(){
+    if(pool.length<2){return;}
     let a:any,b:any;
-    for(let i=0;i<100;i++){const idx=Math.floor(Math.random()*(pool.length-2));a=pool[idx];b=pool[idx+1];if(a&&b&&a.traffic!==b.traffic)break;}
-    if(!a||!b||a.traffic===b.traffic){const diff2=pool.find((s:any)=>s.traffic!==pool[0].traffic);a=pool[0];b=diff2||pool[2];}
+    for(let i=0;i<100;i++){const idx=Math.floor(Math.random()*(Math.max(1,pool.length-1)));a=pool[idx];b=pool[idx+1]||pool[idx-1];if(a&&b&&a.traffic!==b.traffic)break;}
+    if(!a||!b||a.traffic===b.traffic){const diff2=pool.find((s:any)=>s&&s.traffic!==pool[0]?.traffic);a=pool[0];b=diff2||(pool.length>1?pool[1]:pool[0]);}
+    if(!a||!b)return;
     setPair([a,b]);setChosen(null);setPhase("play");
   }
   const scoreRef=useRef(0);
@@ -11050,11 +11066,12 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   const lineColors=G.lineColors||{};
   const didYouKnow=useMemo(()=>{const pool=gameKey==="pdx"?PDX_DYK:gameKey==="dc"?DC_DYK:gameKey==="nfl"?NFL_DYK:gameKey==="nba"?NBA_DYK:gameKey==="balt"?BALT_DYK:gameKey==="la"?LA_DYK:gameKey==="nyc"?NYC_DYK:gameKey==="chi"?CHI_DYK:gameKey==="bos"?BOS_DYK:gameKey==="atl"?ATL_DYK:STATES.map(s=>s.fact);return pool[dayNum%pool.length];},[gameKey,dayNum]);
   const openingClues=useMemo(()=>{
+    if(!target)return[];
     const clues:string[]=[];
     if(DIFF.clues.includes("year"))clues.push((gameKey==="nfl"||gameKey==="nba")?`📅 Founded in ${target.year}`:`📅 Opened/Admitted in ${target.year}`);
-    if(DIFF.clues.includes("conf"))clues.push(`🏈 Conference: ${target.conf}`);
+    if(DIFF.clues.includes("conf")&&target.conf)clues.push(`🏈 Conference: ${target.conf}`);
     if(DIFF.clues.includes("line")&&target.lines){const lineStr=target.lines.slice(0,2).join(" & ")+(target.lines.length>2?" (+"+(target.lines.length-2)+" more)":"");clues.push(`🚊 Serves the ${lineStr} line${target.lines.length>1?"s":""}`);}
-    if(DIFF.clues.includes("region"))clues.push(`🗺️ Region: ${target.region}`);
+    if(DIFF.clues.includes("region")&&target.region)clues.push(`🗺️ Region: ${target.region}`);
     if(DIFF.clues.includes("coast"))clues.push(`🌊 Coast: ${target.coast}`);
     return clues;
   },[target,diff,gameKey]);
@@ -11109,6 +11126,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
         if(!td?.guesses)return emptyRound();
         const storedTgt=td.targetName?its.find((s:any)=>s.name===td.targetName):null;
         const tgt=storedTgt||getTarget(its,gk,roundIdx);
+        if(!tgt)return emptyRound();
         const rebuilt=td.guesses.map((n:string)=>{const s=its.find((x:any)=>x.name===n);return s?buildGuess(s,tgt,gk):null;}).filter(Boolean);
         return{guesses:rebuilt,won:td.won,lost:td.lost,alreadyPlayed:td.won||td.lost,hardLocks:td.hardLocks||{},hintsUsed:td.hintsUsed||0,revealedHints:td.revealedHints||[],targetName:tgt.name,peekPenalty:td.peekPenalty||0,peekUsed:td.peekUsed||false,extraGuesses:td.extraGuesses||0,cardHintsUsed:td.cardHintsUsed||[]};
       }
@@ -11223,6 +11241,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
   }
   async function makeGuess(item:any){
     if(rd.won||rd.lost||rd.alreadyPlayed)return;
+    if(!target)return;
     SoundEngine.play("guess");
     const guess=buildGuess(item,target,gameKey);
     const newGuesses=[...rd.guesses,guess];
@@ -11292,14 +11311,14 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
     if((isWin||isLoss)&&onPartyRoundDone)onPartyRoundDone(round,isWin,newGuesses.length);
   }
   function revealHint(){
-    if(rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
+    if(!target||rd.hintsUsed>=DIFF.hints||rd.won||rd.lost)return;
     SoundEngine.play("hint");
     const pool=generateHints(target,gameKey);
     const hint=pool[Math.min(rd.hintsUsed,pool.length-1)];
     updateRound({revealedHints:[...rd.revealedHints,hint],hintsUsed:rd.hintsUsed+1});
   }
   function useCardPowerupInGame(card:any){
-    if(!canUseCardPowerup(card)||rd.won||rd.lost||rd.alreadyPlayed)return;
+    if(!target||!canUseCardPowerup(card)||rd.won||rd.lost||rd.alreadyPlayed)return;
     const col2=JSON.parse(localStorage.getItem("tgg-card-col")||"[]");
     const updatedCol=col2.map((c:any)=>c.id===card.id?markCardPowerupUsed(c):c);
     localStorage.setItem("tgg-card-col",JSON.stringify(updatedCol));
@@ -11559,7 +11578,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          {target.img&&!rd.won&&!rd.lost&&(
+          {target?.img&&!rd.won&&!rd.lost&&(
             <div style={{borderRadius:10,overflow:"hidden",marginBottom:9,position:"relative",height:170,border:`1px solid ${T.border}`,flexShrink:0}}>
               <img src={target.img} alt="Puzzle clue" onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.88)"}}/>
               <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(0,0,0,0.08) 40%,rgba(0,0,0,0.55) 100%)"}}/>
@@ -11580,7 +11599,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
           <div style={{display:"grid",gridTemplateColumns:DIFF.grid,gap:3,marginBottom:4}}>
             {DIFF.headers.map((h:string)=>{
-              const headerLockMap:{[k:string]:string}={REGION:"region",COAST:"coast",POP:"pop",YEAR:"year",SIZE:"size",ZONE:"zone"};
+              const headerLockMap:{[k:string]:string}={REGION:"region",COAST:"coast",POP:"pop",YEAR:"year",SIZE:"size",ZONE:"zone",CONF:"conf",DIV:"div"};
               const lockKey=headerLockMap[h];
               const isLocked=DIFF.hardLocks&&lockKey&&rd.hardLocks[lockKey]!==undefined;
               return(<div key={h} style={{fontSize:fs(7),letterSpacing:1,color:isLocked?T.cellText.green:T.textMuted,textAlign:"center",fontWeight:600,opacity:isLocked?1:.5,display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
@@ -11598,7 +11617,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
           <div style={{overflowY:"auto",overflowX:"hidden",maxHeight:"min(272px,38dvh)",WebkitOverflowScrolling:"touch" as any,scrollBehavior:"smooth",marginBottom:4}}>
           {rd.guesses.map((g:any,i:number)=>{
             const item=g.item;
-            const effectiveTgt=rd.targetName||target.name;
+            const effectiveTgt=rd.targetName||(target?.name??"");
             const isWin=item.name===effectiveTgt;
             const revKey=`${gameKey}-${round}-${i}`;
             const lit=rowReveal[revKey]!==undefined?rowReveal[revKey]:99;
@@ -11617,7 +11636,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
                 {DIFF.cols.includes("pop")&&<IllumCell T={T} lit={lit} colIdx={2} color={g.popResult?.color||"red"} extra={g.popResult?.arrow}><div style={{fontSize:fs(8),fontWeight:700,color:T.cellText[g.popResult?.color||"red"],textAlign:"center"}}>{popLabel(item.pop)}</div></IllumCell>}
                 {DIFF.cols.includes("sb")&&<IllumCell T={T} lit={lit} colIdx={3} color={g.sbResult?.color||"red"} extra={g.sbResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.sbResult?.color||"red"],textAlign:"center"}}>{item.sb}🏆</div></IllumCell>}
                 {DIFF.cols.includes("champ")&&<IllumCell T={T} lit={lit} colIdx={3} color={g.champResult?.color||"red"} extra={g.champResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.champResult?.color||"red"],textAlign:"center"}}>{item.champ}🏆</div></IllumCell>}
-                {DIFF.cols.includes("direction")&&<IllumCell T={T} lit={lit} colIdx={3} color={gameKey==="states"?g.regionColor||"red":g.zoneColor||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[gameKey==="states"?g.regionColor||"red":g.zoneColor||"red"],textAlign:"center",lineHeight:1.3}}>{g.dirInfo?.label||"—"}</div></IllumCell>}
+                {DIFF.cols.includes("direction")&&<IllumCell T={T} lit={lit} colIdx={3} color={g.dirInfo?.color||"red"}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.dirInfo?.color||"red"],textAlign:"center",lineHeight:1.3}}>{g.dirInfo?.label||"—"}</div></IllumCell>}
                 {DIFF.cols.includes("year")&&<IllumCell T={T} lit={lit} colIdx={(gameKey==="nfl"||gameKey==="nba")?4:4} color={g.yearResult?.color||"red"} extra={g.yearResult?.arrow}><div style={{fontSize:fs(9),fontWeight:800,color:T.cellText[g.yearResult?.color||"red"]}}>{item.year}</div></IllumCell>}
                 {DIFF.cols.includes("size")&&<IllumCell T={T} lit={lit} colIdx={5} color={g.sizeResult?.color||"red"} extra={g.sizeResult?.arrow}><div style={{fontSize:fs(7),fontWeight:700,color:T.cellText[g.sizeResult?.color||"red"],textAlign:"center"}}>{sizeLabel(item.size)}</div></IllumCell>}
                 <div style={{background:lit>DIFF.cols.length?(isWin?T.cellBg.green:T.cellBg.red):"#0d0d0d",border:`1.5px solid ${lit>DIFF.cols.length?(isWin?T.cellBorder.green:T.cellBorder.red):"#252525"}`,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",transition:"background .4s,border-color .4s",minHeight:36,boxShadow:lit>DIFF.cols.length?`0 0 12px ${isWin?T.cellBorder.green:T.cellBorder.red}55`:"none"}}>
@@ -11714,9 +11733,9 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          {rd.won&&(
+          {rd.won&&target&&(
             <div style={{background:T.card,border:`2px solid ${T.accent}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease"}}>
-              {target.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
+              {target?.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
                 <img src={target.img} alt={target.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.8) saturate(1.1)"}}/>
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 30%,rgba(0,0,0,0.78) 100%)"}}/>
                 <div style={{position:"absolute",bottom:12,left:0,right:0,fontFamily:"'Cinzel',serif",fontSize:fs(15),color:"#fff",fontWeight:700,textShadow:"0 2px 10px rgba(0,0,0,0.9)",letterSpacing:.5}}>{target.name}</div>
@@ -11736,9 +11755,9 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
             </div>
           )}
 
-          {rd.lost&&(
+          {rd.lost&&target&&(
             <div style={{background:T.card,border:`1.5px solid ${T.cellBorder.red}`,borderRadius:12,overflow:"hidden",textAlign:"center",marginBottom:14,animation:"popIn .4s ease"}}>
-              {target.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
+              {target?.img&&<div style={{height:210,overflow:"hidden",position:"relative"}}>
                 <img src={target.img} alt={target.name} onError={(e)=>{(e.target as HTMLElement).parentElement!.style.display="none";}} style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55) grayscale(0.4) saturate(0.8)"}}/>
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 25%,rgba(0,0,0,0.82) 100%)"}}/>
                 <div style={{position:"absolute",bottom:10,left:0,right:0,fontSize:fs(14),color:"#fff",fontWeight:800,textShadow:"0 2px 10px rgba(0,0,0,0.95)",letterSpacing:.3}}>{target.name}</div>
@@ -11795,7 +11814,7 @@ function GameApp({initGameKey,initDiff,initMode,onBack,onHome,shieldActivated,on
 
           {showBlitz&&<BlitzMode T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} blitzBest={blitzBests[gameKey]} onNewBest={async(n)=>{setBlitzBests((p:any)=>({...p,[gameKey]:n}));await saveBlitzBest(gameKey,n);}} onClose={()=>setShowBlitz(false)}/>}
           {showItemOfWeek&&<ItemOfWeek T={T} fs={fs} items={items} lineColors={lineColors} gameKey={gameKey} onClose={()=>setShowItemOfWeek(false)}/>}
-          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="nba"?NBA_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
+          {showTrivia&&<TriviaGame T={T} fs={fs} questions={gameKey==="pdx"?PDX_TRIVIA:gameKey==="dc"?DC_TRIVIA:gameKey==="balt"?BALT_TRIVIA:gameKey==="nfl"?NFL_TRIVIA:gameKey==="nba"?NBA_TRIVIA:gameKey==="la"?LA_TRIVIA:gameKey==="nyc"?NYC_TRIVIA:gameKey==="chi"?CHI_TRIVIA:gameKey==="bos"?BOS_TRIVIA:gameKey==="atl"?ATL_TRIVIA:STATES_TRIVIA} gameKey={gameKey} onClose={()=>setShowTrivia(false)}/>}
           {showLineChallenge&&<LineChallengeMode T={T} fs={fs} gameKey={gameKey} items={items} lineColors={lineColors} onClose={()=>setShowLineChallenge(false)}/>}
           {showPhotoMode&&<PhotoMode T={T} fs={fs} gameKey={gameKey} items={items} onClose={()=>setShowPhotoMode(false)}/>}
           {showFakeStation&&<FakeStationMode gameKey={gameKey} T={T} fs={fs} onClose={()=>setShowFakeStation(false)}/>}
