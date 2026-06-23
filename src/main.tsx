@@ -3317,7 +3317,6 @@ const BOS_IMG:Record<string,string>={
   "Back Bay":"Back_Bay_station_(MBTA).jpg",
   "Hynes Convention Center":"Newbury_Street,_Boston.jpg",
   "Kenmore":"Fenway_Park.jpg",
-  "Fenway":"Museum_of_Fine_Arts,_Boston.jpg",
   "Prudential":"Prudential_Tower,_Boston.jpg",
   "Symphony":"Symphony_Hall_Boston.jpg",
   "Longwood Medical Area":"Longwood_Medical_Area,_Boston.jpg",
