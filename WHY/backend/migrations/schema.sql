@@ -198,7 +198,7 @@ CREATE TABLE boosts (
 );
 
 CREATE INDEX idx_boosts_user ON boosts(user_id);
-CREATE INDEX idx_boosts_active ON boosts(user_id, expires_at) WHERE expires_at > NOW();
+CREATE INDEX idx_boosts_active ON boosts(user_id, expires_at);
 
 -- ─── BLOCKS ─────────────────────────────────────────────────────────────────────
 CREATE TABLE blocks (
