@@ -29,8 +29,8 @@ app.get('/', (_req, res) => res.sendFile(path.join(__dirname, '../public/app.htm
 app.get('/preview', (_req, res) => res.sendFile(path.join(__dirname, '../public/preview.html')));
 
 // Rate limiting
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 200 });
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20 });
 app.use('/api/', limiter);
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
