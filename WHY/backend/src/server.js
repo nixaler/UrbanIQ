@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Serve preview
-app.use('/preview', express.static(path.join(__dirname, '../public')));
+app.get('/preview', (_req, res) => res.sendFile(path.join(__dirname, '../public/preview.html')));
 
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
