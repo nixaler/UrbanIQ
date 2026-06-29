@@ -24,6 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded photos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Serve preview
+app.use('/preview', express.static(path.join(__dirname, '../public')));
+
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
