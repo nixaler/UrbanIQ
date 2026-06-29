@@ -24,7 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded photos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Serve preview
+// Serve web app
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, '../public/app.html')));
 app.get('/preview', (_req, res) => res.sendFile(path.join(__dirname, '../public/preview.html')));
 
 // Rate limiting
