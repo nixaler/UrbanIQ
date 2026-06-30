@@ -1,10 +1,10 @@
-const apn = require('apn');
 const { query } = require('../config/database');
 
 let provider;
 
 function getProvider() {
   if (!provider && process.env.APN_KEY && process.env.APN_KEY_ID && process.env.APN_TEAM_ID) {
+    const apn = require('apn');
     provider = new apn.Provider({
       token: {
         key: process.env.APN_KEY,
@@ -26,6 +26,7 @@ async function sendPush(userId, title, body, data = {}) {
   const { rows } = await query('SELECT token FROM push_tokens WHERE user_id = $1', [userId]);
   if (!rows.length) return;
 
+  const apn = require('apn');
   const note = new apn.Notification();
   note.expiry = Math.floor(Date.now() / 1000) + 3600;
   note.badge = 1;
