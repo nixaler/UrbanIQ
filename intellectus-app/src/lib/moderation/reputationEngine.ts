@@ -67,13 +67,23 @@ export async function recomputeBadges(userId: string, currentScore: number) {
     .select()
     .from(badges)
     .where(lte(badges.minReputationScore, currentScore));
+  if (eligibleBadges.length === 0) return;
 
-  for (const badge of eligibleBadges) {
-    await db
-      .insert(userBadges)
-      .values({ userId, badgeId: badge.id, topicId: null })
-      .onConflictDoNothing();
-  }
+  // Checked explicitly rather than relying on onConflictDoNothing: the
+  // unique(userId, badgeId, topicId) constraint doesn't dedupe here because
+  // Postgres treats every NULL topicId as distinct from every other NULL,
+  // so two global (non-topic-scoped) awards of the same badge would both
+  // insert successfully.
+  const alreadyHeld = await db
+    .select({ badgeId: userBadges.badgeId })
+    .from(userBadges)
+    .where(eq(userBadges.userId, userId));
+  const alreadyHeldIds = new Set(alreadyHeld.map((row) => row.badgeId));
+
+  const toAward = eligibleBadges.filter((badge) => !alreadyHeldIds.has(badge.id));
+  if (toAward.length === 0) return;
+
+  await db.insert(userBadges).values(toAward.map((badge) => ({ userId, badgeId: badge.id, topicId: null })));
 }
 
 /**
