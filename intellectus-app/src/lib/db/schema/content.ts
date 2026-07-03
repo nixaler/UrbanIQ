@@ -47,6 +47,8 @@ export const contentBlocks = pgTable('content_blocks', {
     metrics?: { label: string; value: string }[];
     list?: string[];
     references?: { label: string; summary: string }[];
+    media?: { url: string; alt: string };
+    poll?: { positionMarker: string; question: string; choices: string[] };
   }>().notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });

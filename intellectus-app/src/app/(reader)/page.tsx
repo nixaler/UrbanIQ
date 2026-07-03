@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { db } from '@/lib/db/client';
 import { articles, topics } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { getCurrentUserProfile } from '@/lib/auth/session';
+import { isBubblePopped } from '@/lib/actions/feedReset';
+import BubblePopButton from '@/components/layout/BubblePopButton';
 
 // The daily stack changes every day — never statically prerender this at
 // build time (and doing so would also require a live DB connection to exist
@@ -9,23 +12,31 @@ import { eq, desc } from 'drizzle-orm';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const publishedArticles = await db
-    .select({
-      id: articles.id,
-      title: articles.title,
-      publishDate: articles.publishDate,
-      topicName: topics.title,
-    })
-    .from(articles)
-    .innerJoin(topics, eq(articles.topicId, topics.id))
-    .where(eq(articles.status, 'published'))
-    .orderBy(desc(articles.publishDate))
-    .limit(20);
+  const [publishedArticles, viewer] = await Promise.all([
+    db
+      .select({
+        id: articles.id,
+        title: articles.title,
+        publishDate: articles.publishDate,
+        topicName: topics.title,
+      })
+      .from(articles)
+      .innerJoin(topics, eq(articles.topicId, topics.id))
+      .where(eq(articles.status, 'published'))
+      .orderBy(desc(articles.publishDate))
+      .limit(20),
+    getCurrentUserProfile(),
+  ]);
+
+  const bubblePopped = viewer ? await isBubblePopped(viewer.id) : false;
 
   return (
     <main className="min-h-screen bg-[rgb(var(--nr-bg))] text-[rgb(var(--nr-ink))]">
       <div className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-2xl font-bold tracking-tight mb-8">Today's stack</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold tracking-tight">Today's stack</h1>
+          {viewer && <BubblePopButton alreadyActive={bubblePopped} />}
+        </div>
 
         {publishedArticles.length === 0 && (
           <p className="text-[rgb(var(--nr-ink-muted))]">

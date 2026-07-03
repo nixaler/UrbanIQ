@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { getCurrentUserProfile } from './session';
 import type { users } from '@/lib/db/schema';
 
@@ -37,5 +38,25 @@ export async function requireRole(minRole: Role): Promise<UserRow> {
   if (ROLE_RANK[profile.role] < ROLE_RANK[minRole]) {
     throw new ForbiddenError(`Requires role >= ${minRole}, has ${profile.role}`);
   }
+  return profile;
+}
+
+/**
+ * Page-level variants: redirect instead of throwing, so an unauthenticated
+ * visitor lands on the sign-in page instead of a raw 500. Use these in
+ * page.tsx Server Components. Server Actions should keep using
+ * requireUser/requireRole above, since their call sites already catch and
+ * surface a proper error message to the client — swallowing next/navigation's
+ * internal redirect signal there would break the redirect silently.
+ */
+export async function requireUserForPage(): Promise<UserRow> {
+  const profile = await getCurrentUserProfile();
+  if (!profile) redirect('/sign-in');
+  return profile;
+}
+
+export async function requireRoleForPage(minRole: Role): Promise<UserRow> {
+  const profile = await requireUserForPage();
+  if (ROLE_RANK[profile.role] < ROLE_RANK[minRole]) redirect('/');
   return profile;
 }

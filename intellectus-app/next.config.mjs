@@ -1,7 +1,16 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import withSerwistInit from '@serwist/next';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const withSerwist = withSerwistInit({
+  swSrc: 'src/app/sw.ts',
+  swDest: 'public/sw.js',
+  // Only registered in production builds — a dev-mode service worker would
+  // otherwise cache stale HMR output and make local development confusing.
+  disable: process.env.NODE_ENV === 'development',
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,4 +26,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSerwist(nextConfig);

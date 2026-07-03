@@ -8,12 +8,14 @@ import {
   badges,
   threadCloseRequests,
   readingProgress,
+  subscriptions,
 } from '@/lib/db/schema';
 import { and, eq, inArray, isNull } from 'drizzle-orm';
 import ReadProgressGate from '@/components/reading/ReadProgressGate';
 import DiscussionPromptCard from './DiscussionPromptCard';
 import CommentComposer from './CommentComposer';
 import CommentThread, { type SerializedComment } from './CommentThread';
+import { PAYWALL_ENABLED } from '@/lib/config/featureFlags';
 
 export default async function DiscussionSection({
   articleId,
@@ -119,6 +121,22 @@ export default async function DiscussionSection({
     }
   }
 
+  // Premium Ad-Free Discussion Rooms (#22): reading is always free; this
+  // flag-gated check only affects the interactive discussion surface below,
+  // and defaults off per the "free at launch" decision.
+  let hasActiveSubscription = true;
+  if (PAYWALL_ENABLED) {
+    hasActiveSubscription = false;
+    if (viewerId) {
+      const [sub] = await db
+        .select()
+        .from(subscriptions)
+        .where(and(eq(subscriptions.userId, viewerId), eq(subscriptions.status, 'active')))
+        .limit(1);
+      hasActiveSubscription = Boolean(sub);
+    }
+  }
+
   return (
     <section className="space-y-6 pt-4 border-t border-[rgb(var(--nr-border))]">
       <h2 className="text-xs uppercase tracking-widest text-[rgb(var(--nr-ink-muted))] font-semibold">Discussion</h2>
@@ -127,17 +145,23 @@ export default async function DiscussionSection({
         <DiscussionPromptCard key={p.id} promptText={p.promptText} />
       ))}
 
-      <ReadProgressGate articleId={articleId} viewerId={viewerId} initialUnlocked={initialProgress}>
-        <div className="space-y-6">
-          <CommentComposer articleId={articleId} />
+      {!hasActiveSubscription ? (
+        <p className="text-sm text-[rgb(var(--nr-ink-muted))] p-6 rounded-xl border border-dashed border-[rgb(var(--nr-border))] text-center">
+          Subscribe to join the discussion — reading stays free either way.
+        </p>
+      ) : (
+        <ReadProgressGate articleId={articleId} viewerId={viewerId} initialUnlocked={initialProgress}>
+          <div className="space-y-6">
+            <CommentComposer articleId={articleId} />
 
-          <div className="space-y-1">
-            {topLevel.map((comment) => (
-              <CommentThread key={comment.id} comment={comment} articleId={articleId} viewerId={viewerId ?? ''} />
-            ))}
+            <div className="space-y-1">
+              {topLevel.map((comment) => (
+                <CommentThread key={comment.id} comment={comment} articleId={articleId} viewerId={viewerId ?? ''} />
+              ))}
+            </div>
           </div>
-        </div>
-      </ReadProgressGate>
+        </ReadProgressGate>
+      )}
     </section>
   );
 }

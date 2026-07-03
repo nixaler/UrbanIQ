@@ -5,6 +5,8 @@ import BadgeChip from '@/components/badges/BadgeChip';
 import TwoDimVoteButtons from './TwoDimVoteButtons';
 import AgreeToDisagreeButton from './AgreeToDisagreeButton';
 import CommentComposer from './CommentComposer';
+import TipButton from './TipButton';
+import { TIPPING_ENABLED } from '@/lib/config/featureFlags';
 
 export interface SerializedComment {
   id: string;
@@ -69,6 +71,7 @@ export default function CommentThread({ comment, articleId, viewerId, depth = 0 
               pendingCloseRequest={comment.pendingCloseRequest}
             />
           )}
+          {TIPPING_ENABLED && <TipButton commentId={comment.id} />}
         </div>
 
         {replying && (

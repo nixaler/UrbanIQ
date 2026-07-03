@@ -13,6 +13,9 @@ type Events = {
   'notifications/user.scheduled': {
     data: { userId: string; intelWindowTime: string; timezone: string };
   };
+  'content/narration.requested': {
+    data: { articleId: string };
+  };
 };
 
 export const inngest = new Inngest({

@@ -1,6 +1,8 @@
 'use client';
 
 import { useDepthPreference, type DepthLevel } from '@/hooks/useDepthPreference';
+import ProvenanceBadge from '@/components/badges/ProvenanceBadge';
+import MicroPoll from './MicroPoll';
 
 type BlockType = 'event' | 'backstory' | 'visual_data' | 'global_impact' | 'primary_source';
 
@@ -13,7 +15,11 @@ interface ClientBlock {
     markdown?: string;
     metrics?: { label: string; value: string }[];
     list?: string[];
+    media?: { url: string; alt: string };
+    poll?: { positionMarker: string; question: string; choices: string[] };
   };
+  provenance?: { verified: boolean; sourceUrl: string | null } | null;
+  pollData?: { counts: Record<string, number>; viewerChoice: string | null };
 }
 
 interface ArticleShellClientProps {
@@ -27,7 +33,7 @@ const DEPTH_LABEL: Record<DepthLevel, string> = {
   deep: 'Deep Dive',
 };
 
-export default function ArticleShellClient({ initialBlocks }: ArticleShellClientProps) {
+export default function ArticleShellClient({ articleId, initialBlocks }: ArticleShellClientProps) {
   const { currentDepth, setDepth } = useDepthPreference();
 
   const visibleBlocks = initialBlocks.filter((block) => block.depth === currentDepth);
@@ -60,8 +66,29 @@ export default function ArticleShellClient({ initialBlocks }: ArticleShellClient
               {block.type.replace('_', ' ')}
             </span>
 
+            {block.content.media && (
+              <div className="mb-3 space-y-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={block.content.media.url} alt={block.content.media.alt} className="w-full rounded-lg" />
+                <ProvenanceBadge verified={block.provenance?.verified ?? false} sourceUrl={block.provenance?.sourceUrl ?? null} />
+              </div>
+            )}
+
             {block.content.text && (
               <p className="leading-relaxed text-base font-serif">{block.content.text}</p>
+            )}
+
+            {block.content.poll && (
+              <div className="mt-3">
+                <MicroPoll
+                  articleId={articleId}
+                  positionMarker={block.content.poll.positionMarker}
+                  question={block.content.poll.question}
+                  choices={block.content.poll.choices}
+                  initialCounts={block.pollData?.counts ?? {}}
+                  initialChoice={block.pollData?.viewerChoice ?? null}
+                />
+              </div>
             )}
 
             {block.content.list && (
