@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
 import OfflineCacheInitializer from '@/components/layout/OfflineCacheInitializer';
+import NavBar from '@/components/layout/NavBar';
+import DisplayNamePromptGate from '@/components/layout/DisplayNamePromptGate';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -15,6 +17,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem>
           <OfflineCacheInitializer />
+          <NavBar />
+          <DisplayNamePromptGate />
           {children}
         </ThemeProvider>
       </body>

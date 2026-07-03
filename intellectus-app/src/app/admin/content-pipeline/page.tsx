@@ -7,7 +7,7 @@ import PublishButton from '@/components/layout/PublishButton';
 export const dynamic = 'force-dynamic';
 
 export default async function ContentPipelinePage() {
-  await requireRoleForPage('editor');
+  await requireRoleForPage('editor', '/admin/content-pipeline');
 
   const pending = await db
     .select({ id: articles.id, title: articles.title, status: articles.status, topicName: topics.title })

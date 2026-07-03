@@ -7,7 +7,7 @@ import ModerationFlagRow from '@/components/layout/ModerationFlagRow';
 export const dynamic = 'force-dynamic';
 
 export default async function ModerationQueuePage() {
-  await requireRoleForPage('moderator');
+  await requireRoleForPage('moderator', '/admin/moderation-queue');
 
   const flags = await db.select().from(moderationFlags).orderBy(desc(moderationFlags.createdAt)).limit(100);
 

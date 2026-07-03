@@ -7,7 +7,7 @@ import NotificationPrefsForm from '@/components/layout/NotificationPrefsForm';
 export const dynamic = 'force-dynamic';
 
 export default async function NotificationSettingsPage() {
-  const user = await requireUserForPage();
+  const user = await requireUserForPage('/settings/notifications');
 
   const [prefs] = await db.select().from(notificationPrefs).where(eq(notificationPrefs.userId, user.id)).limit(1);
 

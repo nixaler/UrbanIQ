@@ -19,12 +19,14 @@ async function main() {
     {
       id: editorId,
       displayName: 'Founding Editor',
+      displayNameSet: true,
       role: 'editor',
       reputationScore: 100,
     },
     {
       id: readerId,
       displayName: 'Sample Reader',
+      displayNameSet: true,
       role: 'reader',
       reputationScore: 0,
     },

@@ -49,14 +49,14 @@ export async function requireRole(minRole: Role): Promise<UserRow> {
  * surface a proper error message to the client — swallowing next/navigation's
  * internal redirect signal there would break the redirect silently.
  */
-export async function requireUserForPage(): Promise<UserRow> {
+export async function requireUserForPage(redirectTo = '/'): Promise<UserRow> {
   const profile = await getCurrentUserProfile();
-  if (!profile) redirect('/sign-in');
+  if (!profile) redirect(`/sign-in?redirect=${encodeURIComponent(redirectTo)}`);
   return profile;
 }
 
-export async function requireRoleForPage(minRole: Role): Promise<UserRow> {
-  const profile = await requireUserForPage();
+export async function requireRoleForPage(minRole: Role, redirectTo = '/'): Promise<UserRow> {
+  const profile = await requireUserForPage(redirectTo);
   if (ROLE_RANK[profile.role] < ROLE_RANK[minRole]) redirect('/');
   return profile;
 }

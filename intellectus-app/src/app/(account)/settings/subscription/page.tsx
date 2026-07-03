@@ -8,7 +8,7 @@ import { PAYWALL_ENABLED } from '@/lib/config/featureFlags';
 export const dynamic = 'force-dynamic';
 
 export default async function SubscriptionSettingsPage() {
-  const user = await requireUserForPage();
+  const user = await requireUserForPage('/settings/subscription');
   const [sub] = await db.select().from(subscriptions).where(eq(subscriptions.userId, user.id)).limit(1);
 
   return (

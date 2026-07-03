@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 
-export default function MagicLinkForm() {
+export default function MagicLinkForm({ redirectTo = '/' }: { redirectTo?: string }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
@@ -11,9 +11,11 @@ export default function MagicLinkForm() {
     if (!email.trim()) return;
     setStatus('sending');
     const supabase = createSupabaseBrowserClient();
+    const callbackUrl = new URL('/callback', window.location.origin);
+    callbackUrl.searchParams.set('next', redirectTo);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/callback` },
+      options: { emailRedirectTo: callbackUrl.toString() },
     });
     setStatus(error ? 'error' : 'sent');
   }

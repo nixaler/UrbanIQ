@@ -10,5 +10,11 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(`${origin}/`);
+  // Only allow same-site relative paths — `next` is attacker-controllable
+  // via a crafted magic-link URL, so never redirect to an absolute/external
+  // URL here.
+  const next = searchParams.get('next');
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
+
+  return NextResponse.redirect(`${origin}${safeNext}`);
 }

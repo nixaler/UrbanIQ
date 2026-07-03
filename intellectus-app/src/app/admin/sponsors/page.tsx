@@ -6,7 +6,7 @@ import CreateSponsorForm from '@/components/layout/CreateSponsorForm';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminSponsorsPage() {
-  await requireRoleForPage('editor');
+  await requireRoleForPage('editor', '/admin/sponsors');
 
   const allSponsors = await db.select().from(sponsors);
 

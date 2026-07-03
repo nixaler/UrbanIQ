@@ -7,7 +7,7 @@ import PrivacyModeToggle from '@/components/layout/PrivacyModeToggle';
 export const dynamic = 'force-dynamic';
 
 export default async function PrivacySettingsPage() {
-  const user = await requireUserForPage();
+  const user = await requireUserForPage('/settings/privacy');
   const [settings] = await db.select().from(privacySettings).where(eq(privacySettings.userId, user.id)).limit(1);
 
   return (

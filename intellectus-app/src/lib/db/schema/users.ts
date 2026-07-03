@@ -8,6 +8,10 @@ export const privacyModeEnum = pgEnum('privacy_mode', ['standard', 'zero_data'])
 export const users = pgTable('users', {
   id: uuid('id').primaryKey(),
   displayName: text('display_name').notNull(),
+  // False for the auto-generated email-prefix name the signup trigger sets;
+  // flips to true once the user picks their own via updateDisplayName().
+  // Drives whether the lightweight name-prompt banner shows.
+  displayNameSet: boolean('display_name_set').default(false).notNull(),
   avatarUrl: text('avatar_url'),
   role: userRoleEnum('role').default('reader').notNull(),
   reputationScore: integer('reputation_score').default(0).notNull(),
