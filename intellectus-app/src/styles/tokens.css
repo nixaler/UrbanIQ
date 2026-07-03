@@ -21,28 +21,28 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --nr-bg: 17 17 16;
-    --nr-bg-raised: 24 24 22;
-    --nr-ink: 226 223 216;
-    --nr-ink-muted: 148 143 133;
-    --nr-border: 42 41 38;
-    --nr-accent: 129 161 140;
-    --nr-accent-ink: 12 15 13;
-    --nr-well-researched: 129 161 140;
-    --nr-agree: 196 165 122;
+    --nr-bg: 34 32 29;
+    --nr-bg-raised: 45 42 38;
+    --nr-ink: 227 222 213;
+    --nr-ink-muted: 162 155 143;
+    --nr-border: 63 59 53;
+    --nr-accent: 137 168 147;
+    --nr-accent-ink: 20 22 20;
+    --nr-well-researched: 137 168 147;
+    --nr-agree: 204 172 128;
   }
 }
 
 :root[data-theme='dark'] {
-  --nr-bg: 17 17 16;
-  --nr-bg-raised: 24 24 22;
-  --nr-ink: 226 223 216;
-  --nr-ink-muted: 148 143 133;
-  --nr-border: 42 41 38;
-  --nr-accent: 129 161 140;
-  --nr-accent-ink: 12 15 13;
-  --nr-well-researched: 129 161 140;
-  --nr-agree: 196 165 122;
+  --nr-bg: 34 32 29;
+  --nr-bg-raised: 45 42 38;
+  --nr-ink: 227 222 213;
+  --nr-ink-muted: 162 155 143;
+  --nr-border: 63 59 53;
+  --nr-accent: 137 168 147;
+  --nr-accent-ink: 20 22 20;
+  --nr-well-researched: 137 168 147;
+  --nr-agree: 204 172 128;
 }
 
 :root[data-theme='light'] {
