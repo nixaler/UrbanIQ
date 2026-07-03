@@ -98,6 +98,17 @@ Flow:
 
 ---
 
+## Partner Offers (Explore Portal)
+
+- Seeded picks in `EXPLORE_PICKS[cityKey]` — each has optional `partner`, `offer`, `offerId`, `questId` fields
+- **Field name is `offerId` (not `offerCode`)** — e.g. `"busboys-dc"`, `"powells-pdx"`, `"katz-nyc"`, `"loumal-chi"`
+- Server route: `GET /api/offers/code/:offerId` — returns `{ code: "BUSBOYS15" }` or 404
+- Codes are hardcoded in `server.js` `OFFER_CODES` map (no DB table yet)
+- Claiming tracked in `tgg:offers:used:YYYY-MM-DD` (localStorage array of used offerIds)
+- Quest-gated offers: if `questId` is set, user must complete that quest before the CLAIM button activates
+
+---
+
 ## Card Collection
 
 - Cards earned by winning rounds; opened in daily free packs

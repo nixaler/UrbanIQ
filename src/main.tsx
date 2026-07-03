@@ -6596,6 +6596,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
             onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
             onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
             onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            onTouchStart={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onTouchEnd={e=>(e.currentTarget.style.transform="scale(1)")}
+            onTouchCancel={e=>(e.currentTarget.style.transform="scale(1)")}
             style={{height:90,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
             <img src="/photo-dc.jpg" alt="Explore" onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
               style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -6618,6 +6621,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
               <div style={{width:3,height:16,background:"#4169E1",borderRadius:2}}/>
               <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🚊 Transit</span>
             </div>
+            <span onClick={onBegin} style={{fontSize:"10px",fontWeight:700,color:"#888580",letterSpacing:"0.5px",cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>See All →</span>
           </div>
           <div style={{display:"flex",gap:10,paddingLeft:22,paddingRight:22,overflowX:"auto",scrollSnapType:"x mandatory",WebkitOverflowScrolling:"touch",scrollbarWidth:"none" as any,msOverflowStyle:"none" as any}}>
             {gameCards.filter(g=>g.tag==="TRANSIT").map((g,i)=>(
@@ -6626,6 +6630,9 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
                 onMouseDown={e=>(e.currentTarget.style.transform="scale(0.95)")}
                 onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
                 onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+                onTouchStart={e=>(e.currentTarget.style.transform="scale(0.95)")}
+                onTouchEnd={e=>(e.currentTarget.style.transform="scale(1)")}
+                onTouchCancel={e=>(e.currentTarget.style.transform="scale(1)")}
                 style={{flexShrink:0,width:130,height:170,borderRadius:14,overflow:"hidden",position:"relative",scrollSnapAlign:"start",cursor:"pointer",transition:"transform .2s ease, box-shadow .2s ease",boxShadow:"0 4px 16px rgba(0,0,0,0.10)",animation:`lmFadeIn .3s ${i*.05}s ease both`}}>
                 <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
                   style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s ease"}}/>
@@ -6643,14 +6650,20 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
         {/* GEOGRAPHY — wide cinematic card */}
         {(()=>{const g=gameCards.find(gc=>gc.tag==="GEOGRAPHY");if(!g)return null;return(
           <div style={{margin:"0 22px 10px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <div style={{width:3,height:16,background:"#22C55E",borderRadius:2}}/>
-              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Geography</span>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:3,height:16,background:"#22C55E",borderRadius:2}}/>
+                <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🗺️ Geography</span>
+              </div>
+              <span onClick={onBegin} style={{fontSize:"10px",fontWeight:700,color:"#888580",letterSpacing:"0.5px",cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>See All →</span>
             </div>
             <div onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
               onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
               onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
               onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              onTouchStart={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onTouchEnd={e=>(e.currentTarget.style.transform="scale(1)")}
+              onTouchCancel={e=>(e.currentTarget.style.transform="scale(1)")}
               style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
               <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
                 style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -6667,31 +6680,37 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
           </div>
         );})()}
 
-        {/* SPORTS — one card per SPORTS game */}
+        {/* SPORTS — horizontal scroll shelf */}
         {(()=>{const sCards=gameCards.filter(gc=>gc.tag==="SPORTS");if(!sCards.length)return null;return(
-          <div style={{margin:"0 22px 10px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <div style={{width:3,height:16,background:"#E8294A",borderRadius:2}}/>
-              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Sports</span>
+          <div style={{marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 22px",marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:3,height:16,background:"#E8294A",borderRadius:2}}/>
+                <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🏆 Sports</span>
+              </div>
+              <span onClick={onBegin} style={{fontSize:"10px",fontWeight:700,color:"#888580",letterSpacing:"0.5px",cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>See All →</span>
             </div>
-            <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {sCards.map(g=>(
+            <div style={{display:"flex",gap:10,paddingLeft:22,paddingRight:22,overflowX:"auto",scrollSnapType:"x mandatory",WebkitOverflowScrolling:"touch",scrollbarWidth:"none" as any,msOverflowStyle:"none" as any}}>
+            {sCards.map((g,i)=>(
             <div key={g.key} onClick={()=>{SoundEngine.play("select");onSelectGame(g.key);}}
-              onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onMouseDown={e=>(e.currentTarget.style.transform="scale(0.97)")}
               onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
               onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
-              style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}>
+              onTouchStart={e=>(e.currentTarget.style.transform="scale(0.97)")}
+              onTouchEnd={e=>(e.currentTarget.style.transform="scale(1)")}
+              onTouchCancel={e=>(e.currentTarget.style.transform="scale(1)")}
+              style={{flexShrink:0,width:200,height:120,borderRadius:14,overflow:"hidden",position:"relative",scrollSnapAlign:"start",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.10)",animation:`lmFadeIn .3s ${i*.05}s ease both`}}>
               <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
                 style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
               <div style={{position:"absolute",inset:0,background:`linear-gradient(to right,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.25) 100%)`}}/>
-              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
-                <span style={{fontSize:30}}>{g.emoji}</span>
+              <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 16px",gap:10}}>
+                <span style={{fontSize:26}}>{g.emoji}</span>
                 <div>
-                  <div style={{fontSize:"17px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>{g.name}</div>
-                  <div style={{fontSize:"10px",color:"rgba(255,255,255,0.6)",marginTop:2}}>{g.sub}</div>
+                  <div style={{fontSize:"15px",fontWeight:800,color:"#fff",textShadow:"0 1px 8px rgba(0,0,0,.5)",letterSpacing:-0.3}}>{g.name}</div>
+                  <div style={{fontSize:"9px",color:"rgba(255,255,255,0.6)",marginTop:2}}>{g.sub}</div>
                 </div>
               </div>
-              <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"rgba(255,255,255,0.75)",border:"1px solid rgba(255,255,255,0.3)",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+              <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",fontSize:"8px",fontWeight:700,color:"rgba(255,255,255,0.75)",border:"1px solid rgba(255,255,255,0.3)",padding:"4px 8px",borderRadius:5,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
             </div>
             ))}
             </div>
@@ -6701,14 +6720,20 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
         {/* ARCADE — wide card with pulsing glow border */}
         {(()=>{const g=gameCards.find(gc=>gc.tag==="ARCADE");if(!g)return null;return(
           <div style={{margin:"0 22px 10px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <div style={{width:3,height:16,background:"#A855F7",borderRadius:2}}/>
-              <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🎮 Arcade</span>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:3,height:16,background:"#A855F7",borderRadius:2}}/>
+                <span style={{fontSize:"11px",fontWeight:800,letterSpacing:"2.5px",textTransform:"uppercase",color:"#0A0A0A"}}>🎮 Arcade</span>
+              </div>
+              <span onClick={()=>setShowArcadeHub(true)} style={{fontSize:"10px",fontWeight:700,color:"#888580",letterSpacing:"0.5px",cursor:"pointer",WebkitTapHighlightColor:"transparent"}}>See All →</span>
             </div>
             <div onClick={()=>{SoundEngine.play("select");setShowArcadeHub(true);}}
               onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
               onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
               onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              onTouchStart={e=>(e.currentTarget.style.transform="scale(0.98)")}
+              onTouchEnd={e=>(e.currentTarget.style.transform="scale(1)")}
+              onTouchCancel={e=>(e.currentTarget.style.transform="scale(1)")}
               style={{height:100,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 20px rgba(123,47,190,0.18)",border:"1.5px solid rgba(123,47,190,0.25)"}}>
               <img src={g.photo||""} alt={g.name} onError={(e)=>{(e.target as HTMLImageElement).style.display="none";}}
                 style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -7366,6 +7391,10 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   const quests=MICRO_QUESTS[cityKey]||[];
   const G=GAMES[cityKey]||GAMES["dc"];
   const[showStationPicker,setShowStationPicker]=useState(false);
+  const[hudXP,setHudXP]=useState(()=>getXP());
+  const[hudShields,setHudShields]=useState(()=>getShieldCount());
+  const[hudStreak,setHudStreak]=useState(()=>getGlobalData().streak||0);
+  useEffect(()=>{const r=()=>{setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||0);};window.addEventListener("storage",r);return()=>window.removeEventListener("storage",r);},[]);
   useEffect(()=>{if(!selStation)return;const id=setInterval(()=>setPulseTick(t=>t+1),8000);return()=>clearInterval(id);},[selStation]);
   function goBack(){setCityKey("");setSelStation(null);setStationSearch("");setShowStationPicker(false);window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});}
   const stList=meta?.stations||(meta?.hubs||[]).map((h:string)=>({n:h,l:[] as string[],c:""}));
@@ -7381,8 +7410,28 @@ function ExploreView({onSelectGame}:{onSelectGame:(gk:string)=>void}){
   }
   return(
     <div style={{background:"#FFFFFF",paddingBottom:16,position:"relative",minHeight:"100dvh"}}>
-      {shieldPop&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
-      {xpPop!==null&&<div style={{position:"fixed",top:80,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
+      {shieldPop&&<div style={{position:"fixed",top:128,left:"50%",transform:"translateX(-50%)",background:"#0A0A0A",color:"#fff",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.2)",letterSpacing:1}}>🛡️ Streak Shield earned!</div>}
+      {xpPop!==null&&<div style={{position:"fixed",top:128,left:"50%",transform:"translateX(-50%)",background:"#FFB800",color:"#0A0A0A",fontSize:"13px",fontWeight:700,padding:"12px 22px",borderRadius:8,zIndex:9999,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,0.18)",letterSpacing:1}}>+{xpPop} XP</div>}
+      <div style={{display:"flex",justifyContent:"center",padding:"8px 22px 0",position:"sticky",top:52,zIndex:99,pointerEvents:"none",animation:"lmFadeIn .3s ease both"}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:14,background:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(0,0,0,0.08)",borderRadius:100,padding:"6px 18px",boxShadow:"0 2px 16px rgba(0,0,0,0.07)",pointerEvents:"all",animation:"pillFloat 4s ease-in-out infinite"}}>
+          {hudStreak>0&&<><div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FF8C42",lineHeight:1}}>{hudStreak}</span>
+          </div><div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/></>}
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:13}}>⚡</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FFB800",lineHeight:1}}>{hudXP}</span>
+            <div style={{width:40,height:3,background:"rgba(0,0,0,0.07)",borderRadius:2,overflow:"hidden"}}>
+              <div style={{width:`${Math.min(100,(hudXP%500)/500*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF6B35)",borderRadius:2}}/>
+            </div>
+          </div>
+          {hudShields>0&&<><div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,fontWeight:800,color:"#4169E1",lineHeight:1}}>{hudShields}</span>
+            <span style={{fontSize:13}}>🛡️</span>
+          </div></>}
+        </div>
+      </div>
       {!cityKey?(
         <div style={{padding:"20px 22px 0"}}>
           <div style={{marginBottom:18}}>
@@ -8170,8 +8219,32 @@ function CultureView({onSelectGame}:{onSelectGame:(k:string)=>void}){
   const CITY_EMOJIS:{[k:string]:string}={dc:"🏛️",nyc:"🗽",chi:"🌬️",la:"🌴",bos:"🦞",atl:"🍑",pdx:"🌲",balt:"🦀"};
   const CITY_NAMES:{[k:string]:string}={dc:"Washington DC",nyc:"New York City",chi:"Chicago",la:"Los Angeles",bos:"Boston",atl:"Atlanta",pdx:"Portland",balt:"Baltimore"};
   const PILLS:[string,string][]=[["stories","📖 STORIES"],["legends","⭐ LEGENDS"],["scene","🎵 SCENE"],["quiz","🧠 QUIZ"],["timeline","⏳ TIMELINE"],["battle","⚔️ BATTLE"]];
+  const[hudXP,setHudXP]=useState(()=>getXP());
+  const[hudShields,setHudShields]=useState(()=>getShieldCount());
+  const[hudStreak,setHudStreak]=useState(()=>getGlobalData().streak||0);
+  useEffect(()=>{const r=()=>{setHudXP(getXP());setHudShields(getShieldCount());setHudStreak(getGlobalData().streak||0);};window.addEventListener("storage",r);return()=>window.removeEventListener("storage",r);},[]);
   return(
     <div style={{minHeight:"100vh",background:"#fff",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))",position:"relative"}}>
+      <div style={{display:"flex",justifyContent:"center",padding:"8px 22px 0",position:"sticky",top:52,zIndex:99,pointerEvents:"none",animation:"lmFadeIn .3s ease both"}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:14,background:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(0,0,0,0.08)",borderRadius:100,padding:"6px 18px",boxShadow:"0 2px 16px rgba(0,0,0,0.07)",pointerEvents:"all",animation:"pillFloat 4s ease-in-out infinite"}}>
+          {hudStreak>0&&<><div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,display:"inline-block",animation:"lmFlame 1.2s ease infinite",transformOrigin:"bottom center"}}>🔥</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FF8C42",lineHeight:1}}>{hudStreak}</span>
+          </div><div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/></>}
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:13}}>⚡</span>
+            <span style={{fontSize:13,fontWeight:800,color:"#FFB800",lineHeight:1}}>{hudXP}</span>
+            <div style={{width:40,height:3,background:"rgba(0,0,0,0.07)",borderRadius:2,overflow:"hidden"}}>
+              <div style={{width:`${Math.min(100,(hudXP%500)/500*100)}%`,height:"100%",background:"linear-gradient(90deg,#FFB800,#FF6B35)",borderRadius:2}}/>
+            </div>
+          </div>
+          {hudShields>0&&<><div style={{width:1,height:14,background:"rgba(0,0,0,0.08)"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:13,fontWeight:800,color:"#4169E1",lineHeight:1}}>{hudShields}</span>
+            <span style={{fontSize:13}}>🛡️</span>
+          </div></>}
+        </div>
+      </div>
       <div style={{padding:"20px 16px 0"}}>
         <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,letterSpacing:3,backgroundImage:"linear-gradient(90deg,#A855F7,#4169E1)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",marginBottom:4}}>CULTURE</div>
         <div style={{fontSize:12,color:"rgba(0,0,0,0.4)",marginBottom:16}}>Dive into the stories behind every city.</div>
