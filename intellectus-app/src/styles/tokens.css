@@ -1,0 +1,58 @@
+/*
+  Intellectus design tokens.
+  "Chill" aesthetic: muted, earthy, low-contrast-but-legible. No red alert banners.
+  Dark mode is the default reading surface (item #17); light mode is the fallback.
+*/
+:root {
+  --nr-bg: 250 249 246;
+  --nr-bg-raised: 255 255 255;
+  --nr-ink: 38 36 33;
+  --nr-ink-muted: 110 105 97;
+  --nr-border: 226 221 212;
+  --nr-accent: 92 122 102;
+  --nr-accent-ink: 255 255 255;
+  --nr-well-researched: 92 122 102;
+  --nr-agree: 156 130 96;
+
+  --nr-radius-sm: 0.375rem;
+  --nr-radius-md: 0.75rem;
+  --nr-radius-lg: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nr-bg: 34 32 29;
+    --nr-bg-raised: 45 42 38;
+    --nr-ink: 227 222 213;
+    --nr-ink-muted: 162 155 143;
+    --nr-border: 63 59 53;
+    --nr-accent: 137 168 147;
+    --nr-accent-ink: 20 22 20;
+    --nr-well-researched: 137 168 147;
+    --nr-agree: 204 172 128;
+  }
+}
+
+:root[data-theme='dark'] {
+  --nr-bg: 34 32 29;
+  --nr-bg-raised: 45 42 38;
+  --nr-ink: 227 222 213;
+  --nr-ink-muted: 162 155 143;
+  --nr-border: 63 59 53;
+  --nr-accent: 137 168 147;
+  --nr-accent-ink: 20 22 20;
+  --nr-well-researched: 137 168 147;
+  --nr-agree: 204 172 128;
+}
+
+:root[data-theme='light'] {
+  --nr-bg: 250 249 246;
+  --nr-bg-raised: 255 255 255;
+  --nr-ink: 38 36 33;
+  --nr-ink-muted: 110 105 97;
+  --nr-border: 226 221 212;
+  --nr-accent: 92 122 102;
+  --nr-accent-ink: 255 255 255;
+  --nr-well-researched: 92 122 102;
+  --nr-agree: 156 130 96;
+}

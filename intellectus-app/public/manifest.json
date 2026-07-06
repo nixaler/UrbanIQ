@@ -1,0 +1,10 @@
+{
+  "name": "Intellectus",
+  "short_name": "Intellectus",
+  "description": "A daily news and topic reader built for depth over noise.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111110",
+  "theme_color": "#899989",
+  "icons": []
+}
