@@ -1,0 +1,56 @@
+/*
+  niXaler design tokens. Same brand family as niXalergame: mostly white with
+  black/silver and a restrained soft electric blue accent — premium-minimal,
+  sci-fi-restrained rather than loud. Light mode is the default surface (this
+  is a business dashboard, not a nighttime reading app like Intellectus);
+  dark mode is the fallback for the marketing site's hero sections.
+*/
+:root {
+  --nx-bg: 255 255 255;
+  --nx-bg-raised: 248 249 251;
+  --nx-ink: 17 20 24;
+  --nx-ink-muted: 100 107 117;
+  --nx-border: 224 227 232;
+  --nx-accent: 47 128 237;
+  --nx-accent-ink: 255 255 255;
+  --nx-silver: 148 156 168;
+
+  --nx-radius-sm: 0.375rem;
+  --nx-radius-md: 0.75rem;
+  --nx-radius-lg: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nx-bg: 10 12 16;
+    --nx-bg-raised: 18 21 27;
+    --nx-ink: 235 237 240;
+    --nx-ink-muted: 148 156 168;
+    --nx-border: 38 42 50;
+    --nx-accent: 92 168 255;
+    --nx-accent-ink: 8 12 18;
+    --nx-silver: 148 156 168;
+  }
+}
+
+:root[data-theme='dark'] {
+  --nx-bg: 10 12 16;
+  --nx-bg-raised: 18 21 27;
+  --nx-ink: 235 237 240;
+  --nx-ink-muted: 148 156 168;
+  --nx-border: 38 42 50;
+  --nx-accent: 92 168 255;
+  --nx-accent-ink: 8 12 18;
+  --nx-silver: 148 156 168;
+}
+
+:root[data-theme='light'] {
+  --nx-bg: 255 255 255;
+  --nx-bg-raised: 248 249 251;
+  --nx-ink: 17 20 24;
+  --nx-ink-muted: 100 107 117;
+  --nx-border: 224 227 232;
+  --nx-accent: 47 128 237;
+  --nx-accent-ink: 255 255 255;
+  --nx-silver: 148 156 168;
+}
