@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vent-bg: 250 249 252;
+  --vent-bg-raised: 255 255 255;
+  --vent-ink: 30 27 38;
+  --vent-ink-muted: 107 100 122;
+  --vent-border: 224 220 232;
+  --vent-accent: 124 92 199;
+  --vent-critical: 200 48 60;
+  --vent-radius-sm: 6px;
+  --vent-radius-md: 12px;
+  --vent-radius-lg: 20px;
+}
+
+:root[data-theme='dark'] {
+  --vent-bg: 20 18 26;
+  --vent-bg-raised: 30 27 38;
+  --vent-ink: 240 238 245;
+  --vent-ink-muted: 165 159 179;
+  --vent-border: 51 46 64;
+  --vent-accent: 165 141 224;
+  --vent-critical: 240 100 110;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --vent-bg: 20 18 26;
+    --vent-bg-raised: 30 27 38;
+    --vent-ink: 240 238 245;
+    --vent-ink-muted: 165 159 179;
+    --vent-border: 51 46 64;
+    --vent-accent: 165 141 224;
+    --vent-critical: 240 100 110;
+  }
+}
+
+body {
+  background-color: rgb(var(--vent-bg));
+  color: rgb(var(--vent-ink));
+}
