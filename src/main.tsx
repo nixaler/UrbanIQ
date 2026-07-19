@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallba
 import ReactDOM from 'react-dom/client';
 import { io as socketIO } from "socket.io-client";
 import { CityLivesGame } from './city-lives';
+import { PlayCallerGame } from './football-plays';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -6132,6 +6133,7 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
     {key:"nfl",  emoji:"🏈",name:"NFL Teams",      tag:"SPORTS",     sub:"32 franchises · History",    color:"#013369",grad:"linear-gradient(135deg,#013369,#d4af37)",photo:"/photo-nfl.jpg"},
     {key:"nba",  emoji:"🏀",name:"NBA Teams",      tag:"SPORTS",     sub:"30 franchises · History",    color:"#17408B",grad:"linear-gradient(135deg,#17408B,#C9082A)",photo:"https://images.pexels.com/photos/1752757/pexels-photo-1752757.jpeg?auto=compress&cs=tinysrgb&w=800"},
     {key:"minigames",emoji:"🎮",name:"Mini Games", tag:"ARCADE",     sub:"Blitz · Trivia · Challenges",color:"#7c3aed",grad:"linear-gradient(135deg,#7c3aed,#db2777)",photo:"/photo-arcade.jpg"},
+    {key:"play-caller",emoji:"🏈",name:"Play Caller", tag:"ARCADE",  sub:"Draw the route · Call your shot",color:"#e8b400",grad:"linear-gradient(135deg,#173625,#e8b400)",photo:"/photo-nfl.jpg"},
   ];
   const dateStr=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
   const dark=settings?.dark===true;
@@ -6334,6 +6336,25 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
                 <div style={{fontSize:"10px",color:"rgba(255,184,0,0.5)",letterSpacing:1.5}}>GENERATIONAL LIFE SIMULATOR · CRESTFIELD</div>
               </div>
               <div style={{background:"#FFB800",color:"#000",fontSize:"10px",fontWeight:800,padding:"7px 14px",borderRadius:20,letterSpacing:1.5,flexShrink:0,whiteSpace:"nowrap"}}>PLAY →</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Play Caller banner */}
+        <div style={{position:"relative",zIndex:10,padding:"0 48px 16px",maxWidth:680,margin:"0 auto",width:"100%",boxSizing:"border-box"}}>
+          <div onClick={()=>onSelectGame("play-caller")}
+            style={{position:"relative",overflow:"hidden",border:"1px solid #e8b40033",borderRadius:12,padding:"16px 20px",cursor:"pointer",transition:"border-color .2s,box-shadow .2s"}}
+            onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#e8b400";(e.currentTarget as HTMLDivElement).style.boxShadow="0 0 24px #e8b40018";}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#e8b40033";(e.currentTarget as HTMLDivElement).style.boxShadow="none";}}>
+            <img src="/photo-nfl.jpg" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.2,pointerEvents:"none"}} alt="" />
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,#0d0d0d 30%,rgba(13,13,13,0.7) 100%)",pointerEvents:"none"}}/>
+            <div style={{position:"relative",display:"flex",alignItems:"center",gap:16}}>
+              <div style={{width:44,height:44,borderRadius:10,background:"rgba(10,10,10,0.8)",border:"1px solid #e8b40044",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0}}>🏈</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:"13px",fontWeight:700,color:"#fff",letterSpacing:.2,marginBottom:2}}>Play Caller</div>
+                <div style={{fontSize:"10px",color:"rgba(232,180,0,0.6)",letterSpacing:1.5}}>DRAW THE ROUTE · CALL YOUR SHOT</div>
+              </div>
+              <div style={{background:"#e8b400",color:"#000",fontSize:"10px",fontWeight:800,padding:"7px 14px",borderRadius:20,letterSpacing:1.5,flexShrink:0,whiteSpace:"nowrap"}}>PLAY →</div>
             </div>
           </div>
         </div>
@@ -6614,6 +6635,26 @@ function StartPage({onBegin,onSelectGame,initialShowSupport,settings,onHostParty
               </div>
             </div>
             <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"#000",background:"#FFB800",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
+          </div>
+        </div>
+
+        {/* PLAY CALLER */}
+        <div style={{margin:"0 22px 16px"}}>
+          <div onClick={()=>{SoundEngine.play("select");onSelectGame("play-caller");}}
+            onMouseDown={e=>(e.currentTarget.style.transform="scale(0.98)")}
+            onMouseUp={e=>(e.currentTarget.style.transform="scale(1)")}
+            onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+            style={{height:90,borderRadius:14,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .2s,box-shadow .2s",boxShadow:"0 4px 16px rgba(0,0,0,0.12)",background:"#173625"}}>
+            <img src="/photo-nfl.jpg" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.38,pointerEvents:"none"}} alt="" />
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(23,54,37,0.85) 30%,rgba(23,54,37,0.5) 100%)"}}/>
+            <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",padding:"0 20px",gap:14}}>
+              <span style={{fontSize:28}}>🏈</span>
+              <div>
+                <div style={{fontSize:"17px",fontWeight:800,color:"#fff",letterSpacing:-0.3}}>Play Caller</div>
+                <div style={{fontSize:"10px",color:"rgba(232,180,0,0.7)",marginTop:2,letterSpacing:"0.5px"}}>Draw the route · Call your shot · Run it back</div>
+              </div>
+            </div>
+            <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:"9px",fontWeight:700,color:"#000",background:"#e8b400",padding:"5px 10px",borderRadius:6,letterSpacing:"0.5px",fontFamily:"'Outfit',sans-serif"}}>PLAY →</div>
           </div>
         </div>
 
@@ -8336,6 +8377,29 @@ function GameSelector({allStats,roundData,blitzBests,onSelect,onBack,settings}:{
             <div style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
               {["6 Families","30 Characters","Butterfly Effect","City Mystery"].map((t:string)=>(
                 <div key={t} style={{background:"rgba(255,184,0,0.08)",border:"1px solid rgba(255,184,0,0.2)",borderRadius:20,padding:"2px 8px",fontSize:"9px",color:"#FFB800",letterSpacing:1}}>{t.toUpperCase()}</div>
+              ))}
+            </div>
+          </div>
+          {/* Play Caller entry */}
+          <div className="gs-card" onClick={()=>onSelect("play-caller")}
+            style={{background:surface,border:`1px solid ${border}`,borderRadius:16,padding:"16px 18px",cursor:"pointer",animation:"gsCardIn .2s ease both"}}
+            onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor="#e8b400";(e.currentTarget as HTMLDivElement).style.boxShadow="0 8px 32px #e8b40018";}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor=border;(e.currentTarget as HTMLDivElement).style.boxShadow="none";}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:44,height:44,borderRadius:12,background:"#173625",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",flexShrink:0,boxShadow:"0 4px 12px rgba(0,0,0,0.3)"}}>
+                🏈
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:"14px",fontWeight:700,color:text,letterSpacing:.2}}>Play Caller</div>
+                <div style={{fontSize:"10px",letterSpacing:2,color:textMuted,marginTop:2}}>DRAW THE ROUTE · CALL YOUR SHOT · RUN IT BACK</div>
+              </div>
+              <div style={{background:"#e8b400",color:"#000",fontSize:"10px",fontWeight:700,padding:"6px 14px",borderRadius:20,letterSpacing:1,flexShrink:0}}>
+                PLAY →
+              </div>
+            </div>
+            <div style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
+              {["4 Formations","6 Route Types","Draw Your Own","Save Your Playbook"].map((t:string)=>(
+                <div key={t} style={{background:"rgba(232,180,0,0.08)",border:"1px solid rgba(232,180,0,0.2)",borderRadius:20,padding:"2px 8px",fontSize:"9px",color:"#e8b400",letterSpacing:1}}>{t.toUpperCase()}</div>
               ))}
             </div>
           </div>
@@ -12177,7 +12241,7 @@ function MiniGamesScreen({blitzBests,onSelect,onBack}:{blitzBests:any,onSelect:(
 }
 
 // ── ROOT ORCHESTRATOR ─────────────────────────────────────────────────────────
-type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games"|"city-lives";
+type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games"|"city-lives"|"play-caller";
 
 function IntroScreen({onDone}:{onDone:()=>void}){
   const[exiting,setExiting]=useState(false);
@@ -12821,6 +12885,8 @@ function Root(){
     SoundEngine.play("select");
     if(gk==="city-lives"){
       setPhase("city-lives");
+    }else if(gk==="play-caller"){
+      setPhase("play-caller");
     }else if(gk==="minigames"){
       setPhase("mini-games");
     }else if(gk==="cards"){
@@ -12883,6 +12949,10 @@ function Root(){
 
   if(phase==="city-lives"){
     return <CityLivesGame onBack={()=>setPhase("start")}/>;
+  }
+
+  if(phase==="play-caller"){
+    return <PlayCallerGame onBack={()=>setPhase("start")}/>;
   }
 
   if(phase==="tutorial"){
