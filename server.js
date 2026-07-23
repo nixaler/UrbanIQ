@@ -765,6 +765,23 @@ app.post("/api/me/sync", jwtRequired, async (req, res) => {
   return res.json({ ok: true, ...updates });
 });
 
+// ── PLAY CALLER (cloud save) ──────────────────────────────────────────────────
+// Stored via the generic kv_store — no dedicated table/migration needed.
+app.get("/api/playcaller/state", jwtRequired, async (req, res) => {
+  const data = await store.get(`playcaller:${req.user.userId}`);
+  return res.json(data || { playbook: [], career: { attempts: 0, completions: 0, touchdowns: 0, bestYards: 0 }, updatedAt: null });
+});
+
+app.post("/api/playcaller/state", jwtRequired, async (req, res) => {
+  const { playbook, career } = req.body || {};
+  if (!Array.isArray(playbook) || typeof career !== "object" || !career) {
+    return res.status(400).json({ error: "playbook (array) and career (object) required." });
+  }
+  const payload = { playbook: playbook.slice(0, 30), career, updatedAt: new Date().toISOString() };
+  await store.set(`playcaller:${req.user.userId}`, payload);
+  return res.json({ ok: true });
+});
+
 // ── FRIENDS ──────────────────────────────────────────────────────────────────
 // Required Supabase tables:
 //   ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallba
 import ReactDOM from 'react-dom/client';
 import { io as socketIO } from "socket.io-client";
 import { CityLivesGame } from './city-lives';
-import { PlayCallerGame } from './football-plays';
 
 // ── GLOBAL ERROR HANDLER ──────────────────────────────────────────────────────
 window.onerror = (msg, src, line, col, err) => {
@@ -12241,7 +12240,7 @@ function MiniGamesScreen({blitzBests,onSelect,onBack}:{blitzBests:any,onSelect:(
 }
 
 // ── ROOT ORCHESTRATOR ─────────────────────────────────────────────────────────
-type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games"|"city-lives"|"play-caller";
+type Phase="intro"|"start"|"select-game"|"select-difficulty"|"tutorial"|"play"|"mini-games"|"city-lives";
 
 function IntroScreen({onDone}:{onDone:()=>void}){
   const[exiting,setExiting]=useState(false);
@@ -12886,7 +12885,7 @@ function Root(){
     if(gk==="city-lives"){
       setPhase("city-lives");
     }else if(gk==="play-caller"){
-      setPhase("play-caller");
+      window.location.href="/play-caller.html";
     }else if(gk==="minigames"){
       setPhase("mini-games");
     }else if(gk==="cards"){
@@ -12951,11 +12950,7 @@ function Root(){
     return <CityLivesGame onBack={()=>setPhase("start")}/>;
   }
 
-  if(phase==="play-caller"){
-    return <PlayCallerGame onBack={()=>setPhase("start")}/>;
-  }
-
-  if(phase==="tutorial"){
+if(phase==="tutorial"){
     return <InteractiveTutorial T={T} fs={T.fs} gameKey={selectedGame} DIFF={DIFF} lineColors={G.lineColors||{}} onDone={handleTutorialDone}/>;
   }
 
